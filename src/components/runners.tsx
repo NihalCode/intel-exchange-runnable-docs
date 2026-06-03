@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { DISPLAY_BASE } from "@/lib/constants";
 import { runJsInSandbox } from "@/lib/js-sandbox";
 import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/lib/resolve-request";
 import { isMutating, maskText } from "@/lib/security";
 import type { CodeSnippet, RunnableRequest } from "@/lib/types";
+import { PyodideRunner } from "./PyodideRunner";
 import { useRunSettings } from "./RunSettings";
 
 /* --------------------------------- shared -------------------------------- */
@@ -42,7 +44,6 @@ function ResultBox({
   );
 }
 
-/** Renders text only (React escapes) — never dangerouslySetInnerHTML. */
 function Pre({ text }: { text: string }) {
   return (
     <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
@@ -95,10 +96,8 @@ function RunButton({
   tone?: "primary" | "ghost" | "danger";
 }) {
   const toneClass = {
-    primary:
-      "bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50",
-    ghost:
-      "border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800",
+    primary: "bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50",
+    ghost: "border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800",
     danger: "bg-red-600 text-white hover:bg-red-500 disabled:opacity-50",
   }[tone];
   return (
@@ -140,8 +139,8 @@ function formatMaybeJson(text: string): string {
 }
 
 function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
-  const { baseUrl, secretValues } = useRunSettings();
   const settings = useRunSettings();
+  const { baseUrl, secretValues } = settings;
 
   const parsed = useMemo<ExecRequest | null>(
     () => (request ? null : parseHttpSnippet(code)),
@@ -338,11 +337,39 @@ function JsonRunner({ code }: { code: string }) {
 /* ----------------------------- JavaScript -------------------------------- */
 
 function JsRunner({ code }: { code: string }) {
+  const { baseUrl, secretValues, getCredential } = useRunSettings();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [result, setResult] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
+
+  // Substitute placeholder base URL + credentials into the JS code
+  function prepareCode(): string {
+    let out = code.replace(
+      /https:\/\/tenantname\.com\/ctixapi/g,
+      baseUrl.replace(/\/+$/, "")
+    );
+    // Substitute credential placeholders in the URL query string
+    for (const key of ["AccessID", "Signature", "Expires"]) {
+      const val = getCredential(key);
+      if (val) {
+        out = out.replace(
+          new RegExp(encodeURIComponent(`<${key.toLowerCase().replace("id", " id")}>`), "gi"),
+          encodeURIComponent(val)
+        );
+        out = out.replace(
+          new RegExp(`<your ${key.toLowerCase()}>`, "gi"),
+          val
+        );
+        out = out.replace(
+          new RegExp(`"<${key.toLowerCase()}>"`, "gi"),
+          JSON.stringify(val)
+        );
+      }
+    }
+    return out;
+  }
 
   async function run() {
     setBusy(true);
@@ -350,7 +377,7 @@ function JsRunner({ code }: { code: string }) {
     setError(undefined);
     setResult(undefined);
     setLogs([]);
-    const r = await runJsInSandbox(code);
+    const r = await runJsInSandbox(prepareCode(), { baseUrl, secretValues });
     setLogs(r.logs || []);
     setResult(r.result);
     setError(r.error);
@@ -366,21 +393,23 @@ function JsRunner({ code }: { code: string }) {
           {busy ? "Running…" : "Run (sandboxed)"}
         </RunButton>
         <span className="text-[11px] opacity-50">
-          Runs in an isolated iframe; network calls to the API may be blocked by CORS.
+          Sandboxed iframe · API calls proxied server-side
         </span>
       </div>
       {done ? (
         <ResultBox tone={error ? "error" : "success"} title="Console output">
-          {logs.length > 0 ? <Pre text={logs.join("\n")} /> : null}
+          {logs.length > 0 ? (
+            <Pre text={maskText(logs.join("\n"), secretValues)} />
+          ) : null}
           {result !== undefined ? (
             <div className="mt-1">
-              <span className="text-[11px] opacity-60">return value:</span>
-              <Pre text={result} />
+              <span className="text-[11px] opacity-60">return value: </span>
+              <Pre text={maskText(result, secretValues)} />
             </div>
           ) : null}
           {error ? (
             <div className="mt-1 text-red-600 dark:text-red-400">
-              <Pre text={error} />
+              <Pre text={maskText(error, secretValues)} />
             </div>
           ) : null}
           {logs.length === 0 && result === undefined && !error ? (
@@ -392,32 +421,12 @@ function JsRunner({ code }: { code: string }) {
   );
 }
 
-/* ------------------------------- Python ---------------------------------- */
-
-function PythonRunner() {
-  return (
-    <div className="mt-2">
-      <button
-        type="button"
-        disabled
-        className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-semibold opacity-50 dark:border-zinc-700"
-      >
-        <PlayIcon />
-        Run
-      </button>
-      <p className="mt-1 text-[11px] opacity-60">
-        Python snippets are not runnable in this browser environment yet.
-      </p>
-    </div>
-  );
-}
-
 /* ------------------------------- Shell ----------------------------------- */
 
 function ShellNote() {
   return (
     <p className="mt-2 text-[11px] opacity-60">
-      Shell commands can&apos;t be executed from the browser. Use the cURL tab for an
+      Shell commands can&apos;t be run from the browser. Use the cURL tab for the
       equivalent runnable request, or copy this snippet to your terminal.
     </p>
   );
@@ -434,7 +443,7 @@ export function SnippetRunner({ snippet }: { snippet: CodeSnippet }) {
     case "javascript":
       return <JsRunner code={snippet.code} />;
     case "python":
-      return <PythonRunner />;
+      return <PyodideRunner code={snippet.code} />;
     case "none":
       if (/^(bash|sh|shell|zsh)$/i.test(snippet.lang)) return <ShellNote />;
       return null;
