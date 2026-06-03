@@ -7,13 +7,14 @@ import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
 import {
   credFieldsForExec,
   credFieldsForRequest,
+  needsCredential,
   previewRequest,
   resolveExec,
   resolveStructured,
   type CredField,
 } from "@/lib/resolve-request";
 import { isMutating, maskText } from "@/lib/security";
-import type { CodeSnippet, RunnableRequest } from "@/lib/types";
+import type { CodeSnippet, KeyValue, RunnableRequest } from "@/lib/types";
 import { PyodideRunner } from "./PyodideRunner";
 import { useRunSettings } from "./RunSettings";
 
@@ -24,7 +25,7 @@ function ResultBox({
   title,
   children,
 }: {
-  tone: "neutral" | "success" | "error" | "info";
+  tone: "neutral" | "success" | "error" | "info" | "warn";
   title: string;
   children: React.ReactNode;
 }) {
@@ -33,6 +34,7 @@ function ResultBox({
     success: "border-emerald-400/60 bg-emerald-50/60 dark:bg-emerald-950/20",
     error: "border-red-400/60 bg-red-50/60 dark:bg-red-950/20",
     info: "border-sky-400/60 bg-sky-50/60 dark:bg-sky-950/20",
+    warn: "border-amber-400/60 bg-amber-50/60 dark:bg-amber-950/20",
   }[tone];
   return (
     <div className={`mt-2 rounded-md border ${toneClass} p-3 text-sm`}>
@@ -113,6 +115,101 @@ function RunButton({
   );
 }
 
+/* ----------------------------- Query param editor ----------------------- */
+
+/**
+ * Returns the non-credential query params from a RunnableRequest.
+ * Credential params (AccessID, Signature, Expires) are handled by CredentialsForm.
+ */
+function editableQueryParams(query: KeyValue[]): KeyValue[] {
+  return query.filter((p) => !needsCredential(p.name, p.value));
+}
+
+function QueryParamEditor({
+  params,
+  values,
+  onChange,
+}: {
+  params: KeyValue[];
+  values: Record<string, string>;
+  onChange: (name: string, value: string) => void;
+}) {
+  if (params.length === 0) return null;
+  return (
+    <div className="mt-2 rounded-md border border-zinc-300 bg-zinc-50/50 p-3 dark:border-zinc-700 dark:bg-zinc-900/40">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">
+        Query Parameters
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {params.map((p) => (
+          <label key={p.name} className="flex flex-col gap-1 text-xs">
+            <span className="font-medium opacity-80">{p.name}</span>
+            <input
+              type="text"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder={p.value || `(optional)`}
+              value={values[p.name] ?? p.value}
+              onChange={(e) => onChange(p.name, e.target.value)}
+              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
+            />
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------- Payload editor --------------------------- */
+
+function validateJson(text: string): string | null {
+  if (!text.trim()) return null; // empty is OK (no body)
+  try {
+    JSON.parse(text);
+    return null;
+  } catch (e) {
+    return e instanceof Error ? e.message : "Invalid JSON";
+  }
+}
+
+function PayloadEditor({
+  value,
+  onChange,
+  jsonError,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  jsonError: string | null;
+}) {
+  return (
+    <div className="mt-2">
+      <div className="mb-1 flex items-center gap-2">
+        <span className="text-xs font-medium opacity-70">Request body (JSON)</span>
+        {jsonError ? (
+          <span className="rounded bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
+            {jsonError}
+          </span>
+        ) : value.trim() ? (
+          <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+            Valid JSON
+          </span>
+        ) : null}
+      </div>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
+        rows={Math.min(12, Math.max(3, value.split("\n").length + 1))}
+        className={`w-full rounded border px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:bg-zinc-900 ${
+          jsonError
+            ? "border-red-400 dark:border-red-600"
+            : "border-zinc-300 dark:border-zinc-600"
+        }`}
+      />
+    </div>
+  );
+}
+
 /* -------------------------------- HTTP ----------------------------------- */
 
 interface HttpResult {
@@ -155,20 +252,50 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
           : [],
     [request, parsed]
   );
+
+  // Non-credential query params that the user can edit
+  const editableParams = useMemo<KeyValue[]>(
+    () => editableQueryParams(request?.query ?? []),
+    [request]
+  );
+
+  // State: query param overrides (only non-credential params)
+  const [queryValues, setQueryValues] = useState<Record<string, string>>(() =>
+    Object.fromEntries(editableParams.map((p) => [p.name, p.value]))
+  );
+
   const initialBody = request ? request.body : parsed?.body;
   const method = (request?.method || parsed?.method || "GET").toUpperCase();
   const parseFailed = !request && !parsed;
 
-  const [bodyText, setBodyText] = useState<string | undefined>(initialBody);
+  const [bodyText, setBodyText] = useState<string>(initialBody ?? "");
+  const [jsonError, setJsonError] = useState<string | null>(null);
   const [phase, setPhase] = useState<"idle" | "confirm" | "loading">("idle");
   const [result, setResult] = useState<HttpResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
+  const isDefaultBase = !baseUrl || baseUrl === DISPLAY_BASE;
+
+  function handleBodyChange(v: string) {
+    setBodyText(v);
+    setJsonError(validateJson(v));
+  }
+
+  function handleQueryChange(name: string, value: string) {
+    setQueryValues((prev) => ({ ...prev, [name]: value }));
+  }
+
   const buildExec = (): ExecRequest =>
     request
-      ? resolveStructured(request, baseUrl, settings.getCredential, bodyText)
-      : resolveExec(parsed!, baseUrl, settings.getCredential, bodyText);
+      ? resolveStructured(
+          request,
+          baseUrl,
+          settings.getCredential,
+          bodyText || undefined,
+          queryValues
+        )
+      : resolveExec(parsed!, baseUrl, settings.getCredential, bodyText || undefined);
 
   async function execute() {
     const exec = buildExec();
@@ -205,6 +332,10 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
       setError("This snippet could not be parsed into an HTTP request.");
       return;
     }
+    if (jsonError) {
+      setError(`Fix the JSON body before running: ${jsonError}`);
+      return;
+    }
     if (isMutating(method)) {
       setPhase("confirm");
       return;
@@ -212,26 +343,35 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
     void execute();
   }
 
+  // Show body editor for non-GET methods when there's body content or a structured request
   const showBody =
-    method !== "GET" && method !== "HEAD" && (bodyText !== undefined || !!request);
+    method !== "GET" &&
+    method !== "HEAD" &&
+    (bodyText !== "" || request?.body !== undefined);
 
   return (
     <div>
+      {isDefaultBase ? (
+        <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+          <strong>Set your base URL first.</strong> Click <em>API Settings</em> in the header and enter your Cyware tenant URL (e.g.{" "}
+          <code className="font-mono">https://yourcompany.cyware.com/ctixapi</code>).
+        </div>
+      ) : null}
+
       <CredentialsForm fields={credFields} />
 
+      <QueryParamEditor
+        params={editableParams}
+        values={queryValues}
+        onChange={handleQueryChange}
+      />
+
       {showBody ? (
-        <div className="mt-2">
-          <label className="mb-1 block text-xs font-medium opacity-70">
-            Request body
-          </label>
-          <textarea
-            value={bodyText ?? ""}
-            onChange={(e) => setBodyText(e.target.value)}
-            spellCheck={false}
-            rows={Math.min(10, Math.max(3, (bodyText ?? "").split("\n").length))}
-            className="w-full rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
-          />
-        </div>
+        <PayloadEditor
+          value={bodyText}
+          onChange={handleBodyChange}
+          jsonError={jsonError}
+        />
       ) : null}
 
       <div className="mt-2 flex flex-wrap items-center gap-2">

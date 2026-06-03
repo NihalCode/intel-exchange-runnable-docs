@@ -74,9 +74,17 @@ export function resolveStructured(
   req: RunnableRequest,
   baseUrl: string,
   getCred: GetCred,
-  bodyOverride?: string
+  bodyOverride?: string,
+  /** User-edited values for non-credential query params. Key = param name (exact case). */
+  queryOverrides?: Record<string, string>
 ): ExecRequest {
-  const query = applyCreds(req.query || [], getCred);
+  // Apply user overrides before credential substitution so cred values win.
+  const mergedQuery = (req.query || []).map((p) =>
+    queryOverrides && Object.prototype.hasOwnProperty.call(queryOverrides, p.name)
+      ? { name: p.name, value: queryOverrides[p.name] }
+      : p
+  );
+  const query = applyCreds(mergedQuery, getCred);
   const headers = applyCreds(req.headers || [], getCred);
   const url = joinBase(baseUrl, req.path) + queryString(query);
   return {

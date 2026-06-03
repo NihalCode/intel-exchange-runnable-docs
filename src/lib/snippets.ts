@@ -140,7 +140,9 @@ function jsSnippet(req: RunnableRequest): string {
     ...init,
     `});`,
     ``,
-    `const data = await response.json();`,
+    `const text = await response.text();`,
+    `let data;`,
+    `try { data = JSON.parse(text); } catch { data = text; }`,
     `console.log(response.status, data);`,
   ].join("\n");
 }
