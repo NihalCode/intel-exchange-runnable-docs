@@ -109,8 +109,9 @@ export function EndpointView({
       <section className="mt-8">
         <h2 className="mb-1 text-lg font-semibold">Run it</h2>
         <p className="mb-3 text-sm text-zinc-500">
-          Each snippet below is runnable. Set your tenant base URL and credentials in
-          the bar at the top; secrets stay in memory and are masked in output.
+          Each snippet below is runnable in demo mode (simulated responses — no Cyware tenant
+          required). Edit query parameters and request bodies before running. Optional: set a
+          real tenant URL and credentials in API Settings to call a live API.
         </p>
         {snippets.map((snippet, i) => (
           <CodeBlock key={`${snippet.label}-${i}`} snippet={snippet} />

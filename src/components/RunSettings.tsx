@@ -10,8 +10,11 @@ import {
   useState,
 } from "react";
 import { generateAuthParams } from "@/lib/auth-gen";
+import { isDemoModeEnabled } from "@/lib/demo";
 
 interface RunSettings {
+  /** Docs clone: simulate API responses without a Cyware tenant. */
+  demoMode: boolean;
   baseUrl: string;
   setBaseUrl: (v: string) => void;
   /** Returns any credential value by name (case-insensitive) */
@@ -127,6 +130,7 @@ export function RunSettingsProvider({
 
   const value = useMemo<RunSettings>(
     () => ({
+      demoMode: isDemoModeEnabled(),
       baseUrl,
       setBaseUrl,
       getCredential,

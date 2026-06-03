@@ -6,6 +6,7 @@
 // parent → /api/run server-side proxy, so they work despite the opaque origin.
 
 import { DISPLAY_BASE } from "./constants";
+import { isPlaceholderRequestUrl } from "./demo";
 
 export interface SandboxResult {
   logs: string[];
@@ -191,6 +192,7 @@ export function runJsInSandbox(
             url: proxiedUrl,
             headers: data.payload?.headers ?? [],
             body: data.payload?.body,
+            demo: isPlaceholderRequestUrl(proxiedUrl),
           }),
         })
           .then((r) => r.json())

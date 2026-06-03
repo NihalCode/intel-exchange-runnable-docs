@@ -16,9 +16,10 @@ export default async function Home() {
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
           An unofficial, runnable mirror of the Cyware Intel Exchange API reference.
-          Every code snippet has a <strong>Run</strong> control: execute API calls
-          through a secure proxy, validate JSON, or run JavaScript in a sandbox — no
-          copy/paste required. {manifest.count} pages indexed.
+          Every code snippet has a <strong>Run</strong> control — responses are{" "}
+          <strong>simulated in demo mode</strong> so you can try the docs without a Cyware
+          tenant. Validate JSON, edit query params and payloads, or run JavaScript/Python
+          in the browser. {manifest.count} pages indexed.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {topSections.map((s) => (

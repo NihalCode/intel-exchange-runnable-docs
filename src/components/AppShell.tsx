@@ -33,6 +33,7 @@ function ThemeToggle() {
 
 function AuthPanel({ onClose }: { onClose: () => void }) {
   const {
+    demoMode,
     baseUrl, setBaseUrl,
     accessId, setAccessId,
     secretKey, setSecretKey,
@@ -53,10 +54,22 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
+      {demoMode ? (
+        <p className="mb-3 rounded-md border border-sky-200 bg-sky-50 px-2.5 py-2 text-[11px] text-sky-800 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300">
+          <strong>Demo mode is on.</strong> Snippets return simulated JSON — you do not need a Cyware tenant.
+          Only change the base URL below if you want to call a real API (set{" "}
+          <code className="font-mono">NEXT_PUBLIC_DEMO_MODE=false</code> on the server).
+        </p>
+      ) : null}
+
       {/* Base URL */}
       <label className="mb-3 flex flex-col gap-1 text-xs">
-        <span className="font-semibold">Tenant Base URL</span>
-        <span className="text-zinc-500">Your Cyware tenant URL, e.g. <code className="text-sky-600">https://myorg.cyware.com/ctixapi</code></span>
+        <span className="font-semibold">API base URL {demoMode ? "(optional)" : ""}</span>
+        <span className="text-zinc-500">
+          {demoMode
+            ? "Leave as the placeholder to keep using simulated responses."
+            : <>Your Cyware tenant URL, e.g. <code className="text-sky-600">https://myorg.cyware.com/ctixapi</code></>}
+        </span>
         <input
           value={baseUrl}
           onChange={(e) => setBaseUrl(e.target.value)}
@@ -68,11 +81,17 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
 
       <div className="mb-2 border-t border-zinc-100 pt-3 dark:border-zinc-800" />
 
-      <p className="mb-2 text-xs font-semibold">Open API Credentials</p>
+      <p className="mb-2 text-xs font-semibold">Open API Credentials {demoMode ? "(optional)" : ""}</p>
       <p className="mb-3 text-[11px] text-zinc-500">
-        From your Cyware tenant: <strong>Admin → Open API → Generate Credentials</strong>.
-        Enter Access ID and Secret Key — the Signature and Expires are generated automatically and expire after ~25 seconds.
-        Secrets are kept in memory only, never stored.
+        {demoMode ? (
+          <>Not required for demo runs. Add these only when calling a live tenant.</>
+        ) : (
+          <>
+            From your Cyware tenant: <strong>Admin → Open API → Generate Credentials</strong>.
+            Enter Access ID and Secret Key — Signature and Expires are generated automatically (~25 s).
+            Secrets stay in memory only.
+          </>
+        )}
       </p>
 
       <div className="grid grid-cols-2 gap-2">
@@ -141,7 +160,7 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
 }
 
 function HeaderBar() {
-  const { baseUrl, setBaseUrl, authStatus, credentialCount } = useRunSettings();
+  const { demoMode, baseUrl, setBaseUrl, authStatus, credentialCount } = useRunSettings();
   const [panelOpen, setPanelOpen] = useState(false);
 
   const statusDot =
@@ -170,7 +189,13 @@ function HeaderBar() {
       >
         <span className={`h-2 w-2 rounded-full ${statusDot}`} />
         <span className="hidden sm:inline">
-          {authStatus === "ok" ? "Auth ready" : "Set credentials"}
+          {demoMode
+            ? authStatus === "ok"
+              ? "Demo · auth set"
+              : "Demo mode"
+            : authStatus === "ok"
+              ? "Auth ready"
+              : "Set credentials"}
         </span>
         <KeyIcon />
       </button>

@@ -210,6 +210,16 @@ Then commit the updated `src/content/pages/*.json` and `src/content/manifest.jso
 
 ---
 
+## Demo mode (no Cyware tenant)
+
+This clone is meant to run snippets without a live tenant. By default `NEXT_PUBLIC_DEMO_MODE` is enabled (anything except `"false"`).
+
+When demo mode is on and the request URL uses the placeholder host `tenantname.com` (from `DISPLAY_BASE` in snippets), `/api/run` returns simulated JSON via `src/lib/demo.ts` instead of performing DNS/fetch.
+
+To call a **real** Cyware tenant: set `NEXT_PUBLIC_DEMO_MODE=false` in Vercel env, deploy, then enter the tenant base URL and credentials in API Settings.
+
+---
+
 ## Deployment
 
 - **Auto-deploy**: every push to `main` triggers a Vercel build.
@@ -224,7 +234,7 @@ Then commit the updated `src/content/pages/*.json` and `src/content/manifest.jso
 
 | Pitfall | Solution |
 |---|---|
-| `Could not resolve host: tenantname.com` | User hasn't set their real tenant base URL in the header. Tell them to click "API Settings" and enter their Cyware tenant URL. |
+| `Could not resolve host: tenantname.com` | Demo mode is off (`NEXT_PUBLIC_DEMO_MODE=false`) but base URL is still the placeholder. Default is demo on: `/api/run` simulates JSON for `tenantname.com` URLs. Set a real tenant URL only when calling a live API. |
 | `SyntaxError: Unexpected end of JSON input` in JS runner | The API returned a non-JSON body. The generated JS snippets use `response.text()` + graceful JSON parse — never call `response.json()` directly. |
 | `npm ci` fails on Vercel with missing platform deps | Lock file was generated on a different OS. Remove the `installCommand` override in `vercel.json` (use Vercel's default install). |
 | `reactCompiler: true` slows builds | Keep it `false` in `next.config.ts`. The React Compiler adds Babel to every file. |

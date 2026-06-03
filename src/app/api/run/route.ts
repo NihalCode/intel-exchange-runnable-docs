@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dns from "node:dns/promises";
 import net from "node:net";
+import { buildDemoResponse, shouldSimulateRequest } from "@/lib/demo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,6 +14,8 @@ interface RunBody {
   url?: string;
   headers?: { name: string; value: string }[];
   body?: string;
+  /** When true, return a simulated JSON response (docs clone / no tenant). */
+  demo?: boolean;
 }
 
 const ALLOWED_METHODS = new Set([
@@ -97,6 +100,12 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Only http and https protocols are supported." },
       { status: 400 }
+    );
+  }
+
+  if (shouldSimulateRequest(urlStr, payload.demo)) {
+    return NextResponse.json(
+      buildDemoResponse(method, urlStr, payload.body)
     );
   }
 

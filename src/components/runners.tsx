@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { DISPLAY_BASE } from "@/lib/constants";
+import { isPlaceholderBase, isPlaceholderRequestUrl } from "@/lib/demo";
 import { runJsInSandbox } from "@/lib/js-sandbox";
 import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
 import {
@@ -237,7 +238,7 @@ function formatMaybeJson(text: string): string {
 
 function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
   const settings = useRunSettings();
-  const { baseUrl, secretValues } = settings;
+  const { baseUrl, secretValues, demoMode } = settings;
 
   const parsed = useMemo<ExecRequest | null>(
     () => (request ? null : parseHttpSnippet(code)),
@@ -275,7 +276,9 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const isDefaultBase = !baseUrl || baseUrl === DISPLAY_BASE;
+  const useDemo = demoMode && isPlaceholderBase(baseUrl);
+  const sendDemoFlag = (url: string) =>
+    isPlaceholderRequestUrl(url) || useDemo;
 
   function handleBodyChange(v: string) {
     setBodyText(v);
@@ -312,6 +315,7 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
           url: exec.url,
           headers: exec.headers,
           body: exec.body,
+          demo: sendDemoFlag(exec.url),
         }),
       });
       const data = await res.json();
@@ -351,10 +355,15 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
 
   return (
     <div>
-      {isDefaultBase ? (
+      {useDemo ? (
+        <div className="mt-2 rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
+          <strong>Demo mode.</strong> Responses are simulated on this server — no Cyware tenant or credentials required.
+          Credentials below are optional and only needed if you point API Settings at a real tenant URL.
+        </div>
+      ) : demoMode && !isPlaceholderBase(baseUrl) ? null : !demoMode && isPlaceholderBase(baseUrl) ? (
         <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
-          <strong>Set your base URL first.</strong> Click <em>API Settings</em> in the header and enter your Cyware tenant URL (e.g.{" "}
-          <code className="font-mono">https://yourcompany.cyware.com/ctixapi</code>).
+          <strong>Set your base URL.</strong> Enter your Cyware tenant URL in <em>API Settings</em>, or set{" "}
+          <code className="font-mono">NEXT_PUBLIC_DEMO_MODE=true</code> to use simulated responses.
         </div>
       ) : null}
 

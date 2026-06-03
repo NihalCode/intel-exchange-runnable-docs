@@ -71,7 +71,8 @@ async def _ctix_request(method, url, params=None, headers=None, json=None, data=
     elif data is not None:
         body_str = _json.dumps(data) if isinstance(data, dict) else str(data)
     proxy_payload = {"method": method, "url": full_url,
-        "headers": [{"name": k, "value": str(v)} for k, v in hdrs.items()]}
+        "headers": [{"name": k, "value": str(v)} for k, v in hdrs.items()],
+        "demo": "tenantname.com" in full_url}
     if body_str is not None:
         proxy_payload["body"] = body_str
     resp = await _pyfetch("/api/run", method="POST",
