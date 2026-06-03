@@ -1,0 +1,415 @@
+{
+  "slug": "global-notes/note-details-1",
+  "title": "Get Note Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "global-notes",
+    "note-details-1"
+  ],
+  "description": "This API endpoint retrieves the details of a specific note identified by the `note_id`.",
+  "method": "GET",
+  "path": "ingestion/notes/{note_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "note_id",
+        "description": "Pass the ID of a note to retrieve the details.",
+        "isRequired": false,
+        "value": "e64ba06c-acb7-4a3d-82f3-b99de11a8531",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394a10b49385adf3c47220"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "created",
+          "description": "Returns the date and time of the creation of the note.",
+          "isRequired": false,
+          "value": "1685610463",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the information of the user who created the notes. The information includes the email address, first name, ID, and last name of the user.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who created the note.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the note.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the ID of the user who created the note.",
+              "isRequired": false,
+              "value": "58a66a94-fe9b-4928-ba44-d38fda6f06f3",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the note.",
+              "isRequired": false,
+              "value": "doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the note.",
+          "isRequired": false,
+          "value": "e30d3246-c793-4f64-ba51-66e418216eeb",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_json",
+          "description": "Returns a boolean flag that indicates whether the content of the note is formatted as JSON.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "meta_data",
+          "description": "Returns any metadata saved with the notes.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "component",
+              "description": "Identifies the Intel Exchange module or functional area associated with the note.",
+              "isRequired": false,
+              "value": "threatdata",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "object_id",
+              "description": "Returns the unique identifier of the object.",
+              "isRequired": false,
+              "value": "c611c22c-8175-41e8-ae51-aee29c7b1c29",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "type",
+              "description": "Returns the type.",
+              "isRequired": false,
+              "value": "report",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date and time of the modification of the note.",
+          "isRequired": false,
+          "value": "1685610463",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the information of the user who modified the notes. The information includes the email address, first name, ID, and last name of the user.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who last modified the note.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who last modified the note.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the user ID of the user who last modified the note.",
+              "isRequired": false,
+              "value": "58a66a94-fe9b-4928-ba44-d38fda6f06f3",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who last modified the note.",
+              "isRequired": false,
+              "value": "doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "object_id",
+          "description": "Returns the UUID of the threat data object associated with the notes.",
+          "isRequired": false,
+          "value": "c611c22c-8175-41e8-ae51-aee29c7b1c29",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "text",
+          "description": "Returns the description associated with notes.",
+          "isRequired": false,
+          "value": "note content",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the note.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "type",
+          "description": "Returns the type of the note.",
+          "isRequired": false,
+          "value": "threatdata",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,603 @@
+{
+  "slug": "administration/collection-management/list-collections",
+  "title": "Get Collections List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "collection-management",
+    "list-collections"
+  ],
+  "description": "Returns a paginated list of collections in Intel Exchange.",
+  "method": "GET",
+  "path": "publishing/collection/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Filter results by page number.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Filter results by the page size of response.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass `-created` to sort by created date in descending order. Pass `created` to sort by created date in ascending order.",
+        "isRequired": false,
+        "value": "-created",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to retrieve active collections.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the created from time to retrieve collection based on the created date.",
+        "isRequired": false,
+        "value": "1722124800",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_to",
+        "description": "Pass the created to time to retrieve collection based on the created date.",
+        "isRequired": false,
+        "value": "1722643199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass the type of collection. ",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "inbox"
+            },
+            {
+              "value": "polling"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass a keyword to search collections based on the title.",
+        "isRequired": false,
+        "value": "custom",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "nominal",
+        "description": "Pass true to retrieve collections with the ID and name of the collections.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6939454eb49385adf3c44003"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the link to the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the link to the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the maximum number of elements that can be present on a page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total record count.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of collection objects. ",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the collection ID.",
+                  "isRequired": false,
+                  "value": "8a65a960-2b9b-475e-b8f2-9610d1dd8d8c",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the collection name.",
+                  "isRequired": false,
+                  "value": "Custom score collection",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the collection description.",
+                  "isRequired": false,
+                  "value": "tesitng",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_active",
+                  "description": "Returns true if the collection is active, else returns false.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the type of collection.",
+                  "isRequired": false,
+                  "value": "DATA_FEED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_editable",
+                  "description": "Returns true if the collection is editable, else returns false.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "polling",
+                  "description": "Returns true if the polling is allowed, else returns false.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "inbox",
+                  "description": "Returns true if the inbox is allowed for collection, else returns false.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the date and time at which the collection was created.",
+                  "isRequired": false,
+                  "value": "1721741850",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "has_subscribed",
+                  "description": "Returns true if the collection is subscribed by any subscriber, else returns false.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "marking_config",
+                  "description": "Returns the data marking type.",
+                  "isRequired": false,
+                  "value": "tlp",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "default_marking_definition",
+                  "description": "Returns the default data marking configuration.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the marking definition.",
+                      "isRequired": false,
+                      "value": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the marking definition.",
+                      "isRequired": false,
+                      "value": "TLP:AMBER",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the STIX object type.",
+                      "isRequired": false,
+                      "value": "marking-definition",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created",
+                      "description": "Returns the ISO timestamp when the marking was created.",
+                      "isRequired": false,
+                      "value": "2017-01-20T00:00:00.000Z",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "definition",
+                      "description": "Returns the marking type-specific details.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "tlp",
+                          "description": "Returns the default TLP marked.",
+                          "isRequired": false,
+                          "value": "amber",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "spec_version",
+                      "description": "Returns the STIX spec version.",
+                      "isRequired": false,
+                      "value": "2.1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "definition_type",
+                      "description": "Returns the type of definition marking.",
+                      "isRequired": false,
+                      "value": "tlp",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hide_aggregate_col",
+          "description": "Indicates whether to hide aggregate columns in the response/UI.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "subscriber_name",
+          "description": "Returns the name of the subscriber for whom collections are fetched.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

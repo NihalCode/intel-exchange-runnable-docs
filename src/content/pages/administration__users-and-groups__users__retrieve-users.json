@@ -1,0 +1,588 @@
+{
+  "slug": "administration/users-and-groups/users/retrieve-users",
+  "title": "Get Users",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "users-and-groups",
+    "users",
+    "retrieve-users"
+  ],
+  "description": "Returns the list of Intel Exchange users in a paginated format.",
+  "method": "GET",
+  "path": "rest-auth/users/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the epoch time to filter users created after this timestamp.",
+        "isRequired": false,
+        "value": "1622658600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_to",
+        "description": "Pass the epoch time to filter users created before this timestamp.",
+        "isRequired": false,
+        "value": "1622744999",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to include only active users in the response.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass the field to sort the user listing based on the field provided. The order can be reversed by prepending `-` before the key. For example, `-created`.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "created"
+            },
+            {
+              "value": "name"
+            },
+            {
+              "value": "last_active_session"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "invited_by",
+        "description": "Pass the user ID to filter users who were invited by a specific user.",
+        "isRequired": false,
+        "value": "9e2b0468-2a06-410e-bf3e-f5b29e17b077",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass a search keyword to filter users by matching `first_name`, `last_name`, or `email`. The search is case-insensitive.",
+        "isRequired": false,
+        "value": "cyw",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_blocked",
+        "description": "Pass true to retrieve only blocked users. Pass false to retrieve only unblocked users.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "invite_status",
+        "description": "Pass the invite status to filter users based on whether they have accepted the invite. ",
+        "isRequired": false,
+        "value": "INVITED",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "ACCEPTED"
+            },
+            {
+              "value": "INVITED"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "activity_from",
+        "description": "Pass the epoch timestamp to filter users who have been active after this point in time.",
+        "isRequired": false,
+        "value": "1624290146",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "activity_to",
+        "description": "Pass the epoch timestamp to filter users who have been active before this point in time.",
+        "isRequired": false,
+        "value": "1624299145",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "group",
+        "description": "Pass the permission group ID to filter users belonging to a specific group.",
+        "isRequired": false,
+        "value": "139e4dc0-1eb6-443b-8809-f5b4417fee81",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393fa6b49385adf3c3f32e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL endpoint of the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL endpoint of the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records on the page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "count",
+          "description": "Returns the total number of results available.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns a list of user objects with detailed information.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID assigned to the user. This ID is used across the Intel Exchange application to perform various actions.",
+                  "isRequired": false,
+                  "value": "92a767f5-a080-42cd-9407-e186af56f08b",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "first_name",
+                  "description": "Returns the first name of the user.",
+                  "isRequired": false,
+                  "value": "FirstName",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_name",
+                  "description": "Returns the last name of the user.",
+                  "isRequired": false,
+                  "value": "LastName",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "email",
+                  "description": "Returns the associated email ID of the user on which Intel Exchange sends all the emails.",
+                  "isRequired": false,
+                  "value": "username@domain.com",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "contact_number",
+                  "description": "Returns the mobile or telephone number of the user.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "country_code",
+                  "description": "Returns the country code of the user.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user_id",
+                  "description": "Returns the unique ID of the user. This ID is used across the Intel Exchange application to perform various actions.",
+                  "isRequired": false,
+                  "value": "92a767f5-a080-42cd-9407-e186af56f08b",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "username",
+                  "description": "Returns the LDAP username associated with a user.",
+                  "isRequired": false,
+                  "value": "UserName",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "invite_status",
+                  "description": "Returns the invitation status of the user, such as Accepted or Invited.",
+                  "isRequired": false,
+                  "value": "INVITED",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "image_url",
+                  "description": "Return the URL link of the image.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_active",
+                  "description": "Returns True if the user is active on the platform. Else returns False.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_blocked",
+                  "description": "Returns True if the user is blocked, else returns False.\nA user can get blocked if the user has entered the wrong password more than a defined number of times.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_active_session",
+                  "description": "Returns the last active date and time of the user.",
+                  "isRequired": false,
+                  "value": 0,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the date and time at which the user was created.",
+                  "isRequired": false,
+                  "value": 1645189359,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "invited_by",
+                  "description": "Returns the details of the user who created a new user in the form of a dictionary. ",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the inviter.",
+                      "isRequired": false,
+                      "value": "010f5d90-f510-40e5-82a0-dd90f4546dd2",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the inviter.",
+                      "isRequired": false,
+                      "value": "FirstName",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the inviter.",
+                      "isRequired": false,
+                      "value": "LastName",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email address of the inviter.",
+                      "isRequired": false,
+                      "value": "username@domain.com",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_active",
+                      "description": "Returns true if the inviter's account is active. Else, returns false.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "contact_number",
+                      "description": "Returns the inviter's contact number.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "country_code",
+                      "description": "Returns the inviter's country code.",
+                      "isRequired": false,
+                      "value": "91",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "user_groups",
+                  "description": "Returns the list of associated groups for the user, which includes the group ID and the name of the group.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique ID of the user group.",
+                          "isRequired": false,
+                          "value": "78a61669-d874-4424-b678-8862452e710f",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the user group.",
+                          "isRequired": false,
+                          "value": "group",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "active_count",
+          "description": "Returns the number of users who are active.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

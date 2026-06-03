@@ -1,0 +1,205 @@
+{
+  "slug": "administration/configuration/system-notifications/api-expiry-report",
+  "title": "Get API Expiry Report",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "system-notifications",
+    "api-expiry-report"
+  ],
+  "description": "Returns the system notification configuration for the OpenAPI expiry report.",
+  "method": "GET",
+  "path": "email/notifications/openapi/config/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693944f6b49385adf3c43db9"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "openapi",
+          "description": "Returns the configuration for API expiry notifications related to OpenAPI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "is_enabled",
+              "description": "Indicates if the OpenAPI notification is enabled.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_notify_default",
+              "description": "Indicates if the default notification is enabled.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_notify_via",
+              "description": "Returns the list of notification methods.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "email",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "notify_before",
+              "description": "Returns the number of minutes before notification.",
+              "isRequired": false,
+              "value": "0",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "notify_frequency",
+              "description": "Returns the frequency of notification.",
+              "isRequired": false,
+              "value": "daily",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "user_groups",
+              "description": "Returns the list of user groups to be notified.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "users",
+              "description": "Returns the list of users to be notified.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

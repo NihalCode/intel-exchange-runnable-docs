@@ -1,0 +1,82 @@
+{
+  "slug": "indicators-allowed/third-party-indicators/remove-indicator-from-third-party-ignored-list",
+  "title": "Remove Indicator from Third-Party Ignored List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "third-party-indicators",
+    "remove-indicator-from-third-party-ignored-list"
+  ],
+  "description": "Removes an indicator from the third-party ignored list.",
+  "method": "DELETE",
+  "path": "conversion/allowed_indicators/third_party_indicators/bulk-actions/",
+  "request": {
+    "query": [
+      {
+        "name": "ignored",
+        "description": "Pass true to remove an indicator from the third-party ignored indicator list.",
+        "isRequired": true,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "ids",
+        "description": "List of unique identifiers of the objects you want to query or perform actions on.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is a sample ID.",
+            "isRequired": false,
+            "value": "a7b0cdf1-86e8-406a-b12e-aaac7c7ce15b",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68740687aecb8721e09060c3"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Indicator removed from Third-Party Ignored Indicators List successfully",
+      "contentType": "application/json",
+      "body": []
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

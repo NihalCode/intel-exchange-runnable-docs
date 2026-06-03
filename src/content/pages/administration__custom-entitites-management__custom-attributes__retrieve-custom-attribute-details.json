@@ -1,0 +1,306 @@
+{
+  "slug": "administration/custom-entitites-management/custom-attributes/retrieve-custom-attribute-details",
+  "title": "Get Custom Attribute Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "custom-entitites-management",
+    "custom-attributes",
+    "retrieve-custom-attribute-details"
+  ],
+  "description": "Retrieves the details of a custom attribute.",
+  "method": "GET",
+  "path": "ingestion/configuration/custom-attribute/{custom_attribute_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "custom_attribute_id",
+        "description": "Pass the unique ID of a custom attribute.",
+        "isRequired": true,
+        "value": "f8ac8849-097c-446f-abe6-449fa1d6b89c",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693940eeb49385adf3c4053a"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID for the custom attribute.",
+          "isRequired": false,
+          "value": "94db014d-a713-4904-9a9a-d6fec593b52e",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the custom attribute.",
+          "isRequired": false,
+          "value": "pin",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "type",
+          "description": "Returns the number associated with the attribute type.",
+          "isRequired": false,
+          "value": "3",
+          "valueType": "number",
+          "options": {
+            "enumValue": [
+              {
+                "value": "0",
+                "description": "Boolean"
+              },
+              {
+                "value": "1",
+                "description": "Integer"
+              },
+              {
+                "value": "2",
+                "description": "String"
+              },
+              {
+                "value": "3",
+                "description": "Single Select"
+              },
+              {
+                "value": "4",
+                "description": "Date "
+              },
+              {
+                "value": "5",
+                "description": "JSON"
+              },
+              {
+                "value": "6",
+                "description": "Float"
+              }
+            ],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_created",
+          "description": "Returns the creation date of the custom attribute.",
+          "isRequired": false,
+          "value": "1633090980",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_modified",
+          "description": "Returns the modification date of the custom attribute.",
+          "isRequired": false,
+          "value": "1633090980",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "choices",
+          "description": "Returns the list of options available for a single-select attribute.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "SDO1",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "is_actionable",
+          "description": "Returns true if an attribute can be modified in threat data objects, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the number associated with the attribute status.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "enumValue": [
+              {
+                "value": "0",
+                "description": "Inactive"
+              },
+              {
+                "value": "1",
+                "description": "Active"
+              }
+            ],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "sdo_objects",
+          "description": "Returns the list of SDOs on which the attribute is applicable.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "indicator",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "manual",
+          "description": "Returns true if the attribute is manually created by users, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

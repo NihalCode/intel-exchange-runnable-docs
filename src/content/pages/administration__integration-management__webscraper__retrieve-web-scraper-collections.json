@@ -1,0 +1,703 @@
+{
+  "slug": "administration/integration-management/webscraper/retrieve-web-scraper-collections",
+  "title": "Get Web Scraper Collections",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "webscraper",
+    "retrieve-web-scraper-collections"
+  ],
+  "description": "Retrieves all collections present in the web scraper.",
+  "method": "GET",
+  "path": "conversion/feed-sources/web-scrapper/collection/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393b95b49385adf3c394b4"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the link to the collections on the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the link to the collections on the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the size of the collection page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the number of records on a page.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns a list containing the collection details.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID.",
+                  "isRequired": false,
+                  "value": "f5202eec-e3ab-4095-ae27-dbeeac3d1524",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the web scraper.",
+                  "isRequired": false,
+                  "value": "Namemp",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "host",
+                  "description": "Returns the web scraper URL.",
+                  "isRequired": false,
+                  "value": "https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "Returns the confidence score.",
+                  "isRequired": false,
+                  "value": "92074ba0-2c66-4e9a-af53-52ad80c3b8d5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "start_time",
+                  "description": "Returns the start time in epoch format.",
+                  "isRequired": false,
+                  "value": "1629884194",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "unsubscribed_time",
+                  "description": "Returns the timestamp of unsubscription.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscribed",
+                  "description": "Indicates whether the collection is currently subscribed to fetch data.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscribed_once",
+                  "description": "Indicates whether the collection was ever subscribed at least once.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_polling_time",
+                  "description": "Returns the timestamp of the most recent polling event.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_processing",
+                  "description": "Indicates whether the data is currently being processed.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the operational status of the scraper. True means active.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status_reason",
+                  "description": "Returns the additional details or errors explaining the current status.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "score",
+                  "description": "Returns the confidence score.",
+                  "isRequired": false,
+                  "value": "70",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tlp",
+                  "description": "Returns the default TLP value configured.",
+                  "isRequired": false,
+                  "value": "RED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source_id",
+                  "description": "Returns the source ID.",
+                  "isRequired": false,
+                  "value": "92074ba0-2c66-4e9a-af53-52ad80c3b8d5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the created date and time in epoch format.",
+                  "isRequired": false,
+                  "value": "1629889385",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the modified date and time in epoch format.",
+                  "isRequired": false,
+                  "value": "1629889385",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "parsing_error",
+                  "description": "Returns the errors encountered while parsing the data.",
+                  "isRequired": false,
+                  "value": "[]",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "empty_error",
+                  "description": "Returns the logs cases where the data returned was empty.",
+                  "isRequired": false,
+                  "value": "[]",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status_error",
+                  "description": "Indicates issues related to HTTP response or source availability.",
+                  "isRequired": false,
+                  "value": "[]",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "polling",
+                  "description": "Returns the polling configuration, such as polling type, time, status, and more.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "status",
+                      "description": "Returns the whether polling is currently enabled.",
+                      "isRequired": false,
+                      "value": "true",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "polled_once",
+                      "description": "Indicates if polling has ever occurred.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the type of polling, either manual or automatic.",
+                      "isRequired": false,
+                      "value": "M",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "polling_time",
+                      "description": "Returns the polling frequency in seconds.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_polling_time",
+                      "description": "Returns the epoch timestamp of the last successful polling attempt.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "mapping",
+                  "description": "Returns the mapping configurations such as headers, type and more.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "headers",
+                          "description": "Returns the raw value extracted from the data.",
+                          "isRequired": false,
+                          "value": "1.234.20.244",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "value_key",
+                          "description": "Returns the descriptive label for the data source column.",
+                          "isRequired": false,
+                          "value": "Column 0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_selected",
+                          "description": "Whether this column/field is selected for processing.",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "type",
+                          "description": "Returns the type of the value.",
+                          "isRequired": false,
+                          "value": "IPV4",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "content",
+                  "description": "Returns the content type such as text, CSV, JSON.",
+                  "isRequired": false,
+                  "value": "csv",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "headers",
+                  "description": "Returns additional header configurations if required for parsing.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "custom_object_name",
+                  "description": "Returns the optional name for a custom object if applicable.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "separator",
+                  "description": "Returns the separator.\n",
+                  "isRequired": false,
+                  "value": ";",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,97 @@
+{
+  "slug": "detailed-submission/indicator/bulk-delete-indicator-sdo",
+  "title": "Bulk Delete Indicator SDO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "indicator",
+    "bulk-delete-indicator-sdo"
+  ],
+  "description": "Bulk deletes SDOs that are added to the detailed submission using the unique identifiers of the SDO.",
+  "method": "DELETE",
+  "path": "conversion/shareable-intel/{intel-id}/indicator/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass the list of IDs of the Indicators to delete.\n",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example ID.",
+            "isRequired": false,
+            "value": "indicator--6df11b11-eaaf-4895-85e4-178908d534f5",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of intel submission.\n\n",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684fe2d1657970f7175d3a33"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "This request does not return any response body",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

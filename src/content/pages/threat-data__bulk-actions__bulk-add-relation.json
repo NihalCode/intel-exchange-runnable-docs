@@ -1,0 +1,210 @@
+{
+  "slug": "threat-data/bulk-actions/bulk-add-relation",
+  "title": "Bulk Add Relation",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "bulk-actions",
+    "bulk-add-relation"
+  ],
+  "description": "Add a relation to multiple threat data objects.",
+  "method": "POST",
+  "path": "ingestion/threat-data/bulk-action/add_relation/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data objects. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_ids",
+        "description": "Pass the list of threat data object IDs to perform the bulk action. To retrieve a list of object IDs, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "49d5e95e-3889-42de-8280-1ebf5c7cb95a",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "description": "Pass the relation data to pass with the request.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "target",
+            "description": "Pass the details of the threat data object to add as a relation.",
+            "isRequired": true,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "id",
+                "description": "Pass the ID of an object to add as a relation.",
+                "isRequired": true,
+                "value": "85830a15-3ae2-49f1-987c-f52ccf40a0e3",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "Pass the value of the object.",
+                "isRequired": false,
+                "value": "5.205.20.175",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "sub_type",
+                "description": "Pass the sub type of the object.",
+                "isRequired": false,
+                "value": "ipv4-addr",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "type",
+                "description": "Pass the object type. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+                "isRequired": true,
+                "value": "indicator",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "relationship_type",
+            "description": "Pass the relationship type.",
+            "isRequired": true,
+            "value": "",
+            "valueType": "string",
+            "options": {
+              "enumValue": [
+                {
+                  "value": "related-to",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870f1dee86fa45bcc1b1ab5"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "message",
+          "description": "Returns a success or failure message.",
+          "isRequired": false,
+          "value": "Action Successfully Executed",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

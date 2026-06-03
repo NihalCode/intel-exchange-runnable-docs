@@ -1,0 +1,385 @@
+{
+  "slug": "create-intel-via-open-api/ingest-bundle/with-source-and-collection-name",
+  "title": "With Source and Collection Name",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "create-intel-via-open-api",
+    "ingest-bundle",
+    "with-source-and-collection-name"
+  ],
+  "description": "Use this API to ingest a STIX bundle into Intel Exchange by specifying the source and collection name. A STIX bundle can include any combination of STIX Domain Objects (SDOs). For more information on supported objects, see the [STIX documentation](https://docs.oasis-open.org/cti/stix/v2.1/csprd01/stix-v2.1-csprd01.html).\n\n\n\n> [!NOTE]\n> If you pass an invalid or missing source_name or collection_name, the bundle is ingested with the source set to Import and the collection set to STIX2.",
+  "method": "POST",
+  "path": "ingestion/ingestion-api/ingest_bundle/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "bundle",
+        "description": "Pass the STIX bundle that contains one or more STIX objects to ingest.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "id",
+            "description": "Pass a unique identifier for the bundle being ingested.",
+            "isRequired": true,
+            "value": "bundle--73128ede-df7b-42cb-b073-a04b59acf898",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "objects",
+            "description": "Pass an array of STIX objects included in the bundle.",
+            "isRequired": true,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "type",
+                    "description": "Pass the object type. For example, `indicator`, `malware`, `threat-actor`.",
+                    "isRequired": true,
+                    "value": "indicator",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "spec_version",
+                    "description": "Pass the STIX specification version used for the object.",
+                    "isRequired": true,
+                    "value": "2.1",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "id",
+                    "description": "Pass a unique identifier for the specific STIX object.",
+                    "isRequired": true,
+                    "value": "indicator--dcf8ab63-85f4-41ea-a0c4-0a6ee3f29d24",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "created",
+                    "description": "Pass the timestamp when the object was created.",
+                    "isRequired": true,
+                    "value": "2025-07-30T08:25:00.673047Z",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "modified",
+                    "description": "Pass the timestamp when the object was last modified.",
+                    "isRequired": true,
+                    "value": "2025-07-30T08:25:00.673047Z",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "Pass a human-readable name of the object. ",
+                    "isRequired": false,
+                    "value": "url: http://affected-domains.com/test",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "indicator_types",
+                    "description": "Pass the classification types for the indicator. For example, `anomalous-activity`.",
+                    "isRequired": true,
+                    "value": "",
+                    "valueType": "array",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "0",
+                        "description": "This is an example value.",
+                        "isRequired": false,
+                        "value": "anomalous-activity",
+                        "valueType": "string",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "pattern",
+                    "description": "Pass the detection pattern that defines the indicator's characteristics. For example, `[url:value = 'http: //affected-domains.com/test']`.",
+                    "isRequired": true,
+                    "value": "[url:value = 'http: //affected-domains.com/test']",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "pattern_type",
+                    "description": "Pass the type of pattern used. For example, `stix`.",
+                    "isRequired": true,
+                    "value": "stix",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "pattern_version",
+                    "description": "Pass the version of the pattern specification being used. For example, `2.1`.",
+                    "isRequired": false,
+                    "value": "2.1",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "valid_from",
+                    "description": "Pass the timestamp from which the indicator is considered valid.",
+                    "isRequired": true,
+                    "value": "2025-07-30T08:25:00.673047Z",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "object_marking_refs",
+                    "description": "Pass an array of marking definition references that specify the handling or sharing restrictions for the object.",
+                    "isRequired": true,
+                    "value": "",
+                    "valueType": "array",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "type",
+            "description": "Pass the object type of the bundle.",
+            "isRequired": true,
+            "value": "bundle",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "collection_name",
+        "description": "Pass the name of the collection that should receive the bundle.",
+        "isRequired": true,
+        "value": "Compromised Credentials",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "source_name",
+        "description": "Pass the name of the source from which the bundle originates.",
+        "isRequired": true,
+        "value": "Cyware CCM",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "source_type",
+        "description": "Pass the type of the source. For example, `CUSTOM_STIX_SOURCES`.",
+        "isRequired": true,
+        "value": "CUSTOM_STIX_SOURCES",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6980480f696c34a0170a8266"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "success",
+          "description": "Returns whether the bundle ingestion was successful.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "message",
+          "description": "Returns additional details about the ingestion process.",
+          "isRequired": false,
+          "value": "Successfully sent bundle to ingestion.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

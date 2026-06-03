@@ -1,0 +1,369 @@
+{
+  "slug": "threat-data-objects/basic-details/list-published-collections-of-a-threat-object",
+  "title": "Get Published Collections of a Threat Object List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "list-published-collections-of-a-threat-object"
+  ],
+  "description": "Retrieves the collections to which a threat data object is published.",
+  "method": "GET",
+  "path": "ingestion/published-collections/{object_type}/{object_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve in each page.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of the threat data object. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the threat data object ID. To retrieve the object IDs, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "09730695-2f63-4a1c-a0fb-a042689588d5",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394782b49385adf3c45382"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "results",
+          "description": "Returns the details of published collections.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "next",
+              "description": "Returns the URL for the next page.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "previous",
+              "description": "Returns the URL of the previous page.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "total",
+              "description": "Returns the total number of published collections associated with the threat data object.",
+              "isRequired": false,
+              "value": "2",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "page_size",
+              "description": "Returns the page size.",
+              "isRequired": false,
+              "value": "10",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "results",
+              "description": "Returns the details of the collections.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique ID of the published collection record.",
+                      "isRequired": false,
+                      "value": "af242086-e126-44aa-b71c-b290c65e359f",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "collection",
+                      "description": "Returns the collection details",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the ID of the collection.",
+                          "isRequired": false,
+                          "value": "a1751d0f-5346-47b2-aeea-d6f0531fd290",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the collection.",
+                          "isRequired": false,
+                          "value": "MISP",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "action_type",
+                      "description": "Returns the action that triggered the publishing, such as Rules or Manual.",
+                      "isRequired": false,
+                      "value": "Rules",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "published",
+                      "description": "Returns the epoch timestamp of when the threat data object was published to the collection.",
+                      "isRequired": false,
+                      "value": 1627992933,
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "1",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "72abfbf0-2eba-494a-a946-56545b7c0fa4",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "collection",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "b92aff27-13a1-498c-a425-71282025c6ab",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Sample Collection",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "action_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "Manual",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "published",
+                      "description": "",
+                      "isRequired": false,
+                      "value": 1744897300,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,82 @@
+{
+  "slug": "administration/subscriber-management/update-subscriber-status",
+  "title": "Update Subscriber Status",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "subscriber-management",
+    "update-subscriber-status"
+  ],
+  "description": "Updates the status of a subscriber to active or inactive.",
+  "method": "PUT",
+  "path": "publishing/subscriber/{subscriber_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "is_active",
+        "description": "Pass true to activate the subscriber.\nPass false to deactivate the subscriber.",
+        "isRequired": true,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "subscriber_id",
+        "description": "Pass the ID of a subscriber to update the status.",
+        "isRequired": true,
+        "value": "ae683e21-7376-4528-bee6-56802bd0b64f",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393f8cb49385adf3c3f2e5"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Returns the status of the request.",
+          "isRequired": false,
+          "value": "success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

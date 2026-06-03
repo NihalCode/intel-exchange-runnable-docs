@@ -1,0 +1,112 @@
+{
+  "slug": "administration/configuration/table-layout-configurations",
+  "title": "Get Table Layout Configurations",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "table-layout-configurations"
+  ],
+  "description": "Fetches details about layout configurations for the given component.",
+  "method": "GET",
+  "path": "rest-auth/layout-config/",
+  "request": {
+    "query": [
+      {
+        "name": "component",
+        "description": "The component for which the layout config needs to be fetched.",
+        "isRequired": true,
+        "value": "users",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394510b49385adf3c43ec1"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "config",
+          "description": "Returns the layout configurations.",
+          "isRequired": false,
+          "value": "[{\"key\":\"image_url\",\"is_display\":true},{\"is_display\":true},{\"key\":\"email\",\"is_display\":true},{\"key\":\"invited_by\",\"is_display\":false},{\"key\":\"date_joined\",\"is_display\":true},{\"key\":\"last_active_session\",\"is_display\":false},{\"key\":\"status\",\"is_display\":true},{\"key\":\"is_blocked\",\"is_display\":false}]",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "component",
+          "description": "Returns the component for which the layout configuration has been fetched.",
+          "isRequired": false,
+          "value": "users",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

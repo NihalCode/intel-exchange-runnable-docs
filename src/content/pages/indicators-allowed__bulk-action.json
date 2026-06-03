@@ -1,0 +1,110 @@
+{
+  "slug": "indicators-allowed/bulk-action",
+  "title": "Bulk Action",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "bulk-action"
+  ],
+  "description": "Perform bulk actions such as follow, unfollow, and delete on multiple allowed indicators in one API request.",
+  "method": "POST",
+  "path": "conversion/allowed_indicators/bulk-actions/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "action",
+        "description": "Pass from the following actions.",
+        "isRequired": false,
+        "value": "delete",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "follow",
+              "description": ""
+            },
+            {
+              "value": "unfollow",
+              "description": ""
+            },
+            {
+              "value": "delete",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ids",
+        "description": " Returns the list of unique identifiers for the items on which the action should be applied.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "15e4bac8-1ee4-4207-99e2-a8e14e16552d",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68740784aecb8721e0906292"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the success message.",
+          "isRequired": false,
+          "value": "Action applied succesfully",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

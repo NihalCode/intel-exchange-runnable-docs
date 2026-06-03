@@ -1,0 +1,552 @@
+{
+  "slug": "indicators-allowed/list-allowed-indicators",
+  "title": "Get Allowed Indicators List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "list-allowed-indicators"
+  ],
+  "description": "Returns a list of allowed indicators from the Intel Exchange platform.",
+  "method": "GET",
+  "path": "conversion/allowed_indicators/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve indicators. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page. ",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass an allowed indicator type to filter the result. To retrieve the supported list of allowed indicator types, see the **GET List Supported Allowed Indicator Types API**.",
+        "isRequired": false,
+        "value": "url",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_by_id",
+        "description": "Pass the ID of a user to filter records by the creator.",
+        "isRequired": false,
+        "value": "28265289-1fdb-437d-8b7f-09ea0ad9fe08",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "modified_by_id",
+        "description": "Pass the ID of a user to filter records by the modifier.",
+        "isRequired": false,
+        "value": "28265289-1fdb-437d-8b7f-09ea0ad9fe08",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the created from time in epoch format to filter records based on the created time.",
+        "isRequired": false,
+        "value": "1711929600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_to",
+        "description": "Pass the created time in epoch format to filter records based on the created time.",
+        "isRequired": false,
+        "value": "1712361599",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "last_active_from",
+        "description": "Pass the last active time in epoch format to filter records based on the last activity time.",
+        "isRequired": false,
+        "value": "1711929600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "last_active_to",
+        "description": "Pass the last active to time in epoch format to filter records based on the last activity time.",
+        "isRequired": false,
+        "value": "1712361599",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass `-created` to sort the result in descending order based on the created time. Pass `created` to sort the result in ascending order.",
+        "isRequired": false,
+        "value": "-created",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394ef4b49385adf3c4b0d9"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records retrieved per page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the detailed list of indicators.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "created",
+                  "description": "Returns the timestamp when the allowed indicator was created.",
+                  "isRequired": false,
+                  "value": "1712294333",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the details of the user who created the allowed indicator.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "email",
+                      "description": "Returns the email address of the user who created the allowed indicator.",
+                      "isRequired": false,
+                      "value": "john.doe@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the user who created the allowed indicator.",
+                      "isRequired": false,
+                      "value": "john",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the ID of the user who created the allowed indicator.",
+                      "isRequired": false,
+                      "value": "4c8841ea-28f7-4a68-8a7b-46bba21c30ba",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the user who created the allowed indicator.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the unqiue ID of the allowed indicator.",
+                  "isRequired": false,
+                  "value": "df896cee-ef03-4f9f-bb27-4f7cf60c0954",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "include_emails",
+                  "description": "Returns true if the emails of a domain are allowed, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "include_subdomains",
+                  "description": "Returns true if the subdomains of a domain are allowed. Else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "include_urls",
+                  "description": "Returns true if the subdomains of a domain are allowed. Else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the timestamp when the allowed indicator was last modified.",
+                  "isRequired": false,
+                  "value": "1712294333",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_by",
+                  "description": "Returns the details of the user who last modified the allowed indicator.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "email",
+                      "description": "Returns the email address of the user who last modified the allowed indicator.",
+                      "isRequired": false,
+                      "value": "john.doe@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the user who last modified the allowed indicator.",
+                      "isRequired": false,
+                      "value": "john",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the user ID of the user who last modified the allowed indicator.",
+                      "isRequired": false,
+                      "value": "4c8841ea-28f7-4a68-8a7b-46bba21c30ba",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the user who last modified the allowed indicator.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the type of the IOC.",
+                  "isRequired": false,
+                  "value": "ipv4-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the value of the IOC",
+                  "isRequired": false,
+                  "value": "91.108.17.134",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of allowed indicators available in the Intel Exchange platform.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

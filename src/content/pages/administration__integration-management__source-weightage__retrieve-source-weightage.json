@@ -1,0 +1,221 @@
+{
+  "slug": "administration/integration-management/source-weightage/retrieve-source-weightage",
+  "title": "Get Source Weightage",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "source-weightage",
+    "retrieve-source-weightage"
+  ],
+  "description": "Retrieves the confidence score of the source from different sources.\n\nYou can use different endpoints to retrieve the confidence score of different sources as follows:\n\n*   `email_accounts`\n    \n*   `rss_feeds`\n    \n*   `webhook`",
+  "method": "GET",
+  "path": "conversion/feed-sources/source-weightage/api_feeds/",
+  "request": {
+    "query": [
+      {
+        "name": "page ",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393bb9b49385adf3c39868"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the next page of pagination.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the previous page of pagination.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the count of items on a page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "integer",
+          "options": {
+            "defaultValue": "10",
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of items on a page.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of source weightage.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the source.\n",
+                  "isRequired": false,
+                  "value": "11d2f978-2dfd-4d87-a083-860a78782951",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the source.\n",
+                  "isRequired": false,
+                  "value": "Intel471",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "weightage",
+                  "description": "Returns the score weightage of a source.",
+                  "isRequired": false,
+                  "value": 50,
+                  "valueType": "integer",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the type of source.",
+                  "isRequired": false,
+                  "value": "api_feeds",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,97 @@
+{
+  "slug": "detailed-submission/tool/bulk-delete-tool-sdo",
+  "title": "Bulk Delete Tool SDO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "tool",
+    "bulk-delete-tool-sdo"
+  ],
+  "description": "Bulk deletes a particular SDO added to the detailed STIX form submission using the unique identifiers of the SDO.",
+  "method": "DELETE",
+  "path": "ingestion/shareable-intel/{intel-id}/tool/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass the list of IDs of the SDO to delete.\n",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example ID.",
+            "isRequired": false,
+            "value": "tool--8f3fea68-ba05-42a2-adde-c0ba8cc8e281",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684ffcb58f0486a04a983027"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "This request does not return any response body",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

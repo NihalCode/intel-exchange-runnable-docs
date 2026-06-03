@@ -1,0 +1,584 @@
+{
+  "slug": "administration/integration-management/stix-source/list-stix-sources",
+  "title": "Get STIX Source List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "stix-source",
+    "list-stix-sources"
+  ],
+  "description": "Returns a list of custom STIX sources configured in the platform.",
+  "method": "GET",
+  "path": "conversion/feed-sources/custom_stix_sources/",
+  "request": {
+    "query": [
+      {
+        "name": "created_to",
+        "description": "Pass the time in epoch format. For example, *165432121*.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "category",
+        "description": "Pass the ID of a STIX source category to filter results. To get the ID, use the **List STIX Source Collection** endpoint. Example, *6ec60fb7-fd90-4f4f-a8df-640b43a2428b*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve for each page. Example, *10*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "taxii_option",
+        "description": "Pass the STIX version to filter sources. To get the version, use the **Retrieve Collection Details**.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "1"
+            },
+            {
+              "value": "2"
+            },
+            {
+              "value": "2.1"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the time in epoch format. For example, *165432121*.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass a keyword to search the STIX source name. For example, *import*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the result. Example, *1*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393b13b49385adf3c389fc"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns URL link for next page.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns URL link to the previous page.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records in each page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of STIX sources configured in Intel Exchange.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns a list of JSON objects for STIX source details.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the STIX source.",
+                  "isRequired": false,
+                  "value": "e5cc6128-494f-40ff-bec7-f3c347664839",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the source name.",
+                  "isRequired": false,
+                  "value": "Import",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the ID of the creator. Returns null for out-of-the-box sources.",
+                  "isRequired": false,
+                  "value": "29921865-7511-452a-970f-375c7d6ccdc2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_by",
+                  "description": "Returns the ID of the user who modified the source.",
+                  "isRequired": false,
+                  "value": "29921865-7511-452a-970f-375c7d6ccdc2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_active",
+                  "description": "Returns true if the source is in active state.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the created time of the source in epoch format.",
+                  "isRequired": false,
+                  "value": 1693808246,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "score",
+                  "description": "Returns the confidence score of the source.",
+                  "isRequired": false,
+                  "value": 100,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns true if source credentials are in a working state, else returns false. Also to state if polling is working properly.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_editable",
+                  "description": "Returns true if the source configuration is editable.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the source.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "category",
+                  "description": "Returns the details of the source category.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the STIX source category ID.",
+                      "isRequired": false,
+                      "value": "d806af07-5106-49d0-bde4-2f1cae7ea5fc",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the STIX category.",
+                      "isRequired": false,
+                      "value": "System Feeds",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "default",
+                      "description": "Returns the default status of the category.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "source_order",
+                  "description": "Returns the order of the source.",
+                  "isRequired": false,
+                  "value": 10,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source_type",
+                  "description": "Returns the type of source. `CUSTOM_STIX_SOURCES` is the default value for all custom STIX sources.",
+                  "isRequired": false,
+                  "value": "CUSTOM_STIX_SOURCES",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "create_intel_feed",
+                  "description": "Returns true if intel is available to create intel in the platform, else returns false.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ssl_encrypted",
+                  "description": "Returns true if SSL encryption is enabled, else returns false.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_feed_notify",
+                  "description": "Returns the time in minutes in which you get a notification if no feeds are received.",
+                  "isRequired": false,
+                  "value": 1440,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source_logo",
+                  "description": "Returns the source logo, if available.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "default_metadata",
+                  "description": "Returns the metadata associated with the STIX source.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "tlp",
+                      "description": "Returns the TLP associated with the source.",
+                      "isRequired": false,
+                      "value": "NONE",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "score",
+                      "description": "Returns the confidence score of the source.",
+                      "isRequired": false,
+                      "value": 0,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_apply_all",
+                      "description": "Returns True, if meta data is applied to all incoming data.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "selected",
+                      "description": "Indicates where the meta data is currently selected.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tags",
+                      "description": "Returns a list of associated tags.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "marking_config",
+                      "description": "Returns the marking configuration type.\n",
+                      "isRequired": false,
+                      "value": "tlp",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "default_marking_definition",
+                      "description": "Returns the default marking definition.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "username",
+                  "description": "Returns the username of the TAXII credentials for the source.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "service",
+                  "description": "Returns the discovery service URL of the source.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_id",
+                  "description": "Returns the ID of the subscriber.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "key_file",
+                  "description": "Returns the key details associated with the certificate. The key details are used for certificate-based authentication to retrieve data from the TAXII URL.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "cert_file",
+                  "description": "Returns the certificate details. The key details are used for certificate-based authentication to retrieve data from the TAXII URL.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "authentication_type",
+                  "description": "Returns the authentication type configured for the source.",
+                  "isRequired": false,
+                  "value": 1,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "taxii_option",
+                  "description": "Returns the TAXII version of the source.",
+                  "isRequired": false,
+                  "value": "1",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "verify_ssl",
+                  "description": "Returns true if the SSL certificate verification is enabled for the source.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_removable",
+                  "description": "Returns true if the source can be removed.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

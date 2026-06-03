@@ -1,0 +1,96 @@
+{
+  "slug": "threat-investigation/relationship/list-possible-relationships",
+  "title": "Get Possible Relationships List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-investigation",
+    "relationship",
+    "list-possible-relationships"
+  ],
+  "description": "Returns the list of possible STIX 2.1 relationship types that can exist between two STIX Domain Objects.",
+  "method": "GET",
+  "path": "ingestion/investigation/relationship/",
+  "request": {
+    "query": [
+      {
+        "name": "source",
+        "description": "Pass the source object type.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "target",
+        "description": "Pass the target object type.",
+        "isRequired": true,
+        "value": "attack-pattern",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394a68b49385adf3c477a5"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "[\n  \"indicates\",\n  \"related-to\"\n]",
+      "contentType": "application/json",
+      "body": []
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,768 @@
+{
+  "slug": "dashboards/widgets/reterive-widget-configurations",
+  "title": "Get Widget Configurations",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "dashboards",
+    "widgets",
+    "reterive-widget-configurations"
+  ],
+  "description": "Returns the configuration details of a widget.",
+  "method": "GET",
+  "path": "ingestion/analytics/widget/{widget_slug}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "widget_slug",
+        "description": "Pass the slug of a widget.",
+        "isRequired": true,
+        "value": "ioc_vs_allowed",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693953d0b49385adf3c4c533"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "name",
+          "description": "Returns the name of the widget.",
+          "isRequired": false,
+          "value": "Allowed Indicators by Type",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the widget.",
+          "isRequired": false,
+          "value": "All Incoming IOC vs allowed indicators",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "widget_type",
+          "description": "Returns the default chart type of the widget.",
+          "isRequired": false,
+          "value": "variablepie",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "slug",
+          "description": "Returns the unique ID of the widget.",
+          "isRequired": false,
+          "value": "ioc_vs_allowed",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "available_charts",
+          "description": "Returns the list of supported types of widgets.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example of available charts.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "enumValue": [
+                  {
+                    "value": "variablepie",
+                    "description": ""
+                  },
+                  {
+                    "value": "column",
+                    "description": ""
+                  },
+                  {
+                    "value": "columnpyramid",
+                    "description": ""
+                  },
+                  {
+                    "value": "donut",
+                    "description": ""
+                  },
+                  {
+                    "value": "table",
+                    "description": ""
+                  },
+                  {
+                    "value": "bar",
+                    "description": ""
+                  }
+                ],
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "configuration",
+          "description": "Returns the configuration of the widget.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "axis",
+              "description": "Returns an object specifying axis labels for charts",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "xaxis",
+                  "description": "Returns the label name for the X-axis in charts.",
+                  "isRequired": false,
+                  "value": "IOC Type",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "yaxis",
+                  "description": "Returns the label name for the Y-axis in charts.",
+                  "isRequired": false,
+                  "value": "Count",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "redirections",
+              "description": "Returns an array of objects defining interactive redirection rules when interacting with parts of the widget.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "component",
+                      "description": "Returns the name of the target component or page for redirection.",
+                      "isRequired": false,
+                      "value": "threatdata",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "filters",
+                      "description": "Returns an object containing filter criteria applied when redirecting.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "type",
+                          "description": "Returns the data type of the filter input.",
+                          "isRequired": false,
+                          "value": "indicator",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_whitelisted",
+                          "description": "Returns a boolean value indicating whether the indicator is part of the allowed (whitelisted) indicator list.",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "xaxis",
+                      "description": "Returns an array specifying which X-axis data keys trigger redirection.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "key",
+                              "description": "Returns the key name used for X-axis data.",
+                              "isRequired": false,
+                              "value": "ioc_type",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "filters",
+              "description": "Returns an array of filter objects available for the widget UI.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the filter.",
+                      "isRequired": false,
+                      "value": "Source",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "key",
+                      "description": "Returns the identifier key for the filter.",
+                      "isRequired": false,
+                      "value": "source",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the data input type for the filter.",
+                      "isRequired": false,
+                      "value": "select",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "multiple",
+                      "description": "Returns the boolean indicating whether multiple selections are allowed.",
+                      "isRequired": false,
+                      "value": "true",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "component",
+                      "description": "Returns the name of the UI component rendering the filter.",
+                      "isRequired": false,
+                      "value": "sources",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "field",
+                      "description": "Returns the data field mapped to the filter.",
+                      "isRequired": false,
+                      "value": "sources",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "nested",
+                      "description": "Returns the object describing the nested structure",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "path",
+                          "description": "Returns the nested data path.",
+                          "isRequired": false,
+                          "value": "sources",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field",
+                          "description": "Returns the field within the nested data.",
+                          "isRequired": false,
+                          "value": "sources.source_id",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "table_columns",
+              "description": "Returns an array defining the columns for tables in the widget.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "type",
+                      "description": "Returns the data type of the column.",
+                      "isRequired": false,
+                      "value": "string",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "key",
+                      "description": "Returns the key of the data to display in the column.",
+                      "isRequired": false,
+                      "value": "label",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "Returns the display label for the column header.",
+                      "isRequired": false,
+                      "value": "IOC Type",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "1",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "number",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "key",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "value",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "Count",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "indicator_type",
+              "description": "Returns a boolean indicating if the widget relates to indicator types.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "highchart",
+              "description": "Returns a boolean indicating if the widget uses the Highcharts library for rendering charts.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "widget_location",
+          "description": "Returns a string indicating where the widget is displayed.",
+          "isRequired": false,
+          "value": "dashboard",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the ID of the creator of the widget. Returns null for the system widgets.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

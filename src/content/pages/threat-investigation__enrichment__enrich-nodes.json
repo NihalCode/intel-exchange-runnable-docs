@@ -1,0 +1,3141 @@
+{
+  "slug": "threat-investigation/enrichment/enrich-nodes",
+  "title": "Enrich Nodes",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-investigation",
+    "enrichment",
+    "enrich-nodes"
+  ],
+  "description": "Enrich threat data objects for threat investigation using third-party enrichment tools configured in Intel Exchange.",
+  "method": "POST",
+  "path": "integration/investigation/enrichment/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve enrichment results. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of results to retrieve per page. ",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "object_id",
+        "description": "Pass the ID of the threat data object.",
+        "isRequired": true,
+        "value": "01cde415-bed4-40c0-aed4-dd4a52ea6450",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_type",
+        "description": "Pass the type of the threat data object such as `indicator`, `vulnerability`, and more.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass the type or the sub type of the threat data object such as `url`, `domain`, `ipv4-addr`, and more.",
+        "isRequired": true,
+        "value": "ipv4-addr",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "app_slug",
+        "description": "Pass the slug of an enrichment tool to use for enrichment. To retrieve the list of enrichment tools, use the **GET\nEnrichment Tools API**.",
+        "isRequired": true,
+        "value": "alien_vault",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_slug",
+        "description": "Pass the slug value of the action. For example, `get_ip`.",
+        "isRequired": true,
+        "value": "get_ip",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "value",
+        "description": "Pass the value of the threat data object.",
+        "isRequired": true,
+        "value": "311.76.208.163",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "identifier",
+        "description": "Pass `ctix` to indicate that the threat data object already exists in the Intel Exchange database. If you pass anything else, it indicates a custom object.",
+        "isRequired": true,
+        "value": "ctix",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "raw_data",
+        "description": "If the node is already enriched, then pass the raw data to prevent it from getting re-enriched.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "general",
+            "description": "Pass the general enrichment data of the object.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "whois",
+                "description": "Pass the information link related to the object.",
+                "isRequired": false,
+                "value": "http://whois.domaintools.com/1.2.3.4",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "reputation",
+                "description": "Pass the reputation score.",
+                "isRequired": false,
+                "value": 0,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "indicator",
+                "description": "Pass the indicator value to be enriched.",
+                "isRequired": false,
+                "value": "185.161.208.194",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "type",
+                "description": "Pass the type of the object.",
+                "isRequired": false,
+                "value": "IPv4",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "type_title",
+                "description": "Pass the UI label for object type.",
+                "isRequired": false,
+                "value": "IPv4",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "base_indicator",
+                "description": "Pass the details of the base indicator",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Pass the unique identifier of the base indicator.",
+                    "isRequired": false,
+                    "value": 7629,
+                    "valueType": "number",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "indicator",
+                    "description": "Pass the value of the base indicator.",
+                    "isRequired": false,
+                    "value": "1.2.3.4",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "type",
+                    "description": "Pass the type of the base indicator.",
+                    "isRequired": false,
+                    "value": "IPv4",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "title",
+                    "description": "Pass the UI label of the base indicator.",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "description",
+                    "description": "Pass the description of the base indicator.",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "content",
+                    "description": "Pass the content of the base indicator.",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "access_type",
+                    "description": "Pass the access setting type of the base indicator.",
+                    "isRequired": false,
+                    "value": "public",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "access_reason",
+                    "description": "Pass the access setting reason of the base indicator.",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "pulse_info",
+                "description": "Pass the details of threat intelligence pulses, the indicator is part of",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "count",
+                    "description": "Pass the number of related pulses.",
+                    "isRequired": false,
+                    "value": 27,
+                    "valueType": "number",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "pulses",
+                    "description": "Pass the list of pulse objects.",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "array",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "0",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "",
+                        "valueType": "object",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": [
+                          {
+                            "name": "id",
+                            "description": "Pass the unique identifier of the pulse object.",
+                            "isRequired": false,
+                            "value": "5ebca7e4e49c4c7ffae8eeeb",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "name",
+                            "description": "Pass the name of the pulse object.",
+                            "isRequired": false,
+                            "value": "Unknown linked malware delivery using public data sets",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "description",
+                            "description": "Pass the description of the pulse object.",
+                            "isRequired": false,
+                            "value": "Gmail, g account take overs using google education developer access enrolled on unauthorised mdm. 1000k apis set in google console plus data sets being pulled big data & big query push ai data again unauthorised to google data pool, kiosk set up, browser shows “mendal experiments”  ?? Working across all device platforms, on the fly automated bot control.  Weather station & sensor data somehow being used as external beacons or something weird with an android customised car gps config file and a car autopairing config file which appears to be able to scan for unsecure (which means all now!!) other car bluetooth signals and creating p2p netw with the help of gaming consoles mainly xbox",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "modified",
+                            "description": "Pass the modified timestamps of pulse object.",
+                            "isRequired": false,
+                            "value": "2021-08-05T12:08:15.032000",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "created",
+                            "description": "Pass the creation timestamps of pulse object.",
+                            "isRequired": false,
+                            "value": "2020-05-14T02:07:32.487000",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "tags",
+                            "description": "Pass the tags associated",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "references",
+                            "description": "Pass the additional references",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "0",
+                                "description": "This is an example value.",
+                                "isRequired": false,
+                                "value": "2c65c70350c67e4ec31d23379f76d92acdca2c8b1d80f5465fc685510929e05d",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "public",
+                            "description": "Pass the visibility flag, whether the pulse is public.",
+                            "isRequired": false,
+                            "value": 1,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "adversary",
+                            "description": "Pass the name or label of adversary group.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "targeted_countries",
+                            "description": "List of countries targeted by this threat.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "malware_families",
+                            "description": "List of involved malware families.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "attack_ids",
+                            "description": "List of mapped attack techniques.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "industries",
+                            "description": "Industries affected by the threat.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "TLP",
+                            "description": "Pass the TLP of the object.",
+                            "isRequired": false,
+                            "value": "green",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "cloned_from",
+                            "description": "Pass the pulse source ID from which it was cloned.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "export_count",
+                            "description": "Pass the number of times exported.",
+                            "isRequired": false,
+                            "value": 54,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "upvotes_count",
+                            "description": "Pass the number of upvotes received.",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "downvotes_count",
+                            "description": "Pass the number of downvotes received.",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "votes_count",
+                            "description": "Pass the total number of votes.",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "locked",
+                            "description": "Boolean flag for pulse lock status.",
+                            "isRequired": false,
+                            "value": false,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "pulse_source",
+                            "description": "Pass the source of the pulse",
+                            "isRequired": false,
+                            "value": "web",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "validator_count",
+                            "description": "Pass the number of validators who have reviewed the pulse.",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "comment_count",
+                            "description": "Pass the number of comments on the pulse.",
+                            "isRequired": false,
+                            "value": 66,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "follower_count",
+                            "description": "Pass the number of users following this pulse.",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "vote",
+                            "description": "Pass the vote status of the current user",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "author",
+                            "description": "Pass the author details",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "username",
+                                "description": "Pass the user name of the author.",
+                                "isRequired": false,
+                                "value": "dorkingbeauty1",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "id",
+                                "description": "Pass the unique identifier of the author.",
+                                "isRequired": false,
+                                "value": "80137",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "avatar_url",
+                                "description": "Pass the path to author's avatar image.",
+                                "isRequired": false,
+                                "value": "/otxapi/users/avatar_image/media/avatars/user_80137/resized/80/avatar_54d0ee2979.png",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "is_subscribed",
+                                "description": "Whether the user is subscribed to updates.",
+                                "isRequired": false,
+                                "value": false,
+                                "valueType": "boolean",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "is_following",
+                                "description": "Whether the user is following the pulse.",
+                                "isRequired": false,
+                                "value": false,
+                                "valueType": "boolean",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "indicator_type_counts",
+                            "description": "Pass breakdown counts by type",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "domain",
+                                "description": "Pass counts for domain. ",
+                                "isRequired": false,
+                                "value": 2353,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "hostname",
+                                "description": "Pass counts for hostname.",
+                                "isRequired": false,
+                                "value": 2900,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "URL",
+                                "description": "Pass counts for URL.",
+                                "isRequired": false,
+                                "value": 7751,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "FileHash-SHA256",
+                                "description": "Pass counts for file hash SHA-256.",
+                                "isRequired": false,
+                                "value": 2205,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "email",
+                                "description": "Pass counts for email.",
+                                "isRequired": false,
+                                "value": 34,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "FileHash-MD5",
+                                "description": "Pass counts for file hash MD5.",
+                                "isRequired": false,
+                                "value": 2103,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "FileHash-SHA1",
+                                "description": "Pass counts for file hash SHA-1",
+                                "isRequired": false,
+                                "value": 1027,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "FilePath",
+                                "description": "Pass counts for file path.",
+                                "isRequired": false,
+                                "value": 16,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "URI",
+                                "description": "Pass counts for URI.",
+                                "isRequired": false,
+                                "value": 15,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "Mutex",
+                                "description": "Pass counts for Mutex.",
+                                "isRequired": false,
+                                "value": 1,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "CIDR",
+                                "description": "Pass counts for CIDR.",
+                                "isRequired": false,
+                                "value": 3,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "CVE",
+                                "description": "Pass counts for CVE.",
+                                "isRequired": false,
+                                "value": 2,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "SSLCertFingerprint",
+                                "description": "Pass counts for SSLCertFingerprint.",
+                                "isRequired": false,
+                                "value": 2,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "indicator_count",
+                            "description": "Pass the total indicator count.",
+                            "isRequired": false,
+                            "value": 18412,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "is_author",
+                            "description": "Pass a boolean if the current user authored this pulse.",
+                            "isRequired": false,
+                            "value": false,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "is_subscribing",
+                            "description": "Pass the subscription status. ",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "subscriber_count",
+                            "description": "Pass number of pulse subscribers.",
+                            "isRequired": false,
+                            "value": 207,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "modified_text",
+                            "description": "Pass the modification time.",
+                            "isRequired": false,
+                            "value": "4 days ago ",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "is_modified",
+                            "description": "Pass a boolean if modified recently.",
+                            "isRequired": false,
+                            "value": true,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "groups",
+                            "description": "Pass the list of groups associated",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "in_group",
+                            "description": "Pass a boolean if current user is in a group with this pulse",
+                            "isRequired": false,
+                            "value": false,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "threat_hunter_scannable",
+                            "description": "Pass a boolean if the hunter tool can scan.",
+                            "isRequired": false,
+                            "value": true,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "threat_hunter_has_agents",
+                            "description": "Pass the count of threat hunter agents.",
+                            "isRequired": false,
+                            "value": 1,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "related_indicator_type",
+                            "description": "Pass the related indicator type.",
+                            "isRequired": false,
+                            "value": "IPv4",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "related_indicator_is_active",
+                            "description": "Pass a boolean if the related indicator is active.",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "1",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "",
+                        "valueType": "object",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": [
+                          {
+                            "name": "id",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "5a86dbe62e1a784c98231c6a",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "name",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "Integration test",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "description",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "modified",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "2018-02-16T16:36:38.684000",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "created",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "2018-02-16T13:25:58.769000",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "tags",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "references",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "public",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 1,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "adversary",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "targeted_countries",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "malware_families",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "attack_ids",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "industries",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "TLP",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "white",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "cloned_from",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "export_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 29,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "upvotes_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "downvotes_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "votes_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "locked",
+                            "description": "",
+                            "isRequired": false,
+                            "value": false,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "pulse_source",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "web",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "validator_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "comment_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "follower_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "vote",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 0,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "author",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "username",
+                                "description": "",
+                                "isRequired": false,
+                                "value": "macabrera",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "id",
+                                "description": "",
+                                "isRequired": false,
+                                "value": "32",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "avatar_url",
+                                "description": "",
+                                "isRequired": false,
+                                "value": "https://otx.alienvault.com/assets/images/default-avatar.png",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "is_subscribed",
+                                "description": "",
+                                "isRequired": false,
+                                "value": false,
+                                "valueType": "boolean",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "is_following",
+                                "description": "",
+                                "isRequired": false,
+                                "value": false,
+                                "valueType": "boolean",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "indicator_type_counts",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "IPv4",
+                                "description": "Pass counts for IPv4.",
+                                "isRequired": false,
+                                "value": 1,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              },
+                              {
+                                "name": "FileHash-MD5",
+                                "description": "",
+                                "isRequired": false,
+                                "value": 10000,
+                                "valueType": "number",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "indicator_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 10001,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "is_author",
+                            "description": "",
+                            "isRequired": false,
+                            "value": false,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "is_subscribing",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "object",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "subscriber_count",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 39,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "modified_text",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "1270 days ago ",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "is_modified",
+                            "description": "",
+                            "isRequired": false,
+                            "value": true,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "groups",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "in_group",
+                            "description": "",
+                            "isRequired": false,
+                            "value": false,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "threat_hunter_scannable",
+                            "description": "",
+                            "isRequired": false,
+                            "value": true,
+                            "valueType": "boolean",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "threat_hunter_has_agents",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 1,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "related_indicator_type",
+                            "description": "",
+                            "isRequired": false,
+                            "value": "IPv4",
+                            "valueType": "string",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "related_indicator_is_active",
+                            "description": "",
+                            "isRequired": false,
+                            "value": 1,
+                            "valueType": "number",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "references",
+                    "description": "Pass the global references related to the general section.",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "array",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "0",
+                        "description": "This is an example value.",
+                        "isRequired": false,
+                        "value": "https://feodotracker.abuse.ch/",
+                        "valueType": "string",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  },
+                  {
+                    "name": "related",
+                    "description": "Pass the object with source-wise relation breakdown:",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "alienvault",
+                        "description": "Returns the structured threat intelligence from the AlienVault platform.",
+                        "isRequired": false,
+                        "value": "",
+                        "valueType": "object",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": [
+                          {
+                            "name": "adversary",
+                            "description": "Returns the known threat actors or groups attributed to the indicator.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "malware_families",
+                            "description": "Returns the malware families associated with the indicator as per AlienVault data.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          },
+                          {
+                            "name": "industries",
+                            "description": "Returns the industry verticals likely targeted or affected by the threat.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": []
+                          }
+                        ]
+                      },
+                      {
+                        "name": "other",
+                        "description": "Returns the additional contextual intelligence from non-AlienVault sources.",
+                        "isRequired": false,
+                        "value": "",
+                        "valueType": "object",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": [
+                          {
+                            "name": "adversary",
+                            "description": "Returns the threat actors or groups associated with other sources.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "0",
+                                "description": "This is an example value.",
+                                "isRequired": false,
+                                "value": "APT 10",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "malware_families",
+                            "description": "Returns the related malware families identified by external sources.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "0",
+                                "description": "This is an example value.",
+                                "isRequired": false,
+                                "value": "Dridex",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          },
+                          {
+                            "name": "industries",
+                            "description": "Returns the affected industry sectors based on non-AlienVault data.",
+                            "isRequired": false,
+                            "value": "",
+                            "valueType": "array",
+                            "options": {
+                              "xml": {
+                                "prefix": null
+                              },
+                              "schemaNames": []
+                            },
+                            "complexItems": [],
+                            "items": [
+                              {
+                                "name": "0",
+                                "description": "This is an example value.",
+                                "isRequired": false,
+                                "value": "Technology",
+                                "valueType": "string",
+                                "options": {
+                                  "xml": {
+                                    "prefix": null
+                                  },
+                                  "schemaNames": []
+                                },
+                                "complexItems": [],
+                                "items": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "false_positive",
+                "description": "Pass the list of false-positive flags.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "validation",
+                "description": "Pass the validation objects.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "source",
+                        "description": "Pass the validation source label.",
+                        "isRequired": false,
+                        "value": "whitelist",
+                        "valueType": "string",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "message",
+                        "description": "Pass the description of the validation decision.",
+                        "isRequired": false,
+                        "value": "contained in whitelisted prefix",
+                        "valueType": "string",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "Pass the validation name.",
+                        "isRequired": false,
+                        "value": "Whitelisted IP",
+                        "valueType": "string",
+                        "options": {
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "city_data",
+                "description": "Pass a boolean whether city-level info is available.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "city",
+                "description": "Returns the city where the IP is geolocated.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "region",
+                "description": "Returns the state or province information.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "continent_code",
+                "description": "Returns the 2-letter ISO code representing the continent.",
+                "isRequired": false,
+                "value": "OC",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "country_code3",
+                "description": "Returns the 3-letter ISO country code.",
+                "isRequired": false,
+                "value": "AUS",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "country_code2",
+                "description": "Returns the 2-letter ISO country code.",
+                "isRequired": false,
+                "value": "AU",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "subdivision",
+                "description": "Returns the administrative subdivision, such as a state or district.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "latitude",
+                "description": "Returns the Geographical latitude of the IP address.",
+                "isRequired": false,
+                "value": -33.494,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "postal_code",
+                "description": "Returns the ZIP or postal code.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "longitude",
+                "description": "Returns the Geographical longitude of the IP address.",
+                "isRequired": false,
+                "value": 143.2104,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "accuracy_radius",
+                "description": "Returns the estimated accuracy of the geolocation in kilometres.",
+                "isRequired": false,
+                "value": 1000,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "country_code",
+                "description": "Another representation of the country code, often the same as `country_code2`.",
+                "isRequired": false,
+                "value": "AU",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "country_name",
+                "description": "Returns the full country name where the IP is registered",
+                "isRequired": false,
+                "value": "Australia",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "dma_code",
+                "description": "Returns the designated Market Area code used for U.S. media regions",
+                "isRequired": false,
+                "value": 0,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "charset",
+                "description": "Returns the character encoding standard.",
+                "isRequired": false,
+                "value": 0,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "area_code",
+                "description": "Returns the telephone area code associated with the IP.",
+                "isRequired": false,
+                "value": 0,
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "flag_url",
+                "description": "Returns the path to the flag image of the associated country.",
+                "isRequired": false,
+                "value": "/assets/images/flags/au.png",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "flag_title",
+                "description": "Returns the country name or label shown as the title for the flag icon.",
+                "isRequired": false,
+                "value": "Australia",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "sections",
+                "description": "Pass the list of sections included in enrichment.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "This is an example value.",
+                    "isRequired": false,
+                    "value": "general",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69380275b49385adf3bf04bf"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the pagination link to the next page.",
+          "isRequired": false,
+          "value": "investigation/enrichment/?page=2&page_size=10",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the pagination link to the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of results per page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of items on a page.",
+          "isRequired": false,
+          "value": 24,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the details of the enriched threat data objects.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "type",
+                  "description": "Returns the type.",
+                  "isRequired": false,
+                  "value": "node",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "Technology",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "u",
+                  "description": "Returns an endpoint to the image of the node.",
+                  "isRequired": false,
+                  "value": "/ctix/images/graph/identity.svg",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "t",
+                  "description": "Returns the value of the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "Technology",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "hi",
+                  "description": "Returns `true` if the threat data object is hidden in the threat investigations canvas, else returns `false`.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "prop",
+                  "description": "Returns any additional information about the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "parent_type",
+                      "description": "Returns the original object type to which the enrichment is related.",
+                      "isRequired": false,
+                      "value": "indicator",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "enriched",
+                      "description": "Indicates whether the node contains enrichment data retrieved from an external threat intelligence source.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tool_name",
+                      "description": "Returns the name of the tool.",
+                      "isRequired": false,
+                      "value": "alien_vault",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "identifier",
+                      "description": "Returns the internal system identifier for the threat object.",
+                      "isRequired": false,
+                      "value": "enriched",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the type of the object.",
+                      "isRequired": false,
+                      "value": "identity",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "Returns the label for the object type.",
+                      "isRequired": false,
+                      "value": "Identity",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "node",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "United States of America",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "u",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "/ctix/images/graph/location.svg",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "t",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "United States of America",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "hi",
+                  "description": "",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "prop",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "parent_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "indicator",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "enriched",
+                      "description": "",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tool_name",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "alien_vault",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "identifier",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "enriched",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "location",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "Location",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

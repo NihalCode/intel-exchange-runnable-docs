@@ -1,0 +1,250 @@
+{
+  "slug": "administration/integration-management/api-integrations/retrieve-accounts-of-an-api-feed-connector",
+  "title": "Get Accounts of an API Feed Integration",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "api-integrations",
+    "retrieve-accounts-of-an-api-feed-connector"
+  ],
+  "description": "Returns all the API feed accounts configured for an API feed connector.",
+  "method": "GET",
+  "path": "conversion/api-feeds/apps/{app_id}/accounts/",
+  "request": {
+    "query": [
+      {
+        "name": "app_id",
+        "description": "Pass the unique ID of the API feed connector.",
+        "isRequired": false,
+        "value": "7f08d9af-efcd-402d-bb87-d33ce7171d78",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "account_id",
+        "description": "Pass the unique ID of the API feed connector account.",
+        "isRequired": false,
+        "value": "6322b908-308a-43ae-8dff-8077901ca396",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "app_id",
+        "description": "Pass the unique ID of the API feed connector.",
+        "isRequired": true,
+        "value": "7f08d9af-efcd-40nd-bb87-d33ce7171d7g",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693938b4b49385adf3c35e6e"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "0",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique ID of the API feed connector.",
+              "isRequired": false,
+              "value": "b19b3354-2f8f-4ef0-910b-0911e0db97bd",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the account.\n",
+              "isRequired": false,
+              "value": "Default Crowstrike",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "access_key",
+              "description": "Returns the access key credentials of the account.",
+              "isRequired": false,
+              "value": "da**************************9c49",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "secret_key",
+              "description": "Returns the secret key credentials configured to access the account.",
+              "isRequired": false,
+              "value": "0G**********************************tSW7",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "base_url",
+              "description": "Returns the base URL used to access the account.",
+              "isRequired": false,
+              "value": "https://api.crowdstrike.com/",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_active",
+              "description": "Returns true if the account is active, else returns false.",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "extra_fields",
+              "description": "Returns any additional configuration values for the account.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "verify_ssl",
+              "description": "Indicates if SSL verification is enabled when connecting to the API.",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

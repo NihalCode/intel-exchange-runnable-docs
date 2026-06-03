@@ -1,0 +1,83 @@
+{
+  "slug": "administration/integration-management/tool-integrations/tool-accounts/test-connectivity",
+  "title": "Test Connectivity",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "tool-integrations",
+    "tool-accounts",
+    "test-connectivity"
+  ],
+  "description": "This endpoint tests the credentials of an account.",
+  "method": "PUT",
+  "path": "integration/apps/test-connectivity/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "app_id",
+        "description": "Pass the account ID of the third-party tool.",
+        "isRequired": true,
+        "value": "f769182d-9c30-4008-9e35-2a402342d8eb",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "third_party_config_id",
+        "description": "Pass the ID of the third-party application.",
+        "isRequired": true,
+        "value": "b81abd8c-057f-452c-b0ab-7bb6741a8ed4",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6936ba56b49385adf3bbb491"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "This API returns status 200 if the credentials of the account are working fine.",
+          "isRequired": false,
+          "value": "success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

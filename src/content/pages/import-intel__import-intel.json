@@ -1,0 +1,150 @@
+{
+  "slug": "import-intel/import-intel",
+  "title": "Import Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "import-intel",
+    "import-intel"
+  ],
+  "description": "Imports threat data to Intel Exchange.\n\nThe formats supported for import are as follows:\n\n\n  \n    MISP\n    misp\n    .json\n    misp\n  \n  \n    Open IOC\n    openioc\n    .xml\n    openioc\n  \n  \n    STIX 1.x\n    stix1\n    .xml\n    .xml\n  \n  \n    STIX 2.1\n    stix2\n    .json\n    Stix2\n  \n  \n    STIX 2.0\n    stix20\n    .json\n    Stix2\n  \n  \n    STIX 1.x URL\n    stix1url\n    URL\n    url\n  \n  \n    CSV (Recorded Future)\n    csv-recorded-future\n    .csv\n    csv\n  \n  \n    CSV (Cyware)\n    cy-csv\n    .csv\n    csv\n  \n\n\nOptionally, you can specify a collection to which the file is imported. If no collection is specified, the data is imported to the default collection. To retrieve import collections, use the **Get Source Collections** endpoint.\n\n\n\n> [!NOTE]\n> For STIX 1.x URL, the body must include the URL value. For more information, see the example request.",
+  "method": "POST",
+  "path": "conversion/import/{format}/",
+  "request": {
+    "query": [
+      {
+        "name": "version",
+        "description": "If the format (path variable) value is stix1 or stix2, enter the STIX version. ",
+        "isRequired": false,
+        "value": "2.1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "2.1",
+          "enumValue": [
+            {
+              "value": "1.0"
+            },
+            {
+              "value": "2.0"
+            },
+            {
+              "value": "2.1"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "file",
+        "description": "Select the file to be imported.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "file",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "collection_id",
+        "description": "Enter the ID of the collection to which the file is imported. To retrieve the `collection_id`, use the **Get Source Collections** endpoint. Data is imported to both the default collection as well as this specified collection.",
+        "isRequired": false,
+        "value": "603dd2cf-2c3e-4a6b-8200-505d3586df1f",
+        "valueType": "text",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "format",
+        "description": "Pass the format for the import. Refer to preceding table for more information.",
+        "isRequired": false,
+        "value": "stix2",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "cy-csv"
+            },
+            {
+              "value": "misp"
+            },
+            {
+              "value": "openioc"
+            },
+            {
+              "value": "stix1"
+            },
+            {
+              "value": "stix2"
+            },
+            {
+              "value": "stix20"
+            },
+            {
+              "value": "stix1url"
+            },
+            {
+              "value": "csv-recorded-future"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/multipart/form-data",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "690dcdd75c03fd8d55e0e836"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the import status details. To confirm if the intel was successfully imported, sign in to the Intel Exchange platform and check the Notifications section.",
+          "isRequired": false,
+          "value": "You will be notified once file got uploaded.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/multipart/form-data"
+}

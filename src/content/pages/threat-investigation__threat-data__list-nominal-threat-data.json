@@ -1,0 +1,275 @@
+{
+  "slug": "threat-investigation/threat-data/list-nominal-threat-data",
+  "title": "Get Nominal Threat Data List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-investigation",
+    "threat-data",
+    "list-nominal-threat-data"
+  ],
+  "description": "Returns a list of threat data objects that are accessible to use in the threat investigations canvas with limited details of the objects.",
+  "method": "POST",
+  "path": "ingestion/threat-data/list/",
+  "request": {
+    "query": [
+      {
+        "name": "component",
+        "description": "Pass `investigation` to retrieve threat data objects that are accessible to use in threat investigations.",
+        "isRequired": true,
+        "value": "investigation",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "nominal",
+        "description": "Pass `true` to retrieve limited details of the threat data objects.",
+        "isRequired": true,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "query",
+        "description": "Pass the CQL query to filter threat data objects.",
+        "isRequired": true,
+        "value": "type = \"indicator\" AND AND value contains (\"1.1\")",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394a51b49385adf3c47457"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page of results.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of elements in a page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page of results.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of threat data objects",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of a threat data object.",
+                  "isRequired": false,
+                  "value": "3c1b2ed4-b1ca-465a-9594-5121d9ab132d",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of a threat data object.",
+                  "isRequired": false,
+                  "value": "1.1.1.6",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sub_type",
+                  "description": "Returns the subtype of an indicator. For example, *ipv4 address*, *ipv6 address*, *hash*, *URL*, *domain*, and more.",
+                  "isRequired": false,
+                  "value": "ipv4-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the object type.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "node",
+                        "description": "Threat data element"
+                      },
+                      {
+                        "value": "link",
+                        "description": "Relationship object"
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of items on a page.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

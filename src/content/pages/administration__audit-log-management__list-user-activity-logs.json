@@ -1,0 +1,779 @@
+{
+  "slug": "administration/audit-log-management/list-user-activity-logs",
+  "title": "Get User Activity Log List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "audit-log-management",
+    "list-user-activity-logs"
+  ],
+  "description": "Returns a list of activity logs of a user on the platform.",
+  "method": "GET",
+  "path": "rest-auth/logs/user/{user_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve logs. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of logs to retrieve on each page. ",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass the parameter to sort logs. By default logs are returned in descending order (latest logs are returned first) based on the created time.",
+        "isRequired": false,
+        "value": "-timestamp",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "timestamp_from",
+        "description": "Pass the created time in epoch format from which you want to retrieve logs.",
+        "isRequired": false,
+        "value": "1704067200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "timestamp_to",
+        "description": "Pass the created time in epoch format until which you want to retrieve logs.",
+        "isRequired": false,
+        "value": "1704758399",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "response",
+        "description": "Pass the HTTP status code to filter logs. ",
+        "isRequired": false,
+        "value": "201",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "200"
+            },
+            {
+              "value": "201"
+            },
+            {
+              "value": "206"
+            },
+            {
+              "value": "400"
+            },
+            {
+              "value": "401"
+            },
+            {
+              "value": "402"
+            },
+            {
+              "value": "403"
+            },
+            {
+              "value": "404"
+            },
+            {
+              "value": "429"
+            },
+            {
+              "value": "500"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "method",
+        "description": "Pass the HTTP request method to filter logs. ",
+        "isRequired": false,
+        "value": "post",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "get"
+            },
+            {
+              "value": "post"
+            },
+            {
+              "value": "put"
+            },
+            {
+              "value": "delete"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass the query text to search logs.",
+        "isRequired": false,
+        "value": "sample text",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "user_id",
+        "description": "Pass the unique ID of a user.",
+        "isRequired": false,
+        "value": "854bb75f-8e23-4f17-9d52-fd6ef6a4c863",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394406b49385adf3c4345e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page of the response.",
+          "isRequired": false,
+          "value": "logs/user/854bb75f-8e23-4f17-9d52-fd6ef6a4c863/?page=2&page_size=10&sort=-timestamp",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page of the response.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of logs returned per page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of logs available in the platform.",
+          "isRequired": false,
+          "value": 10627,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the lists of activity logs of a user.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "access_id",
+                  "description": "Returns the access ID used by the user to access the platform via the open API. Returns null if accessed using the user interface.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api",
+                  "description": "Returns the API endpoint used.",
+                  "isRequired": false,
+                  "value": "/ctixapi/ingestion/rules/",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_end_time",
+                  "description": "Returns the end time of the API request process in epoch format.",
+                  "isRequired": false,
+                  "value": 1697186770,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_name",
+                  "description": "Returns the name of the API used.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_process_time",
+                  "description": "Returns the total time taken to process the API request in seconds.",
+                  "isRequired": false,
+                  "value": 0.062,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_start_time",
+                  "description": "Returns the start time of the API request process in epoch format.",
+                  "isRequired": false,
+                  "value": 1697186770,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "error_response_data",
+                  "description": "Returns a message if the API request results in an error.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ip_address",
+                  "description": "Returns the IP address of the server.",
+                  "isRequired": false,
+                  "value": "182.71.120.154",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "method",
+                  "description": "Returns HTTP request method used.",
+                  "isRequired": false,
+                  "value": "GET",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "openapi_id",
+                  "description": "Returns the ID of the open API. Returns null if accessed using the user interface.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response",
+                  "description": "Returns the HTTP response code.",
+                  "isRequired": false,
+                  "value": 200,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "timestamp",
+                  "description": "Returns the epoch timestamp of when the activity occurred.",
+                  "isRequired": false,
+                  "value": 1697186770,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user",
+                  "description": "Returns the email ID of the user.",
+                  "isRequired": false,
+                  "value": "john.doe@cyware.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user_id",
+                  "description": "Returns the unique ID of the user.",
+                  "isRequired": false,
+                  "value": "854bb75f-8e23-4f17-9d52-fd6ef6a4c863",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user_agent",
+                  "description": "Returns the browser or platform used by the user to perform the activity.",
+                  "isRequired": false,
+                  "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "access_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "/ctixapi/conversion/shareable-intel/relation/",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_end_time",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 1697186756,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_process_time",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 0.007,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api_start_time",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 1697186756,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "error_response_data",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ip_address",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "182.71.120.154",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "method",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "GET",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "openapi_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 200,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "timestamp",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 1697186756,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "john.doe@cyware.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "854bb75f-8e23-4f17-9d52-fd6ef6a4c863",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "user_agent",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

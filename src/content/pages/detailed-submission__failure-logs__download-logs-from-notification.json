@@ -1,0 +1,97 @@
+{
+  "slug": "detailed-submission/failure-logs/download-logs-from-notification",
+  "title": "Download Logs from Notification",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "failure-logs",
+    "download-logs-from-notification"
+  ],
+  "description": "Download logs from the notification tab.",
+  "method": "GET",
+  "path": "conversion/file/{file_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number of the log file.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the page size of the log file.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "file_id",
+        "description": "Pass the file ID to download.",
+        "isRequired": false,
+        "value": "91812d4c-d26c-427c-827e-7460881baf71",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "685000c18f0486a04a984bab"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "url",
+          "description": "Returns the export URL to download the log file.",
+          "isRequired": false,
+          "value": "https://ctix3core-dt2.mycyware.com/ctixapi/conversion/export/download/6892488c-de6b-4416-bd06-8e7bf4119aba/",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

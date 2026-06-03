@@ -1,0 +1,97 @@
+{
+  "slug": "detailed-submission/course-of-action/bulk-delete-course-of-action-sdo",
+  "title": "Bulk Delete Course of Action SDO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "course-of-action",
+    "bulk-delete-course-of-action-sdo"
+  ],
+  "description": "Bulk deletes a particular SDO added to the detailed STIX form submission using the unique identifiers of the SDO.",
+  "method": "DELETE",
+  "path": "ingestion/shareable-intel/{intel-id}/course-of-action/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass the list of IDs of the SDO to delete.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "course-of-action--45a17754-7125-4b61-b8a4-a7f90fa6b812",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684febd0657970f7175d9dbb"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "This request does not return any response body",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

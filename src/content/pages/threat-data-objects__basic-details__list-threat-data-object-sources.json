@@ -1,0 +1,322 @@
+{
+  "slug": "threat-data-objects/basic-details/list-threat-data-object-sources",
+  "title": "Get Threat Data Object Sources List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "list-threat-data-object-sources"
+  ],
+  "description": "Retrieves a list of feed sources associated with a threat data object. Also, retrieves the description, fanged description, and de-fanged description of the sources.",
+  "method": "GET",
+  "path": "ingestion/threat-data/{object_type}/{object_id}/source-description/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data object. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the threat data object ID. To retrieve the object ID, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "09730695-2f63-4a1c-a0fb-a042689588d5",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6939479cb49385adf3c45480"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL for the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL for the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of sources of the threat data object.",
+          "isRequired": false,
+          "value": 2,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of sources in the page.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns a list of source objects.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "collection",
+                  "description": "Returns the details of the collection, like the name and the ID.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the collection.",
+                      "isRequired": false,
+                      "value": "decf3ae2-9efd-4c5d-a67c-ea3eba333baa",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the collection.",
+                      "isRequired": false,
+                      "value": "Free Text",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "defang_description",
+                  "description": "Returns the defanged version of the description.",
+                  "isRequired": false,
+                  "value": "Detected malicious activity from this address: hxxp://malicious-domain[.]com/path/to/resource",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description as received from the source.",
+                  "isRequired": false,
+                  "value": "Detected malicious activity from this address: http://malicious-domain[.]com/path/to/resource",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "fang_description",
+                  "description": "Returns the fanged version of the description.",
+                  "isRequired": false,
+                  "value": "Detected malicious activity from this address: http://malicious-domain[.]com/path/to/resource",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "labels",
+                  "description": "Returns any tags associated with the object from the source",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "Returns the source details",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the source ID.",
+                      "isRequired": false,
+                      "value": "003d51d0-d3fd-4442-aa60-7e3d5ec8d93d",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the source name.",
+                      "isRequired": false,
+                      "value": "Import",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_type",
+                      "description": "Returns the source type.",
+                      "isRequired": false,
+                      "value": "CUSTOM_STIX_SOURCES",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "tlp",
+                  "description": "Returns the TLP assigned to the object by the source.",
+                  "isRequired": false,
+                  "value": "AMBER",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

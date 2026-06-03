@@ -1,0 +1,249 @@
+{
+  "slug": "administration/integration-management/api-integrations/retrieve-api-feed-account-details",
+  "title": "Get API Feed Account Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "api-integrations",
+    "retrieve-api-feed-account-details"
+  ],
+  "description": "Returns the saved details of an API feed account of an API feed connector.",
+  "method": "GET",
+  "path": "conversion/api-feeds/apps/{app_id}/accounts/{account_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "app_id",
+        "description": "Pass the unique ID of the API feed connector. You can retrieve this ID using the **List API Feeds API**.",
+        "isRequired": true,
+        "value": "7f08d9af-efcd-402d-bb87-d33ce7171d78",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "account_id",
+        "description": "Pass the unique ID of the API feed connector instance.",
+        "isRequired": true,
+        "value": "6322b908-308a-43ae-8dff-8077901ca396",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693938c2b49385adf3c35f72"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the instance ID.",
+          "isRequired": false,
+          "value": "0322b908-388a-43ae-8dff-807790gca396",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "access_key",
+          "description": "Returns the access ID of the instance.",
+          "isRequired": false,
+          "value": "***************",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the instance name.",
+          "isRequired": false,
+          "value": "Test",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "secret_key",
+          "description": "Returns the secret key value of the instance.",
+          "isRequired": false,
+          "value": "***************",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "base_url",
+          "description": "Returns the base URL value of the instance.",
+          "isRequired": false,
+          "value": "https://api.intelligence.mandiant.com/",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the instance is active in Intel Exchange.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "extra_fields",
+          "description": "Returns any additional custom fields required by the integration.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "verify_ssl",
+          "description": "Returns true if SSL verification is enabled for the instance.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "extra_config_fields",
+          "description": "Returns any additional configuration parameters of the instance, if applicable.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "proxy_url",
+          "description": "Returns the proxy URL of the instance.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

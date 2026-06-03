@@ -1,0 +1,337 @@
+{
+  "slug": "administration/configuration/tenant-configuration/authentication-configuration",
+  "title": "Get Authentication Configuration",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "tenant-configuration",
+    "authentication-configuration"
+  ],
+  "description": "Returns the authentication configuration.",
+  "method": "GET",
+  "path": "rest-auth/auth-config/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve per page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6936ced4b49385adf3bc07b1"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "notification_expiry_time",
+          "description": "Returns the number of days in which the notifications expire.",
+          "isRequired": false,
+          "value": "7",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "activity_timeout",
+          "description": "Returns True if the user logs out in case of inactivity, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "activity_timeout_time",
+          "description": "Returns the minutes after which the user will automatically be logged out due to inactivity if enabled.",
+          "isRequired": false,
+          "value": "30",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "password_tries",
+          "description": "Returns the maximum number of tries a user can attempt after which the user account will either be temporary or permanently blocked.",
+          "isRequired": false,
+          "value": "5",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_temporary_lockout",
+          "description": "Returns True if the user has been blocked permanently or temporarily, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "lock_out_time",
+          "description": "Returns the minutes after which the user account unblocks if blocked temporarily.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "account_deactivation_enabled",
+          "description": "Returns True if the user account blocks if not logged in for the configured days, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_inactive_days",
+          "description": "Returns the maximum number of inactive days a user account can have before getting blocked.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "concurrent_sessions",
+          "description": "Returns True if a user can generate multiple authentication tokens at a time, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "jwt_token_expiry",
+          "description": "Returns the expiration time of the JWT token.",
+          "isRequired": false,
+          "value": "4320",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "two_factor_auth",
+          "description": "Returns True if two-factor authentication is enabled, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "two_factor_auth_type",
+          "description": "Returns the type of two-factor authentication enabled, such as email or TOTP.",
+          "isRequired": false,
+          "value": "TOTP",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allow_forgot_password_mail",
+          "description": "Returns True if the forgot password policy has been enabled, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "otp_expiry_time",
+          "description": "Returns the minutes after which the OTP expires if sent over email.",
+          "isRequired": false,
+          "value": "5",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "password_link_expiry_time",
+          "description": "Returns the time after which the reset password link expires if sent over email.",
+          "isRequired": false,
+          "value": "800",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_inactive_alert_days",
+          "description": "Returns the number of inactive days, if a user has not logged into the application for a specific period of time as a reminder before the configured days expires.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "session_auth",
+          "description": "Returns True if a user can open Intel Exchange in multiple windows simultaneously, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "recaptcha",
+          "description": "Returns True if the reCAPTCHA has been enabled, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

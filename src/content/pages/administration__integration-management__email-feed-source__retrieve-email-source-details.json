@@ -1,0 +1,1190 @@
+{
+  "slug": "administration/integration-management/email-feed-source/retrieve-email-source-details",
+  "title": "Get Email Source Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "email-feed-source",
+    "retrieve-email-source-details"
+  ],
+  "description": "Returns the API details of an email source.",
+  "method": "GET",
+  "path": "conversion/feed-sources/email_accounts/{emailsource_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "emailsource_id",
+        "description": "Pass the email source ID to retrieve details of the email source.",
+        "isRequired": true,
+        "value": "1dc46660-8e5c-4a8e-9bcc-484608f3b502",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393b6cb49385adf3c391a6"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the email source.",
+          "isRequired": false,
+          "value": "1dc46660-8e5c-4a8e-4rt-484608f3b502",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the email source.",
+          "isRequired": false,
+          "value": "CywareMail",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the ID of the user who created this Source.",
+          "isRequired": false,
+          "value": "fd98ad0c-208e-4b6d-4rt-feda34afc1e8",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the ID of the user who last modified the source.",
+          "isRequired": false,
+          "value": "fd98ad0c-208e-4b6d-4rt-feda34afc1e8",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the source is active, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time of the source creation in epoch format.",
+          "isRequired": false,
+          "value": "1721116780",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "score",
+          "description": "Returns the confidence score value defined for the source.",
+          "isRequired": false,
+          "value": "100",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the operational status of the feed source. Typically true for valid sources.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_editable",
+          "description": "Returns true if the source is editable, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the source.",
+          "isRequired": false,
+          "value": "You will recieve mails regularly as you have configured this source",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "category",
+          "description": "Returns the source category, such as ID, name, and is default.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the category.",
+              "isRequired": false,
+              "value": "a72fda42-cfe0-4136-4rt-98f7fb339a6e",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the category.",
+              "isRequired": false,
+              "value": "System Feeds",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "default",
+              "description": "Whether this is the default category.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "source_order",
+          "description": "Returns the order of the source in listing/prioritization.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source_type",
+          "description": "Returns the type of source.",
+          "isRequired": false,
+          "value": "EMAIL_ACCOUNTS",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "create_intel_feed",
+          "description": "Returns true if Intel is created automatically, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ssl_encrypted",
+          "description": "Returns true if the SSL connection of this source has been verified; otherwise, returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_feed_notify",
+          "description": "Returns the time interval (in minutes) after which the last feed notification is sent.",
+          "isRequired": false,
+          "value": "1440",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source_logo",
+          "description": "Returns a placeholder for source logo metadata.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "default_metadata",
+          "description": "Returns the default metadata configured for the email, such as `tlp`, `score`, `tags`, `marking_config`, `default_marking_definition`, and `custom_scores`.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "tlp",
+              "description": "Returns the default TLP value configured.",
+              "isRequired": false,
+              "value": "AMBER",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "score",
+              "description": "Returns the default confidence score value defined for the source.",
+              "isRequired": false,
+              "value": "100",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_apply_all",
+              "description": "Returns true if apply metadata to all objects is enabled, else false.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "selected",
+              "description": "Returns true if this metadata set is selected by default.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "tags",
+              "description": "Returns the tags added in the metadata.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the tag.",
+                      "isRequired": false,
+                      "value": "b4e02da3-0999-4e0e-4rt-18bd12292996",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the tag.",
+                      "isRequired": false,
+                      "value": "Malicious",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created",
+                      "description": "Returns the epoch timestamp when the tag was created.",
+                      "isRequired": false,
+                      "value": "1721910390",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "modified",
+                      "description": "Returns the epoch timestamp when the tag was last modified.",
+                      "isRequired": false,
+                      "value": "1721910390",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tag_type",
+                      "description": "Returns the type of the tag.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier of the tag type.",
+                          "isRequired": false,
+                          "value": "source",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the tag type.",
+                          "isRequired": false,
+                          "value": "Source",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "is_active",
+                      "description": "Indicates if the tag is currently active.",
+                      "isRequired": false,
+                      "value": "true",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created_by",
+                      "description": "Returns the creator's user details.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the ID of the user who created the tag.",
+                          "isRequired": false,
+                          "value": "c0fe874d-6c0e-4ee0-4rt-1b72440fe104",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "email",
+                          "description": "Returns the email address of the user who created the tag.",
+                          "isRequired": false,
+                          "value": "john.doe@mail.com",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "last_name",
+                          "description": "Returns the last name of the user who created the tag.",
+                          "isRequired": false,
+                          "value": "Doe",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "first_name",
+                          "description": "Returns the first name of the user who created the tag.",
+                          "isRequired": false,
+                          "value": "John",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "colour_code",
+                      "description": "Returns the hex key of the colour code which denotes type of the tag.",
+                      "isRequired": false,
+                      "value": "#45505E",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "modified_by",
+                      "description": "Returns the details of the user who modified the tag.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the ID of the user who modified the tag.",
+                          "isRequired": false,
+                          "value": "c0fe874d-6c0e-4ee0-4rt-1b72440fe104",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "email",
+                          "description": "Returns the email address of the user who modified the tag.",
+                          "isRequired": false,
+                          "value": "john.doe@mail.com",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "last_name",
+                          "description": "Returns the last name of the user who modified the tag.",
+                          "isRequired": false,
+                          "value": "Doe",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "first_name",
+                          "description": "Returns the first name of the user who modified the tag.",
+                          "isRequired": false,
+                          "value": "John",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "marking_config",
+              "description": "Returns the default marking type such as TLP.",
+              "isRequired": false,
+              "value": "tlp",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "default_marking_definition",
+              "description": "Returns the default metadata applied to indicators ingested via this source.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "custom_scores",
+              "description": "Returns the custom scores configured.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "username",
+          "description": "Returns the email account username used to fetch emails.",
+          "isRequired": false,
+          "value": "john.doe@mail.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "intel_objects",
+          "description": "Returns object types configured to create Intel automatically.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "all",
+              "description": "Whether to extract all supported IOC types from the emails.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "values",
+              "description": "Returns the list of specific IOC types to extract.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SHA-1",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "taxii_option",
+          "description": "Returns the TAXII version.",
+          "isRequired": false,
+          "value": "2.1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allowed_email",
+          "description": "Returns the list of allowed email IDs.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "john.doe@mail.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "protocol_type",
+          "description": "Returns the email protocol used.",
+          "isRequired": false,
+          "value": "IMAP",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "auth_type",
+          "description": "Returns the authentication type for the protocol. (Applicable only when `protocol_type` is EWS.)",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "oauth_client_id",
+          "description": "Returns the client ID of the email source. (Applicable for EWS email source)",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "oauth_directory_id",
+          "description": "Returns the directory or the tenant ID of the email source. (Applicable for EWS Email source)",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "host_url",
+          "description": "Returns the domain name of the email account.",
+          "isRequired": false,
+          "value": "imap.gmail.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "port_value",
+          "description": "Returns the port number.",
+          "isRequired": false,
+          "value": "993",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_polled_uid",
+          "description": "Returns the UID of the last email polled from the server.",
+          "isRequired": false,
+          "value": "138",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "create_intel_feed_senders",
+          "description": "Returns the list of email IDs for which the intel is automatically created from the messages received from these email IDs.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "john.doe@mail.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "allow_regulatory_emails",
+          "description": "Returns true if the email should be marked as a regulatory email, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "regulatory_emails",
+          "description": "Returns a list of email IDs that are marked as regulatory email IDs.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "retry_count",
+          "description": "Returns the retry count that Intel Exchange tries to connect to the email server.\n",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_connection_time",
+          "description": "Returns the last timestamp, when Intel Exchange connects to the email server.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "include_attachment_ioc",
+          "description": "Returns true if the IOCs from email attachments should be included while creating intel.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "include_attachment_artifact",
+          "description": "Returns true if attachments should be included as artifacts while creating intel.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_visible_content_only",
+          "description": "Returns true if the visible content has to be parsed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

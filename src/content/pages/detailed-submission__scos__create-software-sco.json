@@ -1,0 +1,430 @@
+{
+  "slug": "detailed-submission/scos/create-software-sco",
+  "title": "Create Software SCO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "scos",
+    "create-software-sco"
+  ],
+  "description": "Creates a software SCO in the detailed STIX form submission.",
+  "method": "POST",
+  "path": "ingestion/shareable-intel/{intel-id}/software/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "custom_properties",
+        "description": "Pass the list that contains the unique identifier for the custom property, type, name, and the value to add for the same.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP of the SCO.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "value",
+            "description": "Pass the value of the TLP.",
+            "isRequired": false,
+            "value": "AMBER",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "label",
+            "description": "Pass the UI label/name of the TLP.",
+            "isRequired": false,
+            "value": "Amber",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "defanged",
+        "description": "Pass true if the value specified by the user is defanged, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "name",
+        "description": "Pass the name of the SCO.",
+        "isRequired": false,
+        "value": "Word",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "cpe",
+        "description": "Pass the Common Platform Enumeration (CPE) entry for the software.",
+        "isRequired": false,
+        "value": "cpe:2.3:a:microsoft:word:2000:*:*:*:*:*:*:*",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "swid",
+        "description": "Pass the Software Identification (SWID) tags.",
+        "isRequired": false,
+        "value": "ms-word-2002",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "version",
+        "description": "Pass the version of the software.",
+        "isRequired": false,
+        "value": "2002",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "vendor",
+        "description": "Pass the name of the vendor of the software.",
+        "isRequired": false,
+        "value": "Microsoft",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "languages",
+        "description": "Pass the list of strings that specifies the languages supported by the software.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "fr",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684fe777657970f7175d768f"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique identifier for the SCO you created.",
+          "isRequired": false,
+          "value": "software--69679cb0-6833-4003-8923-966e14c8b753",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP of the SCO.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Pass the UI label/name of the TLP.",
+              "isRequired": false,
+              "value": "Amber",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Pass the value of the TLP.",
+              "isRequired": false,
+              "value": "AMBER",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "custom_properties",
+          "description": "Returns the list that contains the unique identifier for the custom property, type, name, and the value to add for the same.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the SCO.",
+          "isRequired": false,
+          "value": "Word",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "defanged",
+          "description": "Returns true if the value specified by the user is defanged, else pass false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cpe",
+          "description": "Returns the Common Platform Enumeration (CPE) entry for the software.",
+          "isRequired": false,
+          "value": "cpe:2.3:a:microsoft:word:2000:*:*:*:*:*:*:*",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "swid",
+          "description": "Returns the Software Identification (SWID) tags.",
+          "isRequired": false,
+          "value": "ms-word-2002",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "languages",
+          "description": "Returns the list of strings that specifies the languages supported by the software.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "fr",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "vendor",
+          "description": "Returns the name of the vendor of the software.",
+          "isRequired": false,
+          "value": "Microsoft",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "version",
+          "description": "Returns the version of the software.",
+          "isRequired": false,
+          "value": "2002",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

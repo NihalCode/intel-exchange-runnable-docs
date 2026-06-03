@@ -1,0 +1,97 @@
+{
+  "slug": "detailed-submission/infrastructure/bulk-delete-infrastructure-sdo",
+  "title": "Bulk Delete Infrastructure SDO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "infrastructure",
+    "bulk-delete-infrastructure-sdo"
+  ],
+  "description": "Deletes the particular SDO using bulk actions that are added to the detailed submission using the unique identifiers of the SDO.",
+  "method": "DELETE",
+  "path": "ingestion/shareable-intel/{intel-id}/infrastructure/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass the list of IDs of the SDOs to delete.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example ID.",
+            "isRequired": false,
+            "value": "infrastructure--18916aee-0356-40b9-a9b3-e1a250dea2c1",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the detailed intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684feec5657970f7175dcfad"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "This request does not return any response body",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

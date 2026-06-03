@@ -1,0 +1,203 @@
+{
+  "slug": "detailed-submission/draft/retrieve-draft-intel",
+  "title": "Get DRAFT Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "draft",
+    "retrieve-draft-intel"
+  ],
+  "description": "Returns the STIX form that the user has initiated.",
+  "method": "GET",
+  "path": "conversion/shareable-intel/{intel-id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the detailed intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394c86b49385adf3c49370"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique identifier for the initiated detailed STIX form submission.",
+          "isRequired": false,
+          "value": "1f09d6df-4856-44f1-a948-189faa232090",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the current status of the detailed STIX form submission.",
+          "isRequired": false,
+          "value": "DRAFT",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "component",
+          "description": "Returns stix-form as the Intel Exchange component for the detailed STIX form submission.",
+          "isRequired": false,
+          "value": "stix-form",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "enabled_stix_objects",
+          "description": "Returns the list of STIX objects the user configured or modified for the current detailed STIX form submission.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "indicator",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time at which the detailed STIX form submission was created.",
+          "isRequired": false,
+          "value": "1631874062",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date and time at which the detailed STIX form submission was modified.",
+          "isRequired": false,
+          "value": "1631874142",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the detailed STIX form submission.",
+          "isRequired": false,
+          "value": "Package 2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

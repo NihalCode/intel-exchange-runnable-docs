@@ -1,0 +1,1626 @@
+{
+  "slug": "tag-groups/get-list-tag-groups-copy",
+  "title": "Create Tag Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "tag-groups",
+    "get-list-tag-groups-copy"
+  ],
+  "description": "Create a new Tag Group in the Intel Exchange platform.\n\n\n\n> [!NOTE]\n> The same endpoint can be used to clone an existing tag group. The cloned group retains all properties of the original, with copy appended to its name",
+  "method": "POST",
+  "path": "ingestion/tags/bulk-actions/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the name of the tag group.",
+        "isRequired": false,
+        "value": "AS Group",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tag_type",
+        "description": "Pass the details of the tag type.",
+        "isRequired": false,
+        "value": "group",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "system",
+              "description": "System Tag"
+            },
+            {
+              "value": "source",
+              "description": "Source Tag"
+            },
+            {
+              "value": "user",
+              "description": "User Tag"
+            },
+            {
+              "value": "privileged ",
+              "description": "Privileged Access Tag"
+            },
+            {
+              "value": "group",
+              "description": "Tag Group"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the tag group.",
+        "isRequired": false,
+        "value": "Description",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "associated_tags",
+        "description": "Pass a list of associated tags.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "Pass the hex color code defined for the tag.",
+                "isRequired": false,
+                "value": "#45505E",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created",
+                "description": "Pass the created date and time of the tag in epoch format.",
+                "isRequired": false,
+                "value": 1749722275,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created_by",
+                "description": "Pass the user details who created the tag. Use the **Get Tags List** endpoint to retrieve the details of the user.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "description",
+                "description": "Pass the description of the tag.",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups",
+                "description": "Pass a list of groups associated with this tag.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "colour_code",
+                        "description": "Pass the hex color code defined for the tag.",
+                        "isRequired": false,
+                        "value": "#DCDEE4",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "icon",
+                        "description": "Pass the icon of the tag.",
+                        "isRequired": false,
+                        "value": "cyicon-tags-solid",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "id",
+                        "description": "Pass the unique ID of the tag.",
+                        "isRequired": false,
+                        "value": "fdf142c4-8a56-4e4c-8814-0ad45671bd0b",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "Pass the name of the tag group.",
+                        "isRequired": false,
+                        "value": "Group1",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "tag_type",
+                        "description": "Pass the details of the tag type.",
+                        "isRequired": false,
+                        "value": "system",
+                        "valueType": "string",
+                        "options": {
+                          "enumValue": [
+                            {
+                              "value": "system",
+                              "description": "System Tag"
+                            },
+                            {
+                              "value": "user",
+                              "description": "User Tag"
+                            },
+                            {
+                              "value": "source",
+                              "description": "Source Tag"
+                            },
+                            {
+                              "value": "privileged",
+                              "description": "Privileged Access Tag"
+                            },
+                            {
+                              "value": "group",
+                              "description": "Tag Group"
+                            }
+                          ],
+                          "xml": {
+                            "prefix": null
+                          },
+                          "schemaNames": []
+                        },
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "theme",
+                        "description": "Pass the theme associated with the tag group.",
+                        "isRequired": false,
+                        "value": "white",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "groups_count",
+                "description": "Pass the number of groups linked to the associated tag.",
+                "isRequired": false,
+                "value": 1,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "Pass the icon of the tag.",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "Pass the unique ID of the tag.\n",
+                "isRequired": false,
+                "value": "bff4064a-a0b2-4163-92c6-043d148a5ef5",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "is_active",
+                "description": "Pass true if the tag is active in Intel Exchange.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified",
+                "description": "Pass the modified date and time of a tag in epoch format.",
+                "isRequired": false,
+                "value": 1749717786,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified_by",
+                "description": "Pass the details of the user who modified the tag details. Use the **Get Tags List** endpoint to retrieve the details of the user.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "Pass the name of the tag.",
+                "isRequired": false,
+                "value": "Ransomware",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "reported_sources",
+                "description": "Pass a list of reported sources associated with the tag",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "id",
+                        "description": "Pass the unique ID of the reported source.",
+                        "isRequired": false,
+                        "value": "8a7f1656-1f1e-4cd4-9687-54d5161b7a0b",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "Pass the name of the reported source.",
+                        "isRequired": false,
+                        "value": "Import",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "type",
+                        "description": "Pass the type of reported source.",
+                        "isRequired": false,
+                        "value": "CUSTOM_STIX_SOURCES",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "tag_type",
+                "description": "Pass the details of the tag type.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "enumValue": [
+                    {
+                      "value": "system",
+                      "description": "System Tag"
+                    },
+                    {
+                      "value": "user",
+                      "description": "User Tag"
+                    },
+                    {
+                      "value": "source",
+                      "description": "Source Tag"
+                    },
+                    {
+                      "value": "privileged ",
+                      "description": "Privileged Access Tag"
+                    },
+                    {
+                      "value": "group",
+                      "description": "Tag Group"
+                    }
+                  ],
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Pass the tag type ID.",
+                    "isRequired": false,
+                    "value": "source",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "Pass the tag type name.",
+                    "isRequired": false,
+                    "value": "Source",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "theme",
+                "description": "Pass the theme associated with the tag.",
+                "isRequired": false,
+                "value": "neutral",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "",
+                "isRequired": false,
+                "value": "#0068FA",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created",
+                "description": "",
+                "isRequired": false,
+                "value": 1750055486,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created_by",
+                "description": "Pass the user details who created the tag group. Use the **Get Tags List** endpoint to retrieve the details of the user.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "email",
+                    "description": "Pass the email address of the user who created the tag.",
+                    "isRequired": false,
+                    "value": "system.default@cyware.com",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Pass the first name of the user who created the tag.",
+                    "isRequired": false,
+                    "value": "System",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "id",
+                    "description": "Pass the user ID of the user who created the tag.",
+                    "isRequired": false,
+                    "value": "79e1e751-f66a-4717-9149-ccb2d94dc1d0",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Pass the last name of the user who created the tag.",
+                    "isRequired": false,
+                    "value": "Default",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "description",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "colour_code",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "#DCDEE4",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "icon",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "cyicon-tags-solid",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "id",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "6eca71a1-4b01-47d3-af9f-d4ad3486e629",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "Tag1",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "tag_type",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "group",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "theme",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "white",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "groups_count",
+                "description": "",
+                "isRequired": false,
+                "value": 1,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "",
+                "isRequired": false,
+                "value": "48dcbe16-d5d2-4590-897b-18ad52131cdd",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "is_active",
+                "description": "",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified",
+                "description": "",
+                "isRequired": false,
+                "value": 1750055486,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified_by",
+                "description": "Pass the details of the user who modified the tag group details. Use the **Get Tags List** endpoint to retrieve the details of the user.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "email",
+                    "description": "Pass the email address of the user who modified the tag.",
+                    "isRequired": false,
+                    "value": "john.doe@example.com",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Pass the first name of the user who modified the tag.",
+                    "isRequired": false,
+                    "value": "John",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "id",
+                    "description": "Pass the ID of the user who modified the tag.",
+                    "isRequired": false,
+                    "value": "79e1e751-f66a-4717-9149-ccb2d94dc1d0",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Pass the last name of the user who modified the tag.",
+                    "isRequired": false,
+                    "value": "Doe",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "name",
+                "description": "",
+                "isRequired": false,
+                "value": "Tag2",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "tag_type",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "user",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "User",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "theme",
+                "description": "",
+                "isRequired": false,
+                "value": "blue",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "2",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "",
+                "isRequired": false,
+                "value": "#27865F",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created",
+                "description": "",
+                "isRequired": false,
+                "value": 1759729208,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created_by",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "description",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups_count",
+                "description": "",
+                "isRequired": false,
+                "value": 0,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "",
+                "isRequired": false,
+                "value": "00f8a324-c6bc-45d6-a6cf-76e4b8d8cb59",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "is_active",
+                "description": "",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified",
+                "description": "",
+                "isRequired": false,
+                "value": 1759729208,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified_by",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "",
+                "isRequired": false,
+                "value": "x--internal--rg:all-users",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "tag_type",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "system",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "System",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "theme",
+                "description": "",
+                "isRequired": false,
+                "value": "green",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "3",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "",
+                "isRequired": false,
+                "value": "#AD6B76",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created",
+                "description": "",
+                "isRequired": false,
+                "value": 1760525948,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created_by",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "email",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "john.doe@example.com",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "John",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "id",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "7e12ace1-d04a-455a-b025-49a67a05f596",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "Doe",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "description",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups_count",
+                "description": "",
+                "isRequired": false,
+                "value": 0,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "",
+                "isRequired": false,
+                "value": "2a33d7c1-1e54-4db4-a441-aec842000faa",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "is_active",
+                "description": "",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified",
+                "description": "",
+                "isRequired": false,
+                "value": 1760525948,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified_by",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "email",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "john.doe@example.com",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "John",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "id",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "7e12ace1-d04a-455a-b025-49a67a05f596",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "Doe",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "name",
+                "description": "",
+                "isRequired": false,
+                "value": "priviliged",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "restricted_groups",
+                "description": "Pass a list of groups restricted from this tag.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "id",
+                        "description": "Pass the unique identifier of the restricted group.",
+                        "isRequired": false,
+                        "value": "89900bd4-5ec2-4eb0-af5c-374dc8c13ef8",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "Pass the unique identifier of the restricted group.",
+                        "isRequired": false,
+                        "value": "Test Group",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "tag_type",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "privileged",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "Privileged",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "theme",
+                "description": "",
+                "isRequired": false,
+                "value": "brown",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_groups",
+                "description": "Pass a list of user groups allowed to access this tag",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "id",
+                        "description": "Pass the unique identifier of the user group.",
+                        "isRequired": false,
+                        "value": "e41dee43-263e-4e18-bb16-f78db8f9d21c",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "Pass the name of the user group.",
+                        "isRequired": false,
+                        "value": "Admin",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "4",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "",
+                "isRequired": false,
+                "value": "#45505E",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created",
+                "description": "",
+                "isRequired": false,
+                "value": 1749717786,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "created_by",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "description",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "groups",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "colour_code",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "#DCDEE4",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "icon",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "cyicon-tags-solid",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "id",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "a529690b-5e00-43be-bda0-2a1b2cb084ec",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "Group34",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "tag_type",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "group",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "theme",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "white",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "groups_count",
+                "description": "",
+                "isRequired": false,
+                "value": 1,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "",
+                "isRequired": false,
+                "value": "cb73515d-01b0-46f1-a287-79a3135fca9c",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "is_active",
+                "description": "",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified",
+                "description": "",
+                "isRequired": false,
+                "value": 1749717786,
+                "valueType": "number",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "modified_by",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "",
+                "isRequired": false,
+                "value": "000010196",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "reported_sources",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "",
+                    "valueType": "object",
+                    "options": null,
+                    "complexItems": [],
+                    "items": [
+                      {
+                        "name": "id",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "18bc7602-39d5-447e-bb30-f0f1820e850a",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "name",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "Sandbox",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      },
+                      {
+                        "name": "type",
+                        "description": "",
+                        "isRequired": false,
+                        "value": "MALWARE_SANDBOX",
+                        "valueType": "string",
+                        "options": null,
+                        "complexItems": [],
+                        "items": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "tag_type",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "source",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "",
+                    "isRequired": false,
+                    "value": "Source",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "theme",
+                "description": "",
+                "isRequired": false,
+                "value": "neutral",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "action",
+        "description": "Pass the action to perform on the tag group.",
+        "isRequired": false,
+        "value": "add",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68efe4be242f952da3121c5d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the response details of the tag creation request.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "details",
+              "description": "Returns a message confirming that the tag group were created successfully.",
+              "isRequired": false,
+              "value": "Tags created successfully.",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "count",
+              "description": "Returns the number of tag groups created.",
+              "isRequired": false,
+              "value": 1,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

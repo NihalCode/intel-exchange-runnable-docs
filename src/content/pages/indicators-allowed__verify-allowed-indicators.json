@@ -1,0 +1,65 @@
+{
+  "slug": "indicators-allowed/verify-allowed-indicators",
+  "title": "Verify Allowed Indicators",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "verify-allowed-indicators"
+  ],
+  "description": "Verify if an indicator is added to the allowed indicators list in the platform.",
+  "method": "POST",
+  "path": "conversion/allowed_indicators/verify/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "value",
+        "description": "Pass the value of an indicator to verify.",
+        "isRequired": false,
+        "value": "https://sample-url.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68740a39aecb8721e090635d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "is_whitelisted",
+          "description": "Returns true if the indicator is allowed in the platform.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,153 @@
+{
+  "slug": "administration/collection-management/create-collection",
+  "title": "Create Collection",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "collection-management",
+    "create-collection"
+  ],
+  "description": "Create a STIX collection in the Intel Exchange application.",
+  "method": "POST",
+  "path": "publishing/collection/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "polling",
+        "description": "Pass true if polling is allowed, else pass false.",
+        "isRequired": true,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "inbox",
+        "description": "Pass true if the inbox is allowed, else pass false.",
+        "isRequired": true,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "name",
+        "description": "Pass the name for the collection.",
+        "isRequired": true,
+        "value": "Sample Name",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description for the collection.",
+        "isRequired": true,
+        "value": "Sample description",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "marking_config",
+        "description": "Pass the data marking type.",
+        "isRequired": false,
+        "value": "tlp",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "tlp",
+          "enumValue": [
+            {
+              "value": "tlp",
+              "description": ""
+            },
+            {
+              "value": "acs",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "default_marking_definition",
+        "description": "Pass the default marking definition data.",
+        "isRequired": false,
+        "value": "AMBER",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "AMBER",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870e418e86fa45bcc19fd51"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Returns the status of the request if it is a success or failure.",
+          "isRequired": false,
+          "value": "success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

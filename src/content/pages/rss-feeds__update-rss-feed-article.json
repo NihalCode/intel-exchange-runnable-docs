@@ -1,0 +1,292 @@
+{
+  "slug": "rss-feeds/update-rss-feed-article",
+  "title": "Update RSS Feed Article",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "rss-feeds",
+    "update-rss-feed-article"
+  ],
+  "description": "Updates an RSS feed article.",
+  "method": "PUT",
+  "path": "conversion/feed-sources/rss/articles/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "is_reviewed",
+        "description": "Pass the review details.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "value",
+            "description": "Pass true to mark an RSS feed article as reviewed.",
+            "isRequired": true,
+            "value": "true",
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "comment",
+            "description": "Pass the review comment.",
+            "isRequired": false,
+            "value": "sample",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "id",
+        "description": "Pass the ID of the article.",
+        "isRequired": true,
+        "value": "2b528e26-e402-436f-be45-fa4e7e7ada46",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6871f09becb3f1449e0d9ff2"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the RSS article.",
+          "isRequired": false,
+          "value": "bb042a32-6eb5-4cec-8886-c3921a9860c0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "stix_created",
+          "description": "Indicates whether a STIX object has been generated from the RSS feed article.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the article.",
+          "isRequired": false,
+          "value": "Clop ransomware suspects busted in Ukraine, money and motors seized",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "summary",
+          "description": "Returns the summary of the article.",
+          "isRequired": false,
+          "value": "Victims in South Korea and the USA, suspects busted in Ukraine.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "published",
+          "description": "Returns the date and time of publishing the article.",
+          "isRequired": false,
+          "value": "Wed, 16 Jun 2021 18:44:28 +0000",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "url",
+          "description": "Returns the URL of the article.",
+          "isRequired": false,
+          "value": "https://nakedsecurity.sophos.com/2021/06/16/clop-ransomware-suspects-busted-in-ukraine-money-and-motors-seized/",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "media_thumbnail",
+          "description": "Returns the URL of the media thumbnail.",
+          "isRequired": false,
+          "value": "https://nakedsecurity.sophos.com/wp-content/uploads/sites/2/2021/06/tes-1200.jpg",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Return details such as ID, name, and default metadata of the source RSS feed.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the source RSS feed.",
+              "isRequired": false,
+              "value": "d5556850-895c-419c-a343-b2314b1a2814",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the source RSS feed.",
+              "isRequired": false,
+              "value": "Cyware RSS",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "date_created",
+          "description": "Returns the date of creation of the account in epoch format.",
+          "isRequired": false,
+          "value": "1623869068",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "bookmarked",
+          "description": "Returns true to bookmark this feed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_read",
+          "description": "Returns true if the article is read, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

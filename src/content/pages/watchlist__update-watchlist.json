@@ -1,0 +1,1078 @@
+{
+  "slug": "watchlist/update-watchlist",
+  "title": "Update Watchlist",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "watchlist",
+    "update-watchlist"
+  ],
+  "description": "Updates the details of a keyword in the watchlist.",
+  "method": "PUT",
+  "path": "ingestion/watchlist/{watchlist_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the value of the keyword.\n",
+        "isRequired": false,
+        "value": "sample keyword",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to activate the keyword, else pass false to deactivate.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_removed",
+        "description": "Pass true to remove the keyword; otherwise, pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_email_alert",
+        "description": "Pass true to send an email alert about the watchlist occurrences, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "internal_recipients",
+        "description": "Pass a list of unique IDs and details of the internal recipients.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass details of the internal recipient of the report",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Pass the user ID.",
+                    "isRequired": false,
+                    "value": "48c1b826-c8c6-48a6-a1b2-f52faef1035d",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Pass the first name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "john",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Pass the last name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "doe",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "email",
+                    "description": "Pass the email address.",
+                    "isRequired": false,
+                    "value": "john.doe@domain.com",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "cc",
+            "description": "Pass details of the internal recipient of the report",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Pass the user ID.",
+                    "isRequired": false,
+                    "value": "74b34e52-a0e3-4277-915c-65096f8ceeba",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Pass the first name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "jane",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Pass the last name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "doe",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "email",
+                    "description": "Pass the email address.",
+                    "isRequired": false,
+                    "value": "jane.doe@cyware.com",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "bcc",
+            "description": "Pass details of the internal recipient of the report",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Pass the user ID.",
+                    "isRequired": false,
+                    "value": "f2e42899-f13d-47b0-bf52-57b444f3c881",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Pass the first name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "sara",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Pass the last name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "taylor",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "email",
+                    "description": "Pass the email address.",
+                    "isRequired": false,
+                    "value": "sara.taylor@cyware.com",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "external_recipients",
+        "description": "Pass a list of email addresses of the external recipients.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass details of the external recipient of the report",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "This is an example email ID.",
+                "isRequired": false,
+                "value": "abc1@domain.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "cc",
+            "description": "Pass the cc email addresses for the external recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "This is an example email ID.",
+                "isRequired": false,
+                "value": "abc2@domain.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "bcc",
+            "description": "Pass the bcc email addresses for the external recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "This is an example email ID.",
+                "isRequired": false,
+                "value": "abc3@domain.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "watchlist_id",
+        "description": "Pass the ID of the watchlist keyword to update.",
+        "isRequired": false,
+        "value": "cd5acb44-506d-41ea-a347-54363c379b14",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870bdd56663b406be313e48"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique identifier of the keyword.",
+          "isRequired": false,
+          "value": "cd5acb44-506d-41ea-a347-54363c379b14",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name or value of the keyword being tracked.",
+          "isRequired": false,
+          "value": "sample keyword",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the UNIX timestamp indicating when the keyword entry was created.",
+          "isRequired": false,
+          "value": "1703679482",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the UNIX timestamp indicating the last modification time of the keyword entry.",
+          "isRequired": false,
+          "value": "1703679482",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the unique identifier of the user who created the keyword.",
+          "isRequired": false,
+          "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "updated_by",
+          "description": "Returns the unique identifier of the user who last updated the keyword.",
+          "isRequired": false,
+          "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_activity_on",
+          "description": "Returns the timestamp or metadata of the last activity associated with this keyword. ",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns a boolean value indicating whether the keyword is currently active.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_removed",
+          "description": "Returns a boolean value indicating whether the keyword has been marked as removed.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_email_alert",
+          "description": "Returns a boolean flag indicating whether email alerts are enabled for this keyword.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "internal_recipients",
+          "description": "Returns the list of internal recipients with whom to share the report",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "to",
+              "description": "Returns details of the internal recipient of the report",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the user ID.",
+                      "isRequired": false,
+                      "value": "48c1b826-c8c6-48a6-a1b2-f52faef1035d",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the internal recipient.",
+                      "isRequired": false,
+                      "value": "john",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the internal recipient.",
+                      "isRequired": false,
+                      "value": "doe",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email address.",
+                      "isRequired": false,
+                      "value": "john.doe@domain.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "cc",
+              "description": "Returns details of the internal users copied in the report.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the user ID.",
+                      "isRequired": false,
+                      "value": "74b34e52-a0e3-4277-915c-65096f8ceeba",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the internal recipient.",
+                      "isRequired": false,
+                      "value": "jane",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the internal recipient.",
+                      "isRequired": false,
+                      "value": "doe",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email address.",
+                      "isRequired": false,
+                      "value": "jane.doe@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "bcc",
+              "description": "Returns details of the internal user blind copied in the report.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the user ID.",
+                      "isRequired": false,
+                      "value": "f2e42899-f13d-47b0-bf52-57b444f3c881",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the internal recipient.",
+                      "isRequired": false,
+                      "value": "sara",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the internal recipient.",
+                      "isRequired": false,
+                      "value": "taylor",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email address.",
+                      "isRequired": false,
+                      "value": "sara.taylor@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "external_recipients",
+          "description": "Returns the list of external recipients (outside Intel Exchange) with whom to share the report.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "to",
+              "description": "Returns details of the external recipient of the report",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example email ID.",
+                  "isRequired": false,
+                  "value": "abc1@domain.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "cc",
+              "description": "Returns the cc email addresses for the external recipients",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example email ID.",
+                  "isRequired": false,
+                  "value": "abc2@domain.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "bcc",
+              "description": "Returns the bcc email addresses for the external recipients",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example email ID.",
+                  "isRequired": false,
+                  "value": "abc3@domain.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "occurrences",
+          "description": "Returns the number of times this keyword has been triggered or matched in the system.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

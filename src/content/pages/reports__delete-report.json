@@ -1,0 +1,88 @@
+{
+  "slug": "reports/delete-report",
+  "title": "Delete Report",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "reports",
+    "delete-report"
+  ],
+  "description": "Delete a report from the Intel Exchange application. You can only delete reports that are created by you. Retrieve the `report_id` using **List Reports** or **Report Details** APIs.",
+  "method": "DELETE",
+  "path": "ingestion/reports/{report_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "type",
+        "description": "Pass the type of report to be deleted. ",
+        "isRequired": true,
+        "value": "basic",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "basic"
+            },
+            {
+              "value": "advanced"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "report_id",
+        "description": "Pass the ID of the report to delete. For example: *87c07bb3-b60c-4279-a5ec-8a38f73f7ea4*",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870bb586663b406be3116eb"
+  },
+  "responses": [
+    {
+      "statusCode": 204,
+      "description": "This request doesn't return any response body. 204 status indicates that the report is deleted from Intel Exchange",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,197 @@
+{
+  "slug": "detailed-submission/scos/create-ipv4-addr-sco",
+  "title": "Create IPv4-addr SCO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "scos",
+    "create-ipv4-addr-sco"
+  ],
+  "description": "Creates an IPv4 SCO in a detailed STIX form submission.",
+  "method": "POST",
+  "path": "conversion/shareable-intel/{intel-id}/ipv4-addr/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "custom_properties",
+        "description": "Pass the list that contains the unique identifier for the custom property, type, name, and the value to add for the same.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP of the SCO object.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "defanged",
+        "description": "Pass true if the value specified by the user is defanged, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "value",
+        "description": "Pass the value of the SCO in the following format: IPv4 Address.",
+        "isRequired": true,
+        "value": "123.34.45.56",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67ff7db9343cd74522eb29a2"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique identifier for the user-created SCO object.",
+          "isRequired": false,
+          "value": "ipv4-addr--949337c9-effe-4e42-9454-146b79f80c96",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP of the SCO object.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "custom_properties",
+          "description": "Returns the list that contains the unique identifier for the custom property, type, name, and the value to add for the same.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the SCO.",
+          "isRequired": false,
+          "value": "123.34.45.56",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "defanged",
+          "description": "Returns true if the value specified by the user is defanged, else pass false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "value",
+          "description": "Returns the value of the SCO.",
+          "isRequired": false,
+          "value": "123.34.45.56",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

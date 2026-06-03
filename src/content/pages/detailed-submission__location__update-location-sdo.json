@@ -1,0 +1,1180 @@
+{
+  "slug": "detailed-submission/location/update-location-sdo",
+  "title": "Update Location SDO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "location",
+    "update-location-sdo"
+  ],
+  "description": "Updates a location SDO in the initiated detailed STIX form submission.",
+  "method": "PUT",
+  "path": "ingestion/shareable-intel/{intel-id}/location/{location-id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "created_by_ref",
+        "description": "Pass the list of IDs and names of the SDO referred.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "id",
+            "description": "Pass the unique identifier of the referred SDO.",
+            "isRequired": false,
+            "value": "identity--30a5479b-e172-4497-80b6-a2d6b58b4c78",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "name",
+            "description": "Pass the name of the referred SDO.",
+            "isRequired": false,
+            "value": "CTIX",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "revoked",
+        "description": "Pass true if the SDO is revoked, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "labels",
+        "description": "Pass the list of IDs and names of the labels attached to the SDO.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "id",
+                "description": "Pass the unique identifier of the label.",
+                "isRequired": false,
+                "value": "c5ffddd6-3057-475c-9ae5-a95b9eb0c7df",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "Pass the name of the label.",
+                "isRequired": false,
+                "value": "ActivityCluster/IrenicAngler",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "id",
+                "description": "",
+                "isRequired": false,
+                "value": "3b069264-5909-40f7-92f9-de2f8d75c93a",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "",
+                "isRequired": false,
+                "value": "ActivityCluster/LampCarrier",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "custom_properties",
+        "description": "Pass the list of unique identifiers for the custom property, type, name, and the value user wishes to add for the same.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "key",
+                "description": "Pass the custom property key details.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Pass the unique identifier of the key.",
+                    "isRequired": false,
+                    "value": "bea5a1c4-63a5-4747-a1a5-53c1a89da6bc",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "name",
+                    "description": "Pass the name of the key.",
+                    "isRequired": false,
+                    "value": "Relevance Score",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "type",
+                    "description": "Pass the data type of the key.",
+                    "isRequired": false,
+                    "value": "int",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "value",
+                "description": "Pass the value of the custom property.",
+                "isRequired": false,
+                "value": "2",
+                "valueType": "number",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the list of UI labels and values of the TLP.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "label",
+            "description": "Pass the UI label/name of the TLP.",
+            "isRequired": false,
+            "value": "Red",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "value",
+            "description": "Pass the value of the TLP.",
+            "isRequired": false,
+            "value": "RED",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "name",
+        "description": "Pass the name of the SDO.",
+        "isRequired": true,
+        "value": "loc 2",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the SDO.",
+        "isRequired": false,
+        "value": "loc desc",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "latitude",
+        "description": "Pass the latitude of the object.",
+        "isRequired": true,
+        "value": "89",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "longitude",
+        "description": "Pass the longitude of the object.",
+        "isRequired": true,
+        "value": "-179",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "precision",
+        "description": "Pass the precision of the object.",
+        "isRequired": false,
+        "value": "5",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "region",
+        "description": "Pass the region of the object.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "label",
+            "description": "Pass the UI label/name of the region.",
+            "isRequired": false,
+            "value": "Asia",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "value",
+            "description": "Pass the value of the region.",
+            "isRequired": false,
+            "value": "asia",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "country",
+        "description": "Pass the country for the object.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "label",
+            "description": "Pass the UI label/name of the country.",
+            "isRequired": false,
+            "value": "India",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "value",
+            "description": "Pass the value of the country.",
+            "isRequired": false,
+            "value": "IN",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "administrative_area",
+        "description": "Pass the administrative area for the object.",
+        "isRequired": false,
+        "value": "delhi",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "city",
+        "description": "Pass the city for the object.",
+        "isRequired": false,
+        "value": "delhi",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "street_address",
+        "description": "Pass the street address of the object.",
+        "isRequired": false,
+        "value": "MG road",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "postal_code",
+        "description": "Pass the postal code of the object.",
+        "isRequired": false,
+        "value": "pin",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "location-id",
+        "description": "Pass the location ID.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684fed43657970f7175daaf3"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "created_by_ref",
+          "description": "Returns the list of IDs and names of the SDO referred.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the referred SDO.",
+              "isRequired": false,
+              "value": "identity--30a5479b-e172-4497-80b6-a2d6b58b4c78",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the referred SDO.",
+              "isRequired": false,
+              "value": "CTIX",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the list of UI labels and values of the TLP.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Returns the UI label/name of the TLP.",
+              "isRequired": false,
+              "value": "Red",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Returns the value of the TLP.",
+              "isRequired": false,
+              "value": "RED",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "revoked",
+          "description": "Returns true if the SDO is revoked, else pass false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "labels",
+          "description": "Returns the list of IDs and names of the labels attached to the SDO.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique identifier of the label.",
+                  "isRequired": false,
+                  "value": "c5ffddd6-3057-475c-9ae5-a95b9eb0c7df",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the label.",
+                  "isRequired": false,
+                  "value": "ActivityCluster/IrenicAngler",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "3b069264-5909-40f7-92f9-de2f8d75c93a",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ActivityCluster/LampCarrier",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "custom_properties",
+          "description": "Returns the list of unique identifiers for the custom property, type, name, and the value the user wishes to add for the same.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "key",
+                  "description": "Returns the custom property key details.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the key.",
+                      "isRequired": false,
+                      "value": "Relevance Score",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the key.",
+                      "isRequired": false,
+                      "value": "bea5a1c4-63a5-4747-a1a5-53c1a89da6bc",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the data type of the key.",
+                      "isRequired": false,
+                      "value": "int",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the value of the custom property.",
+                  "isRequired": false,
+                  "value": "2",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the SDO.",
+          "isRequired": false,
+          "value": "loc 2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the SDO.",
+          "isRequired": false,
+          "value": "loc desc",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "latitude",
+          "description": "Returns the latitude of the object.",
+          "isRequired": false,
+          "value": "89",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "longitude",
+          "description": "Returns the longitude of the object.",
+          "isRequired": false,
+          "value": "-179",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "precision",
+          "description": "Returns the precision of the object.",
+          "isRequired": false,
+          "value": "5",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "region",
+          "description": "Returns the region of the object.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Returns the UI label/name of the region.",
+              "isRequired": false,
+              "value": "Asia",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Returns the value of the region.",
+              "isRequired": false,
+              "value": "asia",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "country",
+          "description": "Returns the country for the object.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Returns the UI label/name of the country.",
+              "isRequired": false,
+              "value": "India",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Returns the value of the country.",
+              "isRequired": false,
+              "value": "IN",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "administrative_area",
+          "description": "Returns the administrative area for the object.",
+          "isRequired": false,
+          "value": "delhi",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "city",
+          "description": "Returns the city for the object.",
+          "isRequired": false,
+          "value": "delhi",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "street_address",
+          "description": "Returns the street address of the object.",
+          "isRequired": false,
+          "value": "MG road",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "postal_code",
+          "description": "Returns the postal code of the object.",
+          "isRequired": false,
+          "value": "pin",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique identifier for the SDO.",
+          "isRequired": false,
+          "value": "location--1e8a4fd2-6654-4364-bc76-c22f3ad1a5e0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

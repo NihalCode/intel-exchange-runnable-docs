@@ -1,0 +1,182 @@
+{
+  "slug": "detailed-submission/scos/create-mutex-sco",
+  "title": "Create Mutex SCO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "scos",
+    "create-mutex-sco"
+  ],
+  "description": "Creates a mutex SCO in the detailed STIX form submission.",
+  "method": "POST",
+  "path": "ingestion/shareable-intel/{intel-id}/mutex/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "custom_properties",
+        "description": "Pass the list that contains the unique identifier for the custom property, type, name, and the value to add for the same.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP of the SCO.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "defanged",
+        "description": "Pass true if the value specified by the user is defanged, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "name",
+        "description": "Pass the name of the SCO.",
+        "isRequired": false,
+        "value": "__CLEANSWEEP__",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of the intel submission.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67ff822d343cd74522eb5294"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique identifier for the SCO that the user created.",
+          "isRequired": false,
+          "value": "mutex--3b7825ea-e78a-4673-aa7a-238be207cab7",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Pass the TLP of the SCO.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "custom_properties",
+          "description": "Returns the list that contains the unique identifier for the custom property, type, name, and the value to add for the same.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the SCO.",
+          "isRequired": false,
+          "value": "__CLEANSWEEP__",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "defanged",
+          "description": "Returns true if the value specified by the user is defanged, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

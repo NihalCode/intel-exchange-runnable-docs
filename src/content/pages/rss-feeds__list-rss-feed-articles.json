@@ -1,0 +1,646 @@
+{
+  "slug": "rss-feeds/list-rss-feed-articles",
+  "title": "Get RSS Feed Articles List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "rss-feeds",
+    "list-rss-feed-articles"
+  ],
+  "description": "Returns a list of articles from RSS feed sources.",
+  "method": "GET",
+  "path": "conversion/feed-sources/rss/articles/",
+  "request": {
+    "query": [
+      {
+        "name": "feed_id",
+        "description": "Pass the ID of a source to filter articles based on the source.",
+        "isRequired": false,
+        "value": "37290cca-338b-4242-879e-da1867c3a055",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "bookmarked",
+        "description": "Pass true to retrieve bookmarked articles.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_read",
+        "description": "Pass true to retrieve read articles.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_reviewed",
+        "description": "Pass true to retrieve articles that are marked as reviewed.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693949b0b49385adf3c46f75"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the link for the next page.",
+          "isRequired": false,
+          "value": "feed-sources/rss/articles/?page=2&page_size=1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the link for the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of elements present on a page.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of RSS feed sources.",
+          "isRequired": false,
+          "value": "14928",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of all RSS feed articles.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the article.",
+                  "isRequired": false,
+                  "value": "8f7b9abd-b41e-4241-9d52-3fb3e356af94",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "bookmarked",
+                  "description": "Returns true if the feed has been bookmarked, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the article.",
+                  "isRequired": false,
+                  "value": "From laid off to starting a SaaS and $8K MRR with my productized service",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "summary",
+                  "description": "Returns the summary of the article.",
+                  "isRequired": false,
+                  "value": "<p>Article URL: <a href=\"https://breeew.com\">https://breeew.com</a></p>\n<p>Comments URL: <a href=\"https://news.ycombinator.com/item?id=38188509\">https://news.ycombinator.com/item?id=38188509</a></p>\n<p>Points: 1</p>\n<p># Comments: 1</p>",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published",
+                  "description": "Returns the date and time of publishing of the article.",
+                  "isRequired": false,
+                  "value": "Wed, 08 Nov 2023 10:08:54 +0000",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "url",
+                  "description": "Returns the URL of the article.",
+                  "isRequired": false,
+                  "value": "https://breeew.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "media_thumbnail",
+                  "description": "Returns the URL of the media thumbnail.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "Return details such as ID and name of the source RSS feed.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the source RSS feed.",
+                      "isRequired": false,
+                      "value": "391b6798-0b72-479c-b602-b47f46f5273f",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the source RSS feed.",
+                      "isRequired": false,
+                      "value": "RSS",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "default_metadata",
+                      "description": "Returns additional fields.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "tlp",
+                          "description": "Returns the TLP associated.",
+                          "isRequired": false,
+                          "value": "WHITE",
+                          "valueType": "string",
+                          "options": {
+                            "defaultValue": "WHITE",
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "score",
+                          "description": "Returns the confidence score for the source.",
+                          "isRequired": false,
+                          "value": "100",
+                          "valueType": "number",
+                          "options": {
+                            "defaultValue": "100",
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_apply_all",
+                          "description": "Returns a boolean indicating whether to apply metadata to all objects/IOCS created. If not, use default values for metadata.",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "defaultValue": "true",
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "selected",
+                          "description": "Returns a boolean value indicating whether the `default_metadata` is to be applied to the report. If not, use default values for the metadata.",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "defaultValue": "true",
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "tags",
+                          "description": "Contains a list of tags selected by the user. Contains id, name and some tag-related values",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "taxii_option",
+                      "description": "Specifies the version of the TAXII protocol used for ingesting or interacting with the feed source.",
+                      "isRequired": false,
+                      "value": "2.1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "date_created",
+                  "description": "Returns the date of creation of this article in epoch format.",
+                  "isRequired": false,
+                  "value": "1699438134",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_read",
+                  "description": "Returns true if the article is read, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_reviewed",
+                  "description": "Returns the review details.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "value",
+                      "description": "Returns true to mark an RSS feed article as reviewed.",
+                      "isRequired": false,
+                      "value": "true",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "comment",
+                      "description": "Returns the review comment.",
+                      "isRequired": false,
+                      "value": "reviewed",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created_by",
+                      "description": "Returns the details of the user who created the note.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "first_name",
+                          "description": "Returns the first name of the user who created the note.",
+                          "isRequired": false,
+                          "value": "john",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "last_name",
+                          "description": "Returns the last name of the user who created the note.",
+                          "isRequired": false,
+                          "value": "doe",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "Returns the ID of the user who created the note.",
+                          "isRequired": false,
+                          "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "email",
+                          "description": "Returns the email address of the user who created the note.",
+                          "isRequired": false,
+                          "value": "john.doe@cyware.com",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "created_date",
+                      "description": "Returns the timestamp when the note was created.",
+                      "isRequired": false,
+                      "value": "1699440004",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

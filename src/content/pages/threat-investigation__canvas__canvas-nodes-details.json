@@ -1,0 +1,762 @@
+{
+  "slug": "threat-investigation/canvas/canvas-nodes-details",
+  "title": "Get Canvas Nodes Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-investigation",
+    "canvas",
+    "canvas-nodes-details"
+  ],
+  "description": "Returns the node details of a threat investigation canvas.",
+  "method": "GET",
+  "path": "ingestion/canvas/nodes/{canvas_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve results. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page. ",
+        "isRequired": false,
+        "value": "20",
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "canvas_id",
+        "description": "Pass the unique ID of a threat investigation canvas.",
+        "isRequired": false,
+        "value": "16bd0f9d-8ee5-4559-a632-8ffe4e687776",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394a95b49385adf3c47901"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the pagination link to navigate to the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the pagination link to navigate to the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of records the API returns.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of elements present on a page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the node details.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the threat data element.",
+                  "isRequired": false,
+                  "value": "indicator--3c1ed30a-659b-4a82-9d35-9328943aae23",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "prop",
+                  "description": "Returns some additional information about the threat data element on the canvas.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "tlp_data",
+                      "description": "Returns the TLP of the data ",
+                      "isRequired": false,
+                      "value": "AMBER",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_seen",
+                      "description": "Returns when the object was first observed.",
+                      "isRequired": false,
+                      "value": "1626179839",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_collections",
+                      "description": "Returns the collections from which the indicator originated.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the source collections.",
+                              "isRequired": false,
+                              "value": "Bruteforce Web",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the source collections.",
+                              "isRequired": false,
+                              "value": "a9d46234-5948-4f88-8984-7d9701fd2c88",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "last_seen",
+                      "description": "Returns the last time the indicator was observed.",
+                      "isRequired": false,
+                      "value": "1626179839",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sources",
+                      "description": "Returns the details of the source.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "created",
+                              "description": "Returns the UNIX timestamp of the source creation.",
+                              "isRequired": false,
+                              "value": "1626179839",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the source.",
+                              "isRequired": false,
+                              "value": "Volon",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "source_type",
+                              "description": "Returns the type of the source.",
+                              "isRequired": false,
+                              "value": "API FEEDS",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the source.",
+                              "isRequired": false,
+                              "value": "e302863d-845d-4272-b0a9-13eebe5e0b40",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "category",
+                              "description": "Returns the source category.",
+                              "isRequired": false,
+                              "value": "System Feeds",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "stix_object_id",
+                      "description": "Returns the unique identifier of the STIX object.",
+                      "isRequired": false,
+                      "value": "indicator--3c1ed30a-659b-4a82-9d35-9328943aae23",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscribers",
+                      "description": "List of subscribers to this object.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "deprecated",
+                      "description": "Returns a boolean indicating whether the indicator is deprecated.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "intel_grading",
+                      "description": "Returns the assessed accuracy and credibility of the intelligence.",
+                      "isRequired": false,
+                      "value": "POSSIBLY TRUE | 3",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "indicator_type",
+                      "description": "Returns the type of indicator.",
+                      "isRequired": false,
+                      "value": "ipv4-addr",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Specifies the STIX type of the indicator object.",
+                      "isRequired": false,
+                      "value": "ipv4-addr",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "labels",
+                      "description": "Returns an array of labels associated with the indicator.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_grading",
+                      "description": "Returns the grading of the source reliability.",
+                      "isRequired": false,
+                      "value": "FAIRLY RELIABLE | C",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "score",
+                      "description": "Returns a numeric score.",
+                      "isRequired": false,
+                      "value": "72.81",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name2",
+                      "description": "Returns a secondary name or value for the node, usually the actual observable.",
+                      "isRequired": false,
+                      "value": "54.198.171.238",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscriber_collections",
+                      "description": "Returns a list of collections subscribed to the indicator.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "parent_type",
+                      "description": "Returns the parent object type in the system.",
+                      "isRequired": false,
+                      "value": "indicator",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "followed",
+                      "description": "Returns boolean indicating whether the user is following this indicator.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "identifier",
+                      "description": "Returns the source identifier.",
+                      "isRequired": false,
+                      "value": "ctix",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "Returns a human-readable tag or classification for the node.",
+                      "isRequired": false,
+                      "value": "IP",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "type",
+                  "description": "Returns one of the following values",
+                  "isRequired": false,
+                  "value": "node",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "node",
+                        "description": "Indicates a threat data element"
+                      },
+                      {
+                        "value": "link",
+                        "description": "Indicates a relationship type"
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "t",
+                  "description": "Returns the value of the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "54.198.171.238",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "hi",
+                  "description": "Returns `true` if the threat data element is hidden in the Threat investigation canvas, else returns `false`.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "u",
+                  "description": "Returns an endpoint to the image of a node.",
+                  "isRequired": false,
+                  "value": "/ctix/images/graph/ipv4-addr.svg",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "x",
+                  "description": "Returns the horizontal (X-axis) coordinate that determines the node’s position in a graphical threat investigation view.",
+                  "isRequired": false,
+                  "value": "511",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "y",
+                  "description": "Returns the vertical (Y-axis) coordinate that determines the node’s position in a graphical threat investigation view.",
+                  "isRequired": false,
+                  "value": "94",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "added_node",
+                  "description": "Indicates whether this node was newly created in the current session or action.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

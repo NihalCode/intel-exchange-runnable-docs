@@ -1,0 +1,296 @@
+{
+  "slug": "threat-data-objects/basic-details/list-source-external-references",
+  "title": "Get Source External References List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "list-source-external-references"
+  ],
+  "description": "Retrieves a list of the external references that are associated with STIX SDOs.",
+  "method": "GET",
+  "path": "ingestion/threat-data/{object_type}/{object_id}/external-references/",
+  "request": {
+    "query": [
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve in each page.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve external references.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data object. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**. ",
+        "isRequired": false,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the threat data object ID. To retrieve the object ID, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": false,
+        "value": "6843bc1c-37ce-4fdc-a289-544abd96f3ca",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693947d0b49385adf3c45733"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL link to the next page.",
+          "isRequired": false,
+          "value": "threat-data/vulnerability/b5767475-1d03-477d-a1ff-c1b69318f3c1/external-references/?page=2&page_size=3",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL link to the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of records returned by the API.",
+          "isRequired": false,
+          "value": "4",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the page size specified in the query parameters.",
+          "isRequired": false,
+          "value": "3",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the source details of the external reference.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "external_id",
+                  "description": "Returns the ID that identifies the reference.",
+                  "isRequired": false,
+                  "value": "CVE-2016-1234",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "Returns the name of the source as referred by the reference.",
+                  "isRequired": false,
+                  "value": "cve",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "url",
+                  "description": "Returns the URL of the external reference referred to by the object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "external_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "0001AA7F-C601-424A-B2B8-BE6C9F5164E7",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "veris",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "url",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "https://github.com/vz-risk/VCDB/blob/125307638178efddd3ecfe2c267ea434667a4eea/data/json/validated/0001AA7F-C601-424A-B2B8-BE6C9F5164E7.json",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

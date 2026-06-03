@@ -1,0 +1,233 @@
+{
+  "slug": "threat-data/export/generate-export-file",
+  "title": "Generate Export File",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "export",
+    "generate-export-file"
+  ],
+  "description": "Initiates export of threat data objects to a CSV file based on the CQL input. This API returns a file ID to retrieve the export file download link. You can export a maximum of 100,000 threat data objects in one API request.\n\n### **The Column Object**\n\nEach column object includes the key and value of a column. You can include the following columns in the export file:\n\n\n  \n    name\n    Value\n  \n  \n    type\n    Type\n  \n  \n    tlp\n    TLP\n  \n  \n    tags\n    Tags\n  \n  \n    sources\n    Source\n  \n  \n    source_collections\n    Source Collection\n  \n  \n    published_collections\n    Published Collections\n  \n  \n    ctix_created\n    System Created Date\n  \n  \n    ctix_modified\n    System Modified Date\n  \n  \n    country\n    Country\n  \n  \n    analyst_score\n    Analyst Score\n  \n  \n    source_confidence\n    Source Confidence",
+  "method": "POST",
+  "path": "ingestion/export/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "format",
+        "description": "Pass the export file format. Currently, Intel Exchange supports only the CSV format.",
+        "isRequired": true,
+        "value": "csv",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "csv",
+          "enumValue": [
+            {
+              "value": "csv",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "component",
+        "description": "Pass the component you want to export.  \nCurrently, Intel Exchange supports only `threat_data`.",
+        "isRequired": true,
+        "value": "threat_data",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "threat_data",
+          "enumValue": [
+            {
+              "value": "threat_data",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "query",
+        "description": "Pass the CQL query to filter threat data objects.  \nTip: You can copy the CQL from the Intel Exchange user interface. Press the following keys to copy the CQL code to use in the API request payload:  \nWindows: Windows + Shift + C  \nMacOS: Command + Shift + C",
+        "isRequired": true,
+        "value": "type = \"tool\"",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "columns",
+        "description": "Pass the list of columns you want to export. For the allowed list of columns, see *The Column Object*.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "key",
+                "description": "Pass the key value.",
+                "isRequired": false,
+                "value": "type",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "label",
+                "description": "Pass the UI label.",
+                "isRequired": false,
+                "value": "Type",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "2",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "key",
+                "description": "",
+                "isRequired": false,
+                "value": "tlp",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "label",
+                "description": "",
+                "isRequired": false,
+                "value": "TLP",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "691ec0cc01f00c87e497929e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns a message that export of the threat data objects is initiated.",
+          "isRequired": false,
+          "value": "Export is in progress. You will receive a notification once the export is complete.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "file_id",
+          "description": "Returns the ID of the export file. You can use this ID to retrieve the download link using the Retrieve **Download Link API**.",
+          "isRequired": false,
+          "value": "48294eb5-ad7a-439e-83e4-d99da6921076",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

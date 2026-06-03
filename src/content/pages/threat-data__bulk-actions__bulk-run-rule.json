@@ -1,0 +1,128 @@
+{
+  "slug": "threat-data/bulk-actions/bulk-run-rule",
+  "title": "Bulk Run Rule",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "bulk-actions",
+    "bulk-run-rule"
+  ],
+  "description": "Add a rule on multiple threat data objects. You can run rules that are configured for manual execution only.",
+  "method": "POST",
+  "path": "ingestion/threat-data/bulk-action/run_rule/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data objects. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_ids",
+        "description": "Pass the list of threat data object IDs to perform the bulk action. To retrieve a list of object IDs, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "49d5e95e-3889-42de-8280-1ebf5c7cb95a",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "description": "Pass the relation data to pass with the request.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "id",
+            "description": "Pass the ID of a rule to run. To retrieve the list of rules, use the **List Rules API** under the Rules section.",
+            "isRequired": true,
+            "value": "5602232e-085b-4c15-89af-404ea45c5703",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870f44ce86fa45bcc1b34d1"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "message",
+          "description": "Returns a success or failure message.",
+          "isRequired": false,
+          "value": "Action Successfully Executed",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

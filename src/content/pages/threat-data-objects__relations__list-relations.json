@@ -1,0 +1,90 @@
+{
+  "slug": "threat-data-objects/relations/list-relations",
+  "title": "Get Relations List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "relations",
+    "list-relations"
+  ],
+  "description": "Retrieves the related statistics for the given object type and object ID.",
+  "method": "GET",
+  "path": "ingestion/threat-data/{object_type}/{object_id}/relations/card",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_type",
+        "description": "Pass the object type. Attack pattern, campaign, course of action, grouping, etc., are examples of the object type.",
+        "isRequired": false,
+        "value": "indicator",
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the object ID. Unique UUID4 is an example of the object ID.",
+        "isRequired": false,
+        "value": "09730695-2f63-4a1c-a0fb-a042689588d5",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394826b49385adf3c459f4"
+  },
+  "responses": [],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

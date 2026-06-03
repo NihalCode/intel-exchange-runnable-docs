@@ -1,0 +1,1767 @@
+{
+  "slug": "administration/users-and-groups/users/signed-in-user-details",
+  "title": "Get Signed in User Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "users-and-groups",
+    "users",
+    "signed-in-user-details"
+  ],
+  "description": "Retrieves details of the currently logged-in user.",
+  "method": "GET",
+  "path": "rest-auth/user-details/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": false,
+        "value": "application/json",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393fb6b49385adf3c3f3b3"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the user. This ID is used across Intel Exchange to perform actions.",
+          "isRequired": false,
+          "value": "010f5d90-f510-40e5-82a0-dd90f4546dd2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "first_name",
+          "description": "Returns the first name of the user.",
+          "isRequired": false,
+          "value": "John",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_name",
+          "description": "Returns the last name of the user.",
+          "isRequired": false,
+          "value": "Doe",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email",
+          "description": "Returns the Intel Exchange associated email address of the user. The user receives all Intel Exchange related emails and information on this email address.",
+          "isRequired": false,
+          "value": "johndoe@orgname.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns True if the user is active in Intel Exchange, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "contact_number",
+          "description": "Returns the contact details, like mobile or telephone number, of the user.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "country_code",
+          "description": "Returns the country code in which the user is located.",
+          "isRequired": false,
+          "value": "91",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "user_id",
+          "description": "Returns the unique ID for the user. This ID is used across Intel Exchange to perform actions.",
+          "isRequired": false,
+          "value": "010f5d90-f510-40e5-82a0-dd90f4546dd2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time of the creation of the user.",
+          "isRequired": false,
+          "value": "1640011145",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "invited_by",
+          "description": "Returns the details of the user who created this user in Intel Exchange in the form of a dictionary. ",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "invite_status",
+          "description": "Returns the invitation status of the user, such as Accepted or Invited.",
+          "isRequired": false,
+          "value": "ACCEPTED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_alerts",
+          "description": "Returns True if the user wants to receive email alerts on the Intel Exchange associated email address, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "sms_alerts",
+          "description": "Returns True if the user wants to receive SMS alerts on the Intel Exchange associated contact number, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "groups",
+          "description": "Returns the list of associated user groups for the user. This includes the group ID and the name of the group.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the user group.",
+                  "isRequired": false,
+                  "value": "d3c286f7-0867-451d-aceb-357eec30bdb1",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the user group.",
+                  "isRequired": false,
+                  "value": "Admin",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "allowed_tlp",
+          "description": "Returns the list of allowed TLPs from which a user can access and view threat data. You can access threat data from all TLPs if TLPs are not selected.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "username",
+          "description": "Returns the LDAP username associated with a user.",
+          "isRequired": false,
+          "value": "JohnDoe",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "image_url",
+          "description": "Return the URL of the image.",
+          "isRequired": false,
+          "value": "https://zeus.mycyware.com/ctixapi/rest-auth/user-image/?user_image=qc46OT2C5NUbrztXrvSpn0oWeySI5iuK9ofAG0knkI7M5PVrBOdmZj2JXKzqgErTCQ98B63WAgvHFX-Pey4vd2ap8SLm-VtC5nuLf9iljEmy4fk3TtgdZysD60J4Ikpj0kdQtMqsOqIhNDdPomIKXd91Xm6PTGn-B0I0oFTxdmfQI1HBvqQLmska",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "date_joined",
+          "description": "Returns the date and time at which the user was created.",
+          "isRequired": false,
+          "value": "18446744011573955000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_active_session",
+          "description": "Returns the last active date and time of the user on the platform.",
+          "isRequired": false,
+          "value": "1645192604",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "admin_component",
+          "description": "Returns the list of components that are part of the admin component in Intel Exchange. Possible values are `superadmin`, `user_management`, `role_and_permission`, `configuration`, `third_party`, `api_integrations`, `certification`, `object_labels`, and `enrichment_management`.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "component",
+          "description": "Returns the components/modules the user has access to.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Access to the Intel Exchange dashboard UI.",
+              "isRequired": false,
+              "value": "dashboard",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "1",
+              "description": "Access to Twitter feed integration.",
+              "isRequired": false,
+              "value": "twitter",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "2",
+              "description": "Access to STIX server-related features.",
+              "isRequired": false,
+              "value": "server_stix",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "3",
+              "description": "Access to threat detection rules.",
+              "isRequired": false,
+              "value": "rule",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "4",
+              "description": "Access to email threat feed settings.",
+              "isRequired": false,
+              "value": "email_feed",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "5",
+              "description": "Access to threat intel source configuration.",
+              "isRequired": false,
+              "value": "source",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "6",
+              "description": "Access to subscriber management.",
+              "isRequired": false,
+              "value": "subscriber",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "7",
+              "description": "Access to data collections management.",
+              "isRequired": false,
+              "value": "collection",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "8",
+              "description": "Access to STIX objects.",
+              "isRequired": false,
+              "value": "objects",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "9",
+              "description": "Access to RSS feed sources.",
+              "isRequired": false,
+              "value": "rss_feeds",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "10",
+              "description": "Access to product version and license info.",
+              "isRequired": false,
+              "value": "version_and_license",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "11",
+              "description": "Access to whitelisted IOCs.",
+              "isRequired": false,
+              "value": "whitelist_ioc",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "12",
+              "description": "Access to CTIX-generated reports.",
+              "isRequired": false,
+              "value": "ctix_report",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "13",
+              "description": "Access to actions configured for indicators.",
+              "isRequired": false,
+              "value": "indicator_actions",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "14",
+              "description": "Access to risk score customization settings.",
+              "isRequired": false,
+              "value": "score_configuration",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "15",
+              "description": "Access to threat investigation features.",
+              "isRequired": false,
+              "value": "threat_investigations",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "16",
+              "description": "Access to user activity audit logs.",
+              "isRequired": false,
+              "value": "user_activity_log",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "permission",
+          "description": "Returns the list of specific actions/permissions the user is allowed to perform.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Delete third-party integrations.",
+              "isRequired": false,
+              "value": "delete_third_party",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "1",
+              "description": "Update email feed configurations.",
+              "isRequired": false,
+              "value": "update_email_feed",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "2",
+              "description": "View labels/tags on STIX objects.",
+              "isRequired": false,
+              "value": "view_object_labels",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "3",
+              "description": "View actions linked to indicators.",
+              "isRequired": false,
+              "value": "view_indicator_actions",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "4",
+              "description": "Create new email threat feeds.",
+              "isRequired": false,
+              "value": "create_email_feed",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "5",
+              "description": "Delete labels from STIX objects.",
+              "isRequired": false,
+              "value": "delete_object_labels",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "6",
+              "description": "Generate new CTIX reports.",
+              "isRequired": false,
+              "value": "create_ctix_report",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "7",
+              "description": "Delete threat detection rules.",
+              "isRequired": false,
+              "value": "delete_rule",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "8",
+              "description": "Edit CTIX reports.",
+              "isRequired": false,
+              "value": "update_ctix_report",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "9",
+              "description": "View subscriber details.",
+              "isRequired": false,
+              "value": "view_subscriber",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "10",
+              "description": "Add new IOCs to the whitelist.",
+              "isRequired": false,
+              "value": "create_whitelist_ioc",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "11",
+              "description": "View configured email feeds.",
+              "isRequired": false,
+              "value": "view_email_feed",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "12",
+              "description": "Modify subscriber settings.",
+              "isRequired": false,
+              "value": "update_subscriber",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "13",
+              "description": "Edit existing whitelisted IOCs.",
+              "isRequired": false,
+              "value": "update_whitelist_ioc",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "14",
+              "description": "Create new data collections.",
+              "isRequired": false,
+              "value": "create_collection",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "15",
+              "description": "View system certifications.",
+              "isRequired": false,
+              "value": "view_certification",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "16",
+              "description": "Remove configured email feeds.",
+              "isRequired": false,
+              "value": "delete_email_feed",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "17",
+              "description": "View RSS feed configurations.",
+              "isRequired": false,
+              "value": "view_rss_feeds",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "18",
+              "description": "View system-wide settings.",
+              "isRequired": false,
+              "value": "view_configuration",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "19",
+              "description": "View third-party integration settings.",
+              "isRequired": false,
+              "value": "view_third_party",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "20",
+              "description": "Edit product version/license details.",
+              "isRequired": false,
+              "value": "update_version_and_license",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "21",
+              "description": "Access dashboard UI.",
+              "isRequired": false,
+              "value": "view_dashboard",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "22",
+              "description": "Delete enrichment-related configurations.",
+              "isRequired": false,
+              "value": "delete_enrichment_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "23",
+              "description": "Modify dashboard layout/settings.",
+              "isRequired": false,
+              "value": "update_dashboard",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "24",
+              "description": "View user roles and their permissions.",
+              "isRequired": false,
+              "value": "view_role_and_permission",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "25",
+              "description": "Modify intel source settings.",
+              "isRequired": false,
+              "value": "update_source",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "26",
+              "description": "Update system certification info.",
+              "isRequired": false,
+              "value": "update_certification",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "27",
+              "description": "View configured detection rules.",
+              "isRequired": false,
+              "value": "view_rule",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "28",
+              "description": "Add new certifications.",
+              "isRequired": false,
+              "value": "create_certification",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "29",
+              "description": "Remove dashboard configuration.",
+              "isRequired": false,
+              "value": "delete_dashboard",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "30",
+              "description": "View enrichment tools and data.",
+              "isRequired": false,
+              "value": "view_enrichment_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "31",
+              "description": "View intel sources.",
+              "isRequired": false,
+              "value": "view_source",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "32",
+              "description": "Add new enrichment settings.",
+              "isRequired": false,
+              "value": "create_enrichment_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "33",
+              "description": "Remove threat intel sources.",
+              "isRequired": false,
+              "value": "delete_source",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "34",
+              "description": "View activity logs of users.",
+              "isRequired": false,
+              "value": "view_user_activity_log",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "35",
+              "description": "View whitelisted IOCs.",
+              "isRequired": false,
+              "value": "view_whitelist_ioc",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "36",
+              "description": "Create objects via STIX server.",
+              "isRequired": false,
+              "value": "create_server_stix",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "37",
+              "description": "Update actions tied to indicators.",
+              "isRequired": false,
+              "value": "update_indicator_actions",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "38",
+              "description": "Remove IOCs from whitelist.",
+              "isRequired": false,
+              "value": "delete_whitelist_ioc",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "39",
+              "description": "Access threat investigation data.",
+              "isRequired": false,
+              "value": "view_threat_investigations",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "40",
+              "description": "Modify platform settings.",
+              "isRequired": false,
+              "value": "update_configuration",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "41",
+              "description": "Add new users.",
+              "isRequired": false,
+              "value": "create_user_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "42",
+              "description": "View threat intel collections.",
+              "isRequired": false,
+              "value": "view_collection",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "43",
+              "description": "Create new dashboard views.",
+              "isRequired": false,
+              "value": "create_dashboard",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "44",
+              "description": "Modify object tags.",
+              "isRequired": false,
+              "value": "update_object_labels",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "45",
+              "description": "Update third-party integrations.",
+              "isRequired": false,
+              "value": "update_third_party",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "46",
+              "description": "View user list and roles.",
+              "isRequired": false,
+              "value": "view_user_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "47",
+              "description": "View STIX server-related objects.",
+              "isRequired": false,
+              "value": "view_server_stix",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "48",
+              "description": "Add new subscribers.",
+              "isRequired": false,
+              "value": "create_subscriber",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "49",
+              "description": "Edit user profiles.",
+              "isRequired": false,
+              "value": "update_user_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "50",
+              "description": "Add new detection rules.",
+              "isRequired": false,
+              "value": "create_rule",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "51",
+              "description": "Modify role permissions.",
+              "isRequired": false,
+              "value": "update_role_and_permission",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "52",
+              "description": "View CTIX reports.",
+              "isRequired": false,
+              "value": "view_ctix_report",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "53",
+              "description": "Create new labels for objects.",
+              "isRequired": false,
+              "value": "create_object_labels",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "54",
+              "description": "Edit threat detection rules.",
+              "isRequired": false,
+              "value": "update_rule",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "55",
+              "description": "Define new user roles.",
+              "isRequired": false,
+              "value": "create_role_and_permission",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "56",
+              "description": "Modify custom risk scoring settings.",
+              "isRequired": false,
+              "value": "update_score_configuration",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "57",
+              "description": "Update existing collections.",
+              "isRequired": false,
+              "value": "update_collection",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "58",
+              "description": "View custom scoring setup.",
+              "isRequired": false,
+              "value": "view_score_configuration",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "59",
+              "description": "Remove CTIX reports.",
+              "isRequired": false,
+              "value": "delete_ctix_report",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "60",
+              "description": "Define actions for indicators.",
+              "isRequired": false,
+              "value": "create_indicator_actions",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "61",
+              "description": "Modify enrichment configurations.",
+              "isRequired": false,
+              "value": "update_enrichment_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "62",
+              "description": "View STIX objects.",
+              "isRequired": false,
+              "value": "view_objects",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "63",
+              "description": "Remove users.",
+              "isRequired": false,
+              "value": "delete_user_management",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "64",
+              "description": "Acces Twitter threat feeds.",
+              "isRequired": false,
+              "value": "view_twitter",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "65",
+              "description": "View current version and license.",
+              "isRequired": false,
+              "value": "view_version_and_license",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "66",
+              "description": "Add new intel sources.",
+              "isRequired": false,
+              "value": "create_source",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "default_page_size",
+          "description": "Returns the default page size for the user for listing APIs.",
+          "isRequired": false,
+          "value": "100",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_login_ip",
+          "description": "Returns the IP address of the user when the user last logged.",
+          "isRequired": false,
+          "value": "3.7.118.226",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_login_location",
+          "description": "Returns the geographical location, including country, along with the city of the user as per the last login IP address.",
+          "isRequired": false,
+          "value": "Seattle, United States",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

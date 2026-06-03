@@ -1,0 +1,447 @@
+{
+  "slug": "administration/license-management-system/retrieve-resource-list-details",
+  "title": "Get Resource Details List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "license-management-system",
+    "retrieve-resource-list-details"
+  ],
+  "description": "Returns constraints are configured by the LMS server.",
+  "method": "GET",
+  "path": "rest-auth/resource/list/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394456b49385adf3c437d2"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "number_of_users",
+          "description": "Returns the user-related limits and usage.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name mapped to the UI.",
+              "isRequired": false,
+              "value": "users",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "soft_limit",
+              "description": "Returns the soft limit of the component. A soft limit is a limit that is not strictly implemented and can be exceeded.",
+              "isRequired": false,
+              "value": "5",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "hard_limit",
+              "description": "Returns the hard limit of the component. Hard Limit is a limit that is strictly implemented and this value can never be exceeded.",
+              "isRequired": false,
+              "value": "50",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "current_value",
+              "description": "Returns the current active count.",
+              "isRequired": false,
+              "value": "3",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "number_of_subscribers",
+          "description": "Returns the subscriber-related limits and usage.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name mapped on the UI.",
+              "isRequired": false,
+              "value": "subscribers",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "soft_limit",
+              "description": "Returns the soft limit of the component. A soft limit is a limit that is not strictly implemented and can be exceeded.",
+              "isRequired": false,
+              "value": "5",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "hard_limit",
+              "description": "Returns the hard limit of the component. Hard Limit is a limit that is strictly implemented and this value can never be exceeded.",
+              "isRequired": false,
+              "value": "50",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "current_value",
+              "description": "Returns the current active count.",
+              "isRequired": false,
+              "value": "3",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "openapi",
+          "description": "Returns the OpenAPI integrations count.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name mapped on the UI.",
+              "isRequired": false,
+              "value": "openapi",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "soft_limit",
+              "description": "Returns the soft limit of the component. A soft limit is a limit that is not strictly implemented and can be exceeded.",
+              "isRequired": false,
+              "value": "5",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "hard_limit",
+              "description": "Returns the hard limit of the component. Hard Limit is a limit that is strictly implemented and this value can never be exceeded.",
+              "isRequired": false,
+              "value": "50",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "current_value",
+              "description": "Returns the current active count.",
+              "isRequired": false,
+              "value": "3",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "rules",
+          "description": "Returns the number of rules configured.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name mapped on the UI.",
+              "isRequired": false,
+              "value": "rule",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "soft_limit",
+              "description": "Returns the soft limit of the component. A soft limit is a limit that is not strictly implemented and can be exceeded.",
+              "isRequired": false,
+              "value": "5",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "hard_limit",
+              "description": "Returns the hard limit of the component. Hard Limit is a limit that is strictly implemented and this value can never be exceeded.",
+              "isRequired": false,
+              "value": "50",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "current_value",
+              "description": "Returns the current active count.",
+              "isRequired": false,
+              "value": "10",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "source",
+          "description": "Returns the number of ingestion sources used.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name mapped on the UI.",
+              "isRequired": false,
+              "value": "source",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "soft_limit",
+              "description": "Returns the soft limit of the component. A soft limit is a limit that is not strictly implemented and can be exceeded.",
+              "isRequired": false,
+              "value": "5",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "hard_limit",
+              "description": "Returns the hard limit of the component. Hard Limit is a limit that is strictly implemented and this value can never be exceeded.",
+              "isRequired": false,
+              "value": "50",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "current_value",
+              "description": "Returns the current active count.",
+              "isRequired": false,
+              "value": "35",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

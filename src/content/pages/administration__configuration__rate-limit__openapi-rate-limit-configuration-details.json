@@ -1,0 +1,143 @@
+{
+  "slug": "administration/configuration/rate-limit/openapi-rate-limit-configuration-details",
+  "title": "Get OpenAPI Rate Limit Configuration Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "rate-limit",
+    "openapi-rate-limit-configuration-details"
+  ],
+  "description": "Returns details about the OpenAPI rate limits configuration.",
+  "method": "GET",
+  "path": "rest-auth/rate-limit/openapi/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693944b1b49385adf3c43b34"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "openapi_cred_api_limit_per_minute",
+          "description": "Returns the per-minute OpenAPI rate limit.",
+          "isRequired": false,
+          "value": "100",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "openapi_cred_api_limit_per_hour",
+          "description": "Returns the per-hour OpenAPI rate limit.",
+          "isRequired": false,
+          "value": "5000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "openapi_cred_api_limit_per_day",
+          "description": "Returns the per-day OpenAPI rate limit.",
+          "isRequired": false,
+          "value": "30000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cumulative_openapi_cred_limit_per_day",
+          "description": "Returns the per-day OpenAPI limit for the Tenant.",
+          "isRequired": false,
+          "value": "100000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cumulative_openapi_cred_limit_per_month",
+          "description": "Returns the per-month OpenAPI rate limit for the Tenant.",
+          "isRequired": false,
+          "value": "3000000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

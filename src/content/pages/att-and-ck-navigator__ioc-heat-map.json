@@ -1,0 +1,142 @@
+{
+  "slug": "att-and-ck-navigator/ioc-heat-map",
+  "title": "Get IOC Heat Map",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "att-and-ck-navigator",
+    "ioc-heat-map"
+  ],
+  "description": "Returns relation statistics for the IOC heat map.",
+  "method": "GET",
+  "path": "ingestion/attack-navigator/tactic-technique-ioc-heat/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394b20b49385adf3c48c7d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0cfb937f-61ef-49d2-a236-aa0b40eb643e:ac4814d2-c855-4e06-985e-53a22690fcb8",
+          "description": "Returns a mapping of unique object identifiers to their corresponding heat map data, including counts of associated indicators, malware, threat actors, and incidents.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "indicator_count",
+              "description": "Returns the number of associated indicators for the specified mapping.",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "malware_count",
+              "description": "Returns the number of associated malware entities for the mapping.",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "threat_actor_count",
+              "description": "Returns the number of associated threat actors linked to the rule or mapping.",
+              "isRequired": false,
+              "value": "0",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "incident_count",
+              "description": "Returns the number of associated incidents related to the given entity pair.",
+              "isRequired": false,
+              "value": "0",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

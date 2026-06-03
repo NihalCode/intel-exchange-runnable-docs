@@ -1,0 +1,328 @@
+{
+  "slug": "administration/integration-management/tool-integrations/tool-details/retrieve-siem-soar-applications",
+  "title": "Get SIEM/SOAR Applications",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "tool-integrations",
+    "tool-details",
+    "retrieve-siem-soar-applications"
+  ],
+  "description": "Returns the list of tools classified under the SIEM (Security Information and Event Management) or the SOAR (Security Orchestration and Automation Response) category.",
+  "method": "GET",
+  "path": "integration/apps/actioned/",
+  "request": {
+    "query": [
+      {
+        "name": "nominal",
+        "description": "Pass true to retrieve ID, title, and slug name of the tools.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the tools.",
+        "isRequired": false,
+        "value": "2",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of tools to be retrieved on each page. ",
+        "isRequired": false,
+        "value": "6",
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to retrieve active tools, else false.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393c42b49385adf3c3a9ff"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL of the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL of the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of items displayed on a page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total count of the tools.",
+          "isRequired": false,
+          "value": 9,
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of the SIEM/SOAR applications.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the tool.",
+                  "isRequired": false,
+                  "value": "33d6408a-3ec8-4642-99ff-c466fa470cc5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title or the name of the tool.",
+                  "isRequired": false,
+                  "value": "ArcSight",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "slug",
+                  "description": "Returns the slug value of the tool. The slug refers to a human-readable unique identifier that can be used to identify a resource.",
+                  "isRequired": false,
+                  "value": "arcsight",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "category",
+                  "description": "Returns the category of the tool.",
+                  "isRequired": false,
+                  "value": "security_information_and_event_managment_system",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_active",
+                  "description": "Returns true if the tool is active, else returns false.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "configured_once",
+                  "description": "Returns True if the tool is configured at least once, else returns False.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "active_rule",
+                  "description": "Returns True if there is any active rule associated with the tool else returns False.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "third_party_logo",
+                  "description": "Returns the URL of the image of the third-party vendor tool.",
+                  "isRequired": false,
+                  "value": "/2627744746342/img301311667244293562.png",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "lite_plus_version",
+                  "description": "Returns true if the tool is present for the CTIX lite version, else false.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

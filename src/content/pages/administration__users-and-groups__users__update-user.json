@@ -1,0 +1,319 @@
+{
+  "slug": "administration/users-and-groups/users/update-user",
+  "title": "Update User",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "users-and-groups",
+    "users",
+    "update-user"
+  ],
+  "description": "Updates the details of a user.",
+  "method": "PUT",
+  "path": "rest-auth/users/{user-id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "first_name",
+        "description": "Pass the first name of the user.",
+        "isRequired": true,
+        "value": "John",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "last_name",
+        "description": "Pass the last name of the user.",
+        "isRequired": true,
+        "value": "Doe",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass True to make a profile active. Else pass False.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "contact_number",
+        "description": "Pass the phone number or mobile number of the user.",
+        "isRequired": false,
+        "value": "9876543210",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "country_code",
+        "description": "Pass the country code in which the user is located.",
+        "isRequired": false,
+        "value": "91",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "email_alerts",
+        "description": "Pass True if the user wants to receive email alerts on the associated email ID from Intel Exchange. Else, pass False.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sms_alerts",
+        "description": "Pass True if the user wants to receive the sms alerts on the associated contact number from Intel Exchange. Else pass False.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "groups",
+        "description": "Pass the list of permission groups for your user.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "id",
+                "description": "Pass the unique group ID for the user.",
+                "isRequired": false,
+                "value": "780bef65-201e-4f68-b924-57f2689e7af0",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "Pass the name of the permission group.",
+                "isRequired": false,
+                "value": "Admin",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "allowed_tlp",
+        "description": "Pass the list of allowed TLPs a user can access in the threat data. You can access threat data information for all TLPs if no TLP value is passed. ",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "enumValue": [
+            {
+              "value": "NONE",
+              "description": ""
+            },
+            {
+              "value": "WHITE",
+              "description": ""
+            },
+            {
+              "value": "GREEN",
+              "description": ""
+            },
+            {
+              "value": "AMBER",
+              "description": ""
+            },
+            {
+              "value": "RED",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the TLP value for the user.",
+            "isRequired": false,
+            "value": "RED",
+            "valueType": "string",
+            "options": {
+              "enumValue": [],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "username",
+        "description": "Pass the LDAP username of the user.",
+        "isRequired": true,
+        "value": "JohnDoe",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "default_page_size",
+        "description": "Pass the default page size for listing APIs for the user.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "user-id",
+        "description": "Pass the ID of the user to update details.",
+        "isRequired": true,
+        "value": "19f7a767-eab7-4057-920b-d971617e5070",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870d8c0e86fa45bcc1949af"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the status of an API success.",
+          "isRequired": false,
+          "value": "Successfully updated",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

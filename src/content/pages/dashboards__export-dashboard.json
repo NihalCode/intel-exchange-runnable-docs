@@ -1,0 +1,426 @@
+{
+  "slug": "dashboards/export-dashboard",
+  "title": "Export Dashboard",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "dashboards",
+    "export-dashboard"
+  ],
+  "description": "Exports a dashboard in the Intel Exchange application. On successful exporting, you will receive an email with the subject line **Cyware Dashboard Report Mail**.",
+  "method": "POST",
+  "path": "ingestion/analytics/dashboard_export/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "dashboards",
+        "description": "Pass the list of dashboards to export.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the dashboard ID. You can retrieve the ID using the **List Dashboards API**.",
+            "isRequired": false,
+            "value": "c28f0aec-3640-45df-a3ab-37ed35745d8a",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "start_date",
+        "description": "Pass the start date of the date range to show data in the dashboard.",
+        "isRequired": false,
+        "value": "1634601600",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "One month from current epoch timestamp",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "end_date",
+        "description": "Pass the end date of the date range to show the data in the dashboard.",
+        "isRequired": false,
+        "value": "1637279999",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "Current epoch timestamp",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "template_config",
+        "description": "Pass the configuration of the export format of the dashboard.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "type",
+            "description": "Pass the export format for the dashboards.",
+            "isRequired": false,
+            "value": "png",
+            "valueType": "string",
+            "options": {
+              "enumValue": [
+                {
+                  "value": "png",
+                  "description": ""
+                },
+                {
+                  "value": "pdf",
+                  "description": ""
+                },
+                {
+                  "value": "email",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "width",
+            "description": "Pass the width for the dashboard report.",
+            "isRequired": false,
+            "value": 1064,
+            "valueType": "number",
+            "options": {
+              "defaultValue": "1064",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "format",
+            "description": "Pass the format for the dashboard report.",
+            "isRequired": false,
+            "value": "a3",
+            "valueType": "string",
+            "options": {
+              "defaultValue": "a3",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "widget_count",
+            "description": "Pass the number of widgets to be included in the export.",
+            "isRequired": false,
+            "value": 1,
+            "valueType": "number",
+            "options": {
+              "defaultValue": "10",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "height",
+            "description": "Pass the height of the dashboard report.",
+            "isRequired": false,
+            "value": 611,
+            "valueType": "number",
+            "options": {
+              "defaultValue": "1372",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "extraHeight",
+            "description": "Pass the extra height details.",
+            "isRequired": false,
+            "value": 150,
+            "valueType": "number",
+            "options": {
+              "defaultValue": "150",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "pdf_required",
+            "description": "Pass true if you want the PDF included in the email.",
+            "isRequired": false,
+            "value": false,
+            "valueType": "boolean",
+            "options": {
+              "defaultValue": "150",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "external_recipients",
+        "description": "Pass the list of emails of the external users to mail the dashboard to in cc and bcc format.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass details of the external recipient of the report.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "cc",
+            "description": "Enter the cc email addresses for the external recipients.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "bcc",
+            "description": "Enter the bcc email addresses for the external recipients.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "internal_recipients",
+        "description": "Pass the list of the emails of the internal users to mail the dashboard to in cc and bcc format.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass details of the internal recipient of the report.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "allowEmptyValue": true,
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "id",
+                    "description": "Enter the user ID to share the dashboard export. You can retrieve the ID using the **List Dashboards API**.",
+                    "isRequired": false,
+                    "value": "70258fac-5905-4232-8b2d-4243dc8bb224",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Enter the first name of the user.",
+                    "isRequired": false,
+                    "value": "John",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Enter the last name of the user.",
+                    "isRequired": false,
+                    "value": "Doe",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "cc",
+            "description": "Enter the cc email addresses for the internal recipients.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "allowEmptyValue": true,
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "bcc",
+            "description": "Enter the bcc email addresses for the internal recipients.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "allowEmptyValue": true,
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870bc496663b406be311fcd"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns a success message.",
+          "isRequired": false,
+          "value": "Your Dashboard will be mailed to you as soon as it is ready.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

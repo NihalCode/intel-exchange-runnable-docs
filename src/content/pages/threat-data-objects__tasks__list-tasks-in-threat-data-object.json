@@ -1,0 +1,553 @@
+{
+  "slug": "threat-data-objects/tasks/list-tasks-in-threat-data-object",
+  "title": "Get Tasks List in Threat Data Object",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "tasks",
+    "list-tasks-in-threat-data-object"
+  ],
+  "description": "Returns the list of tasks associated with a threat data object.",
+  "method": "GET",
+  "path": "ingestion/tasks/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve tasks.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "priority",
+        "description": "Pass the priority to filter tasks.",
+        "isRequired": false,
+        "value": "medium",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "low"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "high"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "status",
+        "description": "Pass the status to filter tasks.",
+        "isRequired": false,
+        "value": "not_started",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "not_started"
+            },
+            {
+              "value": "in_progress"
+            },
+            {
+              "value": "completed",
+              "description": "Retrieves the closure comment in the response"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "assignee",
+        "description": "Pass the ID of a user to filter tasks by the assigned user. To retrieve the user ID, use the **Get Users API**. Example, *0eea7e23-9670-4c5f-9742-2666ddf0be74*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "deadline_gte",
+        "description": "Pass the start date of the task deadline in epoch format to filter tasks. Example, *1623393469*.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "deadline_lte",
+        "description": "Pass the end date of the task deadline in epoch format to filter tasks. Example, *1623393469*.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_by",
+        "description": "Pass the user ID to filter tasks by the user who created the task. To retrieve the user ID, use the **Get Users API**. Example, *0eea7e23-9670-4c5f-9742-2666ddf0be74*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the threat data object ID. To retrieve the object ID, use the **List Threat Data API** under the Threat Data section. Example, *c39cbf92-1ae6-4952-958a-3f48a90d55f6*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693948b0b49385adf3c46311"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL to the next page.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of tasks based on the specified `page_size` in the API request.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL to the previous page.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of tasks.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "assignee",
+                  "description": "Returns the details of the assigned user of the task.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "email",
+                      "description": "Returns the user's email address.",
+                      "isRequired": false,
+                      "value": "john.doe@example.com",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name.",
+                      "isRequired": false,
+                      "value": "John",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the user ID.",
+                      "isRequired": false,
+                      "value": "4361eb93-a232-4584-a4a1-d2b11ccdf9f0",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name.",
+                      "isRequired": false,
+                      "value": "Doe",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "closure_comment",
+                  "description": "Returns the comments that are added while marking the task as complete. This is only application for tasks with the status *complete*.",
+                  "isRequired": false,
+                  "value": "This task is completed by John",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "completed_on",
+                  "description": "Returns the epoch timestamp of when the task was completed.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the epoch timestamp of when the task was created.",
+                  "isRequired": false,
+                  "value": 1745475699,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the details of the user who created the task.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "email",
+                      "description": "Returns the user's email address.",
+                      "isRequired": false,
+                      "value": "jane.smith@example.com",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name.",
+                      "isRequired": false,
+                      "value": "Jane",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the user ID.",
+                      "isRequired": false,
+                      "value": "70f3d3ee-b7bc-4ceb-849e-16db0de5278b",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name.",
+                      "isRequired": false,
+                      "value": "Smith",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "deadline",
+                  "description": "Returns the epoch timestamp of the task deadline.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the task ID.",
+                  "isRequired": false,
+                  "value": "e03998fe-8c3b-4da2-9e45-90290083f3e0",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_removed",
+                  "description": "Indicates whether the task has been marked as removed or deleted within the system.",
+                  "isRequired": false,
+                  "value": 0,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "meta_data",
+                  "description": "Returns the additional information of the task.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "ioc_type",
+                      "description": "Returns the IOC type of the object type is indicator.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the threat data object.",
+                      "isRequired": false,
+                      "value": "Berlin DeepTech Landscape",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the object type.",
+                      "isRequired": false,
+                      "value": "report",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the epoch timestamp of when the task was modified.",
+                  "isRequired": false,
+                  "value": 1745477453,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "object_id",
+                  "description": "Returns the ID of the threat data object.",
+                  "isRequired": false,
+                  "value": "8dabe464-0418-40d6-b75c-67c2cbdac157",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "priority",
+                  "description": "Returns the priority of the task.",
+                  "isRequired": false,
+                  "value": "medium",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "low",
+                        "description": ""
+                      },
+                      {
+                        "value": "medium",
+                        "description": ""
+                      },
+                      {
+                        "value": "high",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the task status.",
+                  "isRequired": false,
+                  "value": "completed",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "not_started",
+                        "description": ""
+                      },
+                      {
+                        "value": "in_progress",
+                        "description": ""
+                      },
+                      {
+                        "value": "completed",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "text",
+                  "description": "Returns the description of the task.",
+                  "isRequired": false,
+                  "value": "Recalculate the report object Risk Score after enrichment",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the object type.",
+                  "isRequired": false,
+                  "value": "report",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of tasks retrieved.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

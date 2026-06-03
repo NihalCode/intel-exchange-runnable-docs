@@ -1,0 +1,355 @@
+{
+  "slug": "administration/custom-entitites-management/custom-kill-chain/create-custom-kill-chain",
+  "title": "Create Custom Kill Chain",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "custom-entitites-management",
+    "custom-kill-chain",
+    "create-custom-kill-chain"
+  ],
+  "description": "Creates a custom kill chain with the phases of the kill chain.",
+  "method": "POST",
+  "path": "ingestion/configuration/kill-chain/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass a unique name for the kill chain within 100 characters.",
+        "isRequired": true,
+        "value": "sample-killchain",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "phases",
+        "description": "Pass the names of the phases within 100 characters to add to the kill chain.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the phase name to add to the kill chain.",
+            "isRequired": false,
+            "value": "Sample phase 1",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [
+      {
+        "name": "accept",
+        "isRequired": false,
+        "value": "application/json, text/plain, */*",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "content-type",
+        "isRequired": false,
+        "value": "application/json",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6874da1eaecb8721e0912b09"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "created_by",
+          "description": "Returns the details of the user who created the kill chain.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the user's email address.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the user's first name.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the user.",
+              "isRequired": false,
+              "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the user's last name.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "ctix_created",
+          "description": "Returns the epoch timestamp indicating when the kill chain was created.",
+          "isRequired": false,
+          "value": "1712925852",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_modified",
+          "description": "Returns the epoch timestamp indicating when the kill chain was last modified.",
+          "isRequired": false,
+          "value": "1712925852",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique identifier of the kill chain.",
+          "isRequired": false,
+          "value": "22a47429-603e-440e-83d0-c19323d7b5aa",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the details of the user who modified the kill chain.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the user's email address.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the user's first name.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the user.",
+              "isRequired": false,
+              "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the user's last name.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the kill chain.",
+          "isRequired": false,
+          "value": "sample-killchain",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "phases",
+          "description": "Returns the phases of the kill chain.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the phase value of the kill chain.",
+              "isRequired": false,
+              "value": "Sample phase 2",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

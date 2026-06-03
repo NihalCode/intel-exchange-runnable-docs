@@ -1,0 +1,149 @@
+{
+  "slug": "quick-add-intel/retrieve-quick-add-intel-status",
+  "title": "Get Quick Add Intel Status",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "quick-add-intel",
+    "retrieve-quick-add-intel-status"
+  ],
+  "description": "Retrieve the intel creation status of a quick add intel submission. This API requires the unique ID of the background task created by the system to create intel.",
+  "method": "GET",
+  "path": "conversion/quick-intel/receive-report/",
+  "request": {
+    "query": [
+      {
+        "name": "task_id",
+        "description": "Pass the quick add intel task ID to retrieve the intel creation status. You can retrieve the ID using the **Quick Add Intel API**.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693945d8b49385adf3c443ea"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "report_id",
+          "description": "Returns the unique ID of the report object that is created as part of the quick add intel submission.",
+          "isRequired": false,
+          "value": "d42fb454-62c7-4b5f-9330-40036bd2da1f",
+          "valueType": "string",
+          "options": {
+            "enumValue": [],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "report_status",
+          "description": "Returns the status of the intel creation.  ",
+          "isRequired": false,
+          "value": "CREATED",
+          "valueType": "string",
+          "options": {
+            "enumValue": [
+              {
+                "value": "DRAFT ",
+                "description": ""
+              },
+              {
+                "value": "PARSED",
+                "description": ""
+              },
+              {
+                "value": "PUBLISHED",
+                "description": ""
+              },
+              {
+                "value": "PROCESSING",
+                "description": ""
+              },
+              {
+                "value": "PENDING",
+                "description": ""
+              },
+              {
+                "value": "CREATED",
+                "description": ""
+              },
+              {
+                "value": "DELETED",
+                "description": ""
+              },
+              {
+                "value": "FAILED",
+                "description": ""
+              },
+              {
+                "value": "PARTIALLY_SUCCESSFUL",
+                "description": ""
+              }
+            ],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

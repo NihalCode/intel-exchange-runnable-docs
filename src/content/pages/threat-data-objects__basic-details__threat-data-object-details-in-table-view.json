@@ -1,0 +1,460 @@
+{
+  "slug": "threat-data-objects/basic-details/threat-data-object-details-in-table-view",
+  "title": "Get Threat Data Object Details in Table View",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "threat-data-object-details-in-table-view"
+  ],
+  "description": "Retrieves the object information for the given filters in a tabular format.",
+  "method": "GET",
+  "path": "ingestion/threat-data/source-overview/",
+  "request": {
+    "query": [
+      {
+        "name": "object_id",
+        "description": "Pass the threat data object ID. To retrieve the object ID, use the **List Threat Data API** under the Threat Data section. Example, *c39cbf92-1ae6-4952-958a-3f48a90d55f6*",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data object. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**. Example, *indicator*.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the details.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve in each page.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394791b49385adf3c45416"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the link to the next page. Returns null in case it is the last page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records in a page",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL for the previous page",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the object details.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "collection",
+                  "description": "Returns the details of the collection, like the ID and name.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the collection ID.",
+                      "isRequired": false,
+                      "value": "a6716d75-9a95-4c14-b1e6-d2b9ba3a1d14",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the collection name.",
+                      "isRequired": false,
+                      "value": "new-indicators-10-coll-0",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the creation timestamp in epoch format of the object as received from the source.",
+                  "isRequired": false,
+                  "value": 1641562748,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "custom_attribute_count",
+                  "description": "Returns the total number of custom attributes received for the object from the source.",
+                  "isRequired": false,
+                  "value": "0",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "first_seen",
+                  "description": "Returns the first seen timestamp in epoch format of the object as received from the source.",
+                  "isRequired": false,
+                  "value": 1633350549,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the record.",
+                  "isRequired": false,
+                  "value": "a7bde8c2-50d6-496e-bd4e-a645d0ca2d66",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_seen",
+                  "description": "Returns the date in epoch format on which the object was last seen as shared by the source.",
+                  "isRequired": false,
+                  "value": 1634978804,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the date in epoch format on which the object was last modified by the source.",
+                  "isRequired": false,
+                  "value": 1641881164,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "Returns details of the source",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the source ID.",
+                      "isRequired": false,
+                      "value": "91106042-dc96-4ecc-8c0e-d1cead882fdc",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the source name.",
+                      "isRequired": false,
+                      "value": "new-indicators-10",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_type",
+                      "description": "Returns the type of source, such as RSS, API feed, or more.",
+                      "isRequired": false,
+                      "value": "CUSTOM_STIX_SOURCES",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "source_confidence",
+                  "description": "Returns the confidence score received from the source for the threat data object",
+                  "isRequired": false,
+                  "value": "HIGH",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tags",
+                  "description": "Returns the list of all the labels or tags received from the source.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "This is an example value.",
+                      "isRequired": false,
+                      "value": "exampletag1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "times_reported",
+                  "description": "Returns the number of times the object has polled from the source.",
+                  "isRequired": false,
+                  "value": 3,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tlp",
+                  "description": "Returns the TLP of the object, such as RED, AMBER, GREEN, NONE.",
+                  "isRequired": false,
+                  "value": "AMBER",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the number of records in the page.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

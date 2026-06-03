@@ -1,0 +1,293 @@
+{
+  "slug": "quick-add-intel/retrieve-quick-add-intel-statistics",
+  "title": "Get Quick Add Intel Statistics",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "quick-add-intel",
+    "retrieve-quick-add-intel-statistics"
+  ],
+  "description": "Returns the statistics of the Quick Add Intel history.\n\n### Intel Processing Statuses\n\n\n  \n    DRAFT\n    The intel has been created but has not yet been submitted for processing.\n  \n  \n    PENDING\n    The intel is awaiting processing.\n  \n  \n    PARSED\n    The intel has been successfully processed and parsed into relevant data structures.\n  \n  \n    PUBLISHED\n    The intel has been successfully processed and parsed into relevant data structures.\n  \n  \n    PROCESSING\n    The intel is currently being analyzed and processed.\n  \n  \n    CREATED\n    The intel has been added to the system but has not yet moved to further stages.\n  \n  \n    DELETED\n    The intel has been removed from the system.\n  \n  \n    FAILED\n    The processing attempt was unsuccessful.\n  \n  \n    PARTIALLY SUCCESSFUL\n    Some elements of the intel were processed successfully, but others encountered issues.",
+  "method": "GET",
+  "path": "conversion/intel-history-stat/",
+  "request": {
+    "query": [
+      {
+        "name": "component",
+        "description": "Pass `quick-add-intel` to retrieve the statistics of the Quick Add Intel history.",
+        "isRequired": true,
+        "value": "quick-add-intel",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "quick-add-intel"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693945ceb49385adf3c44357"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0",
+          "description": "Retrieves the total number of intel in drafted state. The intel has been created but has not yet been submitted for processing.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Retrieves the label of the status.",
+              "isRequired": false,
+              "value": "Draft",
+              "valueType": "string",
+              "options": {
+                "enumValue": [
+                  {
+                    "value": "Draft",
+                    "description": ""
+                  },
+                  {
+                    "value": "Parsed",
+                    "description": ""
+                  },
+                  {
+                    "value": "Published",
+                    "description": ""
+                  },
+                  {
+                    "value": "Processing",
+                    "description": ""
+                  },
+                  {
+                    "value": "Pending",
+                    "description": ""
+                  },
+                  {
+                    "value": "Created",
+                    "description": ""
+                  },
+                  {
+                    "value": "Deleted",
+                    "description": ""
+                  },
+                  {
+                    "value": "Failed",
+                    "description": ""
+                  },
+                  {
+                    "value": "Partially Successful",
+                    "description": ""
+                  }
+                ],
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "key",
+              "description": "Returns the key of the corresponding status.",
+              "isRequired": false,
+              "value": "DRAFT",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Returns the number of intel in the associated status.",
+              "isRequired": false,
+              "value": 6,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "1",
+          "description": "Retrieves the total number of intel in parsed state. The intel has been successfully processed and parsed into relevant data structures.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "",
+              "isRequired": false,
+              "value": "Parsed",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "key",
+              "description": "",
+              "isRequired": false,
+              "value": "PARSED",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "",
+              "isRequired": false,
+              "value": 30,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "2",
+          "description": "Retrieves the total number of intel in published state. The intel has been successfully processed and parsed into relevant data structures.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "",
+              "isRequired": false,
+              "value": "Published",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "key",
+              "description": "",
+              "isRequired": false,
+              "value": "PUBLISHED",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "",
+              "isRequired": false,
+              "value": 50,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "3",
+          "description": "Retrieves the total number of intel still being processed. The intel is currently being analyzed and processed.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "",
+              "isRequired": false,
+              "value": "Processing",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "key",
+              "description": "",
+              "isRequired": false,
+              "value": "PROCESSING",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "",
+              "isRequired": false,
+              "value": 2,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

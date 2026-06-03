@@ -1,0 +1,796 @@
+{
+  "slug": "administration/subscriber-management/retrieve-subscribers",
+  "title": "Get Subscribers",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "subscriber-management",
+    "retrieve-subscribers"
+  ],
+  "description": "Returns a list of subscribers configured in the Intel Exchange platform.",
+  "method": "GET",
+  "path": "publishing/subscriber/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page. ",
+        "isRequired": false,
+        "value": "100",
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "id",
+        "description": "Filter the results by the Subscriber ID.",
+        "isRequired": false,
+        "value": "5d4f094e-df41-442b-a12b-9977e7128003",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "organization_name",
+        "description": "Pass the organization name to filter subscribers.",
+        "isRequired": false,
+        "value": "acme",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "active",
+        "description": "Pass true to retrieve active subscribers. Pass false to retrieve inactive subscribers.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the created time in epoch format to filter subscribers by the created time.",
+        "isRequired": false,
+        "value": "1641563275",
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_to",
+        "description": "Pass the created time in epoch format to filter subscribers by the created time.",
+        "isRequired": false,
+        "value": "1641564275",
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass `-created` to sort subscribers in descending order based on the created time. Pass `created` to sort subscribers in ascending order.",
+        "isRequired": false,
+        "value": "-created",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "last_pull_from",
+        "description": "Pass the last pulled from time in epoch format to filter subscribers by the last pull time.",
+        "isRequired": false,
+        "value": "1641563275",
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "last_pull_to",
+        "description": "Pass the last pull time in epoch format to filter subscribers by the last pull time.",
+        "isRequired": false,
+        "value": "1641563275",
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "nominal",
+        "description": "Pass true to retrieve only the name and ID of the subscribers.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393f8ab49385adf3c3f276"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page.",
+          "isRequired": false,
+          "value": "subscriber/?page=2&page_size=1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records retrieved per page.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of subscribers on the platform.",
+          "isRequired": false,
+          "value": "100",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of subscriber objects. For more information, see the Result Objects.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique identifier for the subscriber.",
+                  "isRequired": false,
+                  "value": "62ff1f14-6422-4dc7-a148-5174345af112",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the display name of the subscriber.",
+                  "isRequired": false,
+                  "value": "das",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "username",
+                  "description": "Returns the internal unique username or user ID.",
+                  "isRequired": false,
+                  "value": "6dadc533-7335-4d73-b2b4-34aa91ee2bbf",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the timestamp when the subscriber was created (in epoch).",
+                  "isRequired": false,
+                  "value": "1712128274",
+                  "valueType": "integer",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the timestamp when the subscriber record was last modified (in epoch).",
+                  "isRequired": false,
+                  "value": "1712131900",
+                  "valueType": "integer",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_pull",
+                  "description": "Returns the timestamp of the last data pull by the subscriber (in epoch).",
+                  "isRequired": false,
+                  "value": "1712131900.753041",
+                  "valueType": "integer",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the ID of the user who created the subscriber.",
+                  "isRequired": false,
+                  "value": "029efea0-9324-4b9c-a10a-89db16724e0f",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_modified_by",
+                  "description": "Returns the ID of the user who last modified the subscriber details.",
+                  "isRequired": false,
+                  "value": "029efea0-9324-4b9c-a10a-89db16724e0f",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "organization_name",
+                  "description": "Returns the name of the subscriber's organization.",
+                  "isRequired": false,
+                  "value": "acme",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "organization_types",
+                  "description": "List of organization types associated with the subscriber.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier for the organization type.",
+                          "isRequired": false,
+                          "value": "c6b0a364-13d8-4cfd-a64b-7f5625c82624",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the organization type.\n",
+                          "isRequired": false,
+                          "value": "sample",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "is_active",
+                  "description": "Indicates whether the subscriber is currently active.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "primary_contact",
+                  "description": "Returns the primary contact details.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the primary contact person.",
+                      "isRequired": false,
+                      "value": "john",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email address of the primary contact person.",
+                      "isRequired": false,
+                      "value": "john.doe@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "number",
+                      "description": "Returns the number of the primary contact person.",
+                      "isRequired": false,
+                      "value": "1231241241",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "address",
+                      "description": "Returns the address of the primary contact person.",
+                      "isRequired": false,
+                      "value": "sample",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "secondary_contact",
+                  "description": "Returns the secondary contact details.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the secondary contact person.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email of the secondary contact person.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "number",
+                      "description": "Returns the number of the secondary contact person.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "address",
+                      "description": "Returns the address of the secondary contact person.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "confidence_score",
+                  "description": "Returns the default confidence score associated with the subscriber.",
+                  "isRequired": false,
+                  "value": "50",
+                  "valueType": "integer",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "white_list_ip",
+                  "description": "Returns the list of IPs or CIDRs whitelisted by the subscriber.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "This is an example value.",
+                      "isRequired": false,
+                      "value": "0.0.0.0/0",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "taxii_enabled",
+                  "description": "Indicates whether the subscriber supports TAXII.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "misp_enabled",
+                  "description": "Indicates whether the subscriber supports MISP.\n",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hide_aggregate_col",
+          "description": "Indicates whether to hide aggregated columns in the UI.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "discovery_url",
+          "description": "Returns the TAXII discovery URL.",
+          "isRequired": false,
+          "value": "https://bugbasket.cywareqa.com/ctixapi/taxii/",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "taxii_enabled",
+          "description": "Returns true if the TAXII requests are enabled, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "misp_enabled",
+          "description": "Returns true if the MISP requests are enabled, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

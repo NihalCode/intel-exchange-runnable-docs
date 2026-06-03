@@ -1,0 +1,1178 @@
+{
+  "slug": "threat-data-objects/enrichment/enrich-threat-data",
+  "title": "Get Enriched Threat Data",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "enrichment",
+    "enrich-threat-data"
+  ],
+  "description": "Returns the enriched data of a threat data object using enrichment tools.",
+  "method": "GET",
+  "path": "integration/apps/update/threatdata/",
+  "request": {
+    "query": [
+      {
+        "name": "app_slug",
+        "description": "Pass the slug of an enrichment tool to retrieve its enriched data. To retrieve the slug of an enrichment tool, use the **GET Enrichment Tools API** endpoint.",
+        "isRequired": true,
+        "value": "comodo",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "value",
+        "description": "Pass the value of the object. For example, *sco*, *vulnerability*, and more.",
+        "isRequired": true,
+        "value": "sdo",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_slug",
+        "description": "Pass the enrichment action name to retrieve specific details. For example, `get_ip` for IPs, `get_domain` for Domain, `get_url` for URL, `get_cve` for Vulnerability.",
+        "isRequired": false,
+        "value": "get_domain",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the ID of an object ID (sco object ID for indicators and vulnerability object ID for vulnerabilities).",
+        "isRequired": true,
+        "value": "916e0c84-61a6-412b-a25c-e65d6bcdc96b",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_type",
+        "description": "Pass the object type. SDO object type(indicator /or vulnerability).",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394851b49385adf3c45b23"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw_data",
+          "description": "Returns the enriched data returned from an enrichment source.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "asn",
+              "description": "Returns the ASN assigned the IP.",
+              "isRequired": false,
+              "value": "13335",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "undetected_urls",
+              "description": "Returns the list of associated non-malicious URLs.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "This is an example value.",
+                      "isRequired": false,
+                      "value": "http://www.qwhty39.com/",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "undetected_downloaded_samples",
+              "description": "Returns the list of file samples downloaded from the IP, not flagged as malicious.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "date",
+                      "description": "Returns the scan date.",
+                      "isRequired": false,
+                      "value": "2019-08-22 17:44:19",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "positives",
+                      "description": "Returns the no of detections.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "Indicates the total number of engines that scanned the file, URL, or sample in question.",
+                      "isRequired": false,
+                      "value": "70",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sha256",
+                      "description": "Returns the hash of the file.",
+                      "isRequired": false,
+                      "value": "a980b60a8922f510d2da527e74ec9443a57dcc65444dbd6a3ae87dceb28090eb",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "detected_downloaded_samples",
+              "description": "Returns the list of files downloaded that were flagged as malicious.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "date",
+                      "description": "Returns the scan date.",
+                      "isRequired": false,
+                      "value": "2018-04-16 02:49:06",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "positives",
+                      "description": "Returns the no of detections.",
+                      "isRequired": false,
+                      "value": "23",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "Indicates the total number of engines that scanned the file, URL, or sample in question.",
+                      "isRequired": false,
+                      "value": "62",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sha256",
+                      "description": "Returns the hash of the file.",
+                      "isRequired": false,
+                      "value": "0773b94a2e3239eeda0d02f32d8beea116783b48172c116c9b6b382338f8be13",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "response_code",
+              "description": "Returns the status of the API request.",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "as_owner",
+              "description": "Returns the org that owns the ASN.",
+              "isRequired": false,
+              "value": "CLOUDFLARENET",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "detected_referrer_samples",
+              "description": "Returns a list of files that referenced this IP and were flagged as malicious.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "positives",
+                      "description": "Returns the no of detections.",
+                      "isRequired": false,
+                      "value": "29",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "Indicates the total number of engines that scanned the file, URL, or sample in question.",
+                      "isRequired": false,
+                      "value": "67",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sha256",
+                      "description": "Returns the hash of the file.",
+                      "isRequired": false,
+                      "value": "5ae867ae674046df7d313206fbe5bf8a13e46985e822638d86615687caed7113",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "verbose_msg",
+              "description": "Returns the status of the message.",
+              "isRequired": false,
+              "value": "IP address in dataset",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "country",
+              "description": "Returns the country code of the IP address.",
+              "isRequired": false,
+              "value": "AU",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "undetected_referrer_samples",
+              "description": "Returns the list of samples that referenced the IP but were not flagged as malicious.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "positives",
+                      "description": "Returns the no of detections.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "Indicates the total number of engines that scanned the file, URL, or sample in question.",
+                      "isRequired": false,
+                      "value": "55",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sha256",
+                      "description": "Returns the hash of the file.",
+                      "isRequired": false,
+                      "value": "d59a490460e82a5fd1fd593fa2910819ac867a6029daccb6f7dd4ab1241ab084",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "detected_urls",
+              "description": "Returns the list of URLs associated with the IP that were detected as malicious.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "url",
+                      "description": "Returns the malicious URL.",
+                      "isRequired": false,
+                      "value": "https://cuocuopromax.org/",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "positives",
+                      "description": "Returns the no of detections.",
+                      "isRequired": false,
+                      "value": "1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "Indicates the total number of engines that scanned the file, URL, or sample in question.",
+                      "isRequired": false,
+                      "value": "92",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "scan_date",
+                      "description": "Returns the date of scan.",
+                      "isRequired": false,
+                      "value": "2022-04-26 02:01:03",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "1",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "url",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "https://abcdef.gay/",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "positives",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "92",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "scan_date",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "2022-04-26 00:47:39",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "detected_communicating_samples",
+              "description": "Returns a list of malware samples that communicated with this IP address.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "date",
+                      "description": "Returns the scan date.",
+                      "isRequired": false,
+                      "value": "2022-04-13 16:35:05",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "positives",
+                      "description": "Returns the no of detections.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "Indicates the total number of engines that scanned the file, URL, or sample in question.",
+                      "isRequired": false,
+                      "value": "73",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sha256",
+                      "description": "Returns the hash of the file.",
+                      "isRequired": false,
+                      "value": "71a67c5e3ff1cb1455d7aafb6978ccd29de1c4ca6a4b2c0e8395f2c69ed01438",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "1",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "date",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "2022-04-13 12:53:28",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "positives",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "total",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "73",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sha256",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "8aed3137c948fb9aab2bdfa35be5db98e255c254576969e8645c5a19fdc8f26a",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "resolutions",
+              "description": "Returns the DNS resolutions where domains pointed to this IP address.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "last_resolved",
+                      "description": "Returns the date the domain last resolved to this IP.",
+                      "isRequired": false,
+                      "value": "2019-01-22 12:28:21",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "hostname",
+                      "description": "Returns the domain name.",
+                      "isRequired": false,
+                      "value": "08294765.cn",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "1",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "last_resolved",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "2016-05-22 00:00:00",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "hostname",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "08307.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "updated",
+              "description": "Returns the UNIX timestamp of the last update to the enrichment data.",
+              "isRequired": false,
+              "value": 1651353555,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "parsed_data",
+          "description": "Returns details of the enriched data.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "detected_referrer_samples_count",
+              "description": "Returns the total number of malicious referrer samples.",
+              "isRequired": false,
+              "value": 100,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "detected_downloaded_samples_count",
+              "description": "Returns the total number of flagged downloaded samples.",
+              "isRequired": false,
+              "value": 13,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "detected_urls_count",
+              "description": "Returns the total number of malicious URLs found.",
+              "isRequired": false,
+              "value": 100,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "detected_communicating_samples_count",
+              "description": "Returns the number of samples that communicated with the IP.",
+              "isRequired": false,
+              "value": 100,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the enrichment request.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "timestamp",
+          "description": "Returns the timestamp when the original data was recorded or fetched.",
+          "isRequired": false,
+          "value": 1651353355,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "enriched_on",
+          "description": "Returns the UNIX timestamp when the enrichment process was completed.",
+          "isRequired": false,
+          "value": 1651353555,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "verdict",
+          "description": "Returns the final categorization of the threat based on analysis.",
+          "isRequired": false,
+          "value": "Malicious",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

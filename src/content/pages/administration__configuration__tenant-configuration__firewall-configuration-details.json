@@ -1,0 +1,251 @@
+{
+  "slug": "administration/configuration/tenant-configuration/firewall-configuration-details",
+  "title": "Get Firewall Configuration Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "tenant-configuration",
+    "firewall-configuration-details"
+  ],
+  "description": "Returns the firewall rules defined for a Tenant. This API either allows all the requested IPs or Countries to access the application or blocks all the IPs or Countries.",
+  "method": "GET",
+  "path": "rest-auth/tenant/config/access-restriction/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394496b49385adf3c43a37"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "config",
+          "description": "Returns the details of general firewall configuration settings that govern access behaviour.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "restricted_access",
+              "description": "Returns True if the firewall is enabled, else returns False.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "blacklist",
+              "description": "Returns True if specific traffic is allowed, else returns False.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "firewall_list",
+          "description": "Returns the list of firewall rules or entries that define specific IPs or CIDRs and their associated properties.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the firewall rule.",
+                  "isRequired": false,
+                  "value": "67d2a851-b6ea-47d2-90c1-89fef3ece100",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "reason",
+                  "description": "Returns the reason for adding a user to the rule.",
+                  "isRequired": false,
+                  "value": "test",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_active",
+                  "description": "Returns True if a rule has been applied on the traffic, else returns False.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the type for which this rule has been defined. Rule type such as CIDR, Country.",
+                  "isRequired": false,
+                  "value": "cidr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the value on which the rule has been applied. It can be IP or Country name based on type.",
+                  "isRequired": false,
+                  "value": "3.7.118.226/24",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_at",
+                  "description": "Returns the date and time of the rule creation.",
+                  "isRequired": false,
+                  "value": "1645376951",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "updated_at",
+                  "description": "Returns the date and time when the rule has been updated.",
+                  "isRequired": false,
+                  "value": "1645376951",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

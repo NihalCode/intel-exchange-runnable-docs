@@ -1,0 +1,877 @@
+{
+  "slug": "administration/custom-entitites-management/custom-objects/list-custom-objects",
+  "title": "Get Custom Objects List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "custom-entitites-management",
+    "custom-objects",
+    "list-custom-objects"
+  ],
+  "description": "Retrieves a list of custom objects from the platform.",
+  "method": "GET",
+  "path": "ingestion/configuration/custom-object/",
+  "request": {
+    "query": [
+      {
+        "name": "manual",
+        "description": "Pass true to retrieve custom attributes manually created by users. Pass false to retrieve custom attributes created by the system.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass a keyword to search for objects by the title.",
+        "isRequired": false,
+        "value": "credit",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ctix_created_from",
+        "description": "Pass the `created_from` time in epoch format to filter records based on the Intel Exchange created time.",
+        "isRequired": false,
+        "value": "1633093577",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ctix_created_to",
+        "description": "Pass the `created_to` time in epoch format to filter records based on the Intel Exchange created time.",
+        "isRequired": false,
+        "value": "1633093578",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page. ",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass `-ctix_modified` to sort records by the last modified date in descending order. Pass `ctix_modified` to sort records by the last modified date in ascending order.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "ctix_modified"
+            },
+            {
+              "value": "-ctix_modified"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ctix_modified_from",
+        "description": "Pass the `modified_from` time in epoch format to filter records based on the Intel Exchange modified time.",
+        "isRequired": false,
+        "value": "1711929600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ctix_modified_to",
+        "description": "Pass the `modified_to` time in epoch format to filter records based on the Intel Exchange modified time.",
+        "isRequired": false,
+        "value": "1712620799",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693940ffb49385adf3c408bd"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL endpoint of the next page.",
+          "isRequired": false,
+          "value": "configuration/custom-object/?page=3&page_size=1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL endpoint of the previous page.",
+          "isRequired": false,
+          "value": "configuration/custom-object/?page=1&page_size=1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of custom objects available in the platform.",
+          "isRequired": false,
+          "value": "42",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the size of the page.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of the result object.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the custom object.",
+                  "isRequired": false,
+                  "value": "f3ecef79-b35d-45a5-bbfa-c4c7b30ca93b",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the custom object.",
+                  "isRequired": false,
+                  "value": "sample",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the type of the custom object assigned by the platform.",
+                  "isRequired": false,
+                  "value": "x-sample",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the custom object.",
+                  "isRequired": false,
+                  "value": "sample",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_created",
+                  "description": "Returns the date of creation of the custom object in epoch format.",
+                  "isRequired": false,
+                  "value": "1710739021",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_modified",
+                  "description": "Returns the date of modification of the custom object in epoch format.",
+                  "isRequired": false,
+                  "value": "1710739021",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns one if the status of the object is active, else returns a random integer if the status of the object is inactive.",
+                  "isRequired": false,
+                  "value": "1",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "manual",
+                  "description": "Returns true if the object is manually created by users, else returns false.",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "fields",
+                  "description": "Returns the list of custom attributes of the custom objects.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier of the custom field.",
+                          "isRequired": false,
+                          "value": "79c35702-cec6-49be-8a7b-13d11a9c8478",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the custom field.",
+                          "isRequired": false,
+                          "value": "analysis",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name_slug",
+                          "description": "Returns the slug of the custom field name.",
+                          "isRequired": false,
+                          "value": "analysis",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "type",
+                          "description": "Returns the data type of the custom field.",
+                          "isRequired": false,
+                          "value": "2",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "Returns the description of the custom field.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "ctix_created",
+                          "description": "Returns the Unix timestamp indicating when the custom field was created.",
+                          "isRequired": false,
+                          "value": "1703243151",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "ctix_modified",
+                          "description": "Returns the Unix timestamp indicating when the custom field was last modified.",
+                          "isRequired": false,
+                          "value": "1703243151",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "choices",
+                          "description": "Returns a list of predefined choices if the field type is dropdown/select.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_actionable",
+                          "description": "Returns true if the field is actionable in workflows, else returns false.",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "status",
+                          "description": "Returns 1 if the field is active. Returns 0 if the field is inactive.",
+                          "isRequired": false,
+                          "value": "1",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "sdo_objects",
+                          "description": "Returns the list of SDOs on which the field is applicable.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "manual",
+                          "description": "Returns true if the field is manually created by users, else returns false.",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_identity",
+                          "description": "Indicates if this field is an identity field.",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_required",
+                          "description": "If true, the field must be filled when creating an object of this type.",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "9cbb879e-36e3-49fc-a1de-36750700b310",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "cpe_ranges",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name_slug",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "cpe_ranges",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "type",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "5",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "ctix_created",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "1710147045",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "ctix_modified",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "1710147045",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "choices",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_actionable",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "status",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "1",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "sdo_objects",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "manual",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_identity",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "false",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_required",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "primary_attribute",
+                  "description": "Returns the primary attribute name of the custom object.",
+                  "isRequired": false,
+                  "value": "analysis",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

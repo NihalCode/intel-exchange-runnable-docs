@@ -1,0 +1,378 @@
+{
+  "slug": "att-and-ck-navigator/tactics",
+  "title": "Get Tactics",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "att-and-ck-navigator",
+    "tactics"
+  ],
+  "description": "Returns a list of ATT&CK tactics.",
+  "method": "GET",
+  "path": "ingestion/attack-navigator/tactics/",
+  "request": {
+    "query": [
+      {
+        "name": "domain",
+        "description": "Pass the ATT&CK domain.",
+        "isRequired": false,
+        "value": "mobile",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "enterprise",
+          "enumValue": [
+            {
+              "value": "enterprise"
+            },
+            {
+              "value": "mobile"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass a query text to search tactics based on the name.",
+        "isRequired": false,
+        "value": "remote",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394b0ab49385adf3c48bd5"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name of the ATT&CK tactic.",
+              "isRequired": false,
+              "value": "Initial Access",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "slug",
+              "description": "Returns the slug of the ATT&CK tactic.",
+              "isRequired": false,
+              "value": "initial-access",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "domain",
+              "description": "Returns the domain based on the request parameters.",
+              "isRequired": false,
+              "value": "mitre-enterprise",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "url",
+              "description": "Returns the URL associated with the ATT&CK tactic.",
+              "isRequired": false,
+              "value": "https://attack.mitre.org/tactics/TA0001",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the unique ID of the tactic.",
+              "isRequired": false,
+              "value": "04611a47-dce4-4258-93cd-467adb3218fe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "1",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "",
+              "isRequired": false,
+              "value": "Impact",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "slug",
+              "description": "",
+              "isRequired": false,
+              "value": "impact",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "domain",
+              "description": "",
+              "isRequired": false,
+              "value": "mitre-enterprise",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "url",
+              "description": "",
+              "isRequired": false,
+              "value": "https://attack.mitre.org/tactics/TA0040",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "",
+              "isRequired": false,
+              "value": "a9d26108-4a19-49cd-9fb8-25d2a561f21d",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "2",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "",
+              "isRequired": false,
+              "value": "Reconnaissance",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "slug",
+              "description": "",
+              "isRequired": false,
+              "value": "reconnaissance",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "domain",
+              "description": "",
+              "isRequired": false,
+              "value": "mitre-enterprise",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "url",
+              "description": "",
+              "isRequired": false,
+              "value": "https://attack.mitre.org/tactics/TA0043",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "",
+              "isRequired": false,
+              "value": "844f5561-ca18-4c00-9a89-95d14ec26de8",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

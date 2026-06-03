@@ -1,0 +1,132 @@
+{
+  "slug": "quick-add-intel/retrieve-parse-iocs-task-status",
+  "title": "Get Parse IOCs Task Status",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "quick-add-intel",
+    "retrieve-parse-iocs-task-status"
+  ],
+  "description": "Returns the status of a parse IOCs task.\n\n### Parsing Task Status Codes\n\nThe following table provides an overview of the different statuses for a parsing task\n\n\n  \n    0\n    enqueued\n    The parsing task is in the queue for processing.\n  \n  \n    1\n    running\n    The parsing task is being processed.\n  \n  \n    2\n    failed\n    Failed to process parsing due to invalid input.\n  \n  \n    3\n    done\n    The parsing task has been completed. Use the Get Parsed IOCs endpoint to retrieve the parsed IOCs.\n  \n  \n    5\n    delayed\n    Parsing is delayed due to too many tasks in the queue. Try again after some time.\n  \n  \n    6\n    cancelled\n    Parsing has been manually cancelled by the user.\n  \n  \n    7\n    aborted\n    Parsing was aborted due to some unexpected error. Create a new parsing task.",
+  "method": "GET",
+  "path": "conversion/tasks/{task_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "fields",
+        "description": "Pass `status` to retrieve the status of a task.",
+        "isRequired": true,
+        "value": "status",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "status"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "num_status",
+        "description": "Pass `true` to retrieve the numeric status of the task.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "task_id",
+        "description": "Pass the ID of a parse IOCs task.",
+        "isRequired": true,
+        "value": "4310c8e6-c26e-4526-a3b2-7445c6798511",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394582b49385adf3c441a6"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Returns the status of the parsing task.",
+          "isRequired": false,
+          "value": "done",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

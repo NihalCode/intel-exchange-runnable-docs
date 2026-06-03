@@ -1,0 +1,660 @@
+{
+  "slug": "threat-data-objects/basic-details/object-source-details",
+  "title": "Get Object Source Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "object-source-details"
+  ],
+  "description": "Retrieves the source object information for the specified threat data object.",
+  "method": "GET",
+  "path": "ingestion/threat-data/source-reference/{id}/",
+  "request": {
+    "query": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data object. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**. Example, *indicator*.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "id",
+        "description": "Enter the ID of the source record. You can retrieve this ID using the **List Source Details API**.",
+        "isRequired": true,
+        "value": "97251976-10a0-42d4-ba58-41365204225f",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693947c1b49385adf3c4565a"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "collection",
+          "description": "Returns the details about the collection.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the collection ID.",
+              "isRequired": false,
+              "value": "5db40c19-d50f-4c6a-9eac-eb3c7e71b497",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the collection name.",
+              "isRequired": false,
+              "value": "orion-static-100-coll-0",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "confidence",
+          "description": "Returns the confidence score reported from a source.",
+          "isRequired": false,
+          "value": "HIGH",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the epoch timestamp of when the object was created in the source.",
+          "isRequired": false,
+          "value": "1641982441",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_created",
+          "description": "Returns the epoch timestamp of when the object was created in Intel Exchange.",
+          "isRequired": false,
+          "value": "1641982444",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_modified",
+          "description": "Returns the epoch timestamp of when the object was modified in Intel Exchange.",
+          "isRequired": false,
+          "value": "1641982444",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "custom_attributes",
+          "description": "Returns any custom attributes associated with the object from the source",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description from the source. ",
+          "isRequired": false,
+          "value": "None",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "granular_markings",
+          "description": "Returns the fine-grained marking definitions that apply to specific parts (fields) of the object.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the source record.",
+          "isRequired": false,
+          "value": "ed19a2b7-b1b1-4c10-adf6-25b2e4790e06",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "kill_chain_phases",
+          "description": "Returns a list of kill chain phases with the phase ID, kill chain name, and phase name.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "name",
+                  "description": "Returns the kill chain name.",
+                  "isRequired": false,
+                  "value": "lockheed-martin-cyber-kill-chain",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "phase_name",
+                  "description": "Returns the phase name.",
+                  "isRequired": false,
+                  "value": "command and control",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "modified",
+          "description": "Returns the epoch timestamp of when the object was modified in the source",
+          "isRequired": false,
+          "value": "1641982441",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "pattern",
+          "description": "Returns the pattern as received from the source in case of a valid object.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "[email-addr:value = 'kiara59@mayer.net'] OR ([ipv6-addr:value = '3cdd:1115:aec:67b7:b23a:b311:330e:9bb6'])",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "pattern_type",
+          "description": "Returns the pattern type as received from the source in case of a valid object.",
+          "isRequired": false,
+          "value": "stix",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "pattern_version",
+          "description": "Returns the pattern version fo the object.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the pattern version as received from the source in case of the valid object.",
+              "isRequired": false,
+              "value": "2.1",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "received_id",
+          "description": "Returns the ID of the object received from the source.",
+          "isRequired": false,
+          "value": "indicator--b2c5372f-8d7b-40a0-a70b-689daa94b99c",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "sco_object_id",
+          "description": "Returns the ID of the object as stored in the database.",
+          "isRequired": false,
+          "value": "382c30a8-f8cf-44f9-97c7-a4d43786fd5c",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Returns details about the source.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the source ID.",
+              "isRequired": false,
+              "value": "c38aeede-606c-4e88-b247-87dbfe8192b1",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the source.",
+              "isRequired": false,
+              "value": "Orion 2.1 testing bug",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "source_type",
+              "description": "Returns the source type.",
+              "isRequired": false,
+              "value": "CUSTOM_STIX_SOURCES",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "spec_version",
+          "description": "Returns the specific version of TAXII as received from the source in case of a valid object.",
+          "isRequired": false,
+          "value": "2.1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tags",
+          "description": "Returns the list of tags received from the source.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "colour_code",
+                  "description": "Returns the hex key of the colour code, which denotes the type of the tag.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the unique identifier of the tag.",
+                  "isRequired": false,
+                  "value": "277f65a4-d72c-48c3-a454-cfdcf35d0782",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the tag.",
+                  "isRequired": false,
+                  "value": "soldier",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "types",
+          "description": "Returns the list of valid types for the object received from the source.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_hash",
+          "description": "Returns the hash value used for recognizing a record in Intel Exchange.",
+          "isRequired": false,
+          "value": "8388ee5a57bacf07ec3d889867b4612a",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "valid_from",
+          "description": "Returns the date and time from which the received object is valid over the platform.",
+          "isRequired": false,
+          "value": "1608189525",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "valid_until",
+          "description": "Returns the date and time till which the received object is valid over the platform.",
+          "isRequired": false,
+          "value": "1610399657",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

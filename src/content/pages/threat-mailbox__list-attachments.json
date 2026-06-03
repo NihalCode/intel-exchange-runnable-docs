@@ -1,0 +1,188 @@
+{
+  "slug": "threat-mailbox/list-attachments",
+  "title": "Get Attachments List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-mailbox",
+    "list-attachments"
+  ],
+  "description": "Returns a list of attachments of an email message.",
+  "method": "GET",
+  "path": "conversion/feed-sources/email/inbox/{email_id}/attachments/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "email_id",
+        "description": "Pass the unique ID of an email.",
+        "isRequired": false,
+        "value": "b5b51b15-88ef-4683-a7fb-95c0318a6322",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394949b49385adf3c46b00"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique ID of the attachment.",
+              "isRequired": false,
+              "value": "761dfd0c-7a4d-4bb6-9fb4-995f954a0b8e",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the attachment.",
+              "isRequired": false,
+              "value": "no_pwd_pdf.pdf",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "mime_type",
+              "description": "Returns the MIME type of the attachment, such as PDF.",
+              "isRequired": false,
+              "value": "application/pdf",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_protected",
+              "description": "Returns true if the attachment is password protected, else returns false.L",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "parsing_status",
+              "description": "Indicates the current state of the attachment parsing process, which is used to extract meaningful data such as IOCs, metadata, or embedded content.",
+              "isRequired": false,
+              "value": "0",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "error_message",
+              "description": "Returns the error message, if present.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

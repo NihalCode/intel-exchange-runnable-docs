@@ -1,0 +1,485 @@
+{
+  "slug": "global-tasks/update-task",
+  "title": "Update Task",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "global-tasks",
+    "update-task"
+  ],
+  "description": "Updates the details of a task.",
+  "method": "PUT",
+  "path": "ingestion/tasks/{task_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "created",
+        "description": "Pass the epoch time of the last created date.",
+        "isRequired": false,
+        "value": "1630394661",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "modified",
+        "description": "Pass the epoch time of the last modified date.",
+        "isRequired": false,
+        "value": "1630394661",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_by",
+        "description": "Pass the details of the user who created the report.",
+        "isRequired": false,
+        "value": "0eea7e23-9670-4c5f-9742-2666ddf0be74",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "assignee",
+        "description": "Pass the ID of a user to assign the task.",
+        "isRequired": true,
+        "value": "0eea7e23-9670-4c5f-9742-2666ddf0be74",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "text",
+        "description": "Pass the description of the task to be performed.",
+        "isRequired": false,
+        "value": "Verify this indicator!",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "priority",
+        "description": "Pass the priority of the task.",
+        "isRequired": false,
+        "value": "high",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "medium",
+          "enumValue": [
+            {
+              "value": "high",
+              "description": ""
+            },
+            {
+              "value": "medium",
+              "description": ""
+            },
+            {
+              "value": "low",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "status",
+        "description": "Pass the status of the task.",
+        "isRequired": false,
+        "value": "not_started",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "not_started",
+          "enumValue": [
+            {
+              "value": "not_started",
+              "description": ""
+            },
+            {
+              "value": "in_progress",
+              "description": ""
+            },
+            {
+              "value": "completed",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "deadline",
+        "description": "Pass the deadline information.",
+        "isRequired": false,
+        "value": "1633393469",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "closure_comment",
+        "description": "Pass the comment to close the task.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "completed_on",
+        "description": "Pass the date of completion of the task.\n\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass the type of the threat data object. For example: *indicator*, *malware*, *vulnerability*, *campaign*, and more.",
+        "isRequired": false,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the ID of the threat data object to associate the task.",
+        "isRequired": false,
+        "value": "92686150-58e5-4f15-be64-f3e123efd825",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "task_id",
+        "description": "Pass the unique identifier of a task to update the details.",
+        "isRequired": false,
+        "value": "c838ad2b-af11-4a32-9e45-088f2e7d55c6",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6873e459aecb8721e09037eb"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the task.",
+          "isRequired": false,
+          "value": "0434c6f6-fa28-4d5f-9e0d-d3f4c1ffcb5a",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date of creation of the task.",
+          "isRequired": false,
+          "value": "1630394661",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date the task was modified.",
+          "isRequired": false,
+          "value": "1630394817",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user who created the task.",
+          "isRequired": false,
+          "value": "(unknown)",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "assignee",
+          "description": "Returns the assignee of the task.",
+          "isRequired": false,
+          "value": "5555f14c-6130-4e58-a2da-33e1a85b5a64",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "text",
+          "description": "Returns the text or description of the task.",
+          "isRequired": false,
+          "value": "Verify this indicator!",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "priority",
+          "description": "Returns the priority of the task.",
+          "isRequired": false,
+          "value": "high",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the task.",
+          "isRequired": false,
+          "value": "not_started",
+          "valueType": "string",
+          "options": {
+            "enumValue": [
+              {
+                "value": "not_started",
+                "description": ""
+              },
+              {
+                "value": "in_progress",
+                "description": ""
+              },
+              {
+                "value": "completed",
+                "description": ""
+              }
+            ],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "deadline",
+          "description": "Returns the deadline of the task.",
+          "isRequired": false,
+          "value": "1633393469",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "closure_comment",
+          "description": "Returns any comments that are added while marking the task as complete.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "completed_on",
+          "description": "Returns the date of completion of the task.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "type",
+          "description": "Returns the type of threat data object that is associated with the task.",
+          "isRequired": false,
+          "value": "indicator",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "object_id",
+          "description": "Returns the ID of the threat data object to associate the task.",
+          "isRequired": false,
+          "value": "92686150-58e5-4f15-be64-f3e123efd825",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_removed",
+          "description": "Returns 1 if the task is marked as removed; otherwise, 0.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

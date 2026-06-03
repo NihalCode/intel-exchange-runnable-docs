@@ -1,0 +1,425 @@
+{
+  "slug": "threat-data/saved-search/update-saved-search",
+  "title": "Update Saved Search",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "saved-search",
+    "update-saved-search"
+  ],
+  "description": "Updates the saved search data in Intel Exchange.",
+  "method": "PUT",
+  "path": "ingestion/saved-searches/{id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "type",
+        "description": "Pass the type of the saved search.",
+        "isRequired": true,
+        "value": "basic",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "basic",
+              "description": ""
+            },
+            {
+              "value": "cql",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "name",
+        "description": "Pass the name of the saved search.",
+        "isRequired": true,
+        "value": "Indicator Search",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the saved search.",
+        "isRequired": false,
+        "value": "Indicator search",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "query",
+        "description": "Pass the updated search query.",
+        "isRequired": true,
+        "value": "type=\"indicator\" and sub_type=\"file\" and created>\"2021-07-28\"",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "shared_type",
+        "description": "Pass the privacy parameter of the saved search.",
+        "isRequired": false,
+        "value": "global",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "private",
+              "description": ""
+            },
+            {
+              "value": "global",
+              "description": ""
+            },
+            {
+              "value": "specific users",
+              "description": ""
+            },
+            {
+              "value": "systems",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "meta_data",
+        "description": "Pass the metadata of the saved search that helps in the transformation to the CQL query or threat data filters.",
+        "isRequired": false,
+        "value": "{\"object_type\":[\"malware\"],\"query\":[{\"length\":26,\"dataKey\":{\"id\":\"type\",\"type\":\"select\",\"addAll\":true,\"reset\":true,\"multiple\":true,\"value\":\"id\",\"label\":\"Object Type\",\"values\":[{\"id\":\"indicator\",\"name\":\"Indicator\"},{\"id\":\"malware\",\"name\":\"Malware\"},{\"id\":\"threat-actor\",\"name\":\"Threat Actor\"},{\"id\":\"vulnerability\",\"name\":\"Vulnerability\"},{\"id\":\"attack-pattern\",\"name\":\"Attack Pattern\"},{\"id\":\"campaign\",\"name\":\"Campaign\"},{\"id\":\"course-of-action\",\"name\":\"Course of Action\"},{\"id\":\"identity\",\"name\":\"Identity\"},{\"id\":\"infrastructure\",\"name\":\"Infrastructure\"},{\"id\":\"intrusion-set\",\"name\":\"Intrusion Set\"},{\"id\":\"location\",\"name\":\"Location\"},{\"id\":\"malware-analysis\",\"name\":\"Malware Analysis\"},{\"id\":\"observed-data\",\"name\":\"Observed Data\"},{\"id\":\"opinion\",\"name\":\"Opinion\"},{\"id\":\"tool\",\"name\":\"Tool\"},{\"id\":\"report\",\"name\":\"Report\"},{\"id\":\"custom-object\",\"name\":\"Custom Object\"},{\"id\":\"observable\",\"name\":\"Observable\"},{\"id\":\"incident\",\"name\":\"Incident\"}]},\"key\":\"'Object Type'\",\"keyType\":\"select\",\"dataOperator\":{\"id\":\"=\",\"label\":\"=\"},\"operator\":\"=\",\"dataValue\":{\"id\":\"malware\",\"name\":\"Malware\"},\"value\":\"\\\"Malware\\\"\"}]}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "id",
+        "description": "Pass the unique ID of a saved search to be update. You can retrieve the ID using the **List Saved Searches API**. Example, *1a7d5c8a-848a-4a67-af82-e68f3d823c65*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870f83ae86fa45bcc1b68a7"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "created_by",
+          "description": "Returns the details of the user who created the saved search.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name.",
+              "isRequired": false,
+              "value": "John",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the user ID.",
+              "isRequired": false,
+              "value": "55164c69-02cf-4dca-936a-47491deaeabc",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the saved search.",
+          "isRequired": false,
+          "value": "Indicator search",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "editable",
+          "description": "Returns True if the user has permission to edit the saved search, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the saved search.",
+          "isRequired": false,
+          "value": "1a7d5c8a-848a-4a67-af82-e68f3d823c65",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_threat_data_search",
+          "description": "Returns True if the saved search is either from threat data search or copied from reports type, else returns False.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "meta_data",
+          "description": "Returns the metadata of the saved search that helps in the transformation to the CQL query or threat data filters.",
+          "isRequired": false,
+          "value": "{\"object_type\":[\"malware\"],\"query\":[{\"length\":26,\"dataKey\":{\"id\":\"type\",\"type\":\"select\",\"addAll\":true,\"reset\":true,\"multiple\":true,\"value\":\"id\",\"label\":\"Object Type\",\"values\":[{\"id\":\"indicator\",\"name\":\"Indicator\"},{\"id\":\"malware\",\"name\":\"Malware\"},{\"id\":\"threat-actor\",\"name\":\"Threat Actor\"},{\"id\":\"vulnerability\",\"name\":\"Vulnerability\"},{\"id\":\"attack-pattern\",\"name\":\"Attack Pattern\"},{\"id\":\"campaign\",\"name\":\"Campaign\"},{\"id\":\"course-of-action\",\"name\":\"Course of Action\"},{\"id\":\"identity\",\"name\":\"Identity\"},{\"id\":\"infrastructure\",\"name\":\"Infrastructure\"},{\"id\":\"intrusion-set\",\"name\":\"Intrusion Set\"},{\"id\":\"location\",\"name\":\"Location\"},{\"id\":\"malware-analysis\",\"name\":\"Malware Analysis\"},{\"id\":\"observed-data\",\"name\":\"Observed Data\"},{\"id\":\"opinion\",\"name\":\"Opinion\"},{\"id\":\"tool\",\"name\":\"Tool\"},{\"id\":\"report\",\"name\":\"Report\"},{\"id\":\"custom-object\",\"name\":\"Custom Object\"},{\"id\":\"observable\",\"name\":\"Observable\"},{\"id\":\"incident\",\"name\":\"Incident\"}]},\"key\":\"'Object Type'\",\"keyType\":\"select\",\"dataOperator\":{\"id\":\"=\",\"label\":\"=\"},\"operator\":\"=\",\"dataValue\":{\"id\":\"malware\",\"name\":\"Malware\"},\"value\":\"\\\"Malware\\\"\"}]}",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the saved search.",
+          "isRequired": false,
+          "value": "Indicator Search",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "order",
+          "description": "Returns the order of the saved search for the user in the listed saved search.",
+          "isRequired": false,
+          "value": "2",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "pinned",
+          "description": "Returns True if the saved search is pinned by the user, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "query",
+          "description": "Returns the CQL query corresponding to the saved search.",
+          "isRequired": false,
+          "value": "type=\"indicator\" and sub_type=\"file\" and created>\"2021-07-28\"",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "shared_type",
+          "description": "Returns the privacy parameter of the saved search. It returns a value from private, global, specific users, or systems.",
+          "isRequired": false,
+          "value": "global",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "shared_users",
+          "description": "Returns the list of users that has access to the saved search, if the shared_type parameter is set to specific users",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "type",
+          "description": "Returns the type of saved search as basic or CQL.",
+          "isRequired": false,
+          "value": "basic",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

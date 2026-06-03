@@ -1,0 +1,397 @@
+{
+  "slug": "threat-mailbox/update-email-message",
+  "title": "Update Email Message",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-mailbox",
+    "update-email-message"
+  ],
+  "description": "Use this API to update the details of an email message.",
+  "method": "PUT",
+  "path": "conversion/feed-sources/email/inbox/{email_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "is_reviewed",
+        "description": "Pass the review details.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "value",
+            "description": "Pass true to mark an email as reviewed.",
+            "isRequired": true,
+            "value": "true",
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "comment",
+            "description": "Pass the review comment within 100 characters.",
+            "isRequired": false,
+            "value": "reviewed",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "email_id",
+        "description": "Pass the unique ID of an email.",
+        "isRequired": false,
+        "value": "c06447cb-e905-4ff0-87af-12de15926811",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "687123b7ecb3f1449e0b6d0d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the email message.",
+          "isRequired": false,
+          "value": "96979ada-1a74-4528-96cf-a7d83b579077",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_config",
+          "description": "Returns the unique ID of the email source.",
+          "isRequired": false,
+          "value": "5578d40e-90c7-4ec7-a63a-0a3244158444",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "to",
+          "description": "Returns the sender's user name to whom the email was sent.",
+          "isRequired": false,
+          "value": "threatmailboxtesting@gmail.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "to_email",
+          "description": "Returns the sender's email address, to whom the email was sent.",
+          "isRequired": false,
+          "value": "threatmailboxtesting@gmail.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "_from",
+          "description": "Returns the recipient's user name who sent the email.",
+          "isRequired": false,
+          "value": "Google Community Team <googlecommunityteam-noreply@google.com>",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "_from_email",
+          "description": "Returns the recipient's email address that sent the email.",
+          "isRequired": false,
+          "value": "googlecommunityteam-noreply@google.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "subject",
+          "description": "Returns the subject of the email message.",
+          "isRequired": false,
+          "value": "Threatmailbox, finish setting up your new Google Account",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "date",
+          "description": "Returns the date when the email is received.",
+          "isRequired": false,
+          "value": "1616682859",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_read",
+          "description": "Returns true if the email is read, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_starred",
+          "description": "Returns true if the email message is bookmarked, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_delete",
+          "description": "Returns true if the email message is deleted, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "stix_created",
+          "description": "Returns true if the intel is created from this email message, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_id",
+          "description": "Returns the unique identifier of the tenant.",
+          "isRequired": false,
+          "value": "27e7256e-edf9-41cc-a325-6fde16e793db",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the timestamp indicating when the email record was ingested or added to the system.",
+          "isRequired": false,
+          "value": "1621846793",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "raw_body",
+          "description": "Returns the body of the email message.",
+          "isRequired": false,
+          "value": "<!doctype html public \"- / /w3c / /dtd xhtml 1.0 transitional / /en\" \"http: / /www.w3.org /tr /xhtml1 /dtd /xhtml1-transitional.dtd\">\r\n  <html xmlns=http://www.w3.org/1999/xhtml xmlns:v=urn:schemas-microsoft-com:vml xmlns:o=urn:schemas-microsoft-com:office:office lang=en>\r\n    <head>\r\n\t  <title>Welcome to your Google Account</title>\r\n      <meta name=format-detection content=address=no>\r\n      <meta name=format-detection content=telephone=no>\r\n      <meta name=x-apple-disable-message-reformatting>\r\n      <meta http-equiv=Content-Type content=\"text/html; charset=utf-8\">\r\n      <meta name=viewport content=\"width=device-width, initial-scale=1, maximum-scale=1\">\r\n      <link href=//fonts.googleapis.com/css?family=Google+Sans rel=stylesheet type=text/css>\r\n      <style type=text/css>\r\n      body{text-decoration:none;}\r\n      </style>\r\n        <style>\r\n    @media screen and (max-width:900px){\r\n      .mobile_only{display: block !important;}\r\n    }\r\n  </style>\r\n      <style type=text/css>\r\n           @media only screen and (max-width: 767px){\r\n             .body_wrapper{min-width:540px !important;}\r\n             .body_size{width: 320px !important;min-width:320px !important;}\r\n             .subheadline{font-size:22px!important;line-height: 35px !important;}\r\n             .device_txt{font-size:26px!important;}\r\n             .greeting_name{font-size:32px!important;}\r\n             .google_mobile{width:135px !important; height:43px !important;}\r\n             .bulb_mobile{width:22px !important; height:31px !important;padding-top:20px !important;}\r\n             .module_mobile{width:110px !important; height:110px !important;}\r\n             .shield_mobile{width:24px !important; height:31px !important;}\r\n             .fmd_mobile{width:30px !important; height:24px !important;}\r\n             .fa_mobile{width:30px !important; height:30px !important;}\r\n            \r\n             .btn_mod2_mobile1{padding:9px 24px 11px 24px !important; border-radius: 4px !important;}\r\n             .btn_mod2_mobile2{min-width:205px; padding:9px 24px 11px 24px !important; border-radius: 4px !important;}\r\n\t\t\t \r\n             .btn_mod3_mobile{padding:9px 24px 11px 24px !important; border-radius: 4px !important;}\r\n             .btn_mod4_mobile{padding:9px 24px 11px 24px !important; border-radius: 4px !important;}\r\n             \r\n\r\n             .space1{height:19px !important;}\r\n             .space2{padding:3px 35px 0 35px !important;}\r\n             .space3{padding-top: 22px !important;}\r\n             .space4{padding: 6px 0 0 0 !important;}\r\n             .space5{padding-top: 17px !important;}\r\n             .space6{padding:0 35px 0 35px !important;}\r\n             .space7{padding-right: 0px !important;}\r\n             .enwid{min-width: 236px !important;}\r\n           \r\n\r\n\t\t\t}\r\n           @media screen and (min-resolution: 288dpi) {\r\n             .device_txt{font-size:26px!important;}\r\n           }\r\n       </style>\r\n    <!--[if gte mso 9]>\r\n<xml>\r\n    <o:OfficeDocumentSettings>\r\n    <o:AllowPNG/>\r\n    <o:PixelsPerInch>96</o:PixelsPerInch>\r\n    </o:OfficeDocumentSettings>\r\n</xml>\r\n<![endif]-->\r\n    </head>\r\n\r\n\r\n\r\n\r\n        \r\n       \r\n      \r\n    \r\n    \r\n    \r\n\r\n\r\n\r\n        \r\n<body bgcolor=#ffffff class=body_wrapper>\r\n      <style>\r\n          @media screen{@font-face{font-family:'Open Sans';font-style:normal;font-weight:normal;src:local('Open Sans Light'),local('OpenSans-Light'),url(http://fonts.gstatic.com/s/opensans/v9/DXI1ORHCpsQm3Vp6mXoaTRampu5_7CjHW5spxoeN3Vs.woff2) format('woff2'),url(http://fonts.gstatic.com/s/opensans/v9/DXI1ORHCpsQm3Vp6mXoaTaRDOzjiPcYnFooOUGCOsRk.woff) format('woff')}}\r\n          /*body{padding:0;margin:0}@media only screen and (max-width:520px){-webkit-text-size-adjust:100%}*/\r\n          body{text-decoration:none;}\r\n      </style>\r\n  <div style=\"font-size: 0px; line-height:0px; color: #ffffff; display: none;\">                                                                                                                                                                                                                                                                                                                                                                                                                                                                           </div>\r\n  \r\n      <center>\r\n        <table role=presentation class=body_size border=0 cellspacing=0 cellpadding=0 align=center width=520 bgcolor=#ffffff style=\"background: #ffffff; min-width: 520px; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; -ms-text-size-adjust: 100%;\">\r\n          <tr><td align=center style=\"padding-top: 20px;\">  <img role=presentation class=google_mobile width=82 height=26 border=0 src=https://services.google.com/fh/files/emails/google_logo_orig.png style=\"width: 82px; height:26px; text-align: center; border: none;\">\r\n</td></tr>\r\n          <tr><td class=space1 height=15></td></tr>\r\n          <tr>\r\n            <td width=480 style=\"-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; -ms-text-size-adjust: 100%; border: 2px solid #E8EAED; border-radius: 16px;\">\r\n              <table role=presentation border=0 cellspacing=0 cellpadding=0 width=100%>\r\n                <tr>\r\n                  <td align=center>    <img role=presentation class=top_img width=100% height=109 border=0 src=https://services.google.com/fh/files/emails/topdesign.png style=\"width: 100%; height: 109px; text-align: center; border: none;\">\r\n</td>\r\n                </tr>\r\n                <tr>\r\n                  <td>\r\n  \t\t\t\t    <table role=presentation border=0 cellspacing=0 cellpadding=0 align=center width=100%>\r\n                      <tr>\r\n                        <!--[if mso]>\r\n                        <td align=\"center\" class=\"greeting_name space6\" style='color:#202124; font-family:Google Sans, Roboto, Arial; font-size:22px; font-weight:normal; line-height:44px; margin:0; padding:0 80px 20px 80px; text-align:center;word-break:normal;direction:ltr;' dir=\"ltr\">Hi Threatmailbox,</td>\r\n                        <![endif]-->\r\n                        <!--[if !mso]><!-->\r\n                        <td align=center class=\"greeting_name space6\" style=\"color:#202124; font-family:Google Sans, Roboto, Arial; font-size:22px; font-weight:normal; line-height:44px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Hi Threatmailbox,</td>\r\n                        <!--<![endif]-->\r\n                      </tr>\r\n                      <!--[if !mso]><!-->\r\n                      <tr>\r\n                        <td height=15 style=\"line-height: 4px; font-size: 4px;\"></td>\r\n                      </tr>\r\n                      <!--<![endif]-->\r\n                      <tr>\r\n                        <td class=\"subheadline space2\" align=center style=\"color:#3C4043; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:16px; font-weight:normal; line-height:24px; margin:0; padding:0 70px 0 70px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr> Welcome to Google. Your new account comes with access to Google products, apps, and services.</td>\r\n                      </tr>\r\n                      <tr>\r\n                        <td class=\"subheadline space6\" align=center style=\"color:#3C4043; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:16px; font-weight:normal; line-height:24px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr> Here are a few tips to get you started.</td>\r\n                      </tr>\r\n                      <tr><td height=45></td></tr>\r\n                    </table>\r\n\t\t\t\t  </td>\r\n                </tr>\r\n\t\t\t\t\r\n\t\t\t\t <tr>\r\n                  <td>\r\n                    <table role=presentation border=0 cellspacing=0 cellpadding=0 align=center width=100%>\r\n                      <tr><td height=50></td></tr>\r\n                      <tr>\r\n                        <td align=center>  <img role=presentation class=module_mobile width=64 height=64 border=0 src=https://www.gstatic.com/images/branding/product/2x/email_64dp.png style=\"width: 64px; height:64px; text-align: center; border: none; font-size:9px;\">\r\n</td>\r\n                      </tr>\r\n                  \r\n                      <tr><td height=15></td></tr>\r\n                      <tr>\r\n                        \r\n                        <!--[if mso]>\r\n                        <td align=\"center\" class=\"device_txt space6\" style='color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 20px 80px; text-align:center; word-break:normal;direction:ltr;' dir=\"ltr\">Want to stay in the loop?</td>\r\n                        <![endif]-->\r\n                        <!--[if !mso]><!-->\r\n                        <td align=center class=\"device_txt space6\" style=\"color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Want to stay in the loop?</td>\r\n                        <!--<![endif]-->\r\n                        \r\n                      </tr>\r\n                      <!--[if !mso]><!-->\r\n                      <tr>\r\n                  <td height=15 style=\"line-height: 4px; font-size: 4px;\"></td>\r\n                      </tr>\r\n                      <!--<![endif]-->\r\n                      <tr>\r\n                          <td class=\"subheadline space6\" align=center style=\"color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:16px; font-weight:normal; line-height:24px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Sign up to receive personalized tips, news and recommendations to help you get the most out of your Google Account.</td>\r\n                      </tr>\r\n                 \r\n                      <tr><td height=30></td></tr>\r\n                      <tr>\r\n                          <td class=space4 style=\"text-align: center;\">\r\n                             <div>\r\n                \t\t\t\t<!--[if mso]>\r\n\t\t\t\t\t\t\t\t\r\n                                \t<v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://notifications.google.com/g/p/AD-FnEyndec72XBvcI2FZtASIkMDr2gI-p9KQj7W_nlDsa2XYbrILYz0nhq9uMgLNV51eCnPJZEYhjsW11WTS2TrLeSDZIZTbwnYb5PRQeVQ4bK9nBHu-UQDf6Bbke1kBvlPuPQ1Gg4-NM0CWnazWazo49MDYWrE3naDehYA2mil6FzFgpdvYU7zEGPhyjG8TK3ozYYFF2I9d16qlhjZ_NZpiTZ8LL561JaJK9IMX-RsAwVMcMLw8VPGIU_u_MqBCVbw47WDi1xRpdGj1eQEAs3zUbpdSrkrsB8xd_bYzPh0A31P5ieRLPlhzH9NA4O5Oe86vUB1U6E\" style=\"height:48px; v-text-anchor:middle; width:205px; \" line-height: 22px; arcsize=\"10%\" strokecolor=\"#1A73E8\" fillcolor=\"#1A73E8;\">\r\n\t\t\t\t\t\t\t\t\t<w:anchorlock/>\r\n                                    <center style=\"color:#ffffff;font-family:Google Sans, Roboto, Arial; font-size:16px; font-weight:normal; word-break:normal; line-height: 22px; mso-line-height-rule: exactly; direction:ltr;\" dir=\"ltr\">Keep me updated</center>\r\n                                    </v:roundrect>\r\n<a href=\"https://notifications.google.com/g/p/AD-FnEyndec72XBvcI2FZtASIkMDr2gI-p9KQj7W_nlDsa2XYbrILYz0nhq9uMgLNV51eCnPJZEYhjsW11WTS2TrLeSDZIZTbwnYb5PRQeVQ4bK9nBHu-UQDf6Bbke1kBvlPuPQ1Gg4-NM0CWnazWazo49MDYWrE3naDehYA2mil6FzFgpdvYU7zEGPhyjG8TK3ozYYFF2I9d16qlhjZ_NZpiTZ8LL561JaJK9IMX-RsAwVMcMLw8VPGIU_u_MqBCVbw47WDi1xRpdGj1eQEAs3zUbpdSrkrsB8xd_bYzPh0A31P5ieRLPlhzH9NA4O5Oe86vUB1U6E\" class=\"subheadline btn_mod2_mobile2\"  target=\"_blank\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; min-width:205px; padding:8px 0px 7px 0px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;  direction:ltr;\" dir=\"ltr\">Keep me updated</a>\r\n                                <![endif]-->\r\n\t\t\t\t\t\t\t\t\r\n                               <!--[if !mso]><!-->\r\n                               <a href=https://notifications.google.com/g/p/AD-FnEyndec72XBvcI2FZtASIkMDr2gI-p9KQj7W_nlDsa2XYbrILYz0nhq9uMgLNV51eCnPJZEYhjsW11WTS2TrLeSDZIZTbwnYb5PRQeVQ4bK9nBHu-UQDf6Bbke1kBvlPuPQ1Gg4-NM0CWnazWazo49MDYWrE3naDehYA2mil6FzFgpdvYU7zEGPhyjG8TK3ozYYFF2I9d16qlhjZ_NZpiTZ8LL561JaJK9IMX-RsAwVMcMLw8VPGIU_u_MqBCVbw47WDi1xRpdGj1eQEAs3zUbpdSrkrsB8xd_bYzPh0A31P5ieRLPlhzH9NA4O5Oe86vUB1U6E target=_blank dir=ltr style=\"text-align: center; display: inline-block;\">\r\n<table role=presentation cellspacing=0 cellpadding=0 align=center>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 3px solid #ffffff;border-top-left-radius: 4px;border-top-right-radius: 4px;display:inline-block; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n        <tr>\r\n\t\t<td class=\"subheadline btn_mod2_mobile2 enwid\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none;  min-width:205px; padding:8px 0px 7px 0px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;  direction:ltr;\">\r\nKeep me updated\r\n</td>\r\n</tr>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 3px solid #ffffff;display:inline-block;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n</table></a>\r\n                               <!--<![endif]-->\r\n                             </div>\r\n                          </td>\r\n                      </tr>\r\n\r\n                 <tr><td height=50></td></tr>\r\n                  <tr><td border=0><hr role=presentation width=516 border=0 bgcolor=#F8F9FA style=\"margin:0; border-collapse: collapse; background-color: #F8F9FA;color: #F8F9FA; height: 8px; border: none; width:516px;\"></td></tr>\r\n                    </table>\r\n                  </td>\r\n                </tr>\r\n                \r\n                <tr>\r\n                  <td>\r\n                    <table role=presentation border=0 cellspacing=0 cellpadding=0 align=center width=100%>\r\n                      <tr><td height=45></td></tr>\r\n                      <tr>\r\n                          <td class=space3 align=center>    <img role=presentation class=module_mobile width=64 height=64 border=0 src=https://services.google.com/fh/files/emails/g_logo1.png style=\"width: 64px; height:64px; text-align: center; border: none; font-size:9px;\">\r\n</td>\r\n                      </tr>\r\n                      <tr><td height=17></td></tr>\r\n                      <tr>\r\n\r\n                            <!--[if mso]>\r\n                            <td align=\"center\" class=\"device_txt space6\" style='color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 20px 80px; text-align:center; word-break:normal;direction:ltr;' dir=\"ltr\">Get a lighter, faster way to search</td>\r\n                            <![endif]-->\r\n                            <!--[if !mso]><!-->\r\n                            <td align=center class=\"device_txt space6\" style=\"color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Get a lighter, faster way to search</td>\r\n                            <!--<![endif]-->\r\n                   \r\n                      </tr>\r\n                      <!--[if !mso]><!-->\r\n                      <tr>\r\n                        <td height=15 style=\"line-height: 4px; font-size: 4px;\"></td>\r\n                      </tr>\r\n                      <!--<![endif]-->\r\n                      <tr>\r\n                          <td class=\"subheadline space6\" align=center style=\"color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:16px; font-weight:normal; line-height:24px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Search in a fast, fun, and easy way. Type less and save time by using your voice.</td>\r\n                          \r\n                      </tr>\r\n                      <tr><td height=30></td></tr>\r\n                      <tr>\r\n                        <td align=center valign=top>\r\n                            <table role=presentation border=0 cellspacing=0 cellpadding=0 width=100%>\r\n                                <tr>\r\n                                    <td class=space4 style=\"text-align: center; padding: 0;\">\r\n                                      \r\n                                        <div>\r\n                                            <!--[if mso]>\r\n                                              <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://notifications.google.com/g/p/AD-FnExgNuXDWxUscOXKCI8-X9oYP9vHzpG9xPZGqsb-bZLbXewbN4luTJzMBnsmQYJmMz8oqnVxV-09_wPA8lsNwj3y90Z1MH23ZEwsoK6kk7zaLrAY4vqJeVyT61rMhxmsmnhLMGkzlO88KVV7mjsKhbhsU-R9qPyQ9t7-PoJzO76Ggtj4KKKd2jD91GZuK6_FQS37o58lZRpPEcMYcJUSzJYXDvJlpU9kNHmHCyi1TCXCdBwH_nvspHireD4csmoi9JYyOzbukngCQBhrtiiV3fsSIG8cCKlj3QaKGnEPMzLuPcY\" style=\"height:48px; v-text-anchor:middle; width:205px;\" arcsize=\"10%\" strokecolor=\"#1A73E8\" fillcolor=\"#1A73E8;\">\r\n                                              <w:anchorlock/>\r\n                                              <center style=\"color:#ffffff;font-family:Google Sans, Roboto, Arial; font-size:16px; font-weight:normal; word-break:normal;direction:ltr;\" dir=\"ltr\">Get Google Go</center>\r\n                                              </v:roundrect>\r\n<a href=\"https://notifications.google.com/g/p/AD-FnExgNuXDWxUscOXKCI8-X9oYP9vHzpG9xPZGqsb-bZLbXewbN4luTJzMBnsmQYJmMz8oqnVxV-09_wPA8lsNwj3y90Z1MH23ZEwsoK6kk7zaLrAY4vqJeVyT61rMhxmsmnhLMGkzlO88KVV7mjsKhbhsU-R9qPyQ9t7-PoJzO76Ggtj4KKKd2jD91GZuK6_FQS37o58lZRpPEcMYcJUSzJYXDvJlpU9kNHmHCyi1TCXCdBwH_nvspHireD4csmoi9JYyOzbukngCQBhrtiiV3fsSIG8cCKlj3QaKGnEPMzLuPcY\" class=\"subheadline btn_mod2_mobile2\"  target=\"_blank\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; padding:7px 24px 7px 24px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;direction:ltr;\" dir=\"ltr\">Get Google Go</a>\r\n                                            <![endif]-->\r\n                                                        <!--[if !mso]><!-->\r\n                               <a href=https://notifications.google.com/g/p/AD-FnExgNuXDWxUscOXKCI8-X9oYP9vHzpG9xPZGqsb-bZLbXewbN4luTJzMBnsmQYJmMz8oqnVxV-09_wPA8lsNwj3y90Z1MH23ZEwsoK6kk7zaLrAY4vqJeVyT61rMhxmsmnhLMGkzlO88KVV7mjsKhbhsU-R9qPyQ9t7-PoJzO76Ggtj4KKKd2jD91GZuK6_FQS37o58lZRpPEcMYcJUSzJYXDvJlpU9kNHmHCyi1TCXCdBwH_nvspHireD4csmoi9JYyOzbukngCQBhrtiiV3fsSIG8cCKlj3QaKGnEPMzLuPcY target=_blank dir=ltr style=\"text-align: center; display: inline-block;\">\r\n<table role=presentation cellspacing=0 cellpadding=0 align=center>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 3px solid #ffffff;border-top-left-radius: 4px;border-top-right-radius: 4px;display:inline-block; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n        <tr>\r\n\t\t<td class=\"subheadline btn_mod2_mobile2 enwid\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; min-width:205px; padding:8px 0px 7px 0px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;  direction:ltr;\">\r\nGet Google Go\r\n</td>\r\n</tr>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 4px solid #ffffff;display:inline-block;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n</table></a>\r\n                               <!--<![endif]-->\r\n                                        </div>\r\n                                        \r\n                                    </td>\r\n                                </tr>\r\n                            </table>\r\n                        </td>\r\n                      </tr>\r\n                      \r\n                      <tr><td height=50></td></tr>\r\n                      <tr><td border=0><hr role=presentation width=516 bgcolor=#F8F9FA border=0 style=\"margin:0; border-collapse: collapse; background-color: #F8F9FA;color: #F8F9FA; height: 8px; border: none; width:516px;\"></td></tr>\r\n                    </table>\r\n                  </td>\r\n                </tr>\r\n                  \r\n\r\n                  \r\n                <tr>\r\n                  <td>\r\n                    <table role=presentation border=0 cellspacing=0 cellpadding=0 align=center width=100%>\r\n             <tr><td height=40></td></tr>\r\n                      <tr>\r\n                  <td align=center>    <img role=presentation class=module_mobile width=64 height=64 border=0 src=https://services.google.com/fh/files/emails/more_logo.png style=\"width: 64px; height:64px; text-align: center; border: none;\">\r\n\r\n\t\t\t\t</td>\r\n                </tr>\r\n\r\n                      <tr><td height=15></td></tr>\r\n                      <tr>\r\n\r\n                        <!--[if mso]>\r\n                        <td align=\"center\" class=\"device_txt space6\" style='color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 20px 80px; text-align:center; word-break:normal;direction:ltr;' dir=\"ltr\">More from Google</td>\r\n                        <![endif]-->\r\n                        <!--[if !mso]><!-->\r\n                        <td align=center class=\"device_txt space6\" style=\"color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>More from Google</td>\r\n                        <!--<![endif]-->\r\n                      </tr>\r\n                      <!--[if !mso]><!-->\r\n                      <tr>\r\n                        <td height=15 style=\"line-height: 4px; font-size: 4px;\"></td>\r\n                      </tr>\r\n                      <!--<![endif]-->\r\n                      <tr>\r\n                          <td class=\"subheadline space6\" align=center style=\"color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:16px; font-weight:normal; line-height:24px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Discover the latest apps from Google</td>\r\n                      </tr>\r\n                      <tr><td height=30></td></tr>\r\n                      <tr>\r\n                          <td align=center valign=top>\r\n                              <table role=presentation>\r\n                                  <tr>\r\n                                      <td style=\"text-align: center; padding: 0;\">\r\n                                          <div>\r\n                                            <!--[if mso]>\r\n                                              <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://notifications.google.com/g/p/AD-FnEyP4CP4QC0Ynk3G3PjmcNzqGIetZn8YQeaQtKUlp8CDz9dIYuaE7f7Wo62K3Am3N_TIdEvfkmmJYrxK4-q5A1uj4nJlJsvMWyAfY3mXBgIongDxHGEnGt9Sy_Sj1gM_JpC-IahCMsqWNlz0wi4CUUAsIPyfXN7jlOcurX751obbKMc_HnS3Dvi09r0g_UKCpQyMamjhWX7DMlAhDKmq38FBk2tszrOunUN6S9FVSmLNPdQ7TW1zDe5CewaBytZD8QtrhqMcbfPZs2SCn7tmhexlSRg9oFqxzLzg9pzEBR1kBJlSRV_EZVMAOHbbj-Ed846L0PWhPEvLP4fypIoE9KJtuB2C2owrCHSwmMxlIyhZ5AYRNCl7bJAJIyy3cLEdm076GxbzyaxDIzgYE9SNjA0Z9zQqg5_YVsm3-8lbrL4Ylru8LXy8TBNtnZT1ulMbx71PLibTXEaK8XJ5SuBie-1JqH5u4FNEjgXTyo9oDLVKLvAN_AU_At9zggU3fGoX6Y5zeSPmSNRtF-8jAqF9TmF9XC4cJjgoCgkPG--ApQf-Vb3Yeemn6ZFFkZwW5hSefZ6r3SwJlzv3qo_U25HguZdHPsUDrCwKMaHtgeoaKx8xmOkep-yohwpD5UWSfU4zMHYyghdXxthk4r-zmtFLoNbEUQ6bkBwaoBcvA4D36X4jdl2VcgPiMm68wvV2hiBwHlEwl1Bb6NBGrv3dVokymxj47Bp0V-cDSTarP7WZJY5_4pLFvz424rU8cpfMndi4Fe91LSXE-RcAn8IQKPoeynVWIEZnzO0N4A\" style=\"height:48px; v-text-anchor:middle; width:205px;\" arcsize=\"10%\" strokecolor=\"#1A73E8\" fillcolor=\"#1A73E8;\">\r\n                                              <w:anchorlock/>\r\n                                              <center style=\"color:#ffffff;font-family:Google Sans, Roboto, Arial; font-size:16px; font-weight:normal; word-break:normal;direction:ltr;\" dir=\"ltr\">More apps from Google</center>\r\n                                              </v:roundrect>\r\n<a href=\"https://notifications.google.com/g/p/AD-FnEyP4CP4QC0Ynk3G3PjmcNzqGIetZn8YQeaQtKUlp8CDz9dIYuaE7f7Wo62K3Am3N_TIdEvfkmmJYrxK4-q5A1uj4nJlJsvMWyAfY3mXBgIongDxHGEnGt9Sy_Sj1gM_JpC-IahCMsqWNlz0wi4CUUAsIPyfXN7jlOcurX751obbKMc_HnS3Dvi09r0g_UKCpQyMamjhWX7DMlAhDKmq38FBk2tszrOunUN6S9FVSmLNPdQ7TW1zDe5CewaBytZD8QtrhqMcbfPZs2SCn7tmhexlSRg9oFqxzLzg9pzEBR1kBJlSRV_EZVMAOHbbj-Ed846L0PWhPEvLP4fypIoE9KJtuB2C2owrCHSwmMxlIyhZ5AYRNCl7bJAJIyy3cLEdm076GxbzyaxDIzgYE9SNjA0Z9zQqg5_YVsm3-8lbrL4Ylru8LXy8TBNtnZT1ulMbx71PLibTXEaK8XJ5SuBie-1JqH5u4FNEjgXTyo9oDLVKLvAN_AU_At9zggU3fGoX6Y5zeSPmSNRtF-8jAqF9TmF9XC4cJjgoCgkPG--ApQf-Vb3Yeemn6ZFFkZwW5hSefZ6r3SwJlzv3qo_U25HguZdHPsUDrCwKMaHtgeoaKx8xmOkep-yohwpD5UWSfU4zMHYyghdXxthk4r-zmtFLoNbEUQ6bkBwaoBcvA4D36X4jdl2VcgPiMm68wvV2hiBwHlEwl1Bb6NBGrv3dVokymxj47Bp0V-cDSTarP7WZJY5_4pLFvz424rU8cpfMndi4Fe91LSXE-RcAn8IQKPoeynVWIEZnzO0N4A\" class=\"subheadline btn_mod3_mobile\"  target=\"_blank\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; padding:7px 24px 7px 24px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;direction:ltr;\" dir=\"ltr\">More apps from Google</a>\r\n                                            <![endif]-->\r\n\r\n                                           \r\n\t\t\t\t\t\t\t\t\t\t\t\r\n\t\t\t\t\t\t\t\t\t\t\t   <!--[if !mso]><!-->\r\n                               <a href=https://notifications.google.com/g/p/AD-FnEyP4CP4QC0Ynk3G3PjmcNzqGIetZn8YQeaQtKUlp8CDz9dIYuaE7f7Wo62K3Am3N_TIdEvfkmmJYrxK4-q5A1uj4nJlJsvMWyAfY3mXBgIongDxHGEnGt9Sy_Sj1gM_JpC-IahCMsqWNlz0wi4CUUAsIPyfXN7jlOcurX751obbKMc_HnS3Dvi09r0g_UKCpQyMamjhWX7DMlAhDKmq38FBk2tszrOunUN6S9FVSmLNPdQ7TW1zDe5CewaBytZD8QtrhqMcbfPZs2SCn7tmhexlSRg9oFqxzLzg9pzEBR1kBJlSRV_EZVMAOHbbj-Ed846L0PWhPEvLP4fypIoE9KJtuB2C2owrCHSwmMxlIyhZ5AYRNCl7bJAJIyy3cLEdm076GxbzyaxDIzgYE9SNjA0Z9zQqg5_YVsm3-8lbrL4Ylru8LXy8TBNtnZT1ulMbx71PLibTXEaK8XJ5SuBie-1JqH5u4FNEjgXTyo9oDLVKLvAN_AU_At9zggU3fGoX6Y5zeSPmSNRtF-8jAqF9TmF9XC4cJjgoCgkPG--ApQf-Vb3Yeemn6ZFFkZwW5hSefZ6r3SwJlzv3qo_U25HguZdHPsUDrCwKMaHtgeoaKx8xmOkep-yohwpD5UWSfU4zMHYyghdXxthk4r-zmtFLoNbEUQ6bkBwaoBcvA4D36X4jdl2VcgPiMm68wvV2hiBwHlEwl1Bb6NBGrv3dVokymxj47Bp0V-cDSTarP7WZJY5_4pLFvz424rU8cpfMndi4Fe91LSXE-RcAn8IQKPoeynVWIEZnzO0N4A target=_blank dir=ltr style=\"text-align: center; display: inline-block;\">\r\n<table role=presentation cellspacing=0 cellpadding=0 align=center>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 3px solid #ffffff;border-top-left-radius: 4px;border-top-right-radius: 4px;display:inline-block; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n        <tr>\r\n\t\t<td class=\"subheadline btn_mod2_mobile2 two_line_button enwid\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; min-width:205px; padding:8px 0px 7px 0px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;  direction:ltr;\">\r\nMore apps from Google\r\n</td>\r\n</tr>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 4px solid #ffffff;display:inline-block;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n</table></a>\r\n                               <!--<![endif]-->\r\n                                          </div>\r\n                                      </td>\r\n                                  </tr>\r\n                                <tr><td height=10></td></tr>\r\n                              </table>\r\n                          </td>\r\n                      </tr>\r\n                    </table>\r\n                  </td>\r\n                </tr>\r\n                  <tr><td height=50></td></tr>\r\n                      <tr><td border=0><hr role=presentation width=516 border=0 bgcolor=#F8F9FA style=\"margin:0; border-collapse: collapse; background-color: #F8F9FA;color: #F8F9FA; height: 8px; border: none; width:516px;\"></td></tr>\r\n                <tr>\r\n                  <td>\r\n                    <table role=presentation border=0 cellspacing=0 cellpadding=0 align=center width=100%>\r\n                      <tr><td height=40></td></tr>\r\n                      <tr>\r\n                        <td align=center>    <img role=presentation class=module_mobile width=64 height=64 border=0 src=https://services.google.com/fh/files/emails/security_logo.png style=\"width: 64px; height:64px; text-align: center; border: none;\">\r\n</td>\r\n                      </tr>\r\n                      <tr><td height=15></td></tr>\r\n                      <tr>\r\n                        <!--[if mso]>\r\n                        <td align=\"center\" class=\"device_txt space6\" style='color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 20px 80px; text-align:center; word-break:normal;direction:ltr;' dir=\"ltr\">Confirm your options are right for you</td>\r\n                        <![endif]-->\r\n                        <!--[if !mso]><!-->\r\n                        <td align=center class=\"device_txt space6\" style=\"color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; font-weight:normal; line-height:33px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Confirm your options are right for you</td>\r\n                        <!--<![endif]-->\r\n                      </tr>\r\n                      <!--[if !mso]><!-->\r\n                      <tr>\r\n                        <td height=15 style=\"line-height: 4px; font-size: 4px;\"></td>\r\n                      </tr>\r\n                      <!--<![endif]-->\r\n                      <tr>\r\n                        <td class=\"subheadline space6\" align=center style=\"color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:16px; font-weight:normal; line-height:24px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Review and change your privacy and security options to make <span style=\"white-space:nowrap; \" class=\"\">Google</span> work better for you.</td>\r\n                      </tr>\r\n\r\n                      <tr><td height=30></td></tr>\r\n                      <tr>\r\n                          <td align=center valign=top>\r\n                              <table role=presentation>\r\n                                  <tr>\r\n                                      <td style=\"text-align: center; padding: 0;\">\r\n                                          <div>\r\n\t\t\t\t\t\t\t\t\t\t<!--[if mso]>\r\n                                                <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"https://notifications.google.com/g/p/AD-FnEycf0-jYiIScz0u0dSNPi4FrbwU8R2uZUsMOvjndwJ1CSqYkzDZkj-H4UdEvkEFP6DpOXtCe2bbd7kbONVtoxKjFa7eUAKacqfx8Os1tF8kc1XJ_T5PZgkhCdfIk4sUJ0S7CAv-LQBSvMg2eeQ-ZS8CkQS1OWsOKvrWI_rKR8FVeIlIkFdbZgl4TFz-vZWZyiXxk9BReC4o1ufKfQ\" style=\"height:48px; v-text-anchor:middle; width:205px;\" arcsize=\"10%\" strokecolor=\"#1A73E8\" fillcolor=\"#1A73E8;\">\r\n                                                <w:anchorlock/>\r\n                                                <center style=\"color:#ffffff;font-family:Google Sans, Roboto, Arial; font-size:16px; font-weight:normal; word-break:normal;direction:ltr;\" dir=\"ltr\">Confirm</center>\r\n                                                </v:roundrect>\r\n                                              <![endif]-->\r\n\r\n                                        <!--[if mso]>\r\n                                              <a href=\"https://notifications.google.com/g/p/AD-FnEycf0-jYiIScz0u0dSNPi4FrbwU8R2uZUsMOvjndwJ1CSqYkzDZkj-H4UdEvkEFP6DpOXtCe2bbd7kbONVtoxKjFa7eUAKacqfx8Os1tF8kc1XJ_T5PZgkhCdfIk4sUJ0S7CAv-LQBSvMg2eeQ-ZS8CkQS1OWsOKvrWI_rKR8FVeIlIkFdbZgl4TFz-vZWZyiXxk9BReC4o1ufKfQ\" class=\"subheadline btn_mod4_mobile\"  target=\"_blank\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; min-width:205px; padding:8px 0px 7px 0px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;direction:ltr;\" dir=\"ltr\">Confirm</a>\r\n<![endif]-->\r\n                                        \r\n\t\t\t\t\t\t\t\t\t\t  <!--[if !mso]><!-->\r\n                               <a href=https://notifications.google.com/g/p/AD-FnEycf0-jYiIScz0u0dSNPi4FrbwU8R2uZUsMOvjndwJ1CSqYkzDZkj-H4UdEvkEFP6DpOXtCe2bbd7kbONVtoxKjFa7eUAKacqfx8Os1tF8kc1XJ_T5PZgkhCdfIk4sUJ0S7CAv-LQBSvMg2eeQ-ZS8CkQS1OWsOKvrWI_rKR8FVeIlIkFdbZgl4TFz-vZWZyiXxk9BReC4o1ufKfQ target=_blank dir=ltr style=\"text-align: center; display: inline-block;\">\r\n<table role=presentation cellspacing=0 cellpadding=0 align=center>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 3px solid #ffffff;border-top-left-radius: 4px;border-top-right-radius: 4px;display:inline-block; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n        <tr>\r\n             <td class=\"subheadline btn_mod2_mobile2 enwid\" style=\"background-color:#1A73E8;; border:1px solid #1A73E8; border-radius:4px; color:#ffffff; display:inline-block; font-family:Google Sans, Roboto, Arial; font-size:16px; line-height:25px; text-decoration:none; min-width:205px; padding:8px 0px 7px 0px; -webkit-text-size-adjust:none; mso-hide:all; font-weight:500; text-align: center; word-break:normal;  direction:ltr;\">\r\nConfirm\r\n</td>\r\n</tr>\r\n    <tr style=\"padding: 0; margin: 0; font-size: 0; line-height: 0;\"><td style=\"border-top: 4px solid #ffffff;display:inline-block;border-bottom-left-radius: 4px;border-bottom-right-radius: 4px; -webkit-text-size-adjust:none;mso-hide:all;text-align: center;\"></td></tr>\r\n</table></a>\r\n                               <!--<![endif]-->\r\n                                            </div>\r\n                                          \r\n                                      </td>\r\n                                  </tr>\r\n                              </table>\r\n                          </td>\r\n                      </tr>\r\n                      \r\n                      <tr><td height=50></td></tr>\r\n                    </table>\r\n                  </td>\r\n                </tr>\r\n              </table>\r\n\t\t        </td>\r\n          </tr>\r\n          \r\n         \r\n          <tr><td height=24></td></tr>\r\n          \r\n          <tr>\r\n              <td width=480 style=\"-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; -ms-text-size-adjust: 100%; border: 2px solid #E8EAED; border-radius: 16px;\">\r\n                    <table role=presentation border=0 cellspacing=0 cellpadding=0 width=100% dir=ltr style=direction:ltr;>\r\n                           \r\n                            <tr>\r\n                                <td style=\"font-size:0pt; line-height:0pt; padding:0; margin:0;\" width=24></td>\r\n                                <!--[if mso]>\r\n                                <td style=\"margin-bottom:67px; padding: 21px 10px 35px 20px;\">    <img role=\"presentation\" class=\"fa_mobile\" width=\"24\" height=\"24\" border=\"0\" src=\"https://services.google.com/fh/files/emails/help_outline.png\" style=\"width: 24px; height:24px; text-align: center; border: none; font-size:3px;\">\r\n</td>\r\n                                <![endif]-->\r\n                                <!--[if !mso]><!-->\r\n                                <td style=\"padding: 47px 10px 40px 20px;\" valign=top>    <img role=presentation class=fa_mobile width=24 height=24 border=0 src=https://services.google.com/fh/files/emails/help_outline.png style=\"width: 24px; height:24px; text-align: center; border: none; font-size:3px;\">\r\n</td>\r\n                                <!--<![endif]-->\r\n                                \r\n                                <td valign=top>\r\n                                    <!--[if mso]>\r\n                                    <div class=\"device_txt\" style=\"margin-bottom:15px; padding-left: 20px; color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; line-height:28px; text-align:left; padding-top:18px; padding-bottom:12px; word-break:normal;direction:ltr;\" dir=\"ltr\" valign=\"top\">Find answers</div>\r\n                                    <![endif]-->\r\n                                    <!--[if !mso]><!-->\r\n                                    <div class=device_txt style=\"padding-left: 20px; color:#202124; font-family:Google Sans, Roboto, Arial; font-size:18px; line-height:28px; text-align:left; padding-top:45px; padding-bottom:12px; word-break:normal;direction:ltr;\" dir=ltr valign=top>Find answers</div>\r\n                                    <!--<![endif]-->\r\n                                  \r\n                                    <!--[if mso]>\r\n                                    <div class=\"subheadline space7\" style=\"margin-bottom:20px; padding-left: 20px; padding-right: 20px; color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-weight: normal; font-size:16px; line-height:24px; text-align:left; padding-bottom:35px; word-break:normal;direction:ltr;\" dir=\"ltr\" valign=\"top\">Visit the <a class=\"tstt\" href=\"https://notifications.google.com/g/p/AD-FnEyoBWRDEfxhTFsOUOdRI_dY4EOg58QFkTeAaRjpWYDRtWvKp4dyv_ngV7vtF6MkVCGaQ4g-jkrN044YDR7OM2YFav7BfLKyQj05QFR1BmBi7TYFjgiR2L6oJXO_csmLtImDIkuNAqY3msbyZ8nmE1xs_jd27fwTjATtLKnYf2fq42h4r5Sb7UdSEg\" target=\"_blank\" style=\"color:#1A73E8; text-decoration:none; font-weight:normal; border:0; ; white-space: normal; text-decoration: underline;\"> Help Center</a> to learn all about your new Google Account.</div>\r\n                                    <![endif]-->\r\n                                    <!--[if !mso]><!-->\r\n                                    <div class=\"subheadline space7\" style=\"padding-left: 20px; padding-right: 20px; color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-weight: normal; font-size:16px; line-height:24px; text-align:left; padding-bottom:50px; word-break:normal;direction:ltr;\" dir=ltr valign=top>Visit the <a class=tstt href=https://notifications.google.com/g/p/AD-FnEyoBWRDEfxhTFsOUOdRI_dY4EOg58QFkTeAaRjpWYDRtWvKp4dyv_ngV7vtF6MkVCGaQ4g-jkrN044YDR7OM2YFav7BfLKyQj05QFR1BmBi7TYFjgiR2L6oJXO_csmLtImDIkuNAqY3msbyZ8nmE1xs_jd27fwTjATtLKnYf2fq42h4r5Sb7UdSEg target=_blank style=\"color:#1A73E8; text-decoration:none; font-weight:normal; border:0; ; white-space: normal; text-decoration: underline;\"> Help Center</a> to learn all about your new Google Account.</div>\r\n                                    <!--<![endif]-->\r\n                                </td>\r\n                                <td style=\"font-size:0pt; line-height:0pt; padding:0; margin:0;\" width=24></td>\r\n                            </tr>\r\n                    </table>\r\n              </td>\r\n          </tr>\r\n\r\n          \r\n                  <tr>\r\n                      <td style=\"-webkit-font-smoothing: antialiased; -webkit-text-size-adjust: none; -ms-text-size-adjust: 100%;\">\r\n                        <table role=presentation border=0 cellspacing=0 cellpadding=0 align=center width=100%>\r\n                         \r\n                          <tr><td height=30></td></tr>\r\n                          <tr>\r\n                            <td width=134 height=46 align=center style=\"font-size:8px; word-break:normal;direction:ltr;\" dir=ltr>    <img role=presentation class=google_mobile width=82 height=26 border=0 src=https://services.google.com/fh/files/emails/google_logo2.png style=\"width: 82px; height:26px; text-align: center; border: none;\">\r\n</td>\r\n                          </tr>\r\n                          <tr><td height=19></td></tr>\r\n                          <tr>\r\n                            <td class=space6 align=center style=\"color:#5F6368; font-family:Roboto, OpenSans, Arial, sans-serif; font-size:12px; line-height:18px; margin:0; padding:0 80px 0 80px; text-align:center; word-break:normal;direction:ltr;\" dir=ltr>Replies to this email aren't monitored. If you have a question about your new account, the <a class=tstt href=https://notifications.google.com/g/p/AD-FnExy_50yPYb0RHFvebs9O3dwP7mul3Op8_F9XWU123-l5Sug-Ufrw_kyrayfKub72KS5gMldRqYUTMp-oVKQj22sadXv3A3TfivQ6XiCNS9ja0ezBqcP4PqYrp5DNCGqeaZZQMxuuGsrwoFc29LWJY74MUQKDLwPtTKJ9Oj1mLibb8efsKgpuIIqSlIFKc-8nA target=_blank style=\"color:#1A73E8; text-decoration:none; font-weight:normal; border:0; ; white-space: normal; text-decoration: underline;\"> Help Center</a> likely has the answer you're looking for.</td>\r\n                          </tr>\r\n                          <tr><td height=19></td></tr>\r\n                          <tr>\r\n                            <td class=space6 valign=middle style=\"color:#5F6368; font-family:\"Roboto\", OpenSans, \"Open Sans\", Arial, sans-serif; font-size:10px; line-height:15px; margin:0; padding:0 80px 0 80px; text-align:center\" align=center>\r\n \r\n\r\n      <span style=\"font-size:inherit; color:inherit; font-weight:inherit; line-height:inherit; font-family:inherit;\">Google LLC<br>1600 Amphitheatre Parkway,<br>Mountain View, CA 94043</span>\r\n   \r\n   \r\n\r\n<br><br><span style=\"word-break:normal; direction:ltr; font-family:Roboto, OpenSans, Arial, sans-serif;\" dir=ltr>This email was sent to you because you created a Google Account.</span></td>\r\n                          </tr>\r\n                        </table>\r\n                      </td>\r\n                  </tr>\r\n                  <tr><td height=18></td></tr>\r\n        </table>\r\n        <div style=\"display:none; white-space:nowrap; font:15px courier; line-height:0;\">\r\n                                    \r\n                                     \r\n        </div>\r\n      </center>\r\n    <img alt=\"\" height=1 width=3 src=https://notifications.google.com/g/img/AD-FnEwuexOnRV6tiq42JPSTQrVJZCLNH0WoFEJIVNyIT6WMKQ.gif></body>\r\n  </html>\r\n",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "raw_header",
+          "description": "Returns the complete original header content of the email in raw text format.",
+          "isRequired": false,
+          "value": "{\"Delivered-To\": \"threatmailboxtesting@gmail.com\", \"Received\": \"from mail-sor-f69.google.com (mail-sor-f69.google.com. [209.85.220.69])\\n        by mx.google.com with SMTPS id p79sor3140981iod.73.2021.03.25.07.34.19\\n        for <threatmailboxtesting@gmail.com>\\n        (Google Transport Security);\\n        Thu, 25 Mar 2021 07:34:26 -0700 (PDT)\", \"X-Received\": \"by 2002:a5d:8149:: with SMTP id f9mr6770529ioo.191.1616682859192;\\n Thu, 25 Mar 2021 07:34:19 -0700 (PDT)\", \"ARC-Seal\": \"i=1; a=rsa-sha256; t=1616682866; cv=none;\\n        d=google.com; s=arc-20160816;\\n        b=jXGOJRjgsqYmzNxg4X/mIzRU36/SxUMwYD049kIGLJYAssAUEiiZ6xJdhVdEGHRyHk\\n         MJr+lEohPdtvF2+Q+bq1eul33f/Yyz5EvYOQNBiw2LCTXRRjCx+0oJPoPgSBXtfdCLKD\\n         K8lYMHOfVXJiNdw/f/MVVOH1ZJn/KVYQDKPE5cS/a0adKrv3eC4C3hWZNc7bDDgUAro3\\n         rPqq6RHjbPjkiroCRq1eEEtANWsuFPZUOMC/mGJ1nbkuyF+pHxoLPd0TgtTyZXkxSiq6\\n         wusz6ywgvdCPUL5a8BxNq+I+0u4XOgkcC4EjDq6AHcIvm0mxS8/jWFf/0R8umyalm5ZF\\n         5+/w==\", \"ARC-Message-Signature\": \"i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;\\n        h=to:from:subject:message-id:feedback-id:reply-to:date:mime-version\\n         :dkim-signature;\\n        bh=LRxL+A66WLRJJX0PJkttMQZLfrR/qiMhnL44bjmz0dk=;\\n        b=yiY8QtYhlUJAIMeGOVbOb4sk0HXCBnMX5NW56EXyiSYjnnZnOigeaBG9xzmg+Qjndm\\n         kUt6w0+kC9SjDsZL165i8S29mlP7r39xenIcBQMmYXY2Tj3+vekcBRL+lEuFw6lun4gw\\n         E10VWbxL1eB684tx2jLl8RbJ4MVwS/ce1HunVNU3TPmN5BY9m9Px/On2T+TvT7ifulpY\\n         0u0R7W36hNXhQpFI1uri+gk3TdIvH6tWtJCwS07CEHqjcr/TAuuaV/jV6YsVf6uLRDv+\\n         5PgYpBiwwCura49FpVhBEqNa7T/5BRI6A6JSDIF3ep7VHFKzZrORHhMIoFAr1hLm1Av6\\n         C39g==\", \"ARC-Authentication-Results\": \"i=1; mx.google.com;\\n       dkim=pass header.i=@google.com header.s=20161025 header.b=ESmR5mw7;\\n       spf=pass (google.com: domain of 3a59cybskacyiqqingeqoowpkvavgco-pqtgrnaiqqing.eqo@scoutcamp.bounces.google.com designates 209.85.220.69 as permitted sender) smtp.mailfrom=3a59cYBsKACYIQQINGEQOOWPKVaVGCO-PQTGRNaIQQING.EQO@scoutcamp.bounces.google.com;\\n       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=google.com\", \"Return-Path\": \"<3a59cYBsKACYIQQINGEQOOWPKVaVGCO-PQTGRNaIQQING.EQO@scoutcamp.bounces.google.com>\", \"Received-SPF\": \"pass (google.com: domain of 3a59cybskacyiqqingeqoowpkvavgco-pqtgrnaiqqing.eqo@scoutcamp.bounces.google.com designates 209.85.220.69 as permitted sender) client-ip=209.85.220.69;\", \"Authentication-Results\": \"mx.google.com;\\n       dkim=pass header.i=@google.com header.s=20161025 header.b=ESmR5mw7;\\n       spf=pass (google.com: domain of 3a59cybskacyiqqingeqoowpkvavgco-pqtgrnaiqqing.eqo@scoutcamp.bounces.google.com designates 209.85.220.69 as permitted sender) smtp.mailfrom=3a59cYBsKACYIQQINGEQOOWPKVaVGCO-PQTGRNaIQQING.EQO@scoutcamp.bounces.google.com;\\n       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=google.com\", \"DKIM-Signature\": \"v=1; a=rsa-sha256; c=relaxed/relaxed;\\n        d=google.com; s=20161025;\\n        h=mime-version:date:reply-to:feedback-id:message-id:subject:from:to;\\n        bh=LRxL+A66WLRJJX0PJkttMQZLfrR/qiMhnL44bjmz0dk=;\\n        b=ESmR5mw79D/gXjrl4z6QNMe6530ZPlx1Rc3fx8zFAtnkji/7ZlBcJPNW5uAtP3ZGo9\\n         LuzaVt28+R12nS8HewmMTzZnefOVJ+JIWP4uavYju37R2OApmcV2JecFbSToVny3PFu/\\n         +oXXiSizrRdyqKRs/ORkkG9bWwQggiL0NgzpDRrczadzSn1U+O+rhFwXrb9xVMfL4n/Z\\n         NdcfrhGNUXmyTLsvM3XjbwHPUY2JyoVyUoS72h44jAewqJ3L/2FaQCYwaInFmaZ8CTOE\\n         xBT7wbfEpCrLgof8vlupZVI8fTgIXHAwVIGlK+4CLAWYWjWadH/+1Q+HRnR2Hl6r0BJ5\\n         FxUQ==\", \"X-Google-DKIM-Signature\": \"v=1; a=rsa-sha256; c=relaxed/relaxed;\\n        d=1e100.net; s=20161025;\\n        h=x-gm-message-state:mime-version:date:reply-to:feedback-id\\n         :message-id:subject:from:to;\\n        bh=LRxL+A66WLRJJX0PJkttMQZLfrR/qiMhnL44bjmz0dk=;\\n        b=JGXiUGxa+fQJBjPLmeHxY3vdn9frSTCFKECvdC5xAuh6CQpMyl+hq1u2psEtr2BiWE\\n         IEGJVTVrMHlsB6NXk6ridsNyB6xh9qUaO1iZMfoH/dq/aBAOKQ9L0MRRP7+CgjPvItyt\\n         UPNFS7ZpujDWukVERe9YLsu72kaAcbD0NcyNd8aFwTMUId+t54m62VUrUp6W1NQneLB4\\n         M6FA8UTrcyYB7Ol0EzOrAN4Up2xvvCrEgJEqhH5PQgmdakGEDeTJjuP3U11YKEcW2sJ9\\n         Y3SbUGew17tlppP2YTPknR+mT5xofkmPG8ik4J4+rsZ/VnvcUHBVDgJBoUy0z1HqM24D\\n         nXKw==\", \"X-Gm-Message-State\": \"AOAM531/qa8M77ZttNydP0MhDLZjJSS/++WQAH9EyT1dlxNehQ28SE6Q\\n\\tpbps/bN039kC2O7CZkHeLxTj\", \"X-Google-Smtp-Source\": \"ABdhPJzuZMHDxrOpzSZRgO02xOaR58NnOERcdhCi7a4xFBY02FudiCHyp1MYs2XPUDmWEGuc46PUWks=\", \"MIME-Version\": \"1.0\", \"Date\": \"Thu, 25 Mar 2021 07:34:19 -0700\", \"Reply-To\": \"Google Community Team <googlecommunityteam-noreply@google.com>\", \"X-Google-Id\": \"4016765\", \"Feedback-ID\": \"P-232-0:C20113407:M110377189-en:gamma\", \"X-Notifications\": \"GAMMA:<d48b871d2e5e6b01f04e1ca5ccb37ba49c178341-20113407-110703341@google.com>\", \"Message-ID\": \"<d48b871d2e5e6b01f04e1ca5ccb37ba49c178341-20113407-110703341@google.com>\", \"Subject\": \"Threatmailbox, finish setting up your new Google Account\", \"From\": \"Google Community Team <googlecommunityteam-noreply@google.com>\", \"To\": \"threatmailboxtesting@gmail.com\", \"Content-Type\": \"multipart/alternative; boundary=\\\"0000000000008960e105be5d4f9f\\\"\"}",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_regulatory_email",
+          "description": "Returns if the email is marked as a regulatory email, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "folder_id",
+          "description": "Returns the unique ID of the folder.",
+          "isRequired": false,
+          "value": "142",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "folder_name",
+          "description": "Returns the name of the folder.",
+          "isRequired": false,
+          "value": "INBOX",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "has_attachments",
+          "description": "Returns true if the email message has attachments, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

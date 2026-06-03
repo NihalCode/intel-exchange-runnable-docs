@@ -1,0 +1,314 @@
+{
+  "slug": "threat-data-objects/basic-details/threat-data-object-advanced-details",
+  "title": "Get Threat Data Object Additional Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "threat-data-object-advanced-details"
+  ],
+  "description": "Retrieves additional information about a threat data object, such as kill chain phases and published collections.",
+  "method": "GET",
+  "path": "ingestion/threat-data/{object_type}/{object_id}/advanced-details/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 2000,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data object. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the unique ID of an object. To retrieve a list of object IDs, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "d2610909-58ff-4be5-a07a-48b42a859462",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394762b49385adf3c45258"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "published_collections",
+          "description": "Returns a list of published collections with the ID, action type, name, and published time.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique identifier of the published collection.",
+                  "isRequired": false,
+                  "value": "245b2206-adae-4056-b2a3-ef9270bdec16",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "collection",
+                  "description": "Returns the details of the collection.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the collection.",
+                      "isRequired": false,
+                      "value": "8c9e459f-5164-4f56-9a65-6a3004977cef",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the collection.",
+                      "isRequired": false,
+                      "value": "default",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "action_type",
+                  "description": "Returns the type of the action.",
+                  "isRequired": false,
+                  "value": "Rule",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published",
+                  "description": "Returns the UNIX timestamp of when the object was published.",
+                  "isRequired": false,
+                  "value": 1685356046,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "kill_chain_phases",
+          "description": "Returns a list of kill chain phases with the phase ID, kill chain name, and phase name.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the phase.",
+                  "isRequired": false,
+                  "value": "9336b88e-a393-443b-81a7-2b9426d7f675",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the kill chain name.",
+                  "isRequired": false,
+                  "value": "lockheed-martin-cyber-kill-chain",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "phase_name",
+                  "description": "Returns the phase name.",
+                  "isRequired": false,
+                  "value": "c2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "c11b4315-df15-49c0-ad65-17143ef8cd0d",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "lockheed-martin-cyber-kill-chain",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "phase_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "installation",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

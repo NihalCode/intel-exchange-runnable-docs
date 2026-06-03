@@ -1,0 +1,978 @@
+{
+  "slug": "administration/audit-log-management/list-subscriber-logs",
+  "title": "Get Subscriber Log List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "audit-log-management",
+    "list-subscriber-logs"
+  ],
+  "description": "Returns a list of activity logs of a subscriber on the platform.",
+  "method": "GET",
+  "path": "publishing/subscriber/polling_logs/{subscriber_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve logs. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of logs to retrieve on each page. ",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "timestamp_from",
+        "description": "Pass the created time in epoch format from which you want to retrieve logs.",
+        "isRequired": false,
+        "value": "1704067200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "timestamp_to",
+        "description": "Pass the created time in epoch format until which you want to retrieve logs.",
+        "isRequired": false,
+        "value": "1704758399",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "response_code",
+        "description": "Pass the HTTP status code to filter logs. ",
+        "isRequired": false,
+        "value": "200",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "200"
+            },
+            {
+              "value": "201"
+            },
+            {
+              "value": "206"
+            },
+            {
+              "value": "400"
+            },
+            {
+              "value": "401"
+            },
+            {
+              "value": "402"
+            },
+            {
+              "value": "403"
+            },
+            {
+              "value": "404"
+            },
+            {
+              "value": "429"
+            },
+            {
+              "value": "500"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "request_method",
+        "description": "Pass the HTTP request method to filter logs. ",
+        "isRequired": false,
+        "value": "get",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "get"
+            },
+            {
+              "value": "post"
+            },
+            {
+              "value": "put"
+            },
+            {
+              "value": "delete"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "collection_id",
+        "description": "Pass the unique ID of a collection to filter logs.",
+        "isRequired": false,
+        "value": "57546b94-da09-4a16-9e69-d1d20969e1ab",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action",
+        "description": "Pass the action type of the subscriber.",
+        "isRequired": false,
+        "value": "Inbox",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "Inbox"
+            },
+            {
+              "value": "Polling"
+            },
+            {
+              "value": "Discovery"
+            },
+            {
+              "value": "Collection Detail"
+            },
+            {
+              "value": "Object Status"
+            },
+            {
+              "value": "Taxii API root"
+            },
+            {
+              "value": "Collection List"
+            },
+            {
+              "value": "Object List"
+            },
+            {
+              "value": "Object Detail"
+            },
+            {
+              "value": "Collection Manifest"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass the parameter to sort logs. By default logs are returned in descending order (latest logs are returned first) based on the created time.",
+        "isRequired": false,
+        "value": "-timestamp",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass the query text to search logs.",
+        "isRequired": false,
+        "value": "sample text",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "subscriber_id",
+        "description": "Pass the unique ID of a subscriber.",
+        "isRequired": false,
+        "value": "5f071899-b78a-4844-953e-68128f256d32",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394416b49385adf3c4352b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page of the response.",
+          "isRequired": false,
+          "value": "subscriber/polling_logs/5f071899-b78a-4844-953e-68128f256d32/?page=2&page_size=10",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page of the response.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of logs returned per page.",
+          "isRequired": false,
+          "value": 10,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of logs available in the platform.",
+          "isRequired": false,
+          "value": 392,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of activity logs.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the log.",
+                  "isRequired": false,
+                  "value": "b14a5e48-c337-4b4d-81a7-3770fe1ab1ee",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api",
+                  "description": "Returns the API endpoint used.",
+                  "isRequired": false,
+                  "value": "/ctix21/collections/f6842cdd-a734-49f3-b13d-4fb1ec2ce6a8/objects/?added_after=2023-12-16T11%3A30%3A00.000000Z&limit=200",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "error_message",
+                  "description": "Returns message if the request results in an error.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "collection_id",
+                  "description": "Returns a list of the IDs of the associated collections.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "This is an example value.",
+                      "isRequired": false,
+                      "value": "f6842cdd-a734-49f3-b13d-4fb1ec2ce6a8",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "feed_count",
+                  "description": "Returns the number of feeds.",
+                  "isRequired": false,
+                  "value": 30,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_name",
+                  "description": "Returns the name of the subscriber.",
+                  "isRequired": false,
+                  "value": "STIX Subscriber",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_id",
+                  "description": "Returns the ID of the subscriber.",
+                  "isRequired": false,
+                  "value": "5f071899-b78a-4844-953e-68128f256d32",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response_code",
+                  "description": "Returns the HTTP response code.",
+                  "isRequired": false,
+                  "value": 200,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "collection_name",
+                  "description": "Returns the name of the name of the associated collection from which data is polled or inboxed.",
+                  "isRequired": false,
+                  "value": "api_automation_stixw_collection1699616980",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ip_address",
+                  "description": "Returns the IP address of the server.",
+                  "isRequired": false,
+                  "value": "3.228.242.33",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "request_headers",
+                  "description": "Returns the headers passed with the API request in key-value pairs.",
+                  "isRequired": false,
+                  "value": "{\"Content-Type\": null, \"Accept\": \"application/taxii+json;version=2.1\", \"Authorization\": \"*********\", \"User-Agent\": \"CTIX-3.0\", \"WWW-Authenticate\": null, \"X-TAXII-Date-Added-First\": null, \"X-TAXII-Date-Added-Last\": null}",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "request_method",
+                  "description": "Returns the HTTP request method used.",
+                  "isRequired": false,
+                  "value": "GET",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response_time",
+                  "description": "Returns the total time taken to respond in seconds.",
+                  "isRequired": false,
+                  "value": 3404.2890071868896,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "action",
+                  "description": "Returns the type of action made.",
+                  "isRequired": false,
+                  "value": "Object List",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "timestamp",
+                  "description": "Returns the creation time of the log in epoch format.",
+                  "isRequired": false,
+                  "value": 1704007240.269333,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "organization_name",
+                  "description": "Returns the organization name associated with the user. Returns the subscriber name if there is no organization associated with the subscriber.",
+                  "isRequired": false,
+                  "value": "STIX Subscriber",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "request_data",
+                  "description": "Returns the data passed with the API request.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "taxii_version",
+                  "description": "Returns the STIX version.",
+                  "isRequired": false,
+                  "value": "2.x",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "dd09c01d-843e-4790-92a5-f2efae6c293a",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "api",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "/ctix21/collections/f6842cdd-a734-49f3-b13d-4fb1ec2ce6a8/objects/?added_after=2023-12-16T10%3A30%3A00.000000Z&limit=200",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "error_message",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "collection_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "f6842cdd-a734-49f3-b13d-4fb1ec2ce6a8",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "feed_count",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 30,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "STIX Subscriber",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "5f071899-b78a-4844-953e-68128f256d32",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response_code",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 200,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "collection_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "api_automation_stixw_collection1699616980",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ip_address",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "3.228.242.33",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "request_headers",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "{\"Content-Type\": null, \"Accept\": \"application/taxii+json;version=2.1\", \"Authorization\": \"*********\", \"User-Agent\": \"CTIX-3.0\", \"WWW-Authenticate\": null, \"X-TAXII-Date-Added-First\": null, \"X-TAXII-Date-Added-Last\": null}",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "request_method",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "GET",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response_time",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 435.78195571899414,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "action",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "Object List",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "timestamp",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 1704003637.186627,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "organization_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "STIX Subscriber",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "request_data",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "taxii_version",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "2.x",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "hide_aggregate_col",
+          "description": "Indicates whether to hide aggregate columns in UI.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

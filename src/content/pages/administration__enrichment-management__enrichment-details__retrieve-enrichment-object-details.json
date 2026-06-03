@@ -1,0 +1,430 @@
+{
+  "slug": "administration/enrichment-management/enrichment-details/retrieve-enrichment-object-details",
+  "title": "Get Enrichment Object Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "enrichment-management",
+    "enrichment-details",
+    "retrieve-enrichment-object-details"
+  ],
+  "description": "Retrieves the enrichment data for the given object and tool ID.",
+  "method": "GET",
+  "path": "ingestion/enrichment/enrichment-object-detail/{object_id}/{tool_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "object_id",
+        "description": "Pass the object ID to retrieve the enrichment details.",
+        "isRequired": true,
+        "value": "46594df4-7629-41cd-a8c8-80e890d0f776",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_type",
+        "description": "Pass the type of the object to retrieve enrichment details.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tool_id",
+        "description": "Pass the tool ID to retrieve the enrichment details.",
+        "isRequired": true,
+        "value": "960fcbfa-df0a-4960-8478-ba053c9b379f",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_id",
+        "description": "Pass the object ID to retrieve the enrichment details.",
+        "isRequired": true,
+        "value": "3c94480e-cc48-431b-b942-b270452d1280",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tool_id",
+        "description": "Pass the tool ID to retrieve the enrichment details.",
+        "isRequired": true,
+        "value": "ba4b209c-51cb-4b13-bbdf-955ea6ae50c2",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693942fcb49385adf3c43095"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the enrichment object.",
+          "isRequired": false,
+          "value": "1569489a-957f-4aee-8760-45214dcbcea6",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tool",
+          "description": "Returns the data enrichment tool object.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the tool.",
+              "isRequired": false,
+              "value": "bea1bf0f-3c48-4b85-b510-a23bb31ce195",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "created",
+              "description": "Returns the timestamp when the tool record was created.",
+              "isRequired": false,
+              "value": 1632224503,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "modified",
+              "description": "Returns the timestamp when the tool record was last modified.",
+              "isRequired": false,
+              "value": 1632224503,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the enrichment tool.",
+              "isRequired": false,
+              "value": "BlueCoat",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "status",
+              "description": "Returns true if the tool is active, otherwise false.",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "image",
+              "description": "Returns the URL of the tool logo.",
+              "isRequired": false,
+              "value": null,
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "created",
+          "description": "Returns the creation date of data enrichment.",
+          "isRequired": false,
+          "value": 1632224549,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the modification date of data enrichment.",
+          "isRequired": false,
+          "value": 1632224549,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "verdict",
+          "description": "Returns the verdict of enrichment.",
+          "isRequired": false,
+          "value": "Malicious",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "enrichment_status",
+          "description": "Returns the enrichment status.",
+          "isRequired": false,
+          "value": "Enrichment",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "enriched_on",
+          "description": "Returns the data enrichment date.",
+          "isRequired": false,
+          "value": 1632224549,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "classification",
+          "description": "Returns the classification of enrichment.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "score",
+          "description": "Returns a numerical risk score assigned by the enrichment tool.",
+          "isRequired": false,
+          "value": 61,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "object_type",
+          "description": "Returns the object type of data enrichment.",
+          "isRequired": false,
+          "value": "indicator",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "object_id",
+          "description": "Returns the object ID of the enriched data.",
+          "isRequired": false,
+          "value": "3296c371-f039-49b3-b901-418c7b20aa53",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tool_response",
+          "description": "Returns the raw response from the enrichment tool.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "meta_information",
+          "description": "Returns the meta information.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,477 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import { runJsInSandbox } from "@/lib/js-sandbox";
+import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
+import {
+  credFieldsForExec,
+  credFieldsForRequest,
+  previewRequest,
+  resolveExec,
+  resolveStructured,
+  type CredField,
+} from "@/lib/resolve-request";
+import { isMutating, maskText } from "@/lib/security";
+import type { CodeSnippet, RunnableRequest } from "@/lib/types";
+import { useRunSettings } from "./RunSettings";
+
+/* --------------------------------- shared -------------------------------- */
+
+function ResultBox({
+  tone,
+  title,
+  children,
+}: {
+  tone: "neutral" | "success" | "error" | "info";
+  title: string;
+  children: React.ReactNode;
+}) {
+  const toneClass = {
+    neutral: "border-zinc-300 dark:border-zinc-700",
+    success: "border-emerald-400/60 bg-emerald-50/60 dark:bg-emerald-950/20",
+    error: "border-red-400/60 bg-red-50/60 dark:bg-red-950/20",
+    info: "border-sky-400/60 bg-sky-50/60 dark:bg-sky-950/20",
+  }[tone];
+  return (
+    <div className={`mt-2 rounded-md border ${toneClass} p-3 text-sm`}>
+      <div className="mb-1 text-xs font-semibold uppercase tracking-wide opacity-70">
+        {title}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+/** Renders text only (React escapes) — never dangerouslySetInnerHTML. */
+function Pre({ text }: { text: string }) {
+  return (
+    <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
+      {text}
+    </pre>
+  );
+}
+
+function CredentialsForm({ fields }: { fields: CredField[] }) {
+  const { getCredential, setCredential } = useRunSettings();
+  if (fields.length === 0) return null;
+  return (
+    <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
+      <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+        <LockIcon />
+        Credentials (kept in memory only)
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {fields.map((f) => (
+          <label key={f.name} className="flex flex-col gap-1 text-xs">
+            <span className="font-medium opacity-80">{f.name}</span>
+            <input
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder={f.example || `Enter ${f.name}`}
+              value={getCredential(f.name)}
+              onChange={(e) => setCredential(f.name, e.target.value)}
+              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
+            />
+          </label>
+        ))}
+      </div>
+      <p className="mt-2 text-[11px] opacity-60">
+        Secrets are never written to localStorage and are masked in output.
+      </p>
+    </div>
+  );
+}
+
+function RunButton({
+  onClick,
+  busy,
+  children,
+  tone = "primary",
+}: {
+  onClick: () => void;
+  busy?: boolean;
+  children: React.ReactNode;
+  tone?: "primary" | "ghost" | "danger";
+}) {
+  const toneClass = {
+    primary:
+      "bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50",
+    ghost:
+      "border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800",
+    danger: "bg-red-600 text-white hover:bg-red-500 disabled:opacity-50",
+  }[tone];
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={busy}
+      className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${toneClass}`}
+    >
+      {busy ? <Spinner /> : null}
+      {children}
+    </button>
+  );
+}
+
+/* -------------------------------- HTTP ----------------------------------- */
+
+interface HttpResult {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  headers: { name: string; value: string }[];
+  body: string;
+  truncated?: boolean;
+  durationMs?: number;
+}
+
+function formatMaybeJson(text: string): string {
+  const t = (text || "").trim();
+  if (!t) return "";
+  if (t.startsWith("{") || t.startsWith("[")) {
+    try {
+      return JSON.stringify(JSON.parse(t), null, 2);
+    } catch {
+      /* not json */
+    }
+  }
+  return text;
+}
+
+function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
+  const { baseUrl, secretValues } = useRunSettings();
+  const settings = useRunSettings();
+
+  const parsed = useMemo<ExecRequest | null>(
+    () => (request ? null : parseHttpSnippet(code)),
+    [code, request]
+  );
+  const credFields = useMemo<CredField[]>(
+    () =>
+      request
+        ? credFieldsForRequest(request)
+        : parsed
+          ? credFieldsForExec(parsed)
+          : [],
+    [request, parsed]
+  );
+  const initialBody = request ? request.body : parsed?.body;
+  const method = (request?.method || parsed?.method || "GET").toUpperCase();
+  const parseFailed = !request && !parsed;
+
+  const [bodyText, setBodyText] = useState<string | undefined>(initialBody);
+  const [phase, setPhase] = useState<"idle" | "confirm" | "loading">("idle");
+  const [result, setResult] = useState<HttpResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const buildExec = (): ExecRequest =>
+    request
+      ? resolveStructured(request, baseUrl, settings.getCredential, bodyText)
+      : resolveExec(parsed!, baseUrl, settings.getCredential, bodyText);
+
+  async function execute() {
+    const exec = buildExec();
+    setPreview(maskText(previewRequest(exec), secretValues));
+    setPhase("loading");
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("/api/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          method: exec.method,
+          url: exec.url,
+          headers: exec.headers,
+          body: exec.body,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setError(data.error || `Proxy error (HTTP ${res.status}).`);
+      } else {
+        setResult(data as HttpResult);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Network error.");
+    } finally {
+      setPhase("idle");
+    }
+  }
+
+  function handleRun() {
+    if (parseFailed) {
+      setError("This snippet could not be parsed into an HTTP request.");
+      return;
+    }
+    if (isMutating(method)) {
+      setPhase("confirm");
+      return;
+    }
+    void execute();
+  }
+
+  const showBody =
+    method !== "GET" && method !== "HEAD" && (bodyText !== undefined || !!request);
+
+  return (
+    <div>
+      <CredentialsForm fields={credFields} />
+
+      {showBody ? (
+        <div className="mt-2">
+          <label className="mb-1 block text-xs font-medium opacity-70">
+            Request body
+          </label>
+          <textarea
+            value={bodyText ?? ""}
+            onChange={(e) => setBodyText(e.target.value)}
+            spellCheck={false}
+            rows={Math.min(10, Math.max(3, (bodyText ?? "").split("\n").length))}
+            className="w-full rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
+          />
+        </div>
+      ) : null}
+
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <RunButton onClick={handleRun} busy={phase === "loading"}>
+          <PlayIcon />
+          {phase === "loading" ? "Running…" : "Run"}
+        </RunButton>
+        <span className="text-[11px] opacity-50">
+          {method} · base: {baseUrl || "(set base URL above)"}
+        </span>
+      </div>
+
+      {phase === "confirm" ? (
+        <ResultBox tone="info" title={`Confirm ${method} request`}>
+          <p className="mb-2">
+            This is a <strong>{method}</strong> request and may create, modify, or
+            delete data on the target server. Continue?
+          </p>
+          <div className="flex gap-2">
+            <RunButton tone="danger" onClick={() => void execute()}>
+              Yes, send {method}
+            </RunButton>
+            <RunButton tone="ghost" onClick={() => setPhase("idle")}>
+              Cancel
+            </RunButton>
+          </div>
+        </ResultBox>
+      ) : null}
+
+      {preview && (phase === "loading" || result || error) ? (
+        <ResultBox tone="neutral" title="Request sent (secrets masked)">
+          <Pre text={preview} />
+        </ResultBox>
+      ) : null}
+
+      {error ? (
+        <ResultBox tone="error" title="Error">
+          <Pre text={maskText(error, secretValues)} />
+        </ResultBox>
+      ) : null}
+
+      {result ? (
+        <ResultBox tone={result.ok ? "success" : "error"} title="Response">
+          <div className="mb-2 font-mono text-xs">
+            <span
+              className={`font-semibold ${result.ok ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+            >
+              {result.status} {result.statusText}
+            </span>
+            {typeof result.durationMs === "number" ? (
+              <span className="opacity-50"> · {result.durationMs} ms</span>
+            ) : null}
+            {result.truncated ? (
+              <span className="text-amber-600"> · response truncated</span>
+            ) : null}
+          </div>
+          <Pre text={maskText(formatMaybeJson(result.body), secretValues)} />
+        </ResultBox>
+      ) : null}
+    </div>
+  );
+}
+
+/* -------------------------------- JSON ----------------------------------- */
+
+function JsonRunner({ code }: { code: string }) {
+  const [status, setStatus] = useState<"idle" | "valid" | "invalid">("idle");
+  const [output, setOutput] = useState("");
+
+  function validate() {
+    try {
+      const parsed = JSON.parse(code);
+      setOutput(JSON.stringify(parsed, null, 2));
+      setStatus("valid");
+    } catch (e) {
+      setOutput(e instanceof Error ? e.message : "Invalid JSON.");
+      setStatus("invalid");
+    }
+  }
+
+  return (
+    <div>
+      <div className="mt-2">
+        <RunButton onClick={validate} tone="ghost">
+          <CheckIcon />
+          Validate / Format JSON
+        </RunButton>
+      </div>
+      {status === "valid" ? (
+        <ResultBox tone="success" title="Valid JSON — formatted">
+          <Pre text={output} />
+        </ResultBox>
+      ) : null}
+      {status === "invalid" ? (
+        <ResultBox tone="error" title="Invalid JSON">
+          <Pre text={output} />
+        </ResultBox>
+      ) : null}
+    </div>
+  );
+}
+
+/* ----------------------------- JavaScript -------------------------------- */
+
+function JsRunner({ code }: { code: string }) {
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [result, setResult] = useState<string | undefined>();
+  const [error, setError] = useState<string | undefined>();
+
+  async function run() {
+    setBusy(true);
+    setDone(false);
+    setError(undefined);
+    setResult(undefined);
+    setLogs([]);
+    const r = await runJsInSandbox(code);
+    setLogs(r.logs || []);
+    setResult(r.result);
+    setError(r.error);
+    setDone(true);
+    setBusy(false);
+  }
+
+  return (
+    <div>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <RunButton onClick={run} busy={busy}>
+          <PlayIcon />
+          {busy ? "Running…" : "Run (sandboxed)"}
+        </RunButton>
+        <span className="text-[11px] opacity-50">
+          Runs in an isolated iframe; network calls to the API may be blocked by CORS.
+        </span>
+      </div>
+      {done ? (
+        <ResultBox tone={error ? "error" : "success"} title="Console output">
+          {logs.length > 0 ? <Pre text={logs.join("\n")} /> : null}
+          {result !== undefined ? (
+            <div className="mt-1">
+              <span className="text-[11px] opacity-60">return value:</span>
+              <Pre text={result} />
+            </div>
+          ) : null}
+          {error ? (
+            <div className="mt-1 text-red-600 dark:text-red-400">
+              <Pre text={error} />
+            </div>
+          ) : null}
+          {logs.length === 0 && result === undefined && !error ? (
+            <span className="text-xs opacity-60">No output.</span>
+          ) : null}
+        </ResultBox>
+      ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------- Python ---------------------------------- */
+
+function PythonRunner() {
+  return (
+    <div className="mt-2">
+      <button
+        type="button"
+        disabled
+        className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-md border border-zinc-300 px-3 py-1.5 text-xs font-semibold opacity-50 dark:border-zinc-700"
+      >
+        <PlayIcon />
+        Run
+      </button>
+      <p className="mt-1 text-[11px] opacity-60">
+        Python snippets are not runnable in this browser environment yet.
+      </p>
+    </div>
+  );
+}
+
+/* ------------------------------- Shell ----------------------------------- */
+
+function ShellNote() {
+  return (
+    <p className="mt-2 text-[11px] opacity-60">
+      Shell commands can&apos;t be executed from the browser. Use the cURL tab for an
+      equivalent runnable request, or copy this snippet to your terminal.
+    </p>
+  );
+}
+
+/* ------------------------------ dispatcher ------------------------------- */
+
+export function SnippetRunner({ snippet }: { snippet: CodeSnippet }) {
+  switch (snippet.runKind) {
+    case "http":
+      return <HttpRunner code={snippet.code} request={snippet.request} />;
+    case "json":
+      return <JsonRunner code={snippet.code} />;
+    case "javascript":
+      return <JsRunner code={snippet.code} />;
+    case "python":
+      return <PythonRunner />;
+    case "none":
+      if (/^(bash|sh|shell|zsh)$/i.test(snippet.lang)) return <ShellNote />;
+      return null;
+    default:
+      return null;
+  }
+}
+
+/* -------------------------------- icons ---------------------------------- */
+
+function Spinner() {
+  return (
+    <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z" />
+    </svg>
+  );
+}
+function PlayIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  );
+}
+function CheckIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function LockIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="11" width="18" height="11" rx="2" />
+      <path d="M7 11V7a5 5 0 0110 0v4" />
+    </svg>
+  );
+}

@@ -1,0 +1,351 @@
+{
+  "slug": "reports/run-report",
+  "title": "Run Report",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "reports",
+    "run-report"
+  ],
+  "description": "Runs a report and sends the file to the recipients.",
+  "method": "POST",
+  "path": "ingestion/reports/{report_id}/run/",
+  "request": {
+    "query": [
+      {
+        "name": "type",
+        "description": "Pass the type of report to run. ",
+        "isRequired": true,
+        "value": "basic",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "basic"
+            },
+            {
+              "value": "advanced"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "file_types",
+        "description": "Pass the report types.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "enumValue": [
+            {
+              "value": "csv",
+              "description": ""
+            },
+            {
+              "value": "xls",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example of file type.",
+            "isRequired": false,
+            "value": "csv",
+            "valueType": "string",
+            "options": {
+              "enumValue": [
+                {
+                  "value": "csv",
+                  "description": ""
+                },
+                {
+                  "value": "xls",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "internal_recipients",
+        "description": "Pass the list of details of internal users to share the report.\n**Note**: At least one internal or external recipient is required.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass the details of an internal user to share the report.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "first_name",
+                    "description": "Pass the first name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "John",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Pass the last name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "Doe",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "email",
+                    "description": "Pass the email address of the internal recipient.",
+                    "isRequired": false,
+                    "value": "john.doe@orgname.com",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "id",
+                    "description": "Pass the unique identifier of the internal recipient.",
+                    "isRequired": false,
+                    "value": "af4d8750-b8a4-4197-9a61-6b416b48f752",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "query_key",
+        "description": "Pass the value to specify whether the report must run based on the created time or the last modified time of threat data in CTIX. ",
+        "isRequired": true,
+        "value": "ctix_created",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "ctix_created",
+              "description": ""
+            },
+            {
+              "value": "ctix_modified",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "starttime",
+        "description": "Pass the start date and time in EPOCH format from which the report captures data available in CTIX.",
+        "isRequired": true,
+        "value": 1752834255,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "endtime",
+        "description": "Pass the end date and time in EPOCH format until which the report captures data available in CTIX.",
+        "isRequired": true,
+        "value": 1753439055,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "external_recipients",
+        "description": "Pass the list of external users to share the report.\n**Note**: At least one internal or external recipient is required.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass the email addresses of the external recipients.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "Pass the email address of the external recipient.",
+                "isRequired": false,
+                "value": "jane.smith@orgname.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "report_id",
+        "description": "Pass the ID of a report. For example: *87c07bb3-b60c-4279-a5ec-8a38f73f7ea4*.",
+        "isRequired": false,
+        "value": "{{report_id}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "688b632339b276871f15959b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the success message",
+          "isRequired": false,
+          "value": "Your Report will be mailed to you as soon as it is ready.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

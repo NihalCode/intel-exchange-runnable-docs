@@ -1,0 +1,1801 @@
+{
+  "slug": "threat-investigation/enrichment/analyze-relations",
+  "title": "Analyze Relations",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-investigation",
+    "enrichment",
+    "analyze-relations"
+  ],
+  "description": "Returns relationship details of threat data objects within Intel Exchange.",
+  "method": "POST",
+  "path": "ingestion/investigation/ctix-enrichment/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass a list of threat object IDs.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example ID.",
+            "isRequired": false,
+            "value": "ff8fcc0f-4efb-4492-9145-230317fea9c4",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6938026db49385adf3bf03c7"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the pagination link to the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of results retrieved per page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the pagination link to the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the relationship details of threat data object",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "hi",
+                  "description": "Returns `true` if the threat data object is hidden in the threat investigation canvas, else returns `false`.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "ff8fcc0f-4efb-4492-9145-230317fea9c4",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "prop",
+                  "description": "Returns additional information about the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "analyst_score",
+                      "description": "Returns the analyst-assigned score.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "analyst_tlp",
+                      "description": "Returns the analyst-assigned score.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "confidence_score",
+                      "description": "Returns the confidence score of the object.",
+                      "isRequired": false,
+                      "value": "40",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "confidence_type",
+                      "description": "Returns the confidence type of the object.",
+                      "isRequired": false,
+                      "value": "ctix",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "country",
+                      "description": "Returns the geographic information about the object source.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created",
+                      "description": "Returns the Unix timestamp when the indicator was created.\n",
+                      "isRequired": false,
+                      "value": "1634636796",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_seen",
+                      "description": "Returns when the object was first observed.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier for the threat object.",
+                      "isRequired": false,
+                      "value": "ff8fcc0f-4efb-4492-9145-230317fea9c4",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "identifier",
+                      "description": "Returns the internal system identifier for the threat object.",
+                      "isRequired": false,
+                      "value": "ctix",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "indicator_type",
+                      "description": "Returns the type of the object.",
+                      "isRequired": false,
+                      "value": "url",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_actioned",
+                      "description": "Boolean indicating if the threat has been actioned.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_deprecated",
+                      "description": "Boolean indicating whether the object is outdated.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_false_positive",
+                      "description": "Boolean indicating if this was marked as a false positive.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_reviewed",
+                      "description": "Boolean indicating whether this threat has been reviewed by an analyst.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_revoked",
+                      "description": "Boolean indicating whether this threat has been reviewed by an analyst.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_whitelisted",
+                      "description": "Boolean indicating the indicator is allowed/safe.",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "Returns the label for the object type.",
+                      "isRequired": false,
+                      "value": "Url",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_seen",
+                      "description": "Returns the last time the indicator was observed",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "modified",
+                      "description": "Returns the Unix timestamp for the last modification of the object.",
+                      "isRequired": false,
+                      "value": "1634636796",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the object.\n\n",
+                      "isRequired": false,
+                      "value": "http://mailservicenow.com/GYfIjwS9bd1nqxSiU1LPb2jcFvhZSBVOjCM1AAAAXGbXCckzcpTILveooC0FGTR%2F8vtVn7gDOIAvF6Tce0TICkadNQh%2BSQYWw6iT6QA5o5nvQzg%3D",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "null",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "parent_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "indicator",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "primary_attribute",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "published_collections",
+                      "description": "Returns the Unix timestamp for the last modification of the indicator.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "severity",
+                      "description": "Returns the threat severity information.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_collections",
+                      "description": "Returns the collections from which the indicator originated.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_confidence",
+                      "description": "Returns the confidence level of the source.",
+                      "isRequired": false,
+                      "value": "NONE",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sources",
+                      "description": "Returns the details of the source",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the source.",
+                              "isRequired": false,
+                              "value": "b7aefa5d-511e-4487-8363-a9844bd7ecc7",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the source.",
+                              "isRequired": false,
+                              "value": "CrowdStrike",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "source_type",
+                              "description": "Returns the type of the source.",
+                              "isRequired": false,
+                              "value": "API_FEEDS",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "sub_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "value",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscriber_collections",
+                      "description": "Returns the collections that have subscribed to this threat.\n\n",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscribers",
+                      "description": "List of subscribers to this object.\n",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tags",
+                      "description": "Returns the list of associated tags.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "infrastructure:-pony3.microsoftups.com-[pony]",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "tlp",
+                      "description": "Returns the associated TLP.",
+                      "isRequired": false,
+                      "value": "AMBER",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the type of the object.",
+                      "isRequired": false,
+                      "value": "indicator",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "valid_from",
+                      "description": "Returns the Unix timestamp for when the indicator becomes valid.",
+                      "isRequired": false,
+                      "value": "1634636783",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "valid_until",
+                      "description": "Returns the Unix timestamp for when the indicator expires.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "t",
+                  "description": "Returns the value of the threat data object or the relationship type.",
+                  "isRequired": false,
+                  "value": "http://mailservicenow.com/GYfIjwS9bd1nqxSiU1LPb2jcFvhZSBVOjCM1AAAAXGbXCckzcpTILveooC0FGTR%2F8vtVn7gDOIAvF6Tce0TICkadNQh%2BSQYWw6iT6QA5o5nvQzg%3D",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns one of the following",
+                  "isRequired": false,
+                  "value": "node",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "node",
+                        "description": "Indicates the threat data object."
+                      },
+                      {
+                        "value": "link",
+                        "description": "Indicates the relationship type."
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "u",
+                  "description": "Returns an endpoint to the image of a node in the canvas.",
+                  "isRequired": false,
+                  "value": "/ctix/images/graph/url.svg",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "hi",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "761a6b7a-9b82-435d-8428-257b2b58d615",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "prop",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "analyst_score",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "analyst_tlp",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "confidence_score",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "confidence_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "ctix",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "country",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "1634577011",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_seen",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "761a6b7a-9b82-435d-8428-257b2b58d615",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "identifier",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "ctix",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "indicator_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_actioned",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_deprecated",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_false_positive",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_reviewed",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_revoked",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_whitelisted",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "false",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "ThreatActor",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_seen",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "modified",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "1634577011",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "Knockoutspider",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "null",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "primary_attribute",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "published_collections",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "severity",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_collections",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_confidence",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "NONE",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sources",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "b7aefa5d-511e-4487-8363-a9844bd7ecc7",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "CrowdStrike",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "source_type",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "API_FEEDS",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "sub_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscriber_collections",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscribers",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tags",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tlp",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "AMBER",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "threat-actor",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "valid_from",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "valid_until",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "t",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "Knockoutspider",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "node",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "u",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "/ctix/images/graph/threat-actor.svg",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "2",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "a2",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "true",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "dt",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "1634887703",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "hi",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ff8fcc0f-4efb-4492-9145-230317fea9c4761a6b7a-9b82-435d-8428-257b2b58d615",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id1",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ff8fcc0f-4efb-4492-9145-230317fea9c4",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id2",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "761a6b7a-9b82-435d-8428-257b2b58d615",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "prop",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "relation",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "label1",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "url",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "label2",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "threat-actor",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "type",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "indicates",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "t",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "indicates",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "link",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of items on a page.",
+          "isRequired": false,
+          "value": "3",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,690 @@
+{
+  "slug": "quick-add-intel/list-quick-add-intel-history",
+  "title": "Get Quick Add Intel History List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "quick-add-intel",
+    "list-quick-add-intel-history"
+  ],
+  "description": "Returns a list of intel added using quick add intel.",
+  "method": "GET",
+  "path": "conversion/intel-history/",
+  "request": {
+    "query": [
+      {
+        "name": "q",
+        "description": "Pass a query text to search for an intel based on the title.",
+        "isRequired": false,
+        "value": "ip",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass a comma-separated list of fields to sort the history.",
+        "isRequired": false,
+        "value": "created",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "created"
+            },
+            {
+              "value": "title"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the time in epoch format to apply the created after (inclusive) filter.",
+        "isRequired": false,
+        "value": "1633521911.678808",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_to",
+        "description": "Pass the time in epoch format to apply the created before (inclusive) filter.",
+        "isRequired": false,
+        "value": "1633521911.678808",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "published_from",
+        "description": "Pass the time in epoch format to apply the published after (inclusive) filter.",
+        "isRequired": false,
+        "value": "1633521911.678808",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "published_to",
+        "description": "Pass the time in epoch format to apply the published before (inclusive) filter.",
+        "isRequired": false,
+        "value": "1633521911.678808",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_by_id",
+        "description": "Pass the user ID to apply the created by filter.",
+        "isRequired": false,
+        "value": "524129ab-bb5d-4366-9ad6-1c9f77e8685a",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "status",
+        "description": "Pass a status to apply the status filter. ",
+        "isRequired": false,
+        "value": "CREATED",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "PENDING"
+            },
+            {
+              "value": "PROCESSING"
+            },
+            {
+              "value": "CREATED"
+            },
+            {
+              "value": "DRAFT"
+            },
+            {
+              "value": "FAILED"
+            },
+            {
+              "value": "PUBLISHED"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "value": "50",
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the records.",
+        "isRequired": false,
+        "value": "3",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "component",
+        "description": "Pass `quick-add-intel` to retrieve the quick add intel history.",
+        "isRequired": true,
+        "value": "quick-add-intel",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "quick-add-intel"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693945c0b49385adf3c442df"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page of the intel history.",
+          "isRequired": false,
+          "value": "intel-history/?page=2&page_size=1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records per page.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page of the intel history.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the details of the quick add intel history.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "client_collections",
+                  "description": "Returns a list of client collections in the platform. For quick add intel submissions, this value is `null`.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "component",
+                  "description": "Returns the component of the intel submission. For quick add intel submission, the value is `quick-add-intel`.",
+                  "isRequired": false,
+                  "value": "quick-add-intel",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the created date of the intel.",
+                  "isRequired": false,
+                  "value": 1706707031.759591,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the details of the creator of the intel.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "email",
+                      "description": "Returns the email of the creator.",
+                      "isRequired": false,
+                      "value": "john.doe@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the creator.",
+                      "isRequired": false,
+                      "value": "john",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the unique ID of the creator.",
+                      "isRequired": false,
+                      "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the creator.",
+                      "isRequired": false,
+                      "value": "doe",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "error_message",
+                  "description": "Returns an error message if the intel creation fails. Else, returns null.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "feed_id",
+                  "description": "Returns the ID of the intel source. For Quick Add Intel, the default source is Import.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the quick add intel submission.",
+                  "isRequired": false,
+                  "value": "9fae8850-5956-4479-834c-8cd4d51c28aa",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "metadata",
+                  "description": "Returns the metadata details of the intel, such as the Confidence Score, tags, and description.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the last modified date of the intel.",
+                  "isRequired": false,
+                  "value": 1706707049.743087,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_by",
+                  "description": "Returns the details of the modifier of the intel.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "email",
+                      "description": "Returns the email of the modifier.",
+                      "isRequired": false,
+                      "value": "john.doe@cyware.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the modifier.",
+                      "isRequired": false,
+                      "value": "john",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the unique ID of the modifier.",
+                      "isRequired": false,
+                      "value": "a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the modifier.",
+                      "isRequired": false,
+                      "value": "doe",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "published_on",
+                  "description": "Returns the published date of the intel to a STIX collection in the platform.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "report_id",
+                  "description": "Returns the ID of the report objected that is created as part of the quick add intel submission.",
+                  "isRequired": false,
+                  "value": "e121fe2f-4ecf-42ab-ac87-8e7c0ba8d24d",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "server_collections",
+                  "description": "Returns a list of server collections in the platform. For quick add intel submissions, this value is null.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the intel creation status.",
+                  "isRequired": false,
+                  "value": "CREATED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the intel.",
+                  "isRequired": false,
+                  "value": "ips",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tlp",
+                  "description": "Returns the TLP of the intel.",
+                  "isRequired": false,
+                  "value": "NONE",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the number of records available in the quick add history.",
+          "isRequired": false,
+          "value": 168553,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,992 @@
+{
+  "slug": "administration/integration-management/rss-feeds/retrieve-rss-feed-source-detail",
+  "title": "Get RSS Feed Source Detail",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "rss-feeds",
+    "retrieve-rss-feed-source-detail"
+  ],
+  "description": "Returns the details for a particular RSS feed source.",
+  "method": "GET",
+  "path": "conversion/feed-sources/rss_feed/{feed_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the RSS feed source. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of RSS feed sources to be retrieved on each page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_from",
+        "description": "Pass the created time in epoch format to filter the RSS feed source.",
+        "isRequired": false,
+        "value": "1720483209",
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_to",
+        "description": "Pass the created time in epoch format to filter the RSS feed source.\n\n",
+        "isRequired": false,
+        "value": "1721951999",
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass the keyword to search the RSS feed source based on the title.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to retrieve active RSS feed sources, else false.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "true"
+            },
+            {
+              "value": "false"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "feed_id",
+        "description": "Pass the RSS feed ID.",
+        "isRequired": true,
+        "value": "1932e7a9-f772-47f2-a199-256250f5edba",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393b46b49385adf3c38e11"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the RSS feed source.",
+          "isRequired": false,
+          "value": "193ne7a9-f772-47f2-a199-256250f5edba",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name for the RSS feed.",
+          "isRequired": false,
+          "value": "CywareNews",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user ID that created the source.",
+          "isRequired": false,
+          "value": "fd9kad0c-208e-4b6d-85eb-feda34afc1e8",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the user ID that modified the source.",
+          "isRequired": false,
+          "value": "fd98ad0c-2g8e-4b6d-85eb-feda34afc1e8",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the RSS feed source is active, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the time of the creation of the feed.",
+          "isRequired": false,
+          "value": "1721122289",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "score",
+          "description": "Returns the confidence score of the feed.",
+          "isRequired": false,
+          "value": "100",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the RSS feed.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_editable",
+          "description": "Returns true if the RSS feed is editable, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the RSS feed.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "category",
+          "description": "Returns the category of the RSS feed.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the unique identifier of the category.",
+              "isRequired": false,
+              "value": "a72fla42-cfe0-4136-8209-98f7fb339a6e",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the category.",
+              "isRequired": false,
+              "value": "System Feeds",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "default",
+              "description": "Indicates if this is the default category.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "source_order",
+          "description": "Returns the order in which the source is received.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source_type",
+          "description": "Returns the source type, such as RSS feeds.",
+          "isRequired": false,
+          "value": "RSS_FEED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "create_intel_feed",
+          "description": "Returns true if intel is created from this RSS feed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ssl_encrypted",
+          "description": "Returns true if the SSL certificate of this connection is verified, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_feed_notify",
+          "description": "Returns the notification interval in minutes.",
+          "isRequired": false,
+          "value": "1440",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source_logo",
+          "description": "Returns the logo for the feed.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "default_metadata",
+          "description": "Returns the metadata defaults such as TLP, score, marking config, tags, etc.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "tlp",
+              "description": "Returns the TLP marked.",
+              "isRequired": false,
+              "value": "WHITE",
+              "valueType": "string",
+              "options": {
+                "enumValue": [
+                  {
+                    "value": "AMBER",
+                    "description": ""
+                  },
+                  {
+                    "value": "GREEN",
+                    "description": ""
+                  },
+                  {
+                    "value": "WHITE",
+                    "description": ""
+                  },
+                  {
+                    "value": "RED",
+                    "description": ""
+                  },
+                  {
+                    "value": "NONE",
+                    "description": ""
+                  }
+                ],
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "score",
+              "description": "Returns the confidence score for the source. Allowed Values: 0 to 100",
+              "isRequired": false,
+              "value": "100",
+              "valueType": "number",
+              "options": {
+                "defaultValue": "100",
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_apply_all",
+              "description": "Returns a boolean indicating whether to apply metadata to all objects/IOCS created. If not, use default values for metadata.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "defaultValue": "true",
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "selected",
+              "description": "Boolean indicating whether the default metadata is to be applied to the report. If not, use default values for the metadata.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "defaultValue": "true",
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "tags",
+              "description": "Returns the list of tags selected by the user. This contains ID, name, and some tag-related values.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "marking_config",
+              "description": "Returns the field name used for marking.",
+              "isRequired": false,
+              "value": "tlp",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "default_marking_definition",
+              "description": "Returns the default marking definition.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "custom_scores",
+              "description": "Returns the custom scoring configurations.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "url",
+          "description": "Returns the URL of the RSS feed.\n",
+          "isRequired": false,
+          "value": "http://100.50.7.110/rss/Test-2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "polling_frequency",
+          "description": "Returns the polling frequency of the RSS feed.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_visible_content_only",
+          "description": "Returns true if only the visible content is parsed from the RSS feed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "intel_objects",
+          "description": "Indicates the types of threat intelligence this feed extracts.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "all",
+              "description": "Returns true if all intel object types listed are parsed.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "values",
+              "description": "List of STIX-supported indicator types parsed from the feed.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "ipv4-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "1",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SHA-1",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "2",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "email-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "3",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SHA-512",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "4",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "ipv6-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "5",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SHA-256",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "6",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SHA-384",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "7",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "MD5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "8",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "url",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "9",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "domain-name",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "10",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SHA-224",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "11",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "SSDEEP",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "12",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "windows-registry-key",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "13",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "mutex",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "14",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "autonomous-system",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "15",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "file_paths",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "16",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "cve_ids",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "17",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "file",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "taxii_option",
+          "description": "Returns the TAXII version of the feed.",
+          "isRequired": false,
+          "value": "2.1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

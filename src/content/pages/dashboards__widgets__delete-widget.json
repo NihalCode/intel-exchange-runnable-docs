@@ -1,0 +1,65 @@
+{
+  "slug": "dashboards/widgets/delete-widget",
+  "title": "Delete Widget",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "dashboards",
+    "widgets",
+    "delete-widget"
+  ],
+  "description": "Deletes a custom widget from the platform.",
+  "method": "DELETE",
+  "path": "ingestion/analytics/widget/{widget_slug}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "widget_slug",
+        "description": "Pass the slug of a widget. You can retrieve the slug using the **List Widgets API**. For example: *01JE8E8WA4VPW9DQB96GW2F1XS*.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870bc146663b406be311e2b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the success message after deletion.",
+          "isRequired": false,
+          "value": "Action Successfully Executed",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

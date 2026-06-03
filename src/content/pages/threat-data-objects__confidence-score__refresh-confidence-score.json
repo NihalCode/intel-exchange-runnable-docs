@@ -1,0 +1,86 @@
+{
+  "slug": "threat-data-objects/confidence-score/refresh-confidence-score",
+  "title": "Refresh Confidence Score (Risk Score)",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "confidence-score",
+    "refresh-confidence-score"
+  ],
+  "description": "Returns the Confidence Score (Risk Score) of an indicator threat data object.",
+  "method": "GET",
+  "path": "ingestion/threat-data/{object_type}/{object_id}/refresh-score/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_type",
+        "description": "Pass the object type (indicator).",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "indicator"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_id",
+        "description": "Pass the indicator threat data object ID. To retrieve the object ID, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "dbd48dae-3505-4ace-9c0e-e617d9ccc269",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68710bccecb3f1449e0b22d8"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "score",
+          "description": "Returns the confidence score (Risk Score) value of the indicator between 0 and 100. Returns -1 if the Risk Score is marked as \"NA\".",
+          "isRequired": false,
+          "value": "100",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

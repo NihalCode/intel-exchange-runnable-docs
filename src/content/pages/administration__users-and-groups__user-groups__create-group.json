@@ -1,0 +1,144 @@
+{
+  "slug": "administration/users-and-groups/user-groups/create-group",
+  "title": "Create Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "users-and-groups",
+    "user-groups",
+    "create-group"
+  ],
+  "description": "Creates a user group in Intel Exchange.",
+  "method": "POST",
+  "path": "rest-auth/groups/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the name of the user group.",
+        "isRequired": true,
+        "value": "Test Group",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "permissions",
+        "description": "Pass the list of permissions associated with the user. This parameter expects a list of permission IDs. Use the **Get List Components** API to retrieve the list of permissions.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "id",
+                "description": "Pass the unique identifier of the permission to be assigned to the group.",
+                "isRequired": false,
+                "value": "36f1eeeb-13dc-4e9a-96cb-411fca6841cd",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "is_active",
+        "description": "Pass True if the user group is active, else pass False.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the user group.",
+        "isRequired": false,
+        "value": "Test User Group",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870d91ae86fa45bcc194d0e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the success message that a user group has been created.",
+          "isRequired": false,
+          "value": "Successfully created",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

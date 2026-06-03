@@ -1,0 +1,1142 @@
+{
+  "slug": "administration/configuration/tenant-configuration/retrieve-tenant-configuration",
+  "title": "Get Tenant Configuration",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "tenant-configuration",
+    "retrieve-tenant-configuration"
+  ],
+  "description": "Returns the configurations related to the tenant.",
+  "method": "GET",
+  "path": "conversion/tenant/config/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve per page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6936ce43b49385adf3bc04af"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the tenant configuration.",
+          "isRequired": false,
+          "value": "28fee803-3be5-439a-aeab-3100bd2500d4",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_name",
+          "description": "Returns the name of the tenant.",
+          "isRequired": false,
+          "value": "bugbasket",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_code",
+          "description": "Returns the code given for the tenant.",
+          "isRequired": false,
+          "value": "bugbasket",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "server_url",
+          "description": "Returns the domain name of the server.",
+          "isRequired": false,
+          "value": "https://bugbasket.cywareqa.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the value of the default TLP.\nWhite, Amber, Green, None, Yellow.",
+          "isRequired": false,
+          "value": "WHITE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the tenant is enabled, else returns false if disabled.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_polling_time",
+          "description": "Returns the time interval at which the Intel Exchange tenant will automatically retrieve the Threat Intel Packages from the configured sources.",
+          "isRequired": false,
+          "value": "14400",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_source_limit",
+          "description": "Returns the maximum number of sources configured.",
+          "isRequired": false,
+          "value": "20",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_upload_file_size",
+          "description": "Returns the maximum file size that could be uploaded.",
+          "isRequired": false,
+          "value": "10485760",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_poll_result_size",
+          "description": "Returns the max allowed size (in KB) of a single polling result.",
+          "isRequired": false,
+          "value": "5120",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_sleep_time",
+          "description": "Returns the time interval at which the application will attempt to retry connecting to the configured Email Inbox server.",
+          "isRequired": false,
+          "value": "60",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_number_of_retry",
+          "description": "Returns the number of times the application attempts to connect to the configured Email inbox server.",
+          "isRequired": false,
+          "value": "5",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_urls_without_scheme",
+          "description": "Returns true to parse URL without schemes, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_domain_from_url",
+          "description": "Returns true if Threat Mail Box and RSS Feeds will automatically parse Domain values from URLs, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_domain_from_email_address",
+          "description": "Returns true if Threat Mail Box and RSS Feeds will automatically parse Domain values from Emails, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_email_from_url",
+          "description": "Returns true if Threat Mail Box and RSS Feeds will automatically parse Emails from URLs, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "parse_file_paths",
+          "description": "Returns true if Threat Mail Box and RSS Feeds will automatically parse file paths, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "apart_polling_max_feeds",
+          "description": "Returns the maximum number of feeds to poll at a single time.",
+          "isRequired": false,
+          "value": "4",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_lite_collections_limit",
+          "description": "Returns the collections allowed in CTIX Lite.",
+          "isRequired": false,
+          "value": "3",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "whitelist_limit",
+          "description": "Returns the overall whitelist limit.",
+          "isRequired": false,
+          "value": "100000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "blueliv_polling_limit",
+          "description": "Returns the limit for Blueliv polling.",
+          "isRequired": false,
+          "value": "4000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "rss_article_timeout",
+          "description": "Returns the timeout (in seconds) for retrieving RSS articles.",
+          "isRequired": false,
+          "value": "60",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "dedup_config",
+          "description": "Returns the deduplication rules per object type.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "common",
+              "description": "Returns the fields considered for common object deduplication.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "Returns the STIX version for object compliance.",
+                  "isRequired": false,
+                  "value": "spec_version",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "4",
+                  "description": "Returns the marking information to limit sharing.",
+                  "isRequired": false,
+                  "value": "granular_markings",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "2",
+                  "description": "Returns the STIX object ID.",
+                  "isRequired": false,
+                  "value": "id",
+                  "valueType": "String",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "3",
+                  "description": "Returns the timestamp when the object was created.",
+                  "isRequired": false,
+                  "value": "created",
+                  "valueType": "String",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "4",
+                  "description": "Returns the timestamp when the object was last updated.",
+                  "isRequired": false,
+                  "value": "modified",
+                  "valueType": "String",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "5",
+                  "description": "Returns the external reference list for the object.",
+                  "isRequired": false,
+                  "value": "external_references",
+                  "valueType": "String",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "indicator",
+              "description": "Returns the additional fields for indicator-level deduplication.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "Returns the start of indicator validity.",
+                  "isRequired": false,
+                  "value": "valid_from",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "1",
+                  "description": "Returns the end of indicator validity.",
+                  "isRequired": false,
+                  "value": "valid_until",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "conversion_config",
+          "description": "Returns the configuration for the conversion pipeline.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "rss_timeout_config",
+              "description": "Returns the RSS feed timeout in conversion.",
+              "isRequired": false,
+              "value": "30",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "object_level_config",
+              "description": "Returns object-level transformation settings that control how source data is handled during conversion.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "include_source",
+                  "description": "Returns the include source in conversion.",
+                  "isRequired": false,
+                  "value": "1",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "convert_objects",
+                  "description": "Returns the convert objects flag.",
+                  "isRequired": false,
+                  "value": "1",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "include_collection",
+                  "description": "Whether to include collection during conversion.",
+                  "isRequired": false,
+                  "value": "0",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "batching_config_size",
+              "description": "Size of each batch for conversion.",
+              "isRequired": false,
+              "value": "550",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "batching_exclude_config",
+              "description": "Returns the sources excluded from batching.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "de74428b-9087-436b-ad98-2c39812961ab",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "source_category_level_config",
+              "description": "Returns the supported source categories for conversion.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "API-based threat data feeds.",
+                  "isRequired": false,
+                  "value": "API_FEEDS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "1",
+                  "description": "User-created STIX data sources.",
+                  "isRequired": false,
+                  "value": "CUSTOM_STIX_SOURCES",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "2",
+                  "description": "Feeds ingested from RSS sources.",
+                  "isRequired": false,
+                  "value": "RSS_FEED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "3",
+                  "description": "Email inbox-based threat ingestion.",
+                  "isRequired": false,
+                  "value": "EMAIL_ACCOUNTS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "4",
+                  "description": "Data coming from internal inbox integrations.",
+                  "isRequired": false,
+                  "value": "INBOX",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "5",
+                  "description": "Web scraping-based data sources.",
+                  "isRequired": false,
+                  "value": "WEB_SCRAPPER",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "6",
+                  "description": "Data from malware analysis environments.",
+                  "isRequired": false,
+                  "value": "MALWARE_SANDBOX",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "7",
+                  "description": "Intel fetched from Twitter accounts or hashtags.",
+                  "isRequired": false,
+                  "value": "TWITTER_FEEDS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "8",
+                  "description": "Data feeds used for enrichment.",
+                  "isRequired": false,
+                  "value": "ENRICHMENT FEEDS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "9",
+                  "description": "Other uncategorized sources.",
+                  "isRequired": false,
+                  "value": "MISCELLANEOUS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "slack_indicator_limit",
+          "description": "Returns the max number of indicators allowed for Slack integration.",
+          "isRequired": false,
+          "value": "1000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "api_feeds_max_retry",
+          "description": "Returns the retry attempts for API feed polling.",
+          "isRequired": false,
+          "value": "3",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_third_party_active",
+          "description": "Returns the third-party ingestion feature enabled.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "third_party_last_refreshed_time",
+          "description": "Returns the details of the last third-party sync.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_number_priority_polling_actions",
+          "description": "Returns the maximum concurrent priority polling processes.",
+          "isRequired": false,
+          "value": "5",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "system_ignored_whitelist_limit",
+          "description": "Returns the entries ignored by the system in whitelist logic.",
+          "isRequired": false,
+          "value": "1000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "dedup_enable",
+          "description": "Whether deduplication logic is enabled.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allow_partial_intel",
+          "description": "Returns true if allow partial threat intelligence entries present.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ai_assist_allowed",
+          "description": "Whether AI Assist features are enabled.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "deprecated_apps",
+          "description": "Returns the list of deprecated apps ",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allowed_third_party_source",
+          "description": "Returns the currently permitted third-party source.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "name",
+              "description": "Returns the name of the allowed third-party source.",
+              "isRequired": false,
+              "value": "Majestic Million",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the ID of the allowed third-party source.",
+              "isRequired": false,
+              "value": "cc1f7e54-f7f4-477e-9f6c-9142eba5464a",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "total_third_party_sources",
+          "description": "Returns the details legal agreement and disclaimer related to the whitelist and third-party data.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "name",
+                  "description": "Returns the name of all allowed third-party sources.",
+                  "isRequired": false,
+                  "value": "Majestic Million",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the ID of all allowed third-party sources.",
+                  "isRequired": false,
+                  "value": "cc1f7e54-f7f4-477e-9f6c-9142eba5464a",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "whitelist_user_agreement",
+          "description": "Returns the user agreement text for whitelist usage.",
+          "isRequired": false,
+          "value": "This data is generated by a third party and is not created or maintained by Cyware.\nIf you enable this feature, you are assuming full responsibility for the data.\nCyware is not responsible in any manner for the content or risk associated with the data access as Cyware is not the source of the associated data content and platform.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

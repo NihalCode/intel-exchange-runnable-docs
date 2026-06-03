@@ -1,0 +1,273 @@
+{
+  "slug": "tags/create-tag",
+  "title": "Create Tag",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "tags",
+    "create-tag"
+  ],
+  "description": "Creates a tag in the Intel Exchange platform.",
+  "method": "POST",
+  "path": "ingestion/tags/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass a unique name for the tag within 50 characters.",
+        "isRequired": false,
+        "value": "SuperMalware",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "colour_code",
+        "description": "Pass the hex color code for the ta.g",
+        "isRequired": false,
+        "value": "#5236E2",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "#5236E2",
+              "description": ""
+            },
+            {
+              "value": "#0068FA",
+              "description": ""
+            },
+            {
+              "value": "#EB9C00",
+              "description": ""
+            },
+            {
+              "value": "#FF5330",
+              "description": ""
+            },
+            {
+              "value": "#27865F",
+              "description": ""
+            },
+            {
+              "value": "#C4C81D",
+              "description": ""
+            },
+            {
+              "value": "#00A2C2",
+              "description": ""
+            },
+            {
+              "value": "#C341E7",
+              "description": ""
+            },
+            {
+              "value": "#AD6B76",
+              "description": ""
+            },
+            {
+              "value": "#95A1B1",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68e66dac3992c355ca5e4a36"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the tag.",
+          "isRequired": false,
+          "value": "010beca6-719c-4288-9791-10ec913317b8",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the tag.",
+          "isRequired": false,
+          "value": "SuperMalware",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "colour_code",
+          "description": "Returns the color defined for the tag.",
+          "isRequired": false,
+          "value": "#0068FA",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the created date and time of a tag in epoch format.",
+          "isRequired": false,
+          "value": 1744376435,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the ID of the user who created the tag.",
+          "isRequired": false,
+          "value": "70f3d3ee-b7bc-4ceb-849e-16db0de5278b",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the ID of the user who last modified the tag details.",
+          "isRequired": false,
+          "value": "70f3d3ee-b7bc-4ceb-849e-16db0de5278b",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the modified date and time of a tag in epoch format.",
+          "isRequired": false,
+          "value": 1744376435,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tag_type",
+          "description": "Returns the tag's type details. The four tag types are System, User, Privileged, and Source.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the ID of the tag type.",
+              "isRequired": false,
+              "value": "user",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the tag type.",
+              "isRequired": false,
+              "value": "User",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the tag is active in Intel Exchange.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

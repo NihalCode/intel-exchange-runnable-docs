@@ -1,0 +1,375 @@
+{
+  "slug": "tags/update-tag",
+  "title": "Update Tag",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "tags",
+    "update-tag"
+  ],
+  "description": "Updates the name and color-code of a tag.",
+  "method": "PUT",
+  "path": "ingestion/tags/{tag_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the name of the tag within 50 characters.",
+        "isRequired": false,
+        "value": "SuperMalware",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "colour_code",
+        "description": "Pass the HEX key of a color code for the tag.",
+        "isRequired": false,
+        "value": "#5236E2",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "#5236E2",
+              "description": ""
+            },
+            {
+              "value": "#0068FA",
+              "description": ""
+            },
+            {
+              "value": "#EB9C00",
+              "description": ""
+            },
+            {
+              "value": "#FF5330",
+              "description": ""
+            },
+            {
+              "value": "#27865F",
+              "description": ""
+            },
+            {
+              "value": "#C4C81D",
+              "description": ""
+            },
+            {
+              "value": "#00A2C2",
+              "description": ""
+            },
+            {
+              "value": "#C341E7",
+              "description": ""
+            },
+            {
+              "value": "#AD6B76",
+              "description": ""
+            },
+            {
+              "value": "#95A1B1",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "tag_id",
+        "description": "Pass the ID of a tag to update the details.",
+        "isRequired": false,
+        "value": "8818f140-62c6-4dee-bfb2-bc26bde9dfa1",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68e66f423992c355ca5e5112"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of a tag.",
+          "isRequired": false,
+          "value": "21043a6f-9810-4ec8-92d4-7e0e1d308b8e",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the tag.",
+          "isRequired": false,
+          "value": "SuperMalware",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "colour_code",
+          "description": "Returns the color defined for the tag.",
+          "isRequired": false,
+          "value": "#5236E2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the created date and time of a tag in epoch format.",
+          "isRequired": false,
+          "value": "2021-08-07T19:37:37.559473Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user details of the person who created the tag.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the ID of the user who created the report.",
+              "isRequired": false,
+              "value": "06678ef4-3c8c-4657-ab2f-aded0aa2562d",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the report.",
+              "isRequired": false,
+              "value": "Anonymous",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the report.",
+              "isRequired": false,
+              "value": "User",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who created the report.",
+              "isRequired": false,
+              "value": "local@system.xyz",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the user details of the person who modified the tag details.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the user ID of the user who last modified the report.",
+              "isRequired": false,
+              "value": "06678ef4-3c8c-4657-ab2f-aded0aa2562d",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who last modified the report.",
+              "isRequired": false,
+              "value": "Anonymous",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who last modified the report.",
+              "isRequired": false,
+              "value": "User",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who last modified the report.",
+              "isRequired": false,
+              "value": "local@system.xyz",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "modified",
+          "description": "Returns the modified date and time of a tag in epoch format.",
+          "isRequired": false,
+          "value": "2021-08-07T20:31:18.096816Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tag_type",
+          "description": "Returns the type of tag.",
+          "isRequired": false,
+          "value": "manual",
+          "valueType": "string",
+          "options": {
+            "enumValue": [
+              {
+                "value": "automated",
+                "description": "Indicates a system-created tag."
+              },
+              {
+                "value": "manual",
+                "description": "Indicates a custom tag created by a user."
+              }
+            ],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,114 @@
+{
+  "slug": "threat-data-objects/basic-details/add-custom-aliases",
+  "title": "Add Custom Aliases to Threat Actors",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "basic-details",
+    "add-custom-aliases"
+  ],
+  "description": "Add custom aliases to threat actors in Intel Exchange.",
+  "method": "POST",
+  "path": "ingestion/threat-data/threat-actor/{object_id}/basic/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "aliases",
+        "description": "Pass the list of strings that specify the also-known names for the threat actors.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "custom",
+            "description": "Pass a list of custom aliases of the threat actor.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "This is an example value.",
+                "isRequired": false,
+                "value": "sample alias 1",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "object_id",
+        "description": "Pass the threat data object ID. To retrieve the object ID, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": false,
+        "value": "903f519f-feb1-49b8-8c80-18ff8de99e8c",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "687109c3ecb3f1449e0b2116"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "message",
+          "description": "Returns the success message.",
+          "isRequired": false,
+          "value": "Custom aliases added successfully.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

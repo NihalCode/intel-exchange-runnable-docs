@@ -1,0 +1,162 @@
+{
+  "slug": "threat-data-objects/quick-action/perform-action-on-threat-data-object",
+  "title": "Perform Action on Threat Data Object",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "quick-action",
+    "perform-action-on-threat-data-object"
+  ],
+  "description": "Performs an action on a threat data object. You can perform actions such as deprecate, undeprecate, add analyst TLP, add analyst score, and more",
+  "method": "POST",
+  "path": "ingestion/threat-data/action/{action_type}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "object_id",
+        "description": "Pass the ID of a threat data object to perform an action.",
+        "isRequired": true,
+        "value": "81f699f3-314d-4a6c-a3426b-c5802552c0f7",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data object.",
+        "isRequired": true,
+        "value": "malware",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "data",
+        "description": "Pass additional data with the action.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "analyst_tlp",
+            "description": "Pass the TLP marked the by analyst.",
+            "isRequired": false,
+            "value": "GREEN",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "action_type",
+        "description": "Pass the action to be performed.",
+        "isRequired": false,
+        "value": "analyst_tlp",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "deprecate"
+            },
+            {
+              "value": "un_deprecate"
+            },
+            {
+              "value": "reviewed"
+            },
+            {
+              "value": "manual_review"
+            },
+            {
+              "value": "whitelist"
+            },
+            {
+              "value": "un_whitelist"
+            },
+            {
+              "value": "false_positive"
+            },
+            {
+              "value": "un_false_positive"
+            },
+            {
+              "value": "analyst_tlp"
+            },
+            {
+              "value": "analyst_score"
+            },
+            {
+              "value": "add_tag"
+            },
+            {
+              "value": "add_relation"
+            },
+            {
+              "value": "delete"
+            },
+            {
+              "value": "revoke_intel"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6937ff8db49385adf3bef68b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Action Successfully Executed\n",
+      "contentType": "application/json",
+      "body": []
+    },
+    {
+      "statusCode": "400",
+      "description": "Bad Request (Check if you have passed valid data)",
+      "contentType": "application/json",
+      "body": []
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

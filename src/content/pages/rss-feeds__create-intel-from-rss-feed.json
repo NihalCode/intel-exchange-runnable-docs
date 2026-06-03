@@ -1,0 +1,373 @@
+{
+  "slug": "rss-feeds/create-intel-from-rss-feed",
+  "title": "Create Intel from RSS Feed",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "rss-feeds",
+    "create-intel-from-rss-feed"
+  ],
+  "description": "Creates intel from the IOCs of an RSS article.",
+  "method": "PUT",
+  "path": "conversion/feed-sources/{article_id}/stix/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "source_type",
+        "description": "Pass the source type, such as the RSS feed.",
+        "isRequired": true,
+        "value": "rss_feed",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "source_feed_id",
+        "description": "Pass the ID of the RSS article.\n",
+        "isRequired": true,
+        "value": "bb042a32-6eb5-4cec-8886-c3921a9860c0",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "content",
+        "description": "Pass the IOCs selected from the article.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "emails",
+            "description": "Pass the emails selected from the article.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "all",
+                "description": "Returns a boolean flag indicating whether all email addresses extracted from the RSS feed should be included as IOCs.",
+                "isRequired": false,
+                "value": "true",
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "domains",
+            "description": "Pass the domains selected from the article.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "all",
+                "description": "Indicates whether all domains from the RSS feed should be included as IOCs.",
+                "isRequired": false,
+                "value": "false",
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "negation",
+                "description": "Returns a boolean that determines whether the listed domain values should be excluded or included.",
+                "isRequired": false,
+                "value": "true",
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "values",
+                "description": "Pass the list of values of the domains.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "This is an example value.",
+                    "isRequired": false,
+                    "value": "abc.com",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "ips",
+            "description": "Pass the IPs selected from the article.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "all",
+                "description": "Indicates whether all IP addresses parsed from the RSS feed should be added to the intel.",
+                "isRequired": false,
+                "value": "false",
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "negation",
+                "description": "Determines whether the IP addresses listed in values should be excluded  or included.",
+                "isRequired": false,
+                "value": "false",
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "values",
+                "description": "Pass the list of values of the IPs",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "This is an example value.",
+                    "isRequired": false,
+                    "value": "1.1.1.1",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "metadata",
+        "description": "Pass the additional details",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "title",
+            "description": "Pass the title of the report.",
+            "isRequired": false,
+            "value": "Nugget post: WKHTMLTOPDF not loading JavaScript",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "description",
+            "description": "Pass the description of the report.",
+            "isRequired": false,
+            "value": "WKHTMLTOPDF is an extremely popular tool to convert existing html pages (or strings) to a PDF. This comes in handy for CyberSift",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "confidence",
+            "description": "Pass the confidence score.",
+            "isRequired": false,
+            "value": "80",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "tlp",
+            "description": "Pass the TLP value for the report.",
+            "isRequired": false,
+            "value": "AMBER",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "article_id",
+        "description": "Pass the ID of an RSS article",
+        "isRequired": false,
+        "value": "2b528e26-e402-436f-be45-fa4e7e7ada46",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6871f0cfecb3f1449e0da0dc"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the success message.",
+          "isRequired": false,
+          "value": "you will be notified once stix get created.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

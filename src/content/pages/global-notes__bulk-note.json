@@ -1,0 +1,132 @@
+{
+  "slug": "global-notes/bulk-note",
+  "title": "Bulk Note",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "global-notes",
+    "bulk-note"
+  ],
+  "description": "Creates notes in bulk for multiple threat data objects.",
+  "method": "POST",
+  "path": "ingestion/ingestion-api/bulk-notes/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "type",
+        "description": "Pass the object type.",
+        "isRequired": true,
+        "value": "threatdata",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "threatdata",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "text",
+        "description": "Pass the note content to be added to the specified threat data objects.",
+        "isRequired": true,
+        "value": "this is report description - demo",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_ids",
+        "description": "Pass the list of object UUIDs to which the note should be attached. To get the `object_id`, use the **List Threat Data endpoint**.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example ID.",
+            "isRequired": false,
+            "value": "a4b77a74-4ed0-4def-8163-04dd27fd4229",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693801f4b49385adf3bf015b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Returns the overall result. For example: *SUCCESS*, *PARTIAL SUCCESS*, or *FAILED*.",
+          "isRequired": false,
+          "value": "SUCCESS",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "message",
+          "description": "Returns the reason based on the status.",
+          "isRequired": false,
+          "value": "The provided note text has been applied to all valid objects.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

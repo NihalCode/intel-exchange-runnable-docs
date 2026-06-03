@@ -1,0 +1,173 @@
+{
+  "slug": "indicators-allowed/add-indicators-to-allowed-list",
+  "title": "Add Indicators to Allowed List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "add-indicators-to-allowed-list"
+  ],
+  "description": "Adds a list of indicators of a common IOC type to the allowed indicators list.",
+  "method": "POST",
+  "path": "conversion/allowed_indicators/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "type",
+        "description": "Pass the type of indicator.",
+        "isRequired": false,
+        "value": "ipv4-addr",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "values",
+        "description": "Pass the list of indicator values to be added to the allowed list.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "91.108.17.134",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "reason",
+        "description": "Pass a reason for adding the indicators to the allowed list.",
+        "isRequired": false,
+        "value": "adding IP ioc",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394f0bb49385adf3c4b1ad"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the categorized results of the requested operation.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "invalid",
+              "description": "Returns the list of invalid IOCs passed.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "new_created",
+              "description": "Returns the list of newly added valid IOCs.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "91.108.17.134",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "already_exists",
+              "description": "Returns the list of IOCs that are already available in the allowed indicators list.\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

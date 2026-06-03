@@ -1,0 +1,276 @@
+{
+  "slug": "indicators-allowed/update-allowed-indicator",
+  "title": "Update Allowed Indicator",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "update-allowed-indicator"
+  ],
+  "description": "Updates the specified allowed indicator.",
+  "method": "PUT",
+  "path": "conversion/allowed_indicators/{indicator_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "include_emails",
+        "description": "Pass true to parse emails, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "include_subdomains",
+        "description": "Parse true to parse subdomains, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "include_urls",
+        "description": "Pass true to parse the URLs, else parse false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass the type of IOC.",
+        "isRequired": false,
+        "value": "ipv4-addr",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "value",
+        "description": "Pass the value of the corresponding IOC.",
+        "isRequired": false,
+        "value": "1.2.3.45",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "indicator_id",
+        "description": "Pass the ID of the allowed list indicator.",
+        "isRequired": false,
+        "value": "8af39afb-6503-4f57-a347-4b42475abd59",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "687406daaecb8721e0906199"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "type",
+          "description": "Returns the type of IOC.",
+          "isRequired": false,
+          "value": "ipv4-addr",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "value",
+          "description": "Returns the value of the IOC.",
+          "isRequired": false,
+          "value": "1.2.3.45",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the ID of the allowed indicator entry.",
+          "isRequired": false,
+          "value": "8af39afb-6503-4f57-a347-4b42475abd59",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the ID of the user that last modified the entry.",
+          "isRequired": false,
+          "value": "6063f29f-0224-4891-8761-34ef988fa080",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date and time of the last modification of the allowed indicator entry.",
+          "isRequired": false,
+          "value": "1641491689",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "include_subdomains",
+          "description": "Returns true if the subdomains are parsed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "include_urls",
+          "description": "Returns true if the URLs are parsed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "include_emails",
+          "description": "Returns true if the emails are parsed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the ID of the user that created the allowed list entry.",
+          "isRequired": false,
+          "value": "754c15c6-e922-4bde-95b2-e80d9d1cf87c",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time of the creation of the allowed list entry.",
+          "isRequired": false,
+          "value": "1641464479",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

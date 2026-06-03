@@ -1,0 +1,1137 @@
+{
+  "slug": "threat-data/bulk-actions/bulk-ioc-lookup-and-create-intel",
+  "title": "Bulk IOC Lookup and Create Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "bulk-actions",
+    "bulk-ioc-lookup-and-create-intel"
+  ],
+  "description": "Perform a lookup for IOCs to retrieve the list of objects available in Intel Exchange. If some IOCs are not available in the platform, you can choose to create intel and ingest the missing IOCs. You can look up and ingest a maximum of 1000 IOCs in an API request.\n\nYou can perform a lookup for the following IOC types:\n\n*   IPv4\n    \n*   IPv6\n    \n*   Email Address\n    \n*   MD5\n    \n*   SHA1\n    \n*   SHA256\n    \n*   SHA512\n    \n*   SSDEEP\n    \n*   URL\n    \n*   Domain",
+  "method": "POST",
+  "path": "ingestion/threat-data/bulk-lookup-and-create/",
+  "request": {
+    "query": [
+      {
+        "name": "enrichment",
+        "description": "Pass true to retrieve the last enriched details of the IOCs.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "false",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "create",
+        "description": "Pass true to create valid IOCs in the payload as threat data objects in the Threat Data module in Intel Exchange.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "false",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "ioc_values",
+        "description": "Pass a list of up to 1000 IOC values to look up.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "76.77.23.225",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "1",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "12.3.4.6",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "2",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "12.3.4.7",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "metadata",
+        "description": "Pass additional information to associate with the intel.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "tlp",
+            "description": "Pass the TLP to associate with the intel.",
+            "isRequired": false,
+            "value": "RED",
+            "valueType": "string",
+            "options": {
+              "defaultValue": "NONE",
+              "enumValue": [
+                {
+                  "value": "GREEN",
+                  "description": ""
+                },
+                {
+                  "value": "AMBER",
+                  "description": ""
+                },
+                {
+                  "value": "RED",
+                  "description": ""
+                },
+                {
+                  "value": "WHITE",
+                  "description": ""
+                },
+                {
+                  "value": "NONE",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "confidence",
+            "description": "Pass the Source Confidence Score to associate with the intel.",
+            "isRequired": false,
+            "value": 100,
+            "valueType": "number",
+            "options": {
+              "defaultValue": "100",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "tags",
+            "description": "Pass a list of tag names to associate with the intel.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "Enter the tag name. Example, *Open API IOC*.",
+                "isRequired": false,
+                "value": "Tag Name",
+                "valueType": "string",
+                "options": {
+                  "defaultValue": "created_using_openapi_lookup",
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "description",
+            "description": "Pass a description for the intel.",
+            "isRequired": false,
+            "value": "Description for all the threat data objects to be created",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "source",
+        "description": "Pass the details of the source, like the source name.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "source_name",
+            "description": "Pass the name of the source to map the intel.  If the passed source name does not exists in the platform, then a new source is automatically created with the suffix (OpenAPI) in the Miscellaneous source category. ",
+            "isRequired": false,
+            "value": "API Source",
+            "valueType": "string",
+            "options": {
+              "defaultValue": "OpenAPI Lookup (OpenAPI)",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "collection",
+        "description": "Pass the details of the collections, like the collection name.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "collection_name",
+            "description": "Pass the name of the source collection to associate with the source. If the passed collection name does not exists in the platform, then a new collection is automatically created with the suffix (OpenAPI).",
+            "isRequired": false,
+            "value": "Open API Source Collection",
+            "valueType": "string",
+            "options": {
+              "defaultValue": "OpenAPI Lookup (OpenAPI)",
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68d2b20350b9067d506b3cda"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "found_iocs",
+          "description": "Returns the details of the IOCs that exist in the platform.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "results",
+              "description": "Returns a list of JSON objects. Each object includes the details of the IOCs that exists in the platform.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "analyst_cvss_score",
+                      "description": "Returns the CVSS score assigned to a vulnerability object by an analyst.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "integer",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "analyst_markings",
+                      "description": "Returns the analyst marking for the object.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "analyst_score",
+                      "description": "Returns the Confidence Score assigned to the IOC by an analyst.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "analyst_tlp",
+                      "description": "Returns the TLP assigned to the IOC by an analyst.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "canvas_data",
+                      "description": "Visual enrichment data used for relationship mapping in the threat intelligence canvas.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "confidence_score",
+                      "description": "Returns the Confidence Score calculated by the Intel Exchange confidence score engine.",
+                      "isRequired": false,
+                      "value": "NA",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "confidence_type",
+                      "description": "Returns the type of Confidence Score.",
+                      "isRequired": false,
+                      "value": "ctix",
+                      "valueType": "string",
+                      "options": {
+                        "enumValue": [
+                          {
+                            "value": "ctix",
+                            "description": "Confidence Score is calculated in Intel Exchange."
+                          },
+                          {
+                            "value": "third-party",
+                            "description": "Confidence Score is calculated by a third-party application"
+                          }
+                        ],
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "country",
+                      "description": "Returns the name of the country where the IOC was seen.\n",
+                      "isRequired": false,
+                      "value": "India",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "created",
+                      "description": "Returns the source created date and time of the IOC.",
+                      "isRequired": false,
+                      "value": 1738323897,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "ctix_created",
+                      "description": "Returns the created date and time of the IOC in Intel Exchange.",
+                      "isRequired": false,
+                      "value": 1738323904,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "ctix_modified",
+                      "description": "Returns the modified date and time of the IOC.",
+                      "isRequired": false,
+                      "value": 1745229473,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "custom_attributes",
+                      "description": "Returns any custom attributes associated with the threat data object",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "custom_attribute_name",
+                              "description": "Returns the name of the custom attribute.",
+                              "isRequired": false,
+                              "value": "csap_card_id",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "custom_attribute_value",
+                              "description": "Returns the value of the custom attribute.",
+                              "isRequired": false,
+                              "value": "348bc093",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "custom_scores",
+                      "description": "Returns custom scores associated with the threat data object",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "x_ctix_customscore_1",
+                          "description": "This is an example value.",
+                          "isRequired": false,
+                          "value": "Medium",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "first_seen",
+                      "description": "Returns the date and time when the IOC was first seen.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "id",
+                      "description": "Returns the unique ID assigned by Intel Exchange to the IOC.",
+                      "isRequired": false,
+                      "value": "83f94ebc-5434-41a5-9b7a-f4267f133a1c",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "indicator_type",
+                      "description": "Returns the type of indicator. Returns null if the threat data object is not an indicator. Returns file for hashes and the indicator type key for other indicators.",
+                      "isRequired": false,
+                      "value": "ipv4-addr",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "ioc_type",
+                      "description": "Returns the type of indicator. Returns null if the threat data object is not an indicator. Returns file for hashes and the indicator type key for other indicators.",
+                      "isRequired": false,
+                      "value": "ipv4-addr",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_actioned",
+                      "description": "Returns true if an action was performed on the threat data object in Intel Exchange. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_deprecated",
+                      "description": "Returns true if the IOC is marked as deprecated in Intel Exchange. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_false_positive",
+                      "description": "Returns true if the IOC is marked as false positive in Intel Exchange. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_reviewed",
+                      "description": "Returns true if the IOC is reviewed. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_revoked",
+                      "description": "Returns true if the IOC is revoked. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_under_review",
+                      "description": "Returns true if the IOC is marked for manual review. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_watchlist",
+                      "description": "Returns true if the IOC is added to the watchlist. Else, returns false.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_whitelisted",
+                      "description": "Returns true if the IOC is marked as an allowed indicator. Else, returns false.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_seen",
+                      "description": "Returns the last seen date and time of the IOC.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "modified",
+                      "description": "Returns the source modified date and time of the IOC.\n",
+                      "isRequired": false,
+                      "value": 1745228752,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the value of the IOC.",
+                      "isRequired": false,
+                      "value": "1.1.1.1",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "pattern",
+                      "description": "Returns the ATT&CK pattern of the IOC",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "primary_attribute",
+                      "description": "Returns the primary attribute of the threat data object if the IOC is a custom object.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "published_collections",
+                      "description": "Returns a list of JSON objects for the collections in which the IOC is published.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "received_id",
+                      "description": "Identifier assigned during data ingestion; often used for tracking source-originated records.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "risk_severity",
+                      "description": "Overall risk level based on threat context or scoring.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "severity",
+                      "description": "Returns the severity of the threat data object.",
+                      "isRequired": false,
+                      "value": "UNKNOWN",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_collections",
+                      "description": "Returns the list of IDs and names of source collections of the IOC.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the source collection.",
+                              "isRequired": false,
+                              "value": "decf3ae2-9efd-4c5d-a67c-ea3eba333baa",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the source collection.",
+                              "isRequired": false,
+                              "value": "Free Text",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "source_confidence",
+                      "description": "Returns the confidence score of the IOC as reported by the source.",
+                      "isRequired": false,
+                      "value": "HIGH",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source_created",
+                      "description": "Returns the epoch timestamp of when the IOC was created in the source",
+                      "isRequired": false,
+                      "value": 1738323897,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sources",
+                      "description": "Returns the list of sources that reported the IOC.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the source.",
+                              "isRequired": false,
+                              "value": "790b1f0c-21e5-46d7-be66-bb57f4bd4074",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the source.",
+                              "isRequired": false,
+                              "value": "Y combi",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "source_type",
+                              "description": "Returns the type of the source.",
+                              "isRequired": false,
+                              "value": "RSS_FEED",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "1",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "6b829200-ecab-4e2e-bd3b-7691e0035cff",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "CSAP",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "source_type",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "MISCELLANEOUS",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "sub_type",
+                      "description": "Returns the valid subtype of the object such as an indicator is a valid subtype is a URL, domain, and more.",
+                      "isRequired": false,
+                      "value": "value",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscriber_collections",
+                      "description": "Returns the collections in which the IOC is published and subscribers are polling data from the collections.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "subscribers",
+                      "description": "Returns the subscribers that are polling the IOC from published collections.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tags",
+                      "description": "Returns the tags associated with the IOC.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "colour_code",
+                              "description": "Returns the colour code in HEX format associated with the tag.",
+                              "isRequired": false,
+                              "value": "#45505E",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "id",
+                              "description": "Returns the tag ID.",
+                              "isRequired": false,
+                              "value": "f350fc79-db83-4e7f-95ec-33e92683fb63",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the tag name.",
+                              "isRequired": false,
+                              "value": "Actor/ELOQUENTPANDA",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "tag_type",
+                              "description": "Returns the type of the tag.",
+                              "isRequired": false,
+                              "value": "source",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "theme",
+                              "description": "Visual styling cue used for UI grouping or prioritisation.",
+                              "isRequired": false,
+                              "value": "neutral",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "tlp",
+                      "description": "Returns the TLP assigned to the IOC by the source.\n",
+                      "isRequired": false,
+                      "value": "AMBER",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the SDO type of the threat data object. Returns indicator for IOCs.",
+                      "isRequired": false,
+                      "value": "indicator",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "valid_from",
+                      "description": "Returns the date and time since when this IOC is valid.",
+                      "isRequired": false,
+                      "value": 1738323897,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "valid_until",
+                      "description": "Returns the date and time until when this IOC is valid.",
+                      "isRequired": false,
+                      "value": null,
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "total",
+              "description": "Returns the details of the IOCs that exist in the platform.",
+              "isRequired": false,
+              "value": 12,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "message",
+          "description": "Returns the message associated with intel creation",
+          "isRequired": false,
+          "value": "Intel creation successfully inititated for IOCs that were not found in the lookup",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "task_id",
+          "description": "Returns the task ID of intel creation",
+          "isRequired": false,
+          "value": "41b9e377-cb6f-41df-9a14-1cc612c0d09a",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "values_not_found",
+          "description": "Returns the details of the IOCs that do not exist in the platform.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "invalid_values",
+              "description": "Returns a list of invalid IOC values. Invalid IOC values will not be ingested into the platform.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "9c5181033b932df1d0e24271713",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "total_invalid",
+              "description": "Returns the total count of invalid IOC values.",
+              "isRequired": false,
+              "value": 5,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "total_valid",
+              "description": "Returns the total number of valid IOC values.",
+              "isRequired": false,
+              "value": 1,
+              "valueType": "number",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "valid_iocs",
+              "description": "Returns a list of all valid IOC values. All valid IOC values will be ingested into the platform if the query parameter `create=true` is passed with the request.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "This is an example value.",
+                  "isRequired": false,
+                  "value": "136.19.253.60",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

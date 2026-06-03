@@ -1,0 +1,646 @@
+{
+  "slug": "administration/integration-management/api-integrations/retrieve-api-feed-source-details",
+  "title": "Get API Feed Source Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "api-integrations",
+    "retrieve-api-feed-source-details"
+  ],
+  "description": "Returns configuration details of an API feed connector.",
+  "method": "GET",
+  "path": "conversion/api-feeds/apps/detail/{app_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "app_id",
+        "description": "Pass the unique ID of the API feed source. You can use the **List API Feeds API** to retrieve the `app_id`.",
+        "isRequired": false,
+        "value": "7f08d9af-efcd-402d-bb87-d33ce7171d78",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693938d3b49385adf3c3605f"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the API feed connector.",
+          "isRequired": false,
+          "value": "043675a0-a035-477a-a4f1-eb309823935b",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the API feed connector.",
+          "isRequired": false,
+          "value": "Alien Vault",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "slug",
+          "description": "Returns the slug value of the API feed connector.",
+          "isRequired": false,
+          "value": "alien_vault",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the API feed connector.",
+          "isRequired": false,
+          "value": "AlienVault enables organizations to detect and respond to today's threats in cloud, on-premises and hybrid cloud environments. It develops commercial and open source solutions to manage cyber attacks.\nCTIX is integrated with AlienVault to gain information from its sources. Domain names, IP addresses, hashes, URLs, and other such details are obtained from AlienVault.",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "third_party_logo",
+          "description": "Returns the path for the image of the API feed connector.",
+          "isRequired": false,
+          "value": "/2627744746342/Integration_AlienVault.svg",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "category",
+          "description": "Returns the category of the API feed category. For example, *threat_feed_provider*.",
+          "isRequired": false,
+          "value": "threat_feed_provider",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "version",
+          "description": "Returns the version of the API feed connector.",
+          "isRequired": false,
+          "value": "1.0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "create_intel_feed",
+          "description": "Returns true if users can create intel from the feeds.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "metadata",
+          "description": "Returns the configuration variables needed for the API feed connector, such as, access key, secret key, polling limits and more.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "help_doc_content_key",
+              "description": "Returns the help documentation key.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "fields",
+              "description": "Returns the fields associated with the instance of the feed provider.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "Returns the key, default value, and field type of the instance field.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "key",
+                      "description": "Returns the key of the instance field.",
+                      "isRequired": false,
+                      "value": "base_url",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "default_value",
+                      "description": "Returns the configured value of the instance field.",
+                      "isRequired": false,
+                      "value": "https://otx.alienvault.com/",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "field_type",
+                      "description": "Returns the field type.",
+                      "isRequired": false,
+                      "value": "text",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "rules",
+                      "description": "Returns any rules associated with the instance field",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "required",
+                          "description": "Returns a boolean indicating whether the field is mandatory when configuring the rule action.",
+                          "isRequired": false,
+                          "value": true,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "2",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "key",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "verify_ssl",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "field_type",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "checkbox",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "default_value",
+                      "description": "",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "related_fields",
+              "description": "Returns the related fields information for the feed provider.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "key",
+                      "description": "Returns the key of the field.",
+                      "isRequired": false,
+                      "value": "collection_name",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "field_type",
+                      "description": "Returns the field type.",
+                      "isRequired": false,
+                      "value": "text",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "order",
+                      "description": "Returns the field order.",
+                      "isRequired": false,
+                      "value": 2,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "rules",
+                      "description": "Returns the validation rules for the field.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "required",
+                          "description": "Returns a boolean indicating whether the field is mandatory when configuring the rule action.",
+                          "isRequired": false,
+                          "value": true,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "display_related_fields",
+                      "description": "Returns true if the fields listed here will also display.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "This is an example value.",
+                          "isRequired": false,
+                          "value": "get_pulse_feeds",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "identifier",
+                      "description": "Indicates what behaviour/function this field is linked to.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "This is an example value.",
+                          "isRequired": false,
+                          "value": "poll",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "maxlength",
+                      "description": "Returns the maximum allowed length for text input.",
+                      "isRequired": false,
+                      "value": 100,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "custom_filters",
+              "description": "Returns any custom filters associated with the feed provider.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "polling",
+              "description": "Returns the polling details of the feed provider.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "limits",
+                  "description": "Returns the details of the polling limits.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "The minimum polling limit in seconds.",
+                      "isRequired": false,
+                      "value": 3600,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "1",
+                      "description": "The maximum polling limit in seconds.",
+                      "isRequired": false,
+                      "value": 604800,
+                      "valueType": "number",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "default",
+                  "description": "The default polling limit is in seconds.",
+                  "isRequired": false,
+                  "value": 14400,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "feed_type",
+          "description": "Returns the type of feed. For example, *System Feeds*.\n",
+          "isRequired": false,
+          "value": "System Feeds",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source_id",
+          "description": "Returns the source ID of the feed provider.",
+          "isRequired": false,
+          "value": "4aa61330-c296-4d8a-a05c-1f4c8ef81951",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the feed provider is currently active  in Intel Exchange.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

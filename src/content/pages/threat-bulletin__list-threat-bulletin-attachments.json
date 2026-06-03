@@ -1,0 +1,340 @@
+{
+  "slug": "threat-bulletin/list-threat-bulletin-attachments",
+  "title": "Get Threat Bulletin Attachments List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-bulletin",
+    "list-threat-bulletin-attachments"
+  ],
+  "description": "Returns all attachments of one threat bulletin.",
+  "method": "GET",
+  "path": "conversion/threat-bulletin/{threat_bulletin_id}/attachments/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "threat_bulletin_id",
+        "description": "Pass the ID of a threat bulletin.",
+        "isRequired": false,
+        "value": "6ecd8c8a-c869-426e-8d78-b4bf26314bb2",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6939499eb49385adf3c46f0d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the link for the next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the link for the previous page.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the page size.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the count of attachments.",
+          "isRequired": false,
+          "value": "2",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of attachments.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the attachment ID.",
+                  "isRequired": false,
+                  "value": "599aae95-0e77-4bfe-bcdf-efb9a7633e8e",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "data",
+                  "description": "Returns the attachment data.",
+                  "isRequired": false,
+                  "value": "PHN0aXg6U1RJWF9QYWNrYWdlIAoJeG1sbnM6c3RpeD0iaHR0cDovL3N0aXgubWl0cmUub3JnL3N0aXgtMSIKCXhtbG5zOnR0cD0iaHR0cDovL3N0aXgubWl0cmUub3JnL1RUUC0xIgoJeG1sbnM6Y3RpeD0iaHR0cHM6Ly9jeXdhcmUuY29tIgoJeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiCgl4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyIKCXhtbG5zOnhzPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIKCXhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiCgkgaWQ9ImN0aXg6UGFja2FnZS1mYmI2M2RjNS0xYmRjLTQwNWItOWYyNy1iMTA2NDM5OTgyMDgiIHZlcnNpb249IjEuMiIgdGltZXN0YW1wPSIyMDIxLTA3LTE1VDE0OjE3OjEzLjA2MjM4NCswMDowMCI+CiAgICA8c3RpeDpTVElYX0hlYWRlcj4KICAgICAgICA8c3RpeDpUaXRsZT5kY2ZndmJobmo8L3N0aXg6VGl0bGU+CiAgICA8L3N0aXg6U1RJWF9IZWFkZXI+CiAgICA8c3RpeDpUVFBzPgogICAgICAgIDxzdGl4OlRUUCBpZD0iY3RpeDp0dHAtMDdjYmY1NTYtMjU5Yi00YmUxLTg1MDctZjhhN2E3NzBhNzliIiB0aW1lc3RhbXA9IjIwMjEtMDctMTVUMTQ6MTc6MzMuNDA4NTM1KzAwOjAwIiB4c2k6dHlwZT0ndHRwOlRUUFR5cGUnPgogICAgICAgICAgICA8dHRwOlRpdGxlPmNmdmdiaG5tPC90dHA6VGl0bGU+CiAgICAgICAgICAgIDx0dHA6QmVoYXZpb3I+CiAgICAgICAgICAgICAgICA8dHRwOkF0dGFja19QYXR0ZXJucz4KICAgICAgICAgICAgICAgICAgICA8dHRwOkF0dGFja19QYXR0ZXJuPgogICAgICAgICAgICAgICAgICAgICAgICA8dHRwOlRpdGxlPmNmdmdiaG5tPC90dHA6VGl0bGU+CiAgICAgICAgICAgICAgICAgICAgPC90dHA6QXR0YWNrX1BhdHRlcm4+CiAgICAgICAgICAgICAgICA8L3R0cDpBdHRhY2tfUGF0dGVybnM+CiAgICAgICAgICAgIDwvdHRwOkJlaGF2aW9yPgogICAgICAgIDwvc3RpeDpUVFA+CiAgICA8L3N0aXg6VFRQcz4KPC9zdGl4OlNUSVhfUGFja2FnZT4K",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the attachment name.",
+                  "isRequired": false,
+                  "value": "0a95b83f-70b7-43d1-a5d2-cf76faaacc6f_15_Jul_2021.xml",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "size",
+                  "description": "Returns the attachment size.",
+                  "isRequired": false,
+                  "value": "1062",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "mime_type",
+                  "description": "Returns the type of attachment.",
+                  "isRequired": false,
+                  "value": "text/xml",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "a0e382ea-4b84-4900-bf14-40f2263c61f5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "data",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "PHN0aXg6U1RJWF9QYWNrYWdlIAoJeG1sbnM6c3RpeD0iaHR0cDovL3N0aXgubWl0cmUub3JnL3N0aXgtMSIKCXhtbG5zOnR0cD0iaHR0cDovL3N0aXgubWl0cmUub3JnL1RUUC0xIgoJeG1sbnM6Y3RpeD0iaHR0cHM6Ly9jeXdhcmUuY29tIgoJeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiCgl4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyIKCXhtbG5zOnhzPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIKCXhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiCgkgaWQ9ImN0aXg6UGFja2FnZS1mYmI2M2RjNS0xYmRjLTQwNWItOWYyNy1iMTA2NDM5OTgyMDgiIHZlcnNpb249IjEuMiIgdGltZXN0YW1wPSIyMDIxLTA3LTE1VDE0OjE3OjEzLjA2MjM4NCswMDowMCI+CiAgICA8c3RpeDpTVElYX0hlYWRlcj4KICAgICAgICA8c3RpeDpUaXRsZT5kY2ZndmJobmo8L3N0aXg6VGl0bGU+CiAgICA8L3N0aXg6U1RJWF9IZWFkZXI+CiAgICA8c3RpeDpUVFBzPgogICAgICAgIDxzdGl4OlRUUCBpZD0iY3RpeDp0dHAtMDdjYmY1NTYtMjU5Yi00YmUxLTg1MDctZjhhN2E3NzBhNzliIiB0aW1lc3RhbXA9IjIwMjEtMDctMTVUMTQ6MTc6MzMuNDA4NTM1KzAwOjAwIiB4c2k6dHlwZT0ndHRwOlRUUFR5cGUnPgogICAgICAgICAgICA8dHRwOlRpdGxlPmNmdmdiaG5tPC90dHA6VGl0bGU+CiAgICAgICAgICAgIDx0dHA6QmVoYXZpb3I+CiAgICAgICAgICAgICAgICA8dHRwOkF0dGFja19QYXR0ZXJucz4KICAgICAgICAgICAgICAgICAgICA8dHRwOkF0dGFja19QYXR0ZXJuPgogICAgICAgICAgICAgICAgICAgICAgICA8dHRwOlRpdGxlPmNmdmdiaG5tPC90dHA6VGl0bGU+CiAgICAgICAgICAgICAgICAgICAgPC90dHA6QXR0YWNrX1BhdHRlcm4+CiAgICAgICAgICAgICAgICA8L3R0cDpBdHRhY2tfUGF0dGVybnM+CiAgICAgICAgICAgIDwvdHRwOkJlaGF2aW9yPgogICAgICAgIDwvc3RpeDpUVFA+CiAgICA8L3N0aXg6VFRQcz4KPC9zdGl4OlNUSVhfUGFja2FnZT4K",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "0a95b83f-70b7-43d1-a5d2-cf76faaacc6f_15_Jul_2021.xml",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "size",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1062",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "mime_type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "text/xml",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,76 @@
+{
+  "slug": "reports/download-file",
+  "title": "Get Download File",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "reports",
+    "download-file"
+  ],
+  "description": "Downloads a file.",
+  "method": "GET",
+  "path": "ingestion/external_download/{file_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "token",
+        "description": "Pass the unique token to authorize the request.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "file_id",
+        "description": "Pass the external file ID to download. Example, *3cd05d6d-3ed4-49ae-8866-4d8f87542fa1*",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": null,
+    "codeExamples": [],
+    "_id": "69398918dcb55907b1445281"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Returns the content of the file.\n",
+      "contentType": "html",
+      "body": [
+        {
+          "name": "raw",
+          "value": ",Valid Until,Tags\n0,,\n1,,cryptolocker | zipbomb\n2,,test_tag | heartbleed",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

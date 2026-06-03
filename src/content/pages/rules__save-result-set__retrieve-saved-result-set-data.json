@@ -1,0 +1,1958 @@
+{
+  "slug": "rules/save-result-set/retrieve-saved-result-set-data",
+  "title": "Get Saved Result Set Data",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "rules",
+    "save-result-set",
+    "retrieve-saved-result-set-data"
+  ],
+  "description": "Returns the data published to the Saved Result Set using rules.",
+  "method": "GET",
+  "path": "ingestion/rules/save_result_set/",
+  "request": {
+    "query": [
+      {
+        "name": "version",
+        "description": "Pass the Saved Result Set version. \n",
+        "isRequired": false,
+        "value": "v3",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "v2",
+          "enumValue": [
+            {
+              "value": "v2",
+              "description": "Retrieves the data that is published using the Save Result Set action in rules. Saved Result Set v2 retrieves indicator and vulnerability data only."
+            },
+            {
+              "value": "v3",
+              "description": "Retrieves the data that is published using the Save Result Set V3 action in rules."
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "label_name",
+        "description": "Pass a tag name to filter data. All data associated the passed tag will be returned.",
+        "isRequired": false,
+        "value": "0day",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "from_timestamp",
+        "description": "Pass the published time in epoch format from which you want to retrieve data.",
+        "isRequired": false,
+        "value": "1649406695",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "to_timestamp",
+        "description": "Pass the published time in epoch format until which you want to retrieve data.",
+        "isRequired": false,
+        "value": "1649406695",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records. ",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394b2ab49385adf3c48cbe"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns a link to the next page.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns a link to the previous page.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of records retrieved per page.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of records available in the Saved Result Set.\n",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of Saved Result Set data.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the Saved Result Set record.\n",
+                  "isRequired": false,
+                  "value": "fc1c1b96-2e74-4cc1-b515-184963e311b4",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_created",
+                  "description": "Returns the creation time of the Saved Result Set record.\n",
+                  "isRequired": false,
+                  "value": "1649406695",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_modified",
+                  "description": "Returns the last modification time of the Saved Result Set record.",
+                  "isRequired": false,
+                  "value": "1649406695",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "version",
+                  "description": "Returns the Saved Result Set version.\n",
+                  "isRequired": false,
+                  "value": "v2",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_tags",
+                  "description": "Returns the list of tags associated with the Saved Result Set record.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier for the tag.",
+                          "isRequired": false,
+                          "value": "acb6cafe-c688-4d10-884e-f00123dd1d42",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the tag.",
+                          "isRequired": false,
+                          "value": "two",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "type",
+                          "description": "Returns the type of the tag.",
+                          "isRequired": false,
+                          "value": "manual",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "created",
+                          "description": "Returns the timestamp of when the tag was created.",
+                          "isRequired": false,
+                          "value": "1649406622",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "modified",
+                          "description": "Returns the timestamp of when the tag was last modified.",
+                          "isRequired": false,
+                          "value": "1649406622",
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "created_by",
+                          "description": "Returns the user who created the tag.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the user.",
+                              "isRequired": false,
+                              "value": "59f01fa7-3628-4218-b123-c00243881adc",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "email",
+                              "description": "Returns the email address of the user.",
+                              "isRequired": false,
+                              "value": "John@gmail.com",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "last_name",
+                              "description": "Returns the last name of the user.",
+                              "isRequired": false,
+                              "value": "John",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "first_name",
+                              "description": "Returns the first name of the user.",
+                              "isRequired": false,
+                              "value": "John",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "colour_code",
+                          "description": "Returns the color code associated with the tag.",
+                          "isRequired": false,
+                          "value": "#0068FA",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "modified_by",
+                          "description": "Returns the user who last modified the tag.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier of the user.",
+                              "isRequired": false,
+                              "value": "59f01fa7-3628-4218-b123-c00243881adc",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "email",
+                              "description": "Returns the email address of the user.",
+                              "isRequired": false,
+                              "value": "John@gmail.com",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "last_name",
+                              "description": "Returns the last name of the user.",
+                              "isRequired": false,
+                              "value": "John",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "first_name",
+                              "description": "Returns the first name of the user.",
+                              "isRequired": false,
+                              "value": "John",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "data",
+                  "description": "Returns the detailed information about the result set.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "tlp",
+                      "description": "Returns the Traffic Light Protocol (TLP) marking for the data.",
+                      "isRequired": false,
+                      "value": "WHITE",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "source",
+                      "description": "Returns the source of the data.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier for the source.",
+                          "isRequired": false,
+                          "value": "e10ebfe4-4e15-4a5c-9ac3-eb21251a054d",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the source.",
+                          "isRequired": false,
+                          "value": "Import",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "tenant_id",
+                      "description": "Returns the unique identifier for the tenant.",
+                      "isRequired": false,
+                      "value": "b2f4ff80-071a-4e5e-b9bc-4f81729a981d",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "indicators",
+                      "description": "Returns the list of threat indicators.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "ttp",
+                              "description": "Returns the techniques, tactics, and procedures associated with the indicator.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the indicator.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name2",
+                              "description": "Returns the alternative name or value of the indicator.",
+                              "isRequired": false,
+                              "value": "8.8.8.8",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "score",
+                              "description": "Returns the score assigned to the indicator.",
+                              "isRequired": false,
+                              "value": "46",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "title",
+                              "description": "Returns the title of the indicator.",
+                              "isRequired": false,
+                              "value": "ipv4: 8.8.8.8||indicator--3ab255ca-5664-421b-885c-17d02256a244",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "sources",
+                              "description": "Returns the sources associated with the indicator.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "0",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "source__name",
+                                      "description": "Returns the name of the data source.",
+                                      "isRequired": false,
+                                      "value": "Import",
+                                      "valueType": "string",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "deprecated",
+                              "description": "Returns whether the indicator is deprecated.",
+                              "isRequired": false,
+                              "value": "false",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "criticality",
+                              "description": "Returns the criticality level of the indicator.",
+                              "isRequired": false,
+                              "value": "0",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "whitelisted",
+                              "description": "Returns whether the indicator is whitelisted.",
+                              "isRequired": false,
+                              "value": "false",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "risk_severity",
+                              "description": "Returns the risk severity level of the indicator.",
+                              "isRequired": false,
+                              "value": "0",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "indicator_type",
+                              "description": "Returns the type of indicator.",
+                              "isRequired": false,
+                              "value": "ipv4-addr",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "stix_object_id",
+                              "description": "Returns the STIX object identifier for the indicator.",
+                              "isRequired": false,
+                              "value": "b2f53079-d203-44c5-8806-9de5be1e9974",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "threat_data_url",
+                              "description": "Returns the URL to view more details about the indicator.",
+                              "isRequired": false,
+                              "value": "hxxps://xyz.com/ctix/threatdata/indicator/b2f53079-d203-44c5-8806-9de5be1e9974/overview",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "custom_properties",
+                              "description": "Returns the custom properties related to the indicator.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "is_false_positive",
+                              "description": "Returns whether the indicator is a false positive.",
+                              "isRequired": false,
+                              "value": "false",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "object_description",
+                              "description": "Returns the additional description for the indicator.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "1",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "ttp",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "name2",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "3.2.1.1",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "score",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "title",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "ipv4: 3.2.1.1||indicator--210c915e-d927-46f7-9495-99cb6c05bf2a",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "sources",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "0",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "source__name",
+                                      "description": "",
+                                      "isRequired": false,
+                                      "value": "Import",
+                                      "valueType": "string",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "deprecated",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "false",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "criticality",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "0",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "whitelisted",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "false",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "risk_severity",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "0",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "indicator_type",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "ipv4-addr",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "stix_object_id",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "b66e8954-fb19-4a02-afad-8dc5ae5666a6",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "threat_data_url",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "hxxps://xyz.com/ctix/threatdata/indicator/b66e8954-fb19-4a02-afad-8dc5ae5666a6/overview",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "custom_properties",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "is_false_positive",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "false",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "object_description",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "stix_header",
+                      "description": "Returns the metadata related to the result set.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "title",
+                          "description": "Returns the title of the report or result set.",
+                          "isRequired": false,
+                          "value": "test Report",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "handling",
+                          "description": "Returns the handling marking for the data.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "0",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "marking",
+                                  "description": "Returns the specific security marking details.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "array",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "0",
+                                      "description": "",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": [
+                                        {
+                                          "name": "name",
+                                          "description": "Returns the name of the marking type.",
+                                          "isRequired": false,
+                                          "value": "TLPMarking",
+                                          "valueType": "string",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": []
+                                        },
+                                        {
+                                          "name": "type",
+                                          "description": "Returns the type of marking.",
+                                          "isRequired": false,
+                                          "value": "tlp",
+                                          "valueType": "string",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "marking_structures",
+                                  "description": "Returns the structured markings applied to the data.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "array",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "0",
+                                      "description": "",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": [
+                                        {
+                                          "name": "marking",
+                                          "description": "Returns the marking details.",
+                                          "isRequired": false,
+                                          "value": "",
+                                          "valueType": "object",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": [
+                                            {
+                                              "name": "type",
+                                              "description": "Returns the type of structured marking applied.",
+                                              "isRequired": false,
+                                              "value": "tlp",
+                                              "valueType": "string",
+                                              "options": {
+                                                "xml": {
+                                                  "prefix": null
+                                                },
+                                                "schemaNames": []
+                                              },
+                                              "complexItems": [],
+                                              "items": []
+                                            },
+                                            {
+                                              "name": "fields",
+                                              "description": "Returns a list of fields that hold marking-related values.",
+                                              "isRequired": false,
+                                              "value": "",
+                                              "valueType": "array",
+                                              "options": {
+                                                "xml": {
+                                                  "prefix": null
+                                                },
+                                                "schemaNames": []
+                                              },
+                                              "complexItems": [],
+                                              "items": [
+                                                {
+                                                  "name": "0",
+                                                  "description": "",
+                                                  "isRequired": false,
+                                                  "value": "",
+                                                  "valueType": "object",
+                                                  "options": {
+                                                    "xml": {
+                                                      "prefix": null
+                                                    },
+                                                    "schemaNames": []
+                                                  },
+                                                  "complexItems": [],
+                                                  "items": [
+                                                    {
+                                                      "name": "value",
+                                                      "description": "Returns the specific marking value assigned.",
+                                                      "isRequired": false,
+                                                      "value": "WHITE",
+                                                      "valueType": "string",
+                                                      "options": {
+                                                        "xml": {
+                                                          "prefix": null
+                                                        },
+                                                        "schemaNames": []
+                                                      },
+                                                      "complexItems": [],
+                                                      "items": []
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "profiles",
+                          "description": "Returns the associated profiles for the data.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "Returns a description of the result set.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "0",
+                              "description": "Returns the additional context or explanation for an object.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "value",
+                                  "description": "Returns the actual descriptive text.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "ordinality",
+                                  "description": "Returns the order or sequence of the description.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "structuring_format",
+                                  "description": "Returns the format used to structure the description.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "package_intent",
+                          "description": "Returns the intended use of the result set.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "short_description",
+                          "description": "Returns a brief description of the result set.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "information_source",
+                          "description": "Returns the information source metadata.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "role",
+                              "description": "Returns the role of the information source.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "time",
+                              "description": "Returns the time-related details for the information source.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "end_time",
+                                  "description": "Returns the end time for the information's validity.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "value",
+                                      "description": "Returns the specific timestamp for when the information validity ends.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    },
+                                    {
+                                      "name": "precision",
+                                      "description": "Returns the level of accuracy of the timestamp.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "start_time",
+                                  "description": "Returns the start time for the information's validity.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "value",
+                                      "description": "Returns the specific timestamp for when the information validity begins.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    },
+                                    {
+                                      "name": "precision",
+                                      "description": "Returns the level of accuracy of the timestamp.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "produced_time",
+                                  "description": "Returns the time when the information was originally created.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "value",
+                                      "description": "Returns the specific timestamp for when the information was produced.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    },
+                                    {
+                                      "name": "precision",
+                                      "description": "Returns the level of accuracy of the timestamp.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "received_time",
+                                  "description": "Returns the time when the information was received.",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "value",
+                                      "description": "Returns the specific timestamp for when the information was received.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    },
+                                    {
+                                      "name": "precision",
+                                      "description": "Returns the level of accuracy of the timestamp.",
+                                      "isRequired": false,
+                                      "value": "",
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "name": "tools",
+                              "description": "Returns the tools associated with the information source.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "identity",
+                              "description": "Returns the identity details of the information source.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "references",
+                              "description": "Returns the references associated with the result set.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "description",
+                              "description": "Returns the additional details or context about the information source.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "csap_card_id",
+                      "description": "Returns the CSAP card identifier.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "intel_package_url",
+                      "description": "Returns the URL to the full Intel package associated with the result set.",
+                      "isRequired": false,
+                      "value": "hxxps://xyz.com/ctix/threatdata/report/f1bac45a-9bf5-4e58-a629-19e69212564e/overview",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "timestamp",
+                  "description": "Returns the timestamp when the result set was retrieved.",
+                  "isRequired": false,
+                  "value": "1649406695",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the Saved Result Set record.",
+                  "isRequired": false,
+                  "value": "test Report",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

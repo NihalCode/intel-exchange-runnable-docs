@@ -1,0 +1,187 @@
+{
+  "slug": "threat-data-objects/tasks/create-task-in-multiple-objects",
+  "title": "Create Task in Multiple Objects",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data-objects",
+    "tasks",
+    "create-task-in-multiple-objects"
+  ],
+  "description": "Creates a task in multiple threat data objects.",
+  "method": "POST",
+  "path": "ingestion/tasks/bulk-action/add_task/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of the threat data object, such as *indicator*, *malware*, *vulnerability*, and more.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_ids",
+        "description": "Pass a list of threat data object IDs to associate with the task.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "0ac94453-737b-4e15-966d-1d11473d75dd",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "description": "Pass the data associated with the task.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "priority",
+            "description": "Pass the priority of the task.",
+            "isRequired": false,
+            "value": "medium",
+            "valueType": "string",
+            "options": {
+              "defaultValue": "medium",
+              "enumValue": [
+                {
+                  "value": "high",
+                  "description": ""
+                },
+                {
+                  "value": "medium",
+                  "description": ""
+                },
+                {
+                  "value": "low",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "status",
+            "description": "Pass the status of the task.",
+            "isRequired": false,
+            "value": "in_progress",
+            "valueType": "string",
+            "options": {
+              "defaultValue": "not_started",
+              "enumValue": [
+                {
+                  "value": "not_started",
+                  "description": ""
+                },
+                {
+                  "value": "in_progress",
+                  "description": ""
+                },
+                {
+                  "value": "completed",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "text",
+            "description": "Pass the description of the task to be performed.",
+            "isRequired": true,
+            "value": "task description",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "assignee",
+            "description": "Pass the ID of a user to assign the task.",
+            "isRequired": true,
+            "value": "58a66a94-fe9b-4928-ba44-d38fda6f06f3",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "687110c6ecb3f1449e0b4618"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "Action Successfully Executed",
+      "contentType": "application/json",
+      "body": []
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

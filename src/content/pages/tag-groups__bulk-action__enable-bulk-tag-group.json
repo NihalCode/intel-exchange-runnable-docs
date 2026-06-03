@@ -1,0 +1,139 @@
+{
+  "slug": "tag-groups/bulk-action/enable-bulk-tag-group",
+  "title": "Enable Bulk Tag Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "tag-groups",
+    "bulk-action",
+    "enable-bulk-tag-group"
+  ],
+  "description": "Enable multiple tag groups in a single request to activate them for use.",
+  "method": "POST",
+  "path": "ingestion/tags/bulk-actions/",
+  "request": {
+    "query": [
+      {
+        "name": "component",
+        "description": "Pass `tags` to include all the tags, irrespective of the status.",
+        "isRequired": false,
+        "value": "tags",
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass the list of unique tag group IDs on which the bulk action must be performed.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example Tag group ID.",
+            "isRequired": false,
+            "value": "1bcbd3e4-0e45-48a0-b87f-775051c7b363",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "1",
+            "description": "This is an example Tag group ID.",
+            "isRequired": false,
+            "value": "cba769ef-af96-43fb-ac5d-3ebbf495e616",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "action",
+        "description": "Pass the action to apply to the specified tag groups. ",
+        "isRequired": false,
+        "value": "enabled",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "enabled",
+              "description": "To enable the Tag groups."
+            },
+            {
+              "value": "disabled",
+              "description": "To disable the Tag groups."
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68efa93f242f952da31049d2"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the response details of the bulk action request.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "details",
+              "description": "Returns a message confirming that the action was successfully executed.",
+              "isRequired": false,
+              "value": "Action Successfully Executed",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

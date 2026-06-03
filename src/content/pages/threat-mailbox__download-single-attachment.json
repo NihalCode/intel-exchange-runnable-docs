@@ -1,0 +1,80 @@
+{
+  "slug": "threat-mailbox/download-single-attachment",
+  "title": "Download Single Threat Mail Attachment",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-mailbox",
+    "download-single-attachment"
+  ],
+  "description": "Use this API to download one attachment of an email message.",
+  "method": "GET",
+  "path": "conversion/feed-sources/email/inbox/{email_id}/attachments/{file_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "email_id",
+        "description": "Pass the unique ID of an email.",
+        "isRequired": false,
+        "value": "b5b51b15-88ef-4683-a7fb-95c0318a6322",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "file_id",
+        "description": "Pass the unique ID of an attachment.",
+        "isRequired": false,
+        "value": "869e2f40-1dfd-4856-939f-4e453746490a",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6871238fecb3f1449e0b6cac"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns an endpoint with a token to download the attachment.",
+          "isRequired": false,
+          "value": "\"http://localhost:8000/feed_sources/email/inbox/b8945432-f1fd-4e05-9fbd-b1afe358f654/attachments/869e2f40-1dfd-4856-939f-4e453746490a/download/?token=40209101-7b18-4984-b5eb-4e4c1c65d346\"",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

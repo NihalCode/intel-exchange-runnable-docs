@@ -1,0 +1,265 @@
+{
+  "slug": "administration/integration-management/tool-integrations/actions/retrieve-action-details",
+  "title": "Get Action Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "tool-integrations",
+    "actions",
+    "retrieve-action-details"
+  ],
+  "description": "Returns the details of actions that are defined for an account of a tool.",
+  "method": "GET",
+  "path": "integration/apps/{integration_app_id}/actions/{integration_action_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "third_party_config_id",
+        "description": "Pass the account ID in the query parameters to refine your results based on a particular account.",
+        "isRequired": false,
+        "value": "c973fca4-d969-432f-aa18-db96f1675d26",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "integration_app_id",
+        "description": "Pass the ID of the third-party tool",
+        "isRequired": true,
+        "value": "ba4b209c-51cb-4b13-bbdf-955ea6ae50c2",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "integration_action_id",
+        "description": "Pass the ID of the action.",
+        "isRequired": true,
+        "value": "c973fca4-d969-432f-aa18-db96f1675d26",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69393c94b49385adf3c3b396"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the action.\n",
+          "isRequired": false,
+          "value": "fe0dff7b-3e61-45e6-ba5b-59927cef0a6c",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "slug",
+          "description": "Returns the slug value of the tool. The slug refers to a human-readable, unique identifier that can be used to identify a resource.",
+          "isRequired": false,
+          "value": "get_ip",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "component",
+          "description": "Returns the component of action, such as IP, hash, URL, domain, or more.",
+          "isRequired": false,
+          "value": "ioc-ip",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the feed channel is active, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "polling_time",
+          "description": "Returns the frequency of a polling task for a tool.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "related_fields",
+          "description": "Returns related fields for an action.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "polling_type",
+          "description": "Returns A if the polling type is automatic, else returns M if the polling type is manual.",
+          "isRequired": false,
+          "value": "A",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "working_status",
+          "description": "Returns the action status, such as if the action is working or not.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the action.",
+          "isRequired": false,
+          "value": "-",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_configured",
+          "description": "Returns true if the action is configured at least once, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

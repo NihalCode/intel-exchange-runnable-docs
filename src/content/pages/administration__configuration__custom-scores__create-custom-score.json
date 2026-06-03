@@ -1,0 +1,172 @@
+{
+  "slug": "administration/configuration/custom-scores/create-custom-score",
+  "title": "Create Custom Score",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "configuration",
+    "custom-scores",
+    "create-custom-score"
+  ],
+  "description": "Creates a new custom score. You can add a maximum of five custom scores.",
+  "method": "POST",
+  "path": "conversion/custom-score/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the name of the custom score.",
+        "isRequired": false,
+        "value": "Priority Score",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "helptext",
+        "description": "Pass the help text for the custom score.",
+        "isRequired": false,
+        "value": "Determines the urgency of addressing the IOC based on current context",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "field_type",
+        "description": "Pass the type of field for the custom score. You can specify one of the following field types.",
+        "isRequired": false,
+        "value": "select",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "integer",
+              "description": "Allows you to enter a text value for the custom score."
+            },
+            {
+              "value": "text",
+              "description": "Allows you to enter an integer value for the custom score."
+            },
+            {
+              "value": "select",
+              "description": "Allows you to select one of the pre-defined list of values for the custom score."
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "values",
+        "description": "Pass a list of allowed values for the custom score. Required if the field type is `select`.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Indicates the IOC requires immediate attention.",
+            "isRequired": false,
+            "value": "High",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "1",
+            "description": "Indicates moderate risk.",
+            "isRequired": false,
+            "value": "Medium",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "2",
+            "description": "Indicates minimal risk.",
+            "isRequired": false,
+            "value": "Low",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870e2cfe86fa45bcc19e72f"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "message",
+          "description": "Returns a success message after creating the custom score.",
+          "isRequired": false,
+          "value": "CustomScore created successfully",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

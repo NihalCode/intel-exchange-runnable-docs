@@ -1,0 +1,233 @@
+{
+  "slug": "detailed-submission/draft/create-draft-intel",
+  "title": "Create DRAFT Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "draft",
+    "create-draft-intel"
+  ],
+  "description": "Request to create/start a STIX form detailed submission, the API returns a unique Identifier that will be used for all the subsequent calls in the create intel/detailed submission.",
+  "method": "POST",
+  "path": "conversion/shareable-intel/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass the title of the STIX detailed submission.",
+        "isRequired": true,
+        "value": "Package 3",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "status",
+        "description": "Pass the current status of the submission.",
+        "isRequired": true,
+        "value": "DRAFT",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "component",
+        "description": "Pass the Intel Exchange component, For detailed submission \"stix-form\" value is used.",
+        "isRequired": true,
+        "value": "stix-form",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "enabled_stix_objects",
+        "description": "Specifies the STIX objects the user can configure/modify for the current detailed submission.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example value.",
+            "isRequired": false,
+            "value": "indicator",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68668ffd4d30e65bd5f52180"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique Identifier for the initiated detailed submission/create-intel.",
+          "isRequired": false,
+          "value": "1f09d6df-4856-44f1-a948-189faa232090",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the current status of the detailed submission.",
+          "isRequired": false,
+          "value": "DRAFT",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "component",
+          "description": "Returns the Intel Exchange component; for detailed submission to \"stix-form\" value is returned.",
+          "isRequired": false,
+          "value": "stix-form",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "enabled_stix_objects",
+          "description": "Returns the STIX objects the user can configure/modify for the current detailed submission.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "indicator",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "created",
+          "description": "Returns the created timestamp for the submission.",
+          "isRequired": false,
+          "value": "1631874062",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the modified timestamp for the submission",
+          "isRequired": false,
+          "value": "1631874062",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the stix detailed submission.",
+          "isRequired": false,
+          "value": "Package 3",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

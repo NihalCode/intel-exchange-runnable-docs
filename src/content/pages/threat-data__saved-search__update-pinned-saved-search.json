@@ -1,0 +1,81 @@
+{
+  "slug": "threat-data/saved-search/update-pinned-saved-search",
+  "title": "Update Pinned Saved Search",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "saved-search",
+    "update-pinned-saved-search"
+  ],
+  "description": "Updates the order of a pinned saved search in Intel Exchange.",
+  "method": "PUT",
+  "path": "ingestion/saved-searches/pin-saved-search/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "saved_search",
+        "description": "Pass the ID of a saved search. You can retrieve the ID using the **List Saved Searches API**.",
+        "isRequired": false,
+        "value": "5090a554-05ba-4706-8310-07ddddc9b865",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "order",
+        "description": "Pass the order in which you want the saved search to appear.",
+        "isRequired": false,
+        "value": "2",
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68710688ecb3f1449e0b18ae"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns success if the saved search is pinned successfully. Else, returns failure.",
+          "isRequired": false,
+          "value": "success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

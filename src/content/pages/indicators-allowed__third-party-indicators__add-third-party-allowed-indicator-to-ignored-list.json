@@ -1,0 +1,111 @@
+{
+  "slug": "indicators-allowed/third-party-indicators/add-third-party-allowed-indicator-to-ignored-list",
+  "title": "Add Third-Party Allowed Indicator to Ignored List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "third-party-indicators",
+    "add-third-party-allowed-indicator-to-ignored-list"
+  ],
+  "description": "Add an indicator from the third-party allowed indicator repository to the third-party ignored indicator list in Intel Exchange.",
+  "method": "POST",
+  "path": "conversion/allowed_indicators/third_party_indicators/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "source",
+        "description": "Pass the ID and name of the third-party repository in which the indicator is found.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "id",
+            "description": "Pass the ID of the third-party repository.",
+            "isRequired": false,
+            "value": "e1e7e5de-e902-4e01-93a6-090e19a28818",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "name",
+            "description": "Pass the name of the third-party repository.",
+            "isRequired": false,
+            "value": "Majestic_Million",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "type",
+        "description": "Pass the type of indicator.",
+        "isRequired": false,
+        "value": "domain-name",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "value",
+        "description": "Pass the value of the indicator.\n",
+        "isRequired": false,
+        "value": "google.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "687405b2aecb8721e0906023"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Indicator added to Third-Party Ignored Indicators List successfully\n",
+      "contentType": "application/json",
+      "body": []
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

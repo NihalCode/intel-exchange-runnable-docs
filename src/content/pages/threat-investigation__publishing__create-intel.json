@@ -1,0 +1,259 @@
+{
+  "slug": "threat-investigation/publishing/create-intel",
+  "title": "Create Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-investigation",
+    "publishing",
+    "create-intel"
+  ],
+  "description": "Creates a report object from the details retrieved from the threat investigation.",
+  "method": "POST",
+  "path": "conversion/investigation/create-intel/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass a title for the intel.",
+        "isRequired": true,
+        "value": "visualizer test 1.0",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "create_intel_feed",
+        "description": "Pass True to create the intel.",
+        "isRequired": true,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "items",
+        "description": "Pass the details of the report object.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "t",
+                "description": "Pass the value of the threat data object or the relationship type.",
+                "isRequired": true,
+                "value": "125.56.67.78",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "prop",
+                "description": "Pass any additional information about the threat data object or the relationship type.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "identifier",
+                    "description": "Pass the internal system identifier for the threat object.",
+                    "isRequired": false,
+                    "value": "added",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "label",
+                    "description": "Pass the label for the object type.",
+                    "isRequired": false,
+                    "value": "IP",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "type",
+                    "description": "Pass the type of the object.",
+                    "isRequired": false,
+                    "value": "url",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "parent_type",
+                    "description": "Pass the category or origin class of the data object being added.",
+                    "isRequired": false,
+                    "value": "indicator",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              },
+              {
+                "name": "id",
+                "description": "Pass the ID of the threat data object or the relationship type.",
+                "isRequired": false,
+                "value": "node--54c79961-6d09-4c95-b152-6645dcc757cc",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "type",
+                "description": "Pass one of the following values",
+                "isRequired": false,
+                "value": "node",
+                "valueType": "string",
+                "options": {
+                  "enumValue": [
+                    {
+                      "value": "node",
+                      "description": " If the item is a threat data object"
+                    },
+                    {
+                      "value": "link",
+                      "description": "If the item is a relationship type"
+                    }
+                  ],
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "added_node",
+                "description": "Pass a boolean flag that marks whether this node is newly introduced in this create-intel operation.",
+                "isRequired": false,
+                "value": "true",
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6873c6eaaecb8721e0900ec8"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "A background task has been initiated to create the intel.",
+          "isRequired": false,
+          "value": "You will be notified once the STIX is created",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

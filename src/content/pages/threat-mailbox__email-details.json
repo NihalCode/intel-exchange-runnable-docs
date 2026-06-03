@@ -1,0 +1,382 @@
+{
+  "slug": "threat-mailbox/email-details",
+  "title": "Get Email Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-mailbox",
+    "email-details"
+  ],
+  "description": "Returns the details of an email.",
+  "method": "GET",
+  "path": "conversion/feed-sources/email/inbox/{id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "id",
+        "description": "Pass the unique ID of an email.",
+        "isRequired": false,
+        "value": "b5b51b15-88ef-4683-a7fb-95c0318a6322",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394937b49385adf3c468f3"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the email message.",
+          "isRequired": false,
+          "value": "96979ada-1a74-4528-96cf-a7d83b579077",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_config",
+          "description": "Returns the unique ID of the email feed source.",
+          "isRequired": false,
+          "value": "5578d40e-90c7-4ec7-a63a-0a3244158444",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "to",
+          "description": "Returns the username of the receiver.",
+          "isRequired": false,
+          "value": "john.doe@gmail.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "to_email",
+          "description": "Returns the email address of the receiver.",
+          "isRequired": false,
+          "value": "john.doe@gmail.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "_from",
+          "description": "Returns the username of the sender.",
+          "isRequired": false,
+          "value": "Google Community Team <googlecommunityteam-noreply@google.com>",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "_from_email",
+          "description": "Returns the email address of the sender.",
+          "isRequired": false,
+          "value": "googlecommunityteam-noreply@google.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "subject",
+          "description": "Returns the subject of the email message.",
+          "isRequired": false,
+          "value": "Threatmailbox, finish setting up your new Google Account",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "date",
+          "description": "Returns the date and time in epoch format when the email is received.",
+          "isRequired": false,
+          "value": "1616682859",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_read",
+          "description": "Returns true if the email is read, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_starred",
+          "description": "Returns true if the email message is bookmarked, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_delete",
+          "description": "Returns true if the email message is trashed, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "stix_created",
+          "description": "Returns true if intel is created from this email message, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_id",
+          "description": "Returns the unique ID of the Intel Exchange instance.",
+          "isRequired": false,
+          "value": "27e7256e-edf9-41cc-a325-6fde16e793db",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time in epoch format when the email is received in Intel Exchange.",
+          "isRequired": false,
+          "value": "1621846793",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "raw_body",
+          "description": "Returns the body of the email message.",
+          "isRequired": false,
+          "value": "<sample html>",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "raw_header",
+          "description": "Returns the complete, unprocessed header section of the email, containing technical metadata and routing information.",
+          "isRequired": false,
+          "value": "sample header",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_regulatory_email",
+          "description": "Returns true if the email is marked as a regulatory email, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "folder_id",
+          "description": "Returns the unique ID of the email folder.",
+          "isRequired": false,
+          "value": "142",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "folder_name",
+          "description": "Returns the name of the email folder.",
+          "isRequired": false,
+          "value": "INBOX",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "has_attachments",
+          "description": "Returns true if the email message includes attachments, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

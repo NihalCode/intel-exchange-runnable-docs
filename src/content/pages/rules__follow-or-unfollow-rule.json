@@ -1,0 +1,81 @@
+{
+  "slug": "rules/follow-or-unfollow-rule",
+  "title": "Follow or Unfollow Rule",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "rules",
+    "follow-or-unfollow-rule"
+  ],
+  "description": "Enables you to follow or unfollow a rule.",
+  "method": "PUT",
+  "path": "ingestion/rules/{rule_id}/follow/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "follow",
+        "description": "Pass true to follow a rule. Else, pass false.\n",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "rule_id",
+        "description": "Pass the unique ID of a rule.",
+        "isRequired": false,
+        "value": "a41615f0-112f-4dab-819c-9704c323e6ae",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6873df68aecb8721e090257f"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns the follow or unfollow status of the specified rule ID.\n",
+          "isRequired": false,
+          "value": "Followed Successfully",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

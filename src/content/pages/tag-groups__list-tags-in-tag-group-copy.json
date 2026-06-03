@@ -1,0 +1,681 @@
+{
+  "slug": "tag-groups/list-tags-in-tag-group-copy",
+  "title": "Update Tag Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "tag-groups",
+    "list-tags-in-tag-group-copy"
+  ],
+  "description": "Update all fields of an existing tag group with new values.",
+  "method": "PUT",
+  "path": "ingestion/tags/{tag_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the name of the tag group.\n\n",
+        "isRequired": true,
+        "value": "AS Group",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the tag group.",
+        "isRequired": false,
+        "value": "Ransomware AS Check",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tag_type",
+        "description": "Pass the details of the tag type.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "enumValue": [
+            {
+              "value": "system",
+              "description": "System Tag"
+            },
+            {
+              "value": "source",
+              "description": "Source Tag"
+            },
+            {
+              "value": "user",
+              "description": "User Tag"
+            },
+            {
+              "value": "privileged",
+              "description": "Privileged Access Tag"
+            },
+            {
+              "value": "group",
+              "description": "Tag Group"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "id",
+            "description": "Pass the tag type ID.",
+            "isRequired": false,
+            "value": "group",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "name",
+            "description": "Pass the tag type name.\n\n",
+            "isRequired": false,
+            "value": "Group",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "associated_tags",
+        "description": "Pass a list of associated tags.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "Pass the hex color code defined for the tag.",
+                "isRequired": false,
+                "value": "#45505E",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "Pass the icon of the tag.",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "Pass the unique ID of the tag.",
+                "isRequired": false,
+                "value": "96031982-fe29-462b-9ab6-5e278a62e281",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "Pass the name of the tag.\n",
+                "isRequired": false,
+                "value": "AS57333",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "tag_type",
+                "description": "Pass the details of the tag type.",
+                "isRequired": false,
+                "value": "source",
+                "valueType": "string",
+                "options": {
+                  "enumValue": [
+                    {
+                      "value": "system",
+                      "description": "System Tag"
+                    },
+                    {
+                      "value": "user",
+                      "description": "User Tag"
+                    },
+                    {
+                      "value": "source",
+                      "description": "Source Tag"
+                    },
+                    {
+                      "value": "privileged",
+                      "description": "Privileged Access Tag"
+                    },
+                    {
+                      "value": "group",
+                      "description": "Tag Group"
+                    }
+                  ],
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "theme",
+                "description": "Pass the theme associated with the tag.",
+                "isRequired": false,
+                "value": "neutral",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": null,
+            "complexItems": [],
+            "items": [
+              {
+                "name": "colour_code",
+                "description": "",
+                "isRequired": false,
+                "value": "#45505E",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "icon",
+                "description": "",
+                "isRequired": false,
+                "value": null,
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "id",
+                "description": "",
+                "isRequired": false,
+                "value": "86767922-7315-48d0-ae9c-3be48b3c9383",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "name",
+                "description": "",
+                "isRequired": false,
+                "value": "AS17505",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "tag_type",
+                "description": "",
+                "isRequired": false,
+                "value": "source",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "theme",
+                "description": "",
+                "isRequired": false,
+                "value": "neutral",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true if the tag group is active in Intel Exchange.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "tag_id",
+        "description": "Pass the ID of a tag group to retrieve the details.",
+        "isRequired": false,
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68efa8d4242f952da310455c"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the tag group.",
+          "isRequired": false,
+          "value": "8b523365-34c3-49d6-890a-e8015b927d45",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the tag group.",
+          "isRequired": false,
+          "value": "AS Group",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "colour_code",
+          "description": "Returns the hex color code defined for the tag group.",
+          "isRequired": false,
+          "value": "#DCDEE4",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the created date and time of the tag group in epoch format.",
+          "isRequired": false,
+          "value": 1760440627,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user details who created the tag group.",
+          "isRequired": false,
+          "value": "70f3d3ee-b7bc-4ceb-849e-16db0de5278b",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the details of the user who modified the tag group details.",
+          "isRequired": false,
+          "value": "70f3d3ee-b7bc-4ceb-849e-16db0de5278b",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the modified date and time of a tag group in epoch format.",
+          "isRequired": false,
+          "value": 1760511178,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tag_type",
+          "description": "Returns the details of the tag type.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the tag type ID.",
+              "isRequired": false,
+              "value": "group",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the tag type name.",
+              "isRequired": false,
+              "value": "Group",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the tag group is active in Intel Exchange.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "groups",
+          "description": "Returns a list of groups associated with this tag group.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the tag group.",
+          "isRequired": false,
+          "value": "Ransomware AS Check",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "theme",
+          "description": "Returns the theme associated with the tag group.",
+          "isRequired": false,
+          "value": "white",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "icon",
+          "description": "Returns the icon of the tag group.",
+          "isRequired": false,
+          "value": "cyicon-tags-solid",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "associated_tags_count",
+          "description": "Returns the number of tags associated with this tag group.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "associated_tags",
+          "description": "Returns a list of associated tags.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the tag.",
+                  "isRequired": false,
+                  "value": "96031982-fe29-462b-9ab6-5e278a62e281",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the tag.",
+                  "isRequired": false,
+                  "value": "ASN/AS57333",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tag_type",
+                  "description": "Returns the details of the tag type.",
+                  "isRequired": false,
+                  "value": "source",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "colour_code",
+                  "description": "Returns the hex color code defined for the tag.",
+                  "isRequired": false,
+                  "value": "#45505E",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "theme",
+                  "description": "Returns the theme associated with the tag.",
+                  "isRequired": false,
+                  "value": "neutral",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "icon",
+                  "description": "Returns the icon of the tag.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

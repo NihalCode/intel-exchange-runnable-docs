@@ -1,0 +1,674 @@
+{
+  "slug": "dashboards/widgets/list-widgets",
+  "title": "Get Widgets List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "dashboards",
+    "widgets",
+    "list-widgets"
+  ],
+  "description": "Returns the list of widgets in the widget library.",
+  "method": "GET",
+  "path": "ingestion/analytics/widget/",
+  "request": {
+    "query": [
+      {
+        "name": "widget_location",
+        "description": "Pass the types of widgets to retrieve in comma-separated values.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "dashboard",
+          "enumValue": [
+            {
+              "value": "dashboard",
+              "description": "System information widgets"
+            },
+            {
+              "value": "hero",
+              "description": "System overview widgets"
+            },
+            {
+              "value": "custom-dashboard-widget",
+              "description": "Custom information widgets"
+            },
+            {
+              "value": "custom-hero-card",
+              "description": "Custom overview widgets"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve widgets from.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "2",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of widgets to retrieve in each page of the response",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "maximum": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created_by_id",
+        "description": "Pass the user ID of the creator of the widgets to filter widgets. If you are passing this parameter, ensure you also pass the `widget_location` value as custom-dashboard-widget or custom-hero-card. For example: *a2b82e81-8e7d-4e68-8a36-3d2d9cd518ad*",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693953b9b49385adf3c4c490"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the link for the next page.",
+          "isRequired": false,
+          "value": "analytics/widget/?page=2&page_size=1",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the link to the previous page.\n",
+          "isRequired": false,
+          "value": null,
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of widgets in Intel Exchange.",
+          "isRequired": false,
+          "value": 52,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the size of the requested page.\n",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of the containing data.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "name",
+                  "description": "Returns the name of the widget.",
+                  "isRequired": false,
+                  "value": "Allowed Indicators by Type",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the widget.",
+                  "isRequired": false,
+                  "value": "This widget displays all incoming IOCs vs allowed indicators",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "widget_type",
+                  "description": "Returns the default chart type of the widget.",
+                  "isRequired": false,
+                  "value": "variablepie",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "slug",
+                  "description": "Returns the unique ID of the widget.",
+                  "isRequired": false,
+                  "value": "ioc_vs_allowed",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "available_charts",
+                  "description": "Returns the list of the supported type of widgets.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "Returns the available charts.",
+                      "isRequired": false,
+                      "value": "bar",
+                      "valueType": "string",
+                      "options": {
+                        "enumValue": [
+                          {
+                            "value": "bar",
+                            "description": ""
+                          },
+                          {
+                            "value": "variablepie",
+                            "description": ""
+                          },
+                          {
+                            "value": "column",
+                            "description": ""
+                          },
+                          {
+                            "value": "columnpyramid",
+                            "description": ""
+                          },
+                          {
+                            "value": "donut",
+                            "description": ""
+                          },
+                          {
+                            "value": "table",
+                            "description": ""
+                          }
+                        ],
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "configuration",
+                  "description": "Returns the configuration of the widget.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "axis",
+                      "description": "Returns an object specifying axis labels for charts:\n",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "xaxis",
+                          "description": "Returns the label for the x-axis in the widget’s chart.",
+                          "isRequired": false,
+                          "value": "IOC Type",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "yaxis",
+                          "description": "Returns the label for the y-axis in the widget’s chart.",
+                          "isRequired": false,
+                          "value": "Count",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "redirections",
+                      "description": "Returns an array of redirection rules for interactions within the widget.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "component",
+                              "description": "Returns the name of the target component to redirect to.",
+                              "isRequired": false,
+                              "value": "threatdata",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "filters",
+                              "description": "Returns an array of filter objects available for this widget.\n",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": null,
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "type",
+                                  "description": "Returns the data type of the filter input.",
+                                  "isRequired": false,
+                                  "value": "indicator",
+                                  "valueType": "string",
+                                  "options": null,
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "is_whitelisted",
+                                  "description": "Returns a boolean value indicating whether the indicator is part of the allowed (whitelisted) indicator list.",
+                                  "isRequired": false,
+                                  "value": true,
+                                  "valueType": "boolean",
+                                  "options": null,
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "xaxis",
+                              "description": "Returns an array specifying which X-axis data keys trigger redirection.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": null,
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "0",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "",
+                                  "valueType": "object",
+                                  "options": null,
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "key",
+                                      "description": "The key name used for X-axis data.",
+                                      "isRequired": false,
+                                      "value": "ioc_type",
+                                      "valueType": "string",
+                                      "options": null,
+                                      "complexItems": [],
+                                      "items": []
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "filters",
+                      "description": "Returns an array of filter objects available for the widget UI.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the filter.",
+                              "isRequired": false,
+                              "value": "Source",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "key",
+                              "description": "Returns the identifier key for the filter.",
+                              "isRequired": false,
+                              "value": "source",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "type",
+                              "description": "Returns the data input type for the filter.",
+                              "isRequired": false,
+                              "value": "select",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "multiple",
+                              "description": "Returns the boolean indicating whether multiple selections are allowed.",
+                              "isRequired": false,
+                              "value": true,
+                              "valueType": "boolean",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "component",
+                              "description": "Returns the name of the UI component rendering the filter.",
+                              "isRequired": false,
+                              "value": "sources",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "field",
+                              "description": "Returns the data field mapped to the filter.",
+                              "isRequired": false,
+                              "value": "sources",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "nested",
+                              "description": "Object describing nested structure.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": null,
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "path",
+                                  "description": "Returns the nested data path.",
+                                  "isRequired": false,
+                                  "value": "sources",
+                                  "valueType": "string",
+                                  "options": null,
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "field",
+                                  "description": "Returns the field within the nested data.",
+                                  "isRequired": false,
+                                  "value": "sources.source_id",
+                                  "valueType": "string",
+                                  "options": null,
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "table_columns",
+                      "description": "Returns an array defining the columns for tables in the widget.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "type",
+                              "description": "Returns the data type of the column.",
+                              "isRequired": false,
+                              "value": "string",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "key",
+                              "description": "Returns the key of the data to display in the column.",
+                              "isRequired": false,
+                              "value": "label",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "label",
+                              "description": "Returns the display label for the column header.",
+                              "isRequired": false,
+                              "value": "IOC Type",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "1",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": null,
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "type",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "number",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "key",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "value",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "label",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "Count",
+                              "valueType": "string",
+                              "options": null,
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "indicator_type",
+                      "description": "Returns a boolean indicating if the widget relates to indicator types.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "highchart",
+                      "description": "Returns a boolean indicating if the widget uses the Highcharts library for rendering charts.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "widget_location",
+                  "description": "Returns the type of widget.",
+                  "isRequired": false,
+                  "value": "dashboard",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "dashboard",
+                        "description": "System information widgets"
+                      },
+                      {
+                        "value": "hero",
+                        "description": "System overview widgets"
+                      },
+                      {
+                        "value": "custom-dashboard-widget",
+                        "description": "Custom information-widget"
+                      },
+                      {
+                        "value": "custom-hero-card",
+                        "description": "Custom overview widgets"
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the ID of the creator of the custom widget. Returns null for the system widgets.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

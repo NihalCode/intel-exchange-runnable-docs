@@ -1,0 +1,172 @@
+{
+  "slug": "administration/license-management-system/retrieve-tenant-permit-details",
+  "title": "Get Tenant Permit Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "license-management-system",
+    "retrieve-tenant-permit-details"
+  ],
+  "description": "Returns details about the tenant license.",
+  "method": "GET",
+  "path": "rest-auth/tenant-permit/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394445b49385adf3c43728"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "license_id",
+          "description": "Returns the current active unique license ID.",
+          "isRequired": false,
+          "value": "9558b609-6c9d-416e-9711-5f53f58d2057",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_name",
+          "description": "Returns the tenant name associated with the current license.",
+          "isRequired": false,
+          "value": "zeus",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_code",
+          "description": "Returns the tenant code associated with the current license.",
+          "isRequired": false,
+          "value": "zeus",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_version",
+          "description": "Returns the Intel Exchange version associated with the current license.",
+          "isRequired": false,
+          "value": "3.0.0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "evaluation_version",
+          "description": "Returns True if the tenant is on a trial version, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tenant_expiry",
+          "description": "Returns the expiration date and time of the license.",
+          "isRequired": false,
+          "value": "1656547200",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "license_version",
+          "description": "Returns the license version.",
+          "isRequired": false,
+          "value": "3.0.0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,489 @@
+{
+  "slug": "threat-bulletin/threat-bulletin-details",
+  "title": "Get Threat Bulletin Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-bulletin",
+    "threat-bulletin-details"
+  ],
+  "description": "Returns the details of a threat bulletin.",
+  "method": "GET",
+  "path": "conversion/threat-bulletin/{threat_bulletin_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "threat_bulletin_id",
+        "description": "Pass the ID of a threat bulletin.",
+        "isRequired": false,
+        "value": "a3a785c5-1d11-46d9-8f86-9b0bd65ed8f8",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394988b49385adf3c46e6c"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "attachments",
+          "description": "Returns the list of attachments.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "client_collections",
+          "description": "Returns the list or group of collections associated with or accessible to the client.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "confidence",
+          "description": "Returns the confidence of the bulletin.",
+          "isRequired": false,
+          "value": "MEDIUM",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the time of creation.",
+          "isRequired": false,
+          "value": "1685944400",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user who created the threat bulletin.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who created the bulletin.",
+              "isRequired": false,
+              "value": "john@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the bulletin.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the ID of the user who created the bulletin.",
+              "isRequired": false,
+              "value": "4218968c-acf3-4789-a92f-7231d0858590",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the bulletin.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "description",
+          "description": "Returns the description for the threat bulletin.",
+          "isRequired": false,
+          "value": "<h2>List of Objects</h2><table cy:data-table=\"c8ea7c80-af59-43f9-b890-364f527b8529\" style=\"width: 100%; padding: 16px 0px; border-spacing: 0px;\"><thead><tr><th cy:data-th=\"name\" style=\"padding: 2px 16px; border: 0.5px solid rgb(223, 226, 231); font-weight: 500; font-size: 14px; background: rgb(250, 251, 252);\">Value</th><th cy:data-th=\"type\" style=\"padding: 2px 16px; border: 0.5px solid rgb(223, 226, 231); font-weight: 500; font-size: 14px; background: rgb(250, 251, 252);\">Type</th><th cy:data-th=\"sources\" style=\"padding: 2px 16px; border: 0.5px solid rgb(223, 226, 231); font-weight: 500; font-size: 14px; background: rgb(250, 251, 252);\">Source</th></tr></thead><tbody><tr cy:data-tr=\"undefined\" cy:data-id=\"63fd8eb4-7ad9-4e27-8818-da4767efcaaa\" cy:data-ref=\"c8ea7c80-af59-43f9-b890-364f527b8529\"><td cy:data-td=\"name\" cy:data-id=\"63fd8eb4-7ad9-4e27-8818-da4767efcaaa\" cy:data-ref=\"c8ea7c80-af59-43f9-b890-364f527b8529\" style=\"padding: 2px 16px; word-break: break-all; font-size: 14px; border: 0.5px solid rgb(223, 226, 231); background: rgb(250, 251, 252);\">77.91.68.62</td><td cy:data-td=\"type\" style=\"padding: 2px 16px; word-break: break-all; font-size: 14px; border: 0.5px solid rgb(223, 226, 231); background: rgb(250, 251, 252);\">indicator</td><td cy:data-td=\"sources\" style=\"padding: 2px 16px; word-break: break-all; font-size: 14px; border: 0.5px solid rgb(223, 226, 231); background: rgb(250, 251, 252);\">CrowdStrike</td></tr></tbody></table>",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the collection ID.",
+          "isRequired": false,
+          "value": "a3a785c5-1d11-46d9-8f86-9b0bd65ed8f8",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "metadata",
+          "description": "Returns the metadata associated with the threat bulletin.",
+          "isRequired": false,
+          "value": "{\"is_added_object\":true,\"height\":640,\"width\":1064}",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the time of modification.",
+          "isRequired": false,
+          "value": "1686547577",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the user who modified the threat bulletin.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who last modified the bulletin.",
+              "isRequired": false,
+              "value": "john@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who last modified the bulletin.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the user ID of the user who last modified the bulletin.",
+              "isRequired": false,
+              "value": "db2139ce-29d1-4db3-9848-2a75a686aacf",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who last modified the bulletin.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "published",
+          "description": "Returns True to indicate if the threat bulletin is published, else returns False.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "published_on",
+          "description": "Returns the published time of the threat bulletin in epoch format.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "received",
+          "description": "Returns true if the the threat bulletin is received from a source.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "report_id",
+          "description": "Returns the ID of the report.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "server_collections",
+          "description": "Returns the list of server collections.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the creation of the threat bulletin.",
+          "isRequired": false,
+          "value": "DRAFT",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tags",
+          "description": "Returns the list of tags.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title for the threat bulletin.",
+          "isRequired": false,
+          "value": "RedHat",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP of the threat bulletin.",
+          "isRequired": false,
+          "value": "AMBER",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,249 @@
+{
+  "slug": "administration/integration-management/tool-integrations/actions/update-action",
+  "title": "Update Action",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "tool-integrations",
+    "actions",
+    "update-action"
+  ],
+  "description": "Updates a particular action of an account.",
+  "method": "PUT",
+  "path": "integration/apps/actions/",
+  "request": {
+    "query": [
+      {
+        "name": "integration_app_id",
+        "description": "Pass the ID of the third-party tool.",
+        "isRequired": false,
+        "value": "079ed40b-01f6-4c00-9119-6db7afc6bc6f",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "integration_action_id",
+        "description": "Pass the ID of the action of tool.",
+        "isRequired": false,
+        "value": "ad45f197-0768-42ea-af4c-1acee0eee19f",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "is_active",
+        "description": "Pass true to activate the action, else pass false.",
+        "isRequired": true,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "third_party_config_id",
+        "description": "Pass the ID of the account to activate or deactivate.",
+        "isRequired": true,
+        "value": "{{integration_account_id}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870d2db6663b406be31e77d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "component",
+          "description": "Returns the component of action, such as IP, hash, URL, domain, or more.",
+          "isRequired": false,
+          "value": "rule",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the ID of the action.",
+          "isRequired": false,
+          "value": "0f63dfa6-88ce-42fc-bebe-c3d43cbe97e4",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the action is configured, else returns false.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_configured",
+          "description": "Returns true if the action is configured, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of action.",
+          "isRequired": false,
+          "value": "-",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "polling_time",
+          "description": "Returns the polling frequency configured for the action.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "polling_type",
+          "description": "Returns A if the polling type is automatic, whereas it returns M if the polling type is manual.",
+          "isRequired": false,
+          "value": "A",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "related_fields",
+          "description": "Returns any related fields that are defined for the action.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "slug",
+          "description": "Returns the slug value of the tool. The slug refers to a human-readable unique identifier that can be used to identify a resource.",
+          "isRequired": false,
+          "value": "trigger_rule_v3",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "working_status",
+          "description": "Returns the action status, such as if the action is in a working state or not.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

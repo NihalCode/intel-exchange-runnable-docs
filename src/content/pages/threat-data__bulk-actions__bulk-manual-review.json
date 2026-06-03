@@ -1,0 +1,123 @@
+{
+  "slug": "threat-data/bulk-actions/bulk-manual-review",
+  "title": "Bulk Manual Review",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "bulk-actions",
+    "bulk-manual-review"
+  ],
+  "description": "Mark multiple threat data objects for manual review or mark the objects as reviewed.",
+  "method": "POST",
+  "path": "ingestion/threat-data/bulk-action/{action_type}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "object_type",
+        "description": "Pass the type of threat data objects. To get the list of supported object types, see **Supported SDO Types** in **Threat Data** > **Miscellaneous**.",
+        "isRequired": true,
+        "value": "indicator",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "object_ids",
+        "description": "Pass the list of threat data object IDs to perform the bulk action. To retrieve a list of object IDs, use the **List Threat Data API** under the Threat Data section.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the valid object ID.",
+            "isRequired": false,
+            "value": "49d5e95e-3889-42de-8280-1ebf5c7cb95a",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "action_type",
+        "description": "Pass the action to be performed on the threat data objects.",
+        "isRequired": true,
+        "value": "manual_review",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "manual_review",
+              "description": "The objects are marked as \"Under Manual Review\" in Intel Exchange"
+            },
+            {
+              "value": "reviewed",
+              "description": "The objects are marked as \"Manually Reviewed\" in Intel Exchange"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870f33fe86fa45bcc1b2aac"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "message",
+          "description": "Returns the success or failure message.",
+          "isRequired": false,
+          "value": "Action Successfully Executed",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

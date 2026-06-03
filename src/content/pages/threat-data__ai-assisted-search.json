@@ -1,0 +1,65 @@
+{
+  "slug": "threat-data/ai-assisted-search",
+  "title": "AI-Assisted Search",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "ai-assisted-search"
+  ],
+  "description": "Converts a natural language prompt into an Intel Exchange search query.\n\n### Changelog\n\n\nAdded a new endpoint for AI-assisted search in Threat Data.",
+  "method": "POST",
+  "path": "ingestion/threat-data/ai-search/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "prompt",
+        "description": "Pass the natural language query to convert into a search filter.",
+        "isRequired": true,
+        "value": "Show IPv4 objects with risk score greater than 80 created in the last week",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "timezone_offset",
+        "description": "Pass the timezone offset in minutes from UTC. For example, pass -330 for IST (UTC+5:30).",
+        "isRequired": false,
+        "value": -330,
+        "valueType": "number",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6a1841f371125041eb800a10"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "query",
+          "description": "Returns the generated search query in Intel Exchange filter syntax.",
+          "isRequired": false,
+          "value": "'type' = \"indicator\" AND 'ioc_type' = \"ipv4-addr\" AND 'confidence_score' > \"80\" AND 'ctix_created' >= \"1779185864000\"",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

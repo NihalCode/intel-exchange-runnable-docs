@@ -1,0 +1,411 @@
+{
+  "slug": "threat-data/saved-search/create-saved-search",
+  "title": "Create Saved Search",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "saved-search",
+    "create-saved-search"
+  ],
+  "description": "Creates a saved search in Intel Exchange.",
+  "method": "POST",
+  "path": "ingestion/saved-searches/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "type",
+        "description": "Pass the type of the saved search as basic or CQL.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "cql",
+              "description": ""
+            },
+            {
+              "value": "basic",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "name",
+        "description": "Pass a name for the saved search.",
+        "isRequired": true,
+        "value": "Indicators from Cyware Feeds",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the saved search.",
+        "isRequired": false,
+        "value": "Indicator search",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "query",
+        "description": "Pass the CQL query of the saved search.",
+        "isRequired": true,
+        "value": "type IN (\\\"indicator\\\",\\\"malware\\\",\\\"threat-actor\\\",\\\"vulnerability\\\",\\\"attack-pattern\\\",\\\"campaign\\\",\\\"course-of-action\\\",\\\"identity\\\",\\\"infrastructure\\\",\\\"intrusion-set\\\",\\\"location\\\",\\\"malware-analysis\\\",\\\"observed-data\\\",\\\"opinion\\\",\\\"tool\\\",\\\"report\\\",\\\"custom-object\\\",\\\"observable\\\",\\\"incident\\\",\\\"note\\\",\\\"grouping\\\")",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "shared_type",
+        "description": "Pass the privacy parameter of the saved search.",
+        "isRequired": false,
+        "value": "private",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "private",
+          "enumValue": [
+            {
+              "value": "private",
+              "description": ""
+            },
+            {
+              "value": "global",
+              "description": ""
+            },
+            {
+              "value": "specific users",
+              "description": ""
+            },
+            {
+              "value": "systems",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "meta_data",
+        "description": "Pass the metadata of the saved search that helps in the transformation to the CQL query or threat data filters.",
+        "isRequired": false,
+        "value": "{\\\"object_type\\\":[\\\"indicator\\\",\\\"malware\\\",\\\"threat-actor\\\",\\\"vulnerability\\\",\\\"attack-pattern\\\",\\\"campaign\\\",\\\"course-of-action\\\",\\\"identity\\\",\\\"infrastructure\\\",\\\"intrusion-set\\\",\\\"location\\\",\\\"malware-analysis\\\",\\\"observed-data\\\",\\\"opinion\\\",\\\"tool\\\",\\\"report\\\",\\\"custom-object\\\",\\\"observable\\\",\\\"incident\\\",\\\"note\\\",\\\"grouping\\\"],\\\"query\\\":[{\\\"length\\\":32,\\\"dataKey\\\":{\\\"id\\\":\\\"type\\\",\\\"type\\\":\\\"select\\\",\\\"subProperty\\\":true,\\\"addAll\\\":true,\\\"reset\\\":true,\\\"multiple\\\":true,\\\"value\\\":\\\"id\\\",\\\"label\\\":\\\"Object Type\\\"},\\\"key\\\":\\\"'Object Type'\\\",\\\"keyType\\\":\\\"select\\\",\\\"dataOperator\\\":{\\\"id\\\":\\\"=\\\",\\\"label\\\":\\\"=\\\"},\\\"operator\\\":\\\"=\\\",\\\"dataValue\\\":{\\\"id\\\":\\\"indicator\\\",\\\"name\\\":\\\"Indicator\\\"},\\\"value\\\":\\\"\\\\\\\"Indicator\\\\\\\"\\\",\\\"condition\\\":\\\"AND\\\"},{\\\"length\\\":25,\\\"dataKey\\\":{\\\"id\\\":\\\"source\\\",\\\"type\\\":\\\"select\\\",\\\"subProperty\\\":true,\\\"multiple\\\":true,\\\"subheading\\\":{\\\"key\\\":\\\"source_type\\\",\\\"mapper\\\":{\\\"CUSTOM_STIX_SOURCES\\\":\\\"STIX\\\",\\\"API_FEEDS\\\":\\\"APIs\\\",\\\"EMAIL_ACCOUNTS\\\":\\\"Email\\\",\\\"RSS_FEED\\\":\\\"RSS\\\",\\\"TWITTER_FEEDS\\\":\\\"X (Twitter)\\\",\\\"WEB_SCRAPPER\\\":\\\"Web Scraper\\\",\\\"MALWARE_SANDBOX\\\":\\\"Sandbox\\\",\\\"MISCELLANEOUS\\\":\\\"Miscellaneous\\\"}},\\\"api_component\\\":\\\"sources\\\",\\\"filters\\\":{\\\"sort\\\":\\\"name\\\"},\\\"label\\\":\\\"Source\\\"},\\\"key\\\":\\\"'Source'\\\",\\\"keyType\\\":\\\"select\\\",\\\"dataOperator\\\":{\\\"id\\\":\\\"=\\\",\\\"label\\\":\\\"=\\\"},\\\"operator\\\":\\\"=\\\",\\\"dataValue\\\":{\\\"id\\\":\\\"44b6ace6-0e76-4cc2-af54-85d0bc9f7cc5\\\",\\\"name\\\":\\\"Cyware Labs\\\",\\\"source_type\\\":\\\"TWITTER_FEEDS\\\"},\\\"value\\\":\\\"\\\\\\\"Cyware Labs\\\\\\\"\\\"}]}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870f82ee86fa45bcc1b680b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "created_by",
+          "description": "Returns the details of the user who created the saved search.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user.",
+              "isRequired": false,
+              "value": "john.doe@example.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name.",
+              "isRequired": false,
+              "value": "John",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the user ID.",
+              "isRequired": false,
+              "value": "70f3d3ee-b7bc-4ceb-849e-16db0de5278b",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the saved search.",
+          "isRequired": false,
+          "value": "Indicator search",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "editable",
+          "description": "Returns true if the user has permission to edit the saved search, else returns false.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the saved search.",
+          "isRequired": false,
+          "value": "c0658427-1c73-4409-b60a-8285d2b49f7e",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_threat_data_search",
+          "description": "Returns true if the saved search is a threat data search or copied from a reports search, else returns false.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "meta_data",
+          "description": "Returns the metadata of the saved search that helps in the transformation to the CQL query or threat data filters.",
+          "isRequired": false,
+          "value": "{\"object_type\":[\"indicator\",\"malware\",\"threat-actor\",\"vulnerability\",\"attack-pattern\",\"campaign\",\"course-of-action\",\"identity\",\"infrastructure\",\"intrusion-set\",\"location\",\"malware-analysis\",\"observed-data\",\"opinion\",\"tool\",\"report\",\"custom-object\",\"observable\",\"incident\",\"note\",\"grouping\"],\"query\":[{\"length\":32,\"dataKey\":{\"id\":\"type\",\"type\":\"select\",\"subProperty\":true,\"addAll\":true,\"reset\":true,\"multiple\":true,\"value\":\"id\",\"label\":\"Object Type\"},\"key\":\"'Object Type'\",\"keyType\":\"select\",\"dataOperator\":{\"id\":\"=\",\"label\":\"=\"},\"operator\":\"=\",\"dataValue\":{\"id\":\"indicator\",\"name\":\"Indicator\"},\"value\":\"\\\"Indicator\\\"\",\"condition\":\"AND\"},{\"length\":25,\"dataKey\":{\"id\":\"source\",\"type\":\"select\",\"subProperty\":true,\"multiple\":true,\"subheading\":{\"key\":\"source_type\",\"mapper\":{\"CUSTOM_STIX_SOURCES\":\"STIX\",\"API_FEEDS\":\"APIs\",\"EMAIL_ACCOUNTS\":\"Email\",\"RSS_FEED\":\"RSS\",\"TWITTER_FEEDS\":\"X (Twitter)\",\"WEB_SCRAPPER\":\"Web Scraper\",\"MALWARE_SANDBOX\":\"Sandbox\",\"MISCELLANEOUS\":\"Miscellaneous\"}},\"api_component\":\"sources\",\"filters\":{\"sort\":\"name\"},\"label\":\"Source\"},\"key\":\"'Source'\",\"keyType\":\"select\",\"dataOperator\":{\"id\":\"=\",\"label\":\"=\"},\"operator\":\"=\",\"dataValue\":{\"id\":\"44b6ace6-0e76-4cc2-af54-85d0bc9f7cc5\",\"name\":\"Cyware Labs\",\"source_type\":\"TWITTER_FEEDS\"},\"value\":\"\\\"Cyware Labs\\\"\"}]}",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the saved search.",
+          "isRequired": false,
+          "value": "Indicators from Cyware Feeds",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "order",
+          "description": "Returns the order of the saved search for the user in the listed saved search.",
+          "isRequired": false,
+          "value": -1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "pinned",
+          "description": "Returns true if the saved search is pinned by the user, else returns false.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "query",
+          "description": "Returns the CQL query of the saved search.",
+          "isRequired": false,
+          "value": "type IN (\"indicator\",\"malware\",\"threat-actor\",\"vulnerability\",\"attack-pattern\",\"campaign\",\"course-of-action\",\"identity\",\"infrastructure\",\"intrusion-set\",\"location\",\"malware-analysis\",\"observed-data\",\"opinion\",\"tool\",\"report\",\"custom-object\",\"observable\",\"incident\",\"note\",\"grouping\")",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "shared_type",
+          "description": "Returns the privacy parameter of the saved search, such as private, global, specific users, or systems.",
+          "isRequired": false,
+          "value": "global",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "shared_users",
+          "description": "If the shared_type parameter is *specific users*, then it returns the list of users with whom the saved search is shared.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "type",
+          "description": "Returns the type of saved search as basic or CQL.",
+          "isRequired": false,
+          "value": "cql",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,97 @@
+{
+  "slug": "threat-bulletin/token-to-download-attachment",
+  "title": "Get Token to Download Attachment",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-bulletin",
+    "token-to-download-attachment"
+  ],
+  "description": "Returns the token to download the attachments of a threat bulletin.",
+  "method": "GET",
+  "path": "conversion/threat-bulletin/{threat_bulletin_id}/attachments/link/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "threat_bulletin_id",
+        "description": "Pass the ID of a threat bulletin.",
+        "isRequired": false,
+        "value": "a3a785c5-1d11-46d9-8f86-9b0bd65ed8f8",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394993b49385adf3c46ed8"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the link to the attachment that includes the download token.",
+          "isRequired": false,
+          "value": "/threat-bulletin/6ecd8c8a-c869-426e-8d78-b4bf26314bb2/attachments/download/?token=2cba13b5-4e7c-40e9-8f1b-3daf69f27510&all_files=True",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

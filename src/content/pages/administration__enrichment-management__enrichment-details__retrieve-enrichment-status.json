@@ -1,0 +1,130 @@
+{
+  "slug": "administration/enrichment-management/enrichment-details/retrieve-enrichment-status",
+  "title": "Get Enrichment Status",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "enrichment-management",
+    "enrichment-details",
+    "retrieve-enrichment-status"
+  ],
+  "description": "Retrieves the enrichment status.",
+  "method": "GET",
+  "path": "ingestion/enrichment/status/{object_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "object_id",
+        "description": "Pass the object ID to fetch the enrichment status.",
+        "isRequired": true,
+        "value": "3ba2f063-d507-490a-a68c-04a6e7bea5fb",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "object_id",
+        "description": "Pass the object ID to fetch the enrichment status.",
+        "isRequired": true,
+        "value": "b1b6647a-f012-47f3-99b0-314cf79e536c",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693943c4b49385adf3c4337e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Returns the enrichment status of the tool ID of the object.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "4797fbf3-1578-4aaa-824b-d6c437ca0610",
+              "description": "Returns the value indicating the enrichment status.",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

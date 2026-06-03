@@ -1,0 +1,1601 @@
+{
+  "slug": "reports/create-report",
+  "title": "Create Report",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "reports",
+    "create-report"
+  ],
+  "description": "Create a basic (standard) report in Intel Exchange.\n\n\n\n> [!NOTE]\n> Do not use this endpoint to create advanced reports.",
+  "method": "POST",
+  "path": "ingestion/reports/",
+  "request": {
+    "query": [
+      {
+        "name": "type",
+        "description": "Pass the type of report to be created. ",
+        "isRequired": true,
+        "value": "basic",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "basic"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "name",
+        "description": "Pass the name of the report.",
+        "isRequired": true,
+        "value": "Intel Exchange report",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass the type of report to be created. ",
+        "isRequired": true,
+        "value": "basic",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "basic",
+              "description": "To create standard reports"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "basic_report_type",
+        "description": "Pass the type of basic report to be created. ",
+        "isRequired": false,
+        "value": "custom",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "custom",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "shared_type",
+        "description": "Pass the share type value.",
+        "isRequired": true,
+        "value": "global",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "private",
+              "description": ""
+            },
+            {
+              "value": "global",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "saved_search",
+        "description": "Pass the saved search or custom query details used for generating the report. You can use the List Saved Search endpoint to retrieve the required details.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "meta_data",
+            "description": "Pass the saved search metadata to include in the report.",
+            "isRequired": true,
+            "value": "{\\\"object_type\\\":[\\\"indicator\\\"],\\\"query\\\":[{\\\"length\\\":28,\\\"dataKey\\\":{\\\"id\\\":\\\"type\\\",\\\"type\\\":\\\"select\\\",\\\"addAll\\\":true,\\\"reset\\\":true,\\\"multiple\\\":true,\\\"value\\\":\\\"id\\\",\\\"label\\\":\\\"Object Type\\\",\\\"values\\\":[{\\\"id\\\":\\\"indicator\\\",\\\"name\\\":\\\"Indicator\\\"},{\\\"id\\\":\\\"malware\\\",\\\"name\\\":\\\"Malware\\\"},{\\\"id\\\":\\\"threat-actor\\\",\\\"name\\\":\\\"Threat Actor\\\"},{\\\"id\\\":\\\"vulnerability\\\",\\\"name\\\":\\\"Vulnerability\\\"},{\\\"id\\\":\\\"attack-pattern\\\",\\\"name\\\":\\\"Attack Pattern\\\"},{\\\"id\\\":\\\"campaign\\\",\\\"name\\\":\\\"Campaign\\\"},{\\\"id\\\":\\\"course-of-action\\\",\\\"name\\\":\\\"Course of Action\\\"},{\\\"id\\\":\\\"identity\\\",\\\"name\\\":\\\"Identity\\\"},{\\\"id\\\":\\\"infrastructure\\\",\\\"name\\\":\\\"Infrastructure\\\"},{\\\"id\\\":\\\"intrusion-set\\\",\\\"name\\\":\\\"Intrusion Set\\\"},{\\\"id\\\":\\\"location\\\",\\\"name\\\":\\\"Location\\\"},{\\\"id\\\":\\\"malware-analysis\\\",\\\"name\\\":\\\"Malware Analysis\\\"},{\\\"id\\\":\\\"observed-data\\\",\\\"name\\\":\\\"Observed Data\\\"},{\\\"id\\\":\\\"opinion\\\",\\\"name\\\":\\\"Opinion\\\"},{\\\"id\\\":\\\"tool\\\",\\\"name\\\":\\\"Tool\\\"},{\\\"id\\\":\\\"report\\\",\\\"name\\\":\\\"Report\\\"},{\\\"id\\\":\\\"custom-object\\\",\\\"name\\\":\\\"Custom Object\\\"},{\\\"id\\\":\\\"observable\\\",\\\"name\\\":\\\"Observable\\\"},{\\\"id\\\":\\\"incident\\\",\\\"name\\\":\\\"Incident\\\"}]},\\\"key\\\":\\\"'Object Type'\\\",\\\"keyType\\\":\\\"select\\\",\\\"dataOperator\\\":{\\\"id\\\":\\\"=\\\",\\\"label\\\":\\\"=\\\"},\\\"operator\\\":\\\"=\\\",\\\"dataValue\\\":{\\\"id\\\":\\\"indicator\\\",\\\"name\\\":\\\"Indicator\\\"},\\\"value\\\":\\\"\\\\\\\"Indicator\\\\\\\"\\\"}]}",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "name",
+            "description": "Pass the saved search name.",
+            "isRequired": false,
+            "value": "Malware",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "query",
+            "description": "Pass the saved search query to generate the report.",
+            "isRequired": true,
+            "value": "type = \"malware\"",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "schedule",
+        "description": "Pass the schedule details such as repeat type, start date and time, duration time, duration value, and repeat value.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "repeat_type",
+            "description": "Pass the frequency of the schedule.",
+            "isRequired": true,
+            "value": "daily",
+            "valueType": "string",
+            "options": {
+              "enumValue": [
+                {
+                  "value": "once",
+                  "description": ""
+                },
+                {
+                  "value": "daily",
+                  "description": ""
+                },
+                {
+                  "value": "weekly",
+                  "description": ""
+                },
+                {
+                  "value": "monthly",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "start_datetime",
+            "description": "Pass the start time of the report in epoch format.",
+            "isRequired": true,
+            "value": "1638124200",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "duration_value",
+            "description": "Pass the time frame in days to include the data in the report.",
+            "isRequired": true,
+            "value": "2",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "repeat_value",
+            "description": "Pass the number of times to repeat the schedule.",
+            "isRequired": true,
+            "value": "2",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "file_types",
+        "description": "Pass the report type.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the report type, such as CSV, XLS.",
+            "isRequired": false,
+            "value": "csv",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "columns",
+        "description": "Pass the list of columns to be displayed in a basic report.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "key",
+                "description": "Pass the report column key.",
+                "isRequired": false,
+                "value": "valid_until",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "label",
+                "description": "Pass the report column label.",
+                "isRequired": false,
+                "value": "Valid Until",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "internal_recipients",
+        "description": "Pass the list of internal recipients with whom to share the report.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass details of the internal recipient of the report.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "",
+                "valueType": "object",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "user_id",
+                    "description": "Enter the user ID.",
+                    "isRequired": false,
+                    "value": "3504aa4a-1e56-40c6-89d7-fc3c6adc2b03",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "first_name",
+                    "description": "Enter the first name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "John",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "last_name",
+                    "description": "Enter the last name of the internal recipient.",
+                    "isRequired": false,
+                    "value": "Doe",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  },
+                  {
+                    "name": "email",
+                    "description": "Enter the email address.",
+                    "isRequired": false,
+                    "value": "johndoe@example.com",
+                    "valueType": "string",
+                    "options": {
+                      "xml": {
+                        "prefix": null
+                      },
+                      "schemaNames": []
+                    },
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "cc",
+            "description": "Enter the cc email addresses for the internal recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "bcc",
+            "description": "Enter the bcc email addresses for the internal recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "query_key",
+        "description": "Pass the key to sort data in the report.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "`ctix_created`",
+          "enumValue": [
+            {
+              "value": "`ctix_created`",
+              "description": "Data in the report is sorted based on the system created date."
+            },
+            {
+              "value": "`ctix_modified`",
+              "description": "Data in the report is sorted based on the system modified date."
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "external_recipients",
+        "description": "Pass the list of external recipients (outside Intel Exchange) with whom to share the report.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "to",
+            "description": "Pass details of the external recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "The email address of the external recipient.",
+                "isRequired": false,
+                "value": "bca@cyware.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "cc",
+            "description": "The cc email address of external recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "bcc",
+            "description": "The bcc email address of external recipients",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870bd646663b406be31317e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "basic_report_type",
+          "description": "Returns the type of basic report, such as saved or custom.",
+          "isRequired": false,
+          "value": "custom",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "columns",
+          "description": "Returns the list of columns in a report.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Retrieves the report column details",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "key",
+                  "description": "Returns the valid until column key.",
+                  "isRequired": false,
+                  "value": "valid_until",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "label",
+                  "description": "Returns the valid until column label.",
+                  "isRequired": false,
+                  "value": "Valid Until",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "created",
+          "description": "Returns the epoch time of when the report was created.",
+          "isRequired": false,
+          "value": "1692188813",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the details of the user who created the report.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who created the report.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the report.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the ID of the user who created the report.",
+              "isRequired": false,
+              "value": "0d4408bd-9f94-47ec-98eb-6f32ecfd8b13",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the report.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "date_last_run",
+          "description": "Returns the date and time in epoch format at which the report was manually run.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "external_recipients",
+          "description": "Returns the list of external recipients with whom to share the report.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "bcc",
+              "description": "Returns the external recipients marked as bcc",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "cc",
+              "description": "Returns the external recipients marked as cc",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "to",
+              "description": "Returns the external recipient details of the report",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "Returns the email address of the external recipient.",
+                  "isRequired": false,
+                  "value": "bca@cyware.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "file_types",
+          "description": "Returns the report formats, such as CSV and XLS.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the report format.",
+              "isRequired": false,
+              "value": "csv",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the report.",
+          "isRequired": false,
+          "value": "334c3ff3-bfcc-402c-ad6a-e13cb830a602",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "internal_recipients",
+          "description": "Returns the list of internal recipients with whom to share the report.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "bcc",
+              "description": "Returns the internal recipients marked as bcc.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "cc",
+              "description": "Returns the internal recipients marked as cc.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "to",
+              "description": "Returns the internal recipient details.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "0",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "user",
+                      "description": "Enter the user details",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "modified",
+          "description": "Returns the epoch time of the last modified date.",
+          "isRequired": false,
+          "value": "1692188813",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the details of the user who last modified the report",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who last modified the report.",
+              "isRequired": false,
+              "value": "john.doe@cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who last modified the report.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the user ID of the user who last modified the report.",
+              "isRequired": false,
+              "value": "0d4408bd-9f94-47ec-98eb-6f32ecfd8b13",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who last modified the report.",
+              "isRequired": false,
+              "value": "doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the report.",
+          "isRequired": false,
+          "value": "Vulnerability Report",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "query_key",
+          "description": "Returns the sorting type in basic reports.",
+          "isRequired": false,
+          "value": "ctix_created",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "saved_search",
+          "description": "Returns the saved search object for the corresponding report used for generating the report.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "created_by",
+              "description": "Returns the details of the user who created the report",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "email",
+                  "description": "Returns the email address of the user who last created the report.",
+                  "isRequired": false,
+                  "value": "john.doe@cyware.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "first_name",
+                  "description": "Returns the first name of the user who last created the report.",
+                  "isRequired": false,
+                  "value": "john",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the user ID of the user who last created the report.",
+                  "isRequired": false,
+                  "value": "76fbe1c3-5fd0-4674-9666-69921edafb94",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_name",
+                  "description": "Returns the last name of the user who last created the report.",
+                  "isRequired": false,
+                  "value": "doe",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "description",
+              "description": "Returns the report description, if any ",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "editable",
+              "description": "Returns if the report is editable.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the unique ID of the report.",
+              "isRequired": false,
+              "value": "57d957a8-c468-4a94-8c23-b74aa3540fb0",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_threat_data_search",
+              "description": "Returns a boolean indicating whether the search pertains to threat data.",
+              "isRequired": false,
+              "value": "true",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "meta_data",
+              "description": "Returns the metadata about the search query, filters, and object types.",
+              "isRequired": false,
+              "value": "{\"object_type\":[\"vulnerability\"],\"query\":[{\"length\":32,\"dataKey\":{\"id\":\"type\",\"type\":\"select\",\"addAll\":true,\"reset\":true,\"multiple\":true,\"value\":\"id\",\"label\":\"Object Type\",\"values\":[{\"id\":\"indicator\",\"name\":\"Indicator\"},{\"id\":\"malware\",\"name\":\"Malware\"},{\"id\":\"threat-actor\",\"name\":\"Threat Actor\"},{\"id\":\"vulnerability\",\"name\":\"Vulnerability\"},{\"id\":\"attack-pattern\",\"name\":\"Attack Pattern\"},{\"id\":\"campaign\",\"name\":\"Campaign\"},{\"id\":\"course-of-action\",\"name\":\"Course of Action\"},{\"id\":\"identity\",\"name\":\"Identity\"},{\"id\":\"infrastructure\",\"name\":\"Infrastructure\"},{\"id\":\"intrusion-set\",\"name\":\"Intrusion Set\"},{\"id\":\"location\",\"name\":\"Location\"},{\"id\":\"malware-analysis\",\"name\":\"Malware Analysis\"},{\"id\":\"observed-data\",\"name\":\"Observed Data\"},{\"id\":\"opinion\",\"name\":\"Opinion\"},{\"id\":\"tool\",\"name\":\"Tool\"},{\"id\":\"report\",\"name\":\"Report\"},{\"id\":\"custom-object\",\"name\":\"Custom Object\"},{\"id\":\"observable\",\"name\":\"Observable\"},{\"id\":\"incident\",\"name\":\"Incident\"}]},\"key\":\"'Object Type'\",\"keyType\":\"select\",\"dataOperator\":{\"id\":\"=\",\"label\":\"=\"},\"operator\":\"=\",\"dataValue\":{\"id\":\"vulnerability\",\"name\":\"Vulnerability\"},\"value\":\"\\\"Vulnerability\\\"\"}]}",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the name of the report.",
+              "isRequired": false,
+              "value": "Vulnerability",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "order",
+              "description": "Returns the ordering index for the saved search.",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "pinned",
+              "description": "Returns a boolean indicating if the saved search is pinned for quick access.",
+              "isRequired": false,
+              "value": "false",
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "query",
+              "description": "Returns the query string used in the saved search.",
+              "isRequired": false,
+              "value": "type = \"vulnerability\"",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "shared_type",
+              "description": "Returns the shared type, such as global or private.",
+              "isRequired": false,
+              "value": "global",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "shared_users",
+              "description": "Returns the list of users with whom the saved search is shared.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "type",
+              "description": "Returns the type of report, such as basic or advanced.",
+              "isRequired": false,
+              "value": "cql",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "schedule",
+          "description": "Returns the schedule details of the report",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "duration_value",
+              "description": "Returns the duration in days to capture data in the report.",
+              "isRequired": false,
+              "value": "2",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "ends_on",
+              "description": "Returns details of when the report ends",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "attempts_left",
+                  "description": "Returns the number of attempts left.",
+                  "isRequired": false,
+                  "value": "10",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the number of occurrences.",
+                  "isRequired": false,
+                  "value": "occurrences",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the value associated with the end condition.",
+                  "isRequired": false,
+                  "value": "10",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "id",
+              "description": "Returns the unique ID of the schedule.",
+              "isRequired": false,
+              "value": "37bbeaac-a8d2-4571-a259-ee710342213e",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "repeat_on",
+              "description": "Returns the details of how often the report schedule repeats",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "repeat_type",
+              "description": "Returns the time interval for the re-run of the report.",
+              "isRequired": false,
+              "value": "daily",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "start_datetime",
+              "description": "Returns the starting date and time in epoch format from which the report captures the received data.",
+              "isRequired": false,
+              "value": "1638124200",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "shared_type",
+          "description": "Returns the shared type, such as global or private.",
+          "isRequired": false,
+          "value": "global",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "type",
+          "description": "Returns the type of report, such as basic or advanced.",
+          "isRequired": false,
+          "value": "basic",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,469 @@
+{
+  "slug": "administration/users-and-groups/users/create-user",
+  "title": "Add User",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "users-and-groups",
+    "users",
+    "create-user"
+  ],
+  "description": "Adds a user in Intel Exchange.",
+  "method": "POST",
+  "path": "rest-auth/users/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "first_name",
+        "description": "Pass the first name of the user.",
+        "isRequired": true,
+        "value": "John",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "last_name",
+        "description": "Pass the last name of the user.",
+        "isRequired": true,
+        "value": "Doe",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "username",
+        "description": "Pass the LDAP username associated with a user.",
+        "isRequired": true,
+        "value": "JohnDoe",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "email",
+        "description": "Pass the Intel Exchange associated email ID of the user to whom all the emails will go.",
+        "isRequired": true,
+        "value": "johndoe@orgname.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "groups",
+        "description": "Pass the list of permission groups where the user is enlisted.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "id",
+                "description": "Pass the unique ID of the permission group.",
+                "isRequired": false,
+                "value": "f055f579-da54-467c-a2c4-6aea083945c6",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "is_active",
+        "description": "Pass True to make a profile active. Else pass False.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "contact_number",
+        "description": "Pass the contact details, like the phone number or mobile number of the user.",
+        "isRequired": false,
+        "value": "9876543219",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "country_code",
+        "description": "Pass the country code in which the user is located.",
+        "isRequired": false,
+        "value": "91",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "email_alerts",
+        "description": "Pass True if the user wants to receive email alerts on the associated Intel Exchange email ID. Else pass False.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sms_alerts",
+        "description": "Pass True if the user wants to receive SMS alerts on the Intel Exchange associated contact number. Else pass False.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "allowed_tlp",
+        "description": "Pass the list of allowed TLPs that a user can access and view threat data. If no TLPs have been selected, the user can access threat data from all TLPs.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "enumValue": [
+            {
+              "value": "NONE",
+              "description": ""
+            },
+            {
+              "value": "WHITE",
+              "description": ""
+            },
+            {
+              "value": "GREEN",
+              "description": ""
+            },
+            {
+              "value": "AMBER",
+              "description": ""
+            },
+            {
+              "value": "RED",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "1",
+            "description": "Pass the TLP value to associate with the user.",
+            "isRequired": false,
+            "value": "WHITE",
+            "valueType": "string",
+            "options": {
+              "enumValue": [],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870d8b5e86fa45bcc1948e6"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID for the user. This ID is used across the Intel Exchange application to perform actions.",
+          "isRequired": false,
+          "value": "cf0e148b-5f7a-4f05-8f4d-081fa1743231",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "first_name",
+          "description": "Returns the first name of the user.",
+          "isRequired": false,
+          "value": "John",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_name",
+          "description": "Returns the last name of the user.",
+          "isRequired": false,
+          "value": "Doe",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email",
+          "description": "Returns the Intel Exchange associated email ID of the user to whom Intel Exchange sends all the emails.",
+          "isRequired": false,
+          "value": "johndoe@orgname.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns True if the user is active on the platform, else returns False.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "contact_number",
+          "description": "Returns the contact details like mobile or telephone number of the user.",
+          "isRequired": false,
+          "value": "9876543219",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "country_code",
+          "description": "Returns the country code of the user where the user is located.",
+          "isRequired": false,
+          "value": "91",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "user_id",
+          "description": "Returns the unique ID of the user. This ID is used across the Intel Exchange application to perform actions.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_alerts",
+          "description": "Returns True if the user wants to receive email alerts on the Intel Exchange associated email address, else returns False.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "sms_alerts",
+          "description": "Returns True if the user wants to receive SMS alerts on the Intel Exchange associated contact number, else returns False.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allowed_tlp",
+          "description": "Returns the list of allowed TLPs from which a user can access and view threat data. You can access threat data from all TLPs if no TLPs are selected.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the TLP value to which the user has access to.",
+              "isRequired": false,
+              "value": "WHITE",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "details",
+          "description": "Returns the status of an API success.",
+          "isRequired": false,
+          "value": "Successfully Created",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

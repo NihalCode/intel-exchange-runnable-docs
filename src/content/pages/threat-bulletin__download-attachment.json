@@ -1,0 +1,95 @@
+{
+  "slug": "threat-bulletin/download-attachment",
+  "title": "Download Threat Bulletin Attachment",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-bulletin",
+    "download-attachment"
+  ],
+  "description": "Downloads an attachment from a threat bulletin.",
+  "method": "GET",
+  "path": "conversion/threat-bulletin/{threat_bulletin_id}/attachments/{attachment_id}/download/",
+  "request": {
+    "query": [
+      {
+        "name": "token",
+        "description": "Pass the download token.",
+        "isRequired": false,
+        "value": "{token}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "threat_bulletin_id",
+        "description": "Pass the ID of a threat bulletin.",
+        "isRequired": false,
+        "value": "6ecd8c8a-c869-426e-8d78-b4bf26314bb2",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "attachment_id",
+        "description": "Pass the ID of an attachment.",
+        "isRequired": false,
+        "value": "599aae95-0e77-4bfe-bcdf-efb9a7633e8e",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6871ee5eecb3f1449e0d9e51"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Returns the attachment from a threat bulletin in downloadable format.",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "value": "PK\u0003\u0004\u0014\u0000\u0000\u0000\u0000\u0000�@ST$�̨&\u0004\u0000\u0000&\u0004\u0000\u00004\u0000\u0000\u00000a95b83f-70b7-43d1-a5d2-cf76faaacc6f_15_Jul_2021.xml<stix:STIX_Package \n\txmlns:stix=\"http://stix.mitre.org/stix-1\"\n\txmlns:ttp=\"http://stix.mitre.org/TTP-1\"\n\txmlns:ctix=\"https://cyware.com\"\n\txmlns:xlink=\"http://www.w3.org/1999/xlink\"\n\txmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n\txmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\t id=\"ctix:Package-fbb63dc5-1bdc-405b-9f27-b10643998208\" version=\"1.2\" timestamp=\"2021-07-15T14:17:13.062384+00:00\">\n    <stix:STIX_Header>\n        <stix:Title>dcfgvbhnj</stix:Title>\n    </stix:STIX_Header>\n    <stix:TTPs>\n        <stix:TTP id=\"ctix:ttp-07cbf556-259b-4be1-8507-f8a7a770a79b\" timestamp=\"2021-07-15T14:17:33.408535+00:00\" xsi:type='ttp:TTPType'>\n            <ttp:Title>cfvgbhnm</ttp:Title>\n            <ttp:Behavior>\n                <ttp:Attack_Patterns>\n                    <ttp:Attack_Pattern>\n                        <ttp:Title>cfvgbhnm</ttp:Title>\n                    </ttp:Attack_Pattern>\n                </ttp:Attack_Patterns>\n            </ttp:Behavior>\n        </stix:TTP>\n    </stix:TTPs>\n</stix:STIX_Package>\nPK\u0003\u0004\u0014\u0000\u0000\u0000\u0000\u0000�@ST$�̨&\u0004\u0000\u0000&\u0004\u0000\u00004\u0000\u0000\u00000a95b83f-70b7-43d1-a5d2-cf76faaacc6f_15_Jul_2021.xml<stix:STIX_Package \n\txmlns:stix=\"http://stix.mitre.org/stix-1\"\n\txmlns:ttp=\"http://stix.mitre.org/TTP-1\"\n\txmlns:ctix=\"https://cyware.com\"\n\txmlns:xlink=\"http://www.w3.org/1999/xlink\"\n\txmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n\txmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\t id=\"ctix:Package-fbb63dc5-1bdc-405b-9f27-b10643998208\" version=\"1.2\" timestamp=\"2021-07-15T14:17:13.062384+00:00\">\n    <stix:STIX_Header>\n        <stix:Title>dcfgvbhnj</stix:Title>\n    </stix:STIX_Header>\n    <stix:TTPs>\n        <stix:TTP id=\"ctix:ttp-07cbf556-259b-4be1-8507-f8a7a770a79b\" timestamp=\"2021-07-15T14:17:33.408535+00:00\" xsi:type='ttp:TTPType'>\n            <ttp:Title>cfvgbhnm</ttp:Title>\n            <ttp:Behavior>\n                <ttp:Attack_Patterns>\n                    <ttp:Attack_Pattern>\n                        <ttp:Title>cfvgbhnm</ttp:Title>\n                    </ttp:Attack_Pattern>\n                </ttp:Attack_Patterns>\n            </ttp:Behavior>\n        </stix:TTP>\n    </stix:TTPs>\n</stix:STIX_Package>\nPK\u0001\u0002\u0014\u0003\u0014\u0000\u0000\u0000\u0000\u0000�@ST$�̨&\u0004\u0000\u0000&\u0004\u0000\u00004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�\u0001\u0000\u0000\u0000\u00000a95b83f-70b7-43d1-a5d2-cf76faaacc6f_15_Jul_2021.xmlPK\u0001\u0002\u0014\u0003\u0014\u0000\u0000\u0000\u0000\u0000�@ST$�̨&\u0004\u0000\u0000&\u0004\u0000\u00004\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000�\u0001x\u0004\u0000\u00000a95b83f-70b7-43d1-a5d2-cf76faaacc6f_15_Jul_2021.xmlPK\u0005\u0006\u0000\u0000\u0000\u0000\u0002\u0000\u0002\u0000�\u0000\u0000\u0000�\b\u0000\u0000\u0000\u0000",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

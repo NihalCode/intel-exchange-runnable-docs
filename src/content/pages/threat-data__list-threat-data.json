@@ -1,0 +1,2059 @@
+{
+  "slug": "threat-data/list-threat-data",
+  "title": "Get Threat Data List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "threat-data",
+    "list-threat-data"
+  ],
+  "description": "Returns a list of threat data objects from Intel Exchange using a CQL query. You can retrieve a maximum of 500,000 threat data objects using this API.\n\nUse the following field mapping and operator references to write accurate CQL queries for this endpoint.\n\n\nThe following table maps UI field labels and their associated values to the corresponding API field keys and values used in the CQL module. Use this mapping to write accurate CQL queries in the API.\nUI Label\nAPI Query Key\nAccepted Values (UI label -> API Query Key)\nObject Type\ntype\n* Indicator → `indicator`\n* Malware → `malware`\n* Threat Actor → `threat-actor`\n* Vulnerability → `vulnerability`\n* Attack Pattern → `attack-pattern`\n* Campaign → `campaign`\n* Course of Action → `course-of-action`\n* Identity → `identity`\n* Infrastructure → `infrastructure`\n* Intrusion Set → `intrusion-set`\n* Location → `location`\n* Malware Analysis → `malware-analysis`\n* Observed Data → `observed-data`\n* Opinion → `opinion`\n* Tool → `tool`\n* Report → `report`\nIOC type\nioc_type\n* Artifact → `artifact`\n* Autonomous system → `autonomous-system`\n* Directory → `directory`\n* Domain → `domain-name`\n* Email addr → `email-addr`\n* Email message → `email-message`\n* File → `file`\n* Ipv4 addr → `ipv4-addr`\n* Ipv6 addr → `ipv6-addr`\n* Mac addr → `mac-addr`\n* MD5 → `MD5`\n* Mutex → `mutex`\n* Network traffic → `network-traffic`\n* Process → `process`\n* SHA1 → `SHA-1`\n* SHA224 → `SHA-224`\n* SHA384 → `SHA-384`\n* SHA512 → `SHA-512`\n* Software → `software`\n* SSDEEP → `SSDEEP`\n* URL → `url`\n* User account → `user-account`\n* Windows registry key → `windows-registry-key`\n* X509 certificate → `x509-certificate`\n* YARA → `yara`\nCustom Object Type\ncustom_object_type\nCustom object types are platform-defined. For example, text will appear as x-test in API queries.\nSource\nsource\nEach source in the UI maps to a unique source ID in the API. These IDs vary based on the sources configured in your instance.\nSource Type\nsource_type\n* STIX → `CUSTOM_STIX_SOURCES`\n* APIs → `API_FEEDS`\n* Email → `EMAIL_ACCOUNTS`\n* RSS → `RSS_FEED`\n* X (Twitter) → `TWITTER_FEEDS`\n* Web Scraper → `WEB_SCRAPPER`\n* Sandbox → `MALWARE_SANDBOX`\n* Miscellaneous → `MISCELLANEOUS`\nSource Collections\nsource_collection\nEach source collection maps to a unique ID used in API queries. These values vary based on the collections configured in your instance.\nSource Confidence\nsource_confidence\n* High → `HIGH`\n* Medium → `MEDIUM`\n* Low → `LOW`\n* None → `NONE`\nSource Confidence Value\nsource_confidence_value\nPass an integer value representing the confidence score in the API.\nSource Created\nsource_created\nUse an EPOCH timestamp to filter results by the created date in your API query.\nSource Modified\nsource_modified\nUse an EPOCH timestamp to filter results by the modified date in your API query.\nValue\nvalue\nPass a custom string to match or filter against user-defined input.\nPublished Collection\npublished_collection\nUse the collection’s unique ID to filter by a specific published collection.\nPublished Date\npublished_on\nPass an EPOCH timestamp to filter indicators by their published date.\nImported File Date\nimported_file_on\nPass an EPOCH timestamp to filter indicators by their imported file date.\nImported File\nimported_file\nProvide any string value as the label for the imported file.\nSystem Created Date\nctix_created\nUse an EPOCH timestamp to filter by the system creation date in API queries.\nSystem Modified Date\nctix_modified\nUse an EPOCH timestamp to filter by the system modification date in API queries.\nRisk Score\nconfidence_score\nProvide an integer value to represent the risk or confidence level in your API query.\nTLP\ntlp\n* Red → `RED`\n* Amber+Strict → `AMBER_STRICT`\n* Amber → `AMBER`\n* Green → `GREEN`\n* Clear → `CLEAR`\n* None → `NONE`\nValid Until\nvalid_until\nPass an EPOCH timestamp to specify the expiry date of the indicator in your API query\nValid From\nvalid_from\nPass an EPOCH timestamp to define when the indicator becomes valid in your API query.\nTag Category\ntag_type\n* Source → `source`\n* User → `user`\n* System → `system`\n* Privileged Access → `privileged`\n* Group → `group`\nTags\ntags\nPass the unique tag ID in your API query. Each tag in the UI corresponds to a specific ID.\nAnalyst Score\nanalyst_score\nProvide an integer value in the API to indicate the analyst-assigned score.\nAnalyst CVSS Score\nanalyst_cvss_score\nPass an integer value to represent the analyst-assigned CVSS score.\nCountries\ncountries\nUse the exact country name as shown in the UI. The API expects the same value without any change in casing or format.\nFirst Seen\nfirst_seen\nPass the date as an EPOCH timestamp when querying through the API.\nLast Seen\nlast_seen\nPass the date as an EPOCH timestamp when querying through the API.\nDeprecation Status\nis_deprecated\n* Deprecated → `true`\n* Not Deprecated → `false`\nFalse Positive Status\nis_false_positive\n* True → `true`\n* False → `false`\nReview Status\nis_reviewed\n* Reviewed → `true`\n* Not Reviewed → `false`\nRevoke Status\nis_revoked\n* Revoked → `true`\n* Not Revoked → `false`\nManual Review\nis_under_review\n* Yes → `true`\n* No → `false`\nIncluded in Allowed Indicators\nis_whitelisted\n* Yes → `true`\n* No → `false`\nActioned By\nactioned_by\nPass the system-generated user ID when querying through the API.\nActioned Date\nactioned_on\nUse an EPOCH timestamp to filter results by actioned date in the API.\nAction Medium\naction_type\n* Manual → `manual`\n* Rule → `automatic`\nActioned App Type\naapp_type\n* CTIX → `ctix`\n* 3rd Party → `third_party`\nActioned App\napp_name\nUse the app name exactly as shown in the UI. The API expects the value with the same casing and format, without any changes.\nRelation Created Date\nrelation_created\nPass the date as an EPOCH timestamp in the API.\nRelation Modified Date\nrelation_modified\nPass the date as an EPOCH timestamp in the API.\nRelation Type\nrelationship_type\nPass either predefined or custom relationship types in the API. Common default types include duplicate-of, derived-from, and related-to.\nRelated Object Property\nrelated_object_property\nValues are populated dynamically based on platform configuration for related object properties.\nRelated Object\nrelated_object\nUse this key in your API queries. Values are the same as those used in the Object Type field.\nHas Relations\nhas_relations\n* Yes → `true`\n* No → `false`\nSighting Located\nsighting_located\n* Yes → `true`\n* No → `false`\nSighting Observed\nsighting_observed\n* Yes → `true`\n* No → `false`\nSighting First Seen\nsighting_first_seen\nPass an EPOCH timestamp in your API query to specify when the sighting was first observed.\nSighting Last Seen\nsighting_last_seen\nPass an EPOCH timestamp in your API query to specify when the sighting was last observed.\nSighting Source Created\nsighting_source_created\nPass an EPOCH timestamp in your API query to define when the source created the sighting.\nSighting Source Modified\nsighting_source_modified\nPass an EPOCH timestamp in your API query to define when the source last modified the sighting.\n\n\n**CQL Conditions**: Learn about conditional operators used in CQL expressions.\n\n**CQL Operators**: Understand the supported comparison and logical operators in CQL.\n\nFor more information, see [CQL documentation](https://techdocs.cyware.com/en/index-en.html?contextId=ctix_understand_cql_grammar).",
+  "method": "POST",
+  "path": "ingestion/threat-data/list/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to filter threat data objects by page number.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records per page to filter the threat data objects by page size.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "maximum": 2000,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_limit",
+        "description": "Pass the total number of threat data objects to be retrieved.",
+        "isRequired": false,
+        "valueType": "integer",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "enrichment",
+        "description": "Pass true to retrieve the details of the last enrichment details for the objects, if available.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "sort",
+        "description": "Pass the sorting order for the records.",
+        "isRequired": false,
+        "value": "-ctix_created",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "-ctix_created",
+          "enumValue": [
+            {
+              "value": "-ctix_created",
+              "description": "Latest records retrieved first"
+            },
+            {
+              "value": "ctix_created",
+              "description": "Oldest records retrieved first"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "query",
+        "description": "Pass a CQL query to filter and fetch results.",
+        "isRequired": true,
+        "value": "type = \"indicator\"",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6980484a696c34a0170a851f"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "next",
+          "description": "Returns the URL for the next page.",
+          "isRequired": false,
+          "value": "threat-data/list/?page=2&page_size=10&page_limit=10",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "page_size",
+          "description": "Returns the number of threat data objects in the response.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "previous",
+          "description": "Returns the URL of the previous page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of threat data objects.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "analyst_score",
+                  "description": "Returns the score assigned to a threat data object by an analyst.",
+                  "isRequired": false,
+                  "value": "10",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "analyst_tlp",
+                  "description": "Returns the TLP assigned to a threat data object by an analyst.",
+                  "isRequired": false,
+                  "value": "GREEN",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "confidence_score",
+                  "description": "Returns the score calculated by the Intel Exchange confidence score engine.",
+                  "isRequired": false,
+                  "value": "55.94",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "confidence_type",
+                  "description": "Returns the type of confidence.",
+                  "isRequired": false,
+                  "value": "ctix",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "ctix",
+                        "description": "Confidence score is calculated in Intel Exchange."
+                      },
+                      {
+                        "value": "third-party",
+                        "description": "Confidence score is calculated by a third-party application."
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "country",
+                  "description": "Returns the country name where the threat data object was seen.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the date and time of the creation of the threat data object.",
+                  "isRequired": false,
+                  "value": "1641555724",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_created",
+                  "description": "Returns the date and time of the creation of the threat data object in Intel Exchange.",
+                  "isRequired": false,
+                  "value": "1641555726",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_modified",
+                  "description": "Returns the date and time of modification of the threat data object in Intel Exchange.",
+                  "isRequired": false,
+                  "value": "1641555726",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "first_seen",
+                  "description": "Returns the epoch time at which the threat data object was first seen.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the ID of the threat data object.",
+                  "isRequired": false,
+                  "value": "16c5f2ca-0abb-449c-97f6-b05c3ae475dd",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "indicator_type",
+                  "description": "Returns the type of indicator. Returns null if the threat data object is not an indicator.",
+                  "isRequired": false,
+                  "value": "url",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ioc_type",
+                  "description": "Returns the type of indicator. Returns null if the threat data object is not an indicator.",
+                  "isRequired": false,
+                  "value": "url",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_actioned",
+                  "description": "Returns true if any action was performed on the threat data object, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_deprecated",
+                  "description": "Returns true if the threat data object is deprecated, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_false_positive",
+                  "description": "Returns true if the threat data object is marked as false positive, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_reviewed",
+                  "description": "Returns true if the threat data object is reviewed, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_revoked",
+                  "description": "Returns true if the threat data object is revoked, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_whitelisted",
+                  "description": "Returns true if the threat data object is marked as an allowed indicator, else returns false.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_seen",
+                  "description": "Returns the last seen date and time of the threat data object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the modified date and time (epoch) of the threat data object.",
+                  "isRequired": false,
+                  "value": "1641977341",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the threat data object.",
+                  "isRequired": false,
+                  "value": "https://osborne.com/",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "null",
+                  "description": "The field appears to be a placeholder or artefact from the API response structure.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "primary_attribute",
+                  "description": "Returns the primary attribute of the threat data object if the threat data object is a custom object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published_collections",
+                  "description": "Returns the name of the collections in which the threat data object is published.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "severity",
+                  "description": "Returns the severity of the threat data object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source_collections",
+                  "description": "Returns the list of IDs and names of source collections of the threat data object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "ID of source collection.",
+                          "isRequired": false,
+                          "value": "86973a79-74af-49a1-a457-241e78121b53",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Name of source collection.",
+                          "isRequired": false,
+                          "value": "orion-static-100-coll-0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "5db40c19-d50f-4c6a-9eac-eb3c7e71b497",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "orion-static-100-coll-0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "source_confidence",
+                  "description": "Returns the confidence score of the threat data object as reported by its source.",
+                  "isRequired": false,
+                  "value": "MEDIUM",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sources",
+                  "description": "Returns the list of sources that reported this threat data object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns ID of source.",
+                          "isRequired": false,
+                          "value": "bd64b20e-2cad-4089-bfa8-d3c6fdbd13f3",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns name of source.",
+                          "isRequired": false,
+                          "value": "Orion 2.1 bug test",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "source_type",
+                          "description": "Returns source type.",
+                          "isRequired": false,
+                          "value": "CUSTOM_STIX_SOURCES",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "c38aeede-606c-4e88-b247-87dbfe8192b1",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Orion 2.1 testing bug",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "source_type",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "CUSTOM_STIX_SOURCES",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "sub_type",
+                  "description": "Returns the sub-type of an object if it is an indicator.",
+                  "isRequired": false,
+                  "value": "value",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_collections",
+                  "description": "Returns details of subscriber collections.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscribers",
+                  "description": "Returns details of subscribers.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tags",
+                  "description": "Returns the details of tags associated with the threat data object.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "colour_code",
+                          "description": "Returns the colour code in HEX format associated with the tag.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "Returns the tag ID.",
+                          "isRequired": false,
+                          "value": "26c9218a-2689-4536-8044-5598c86e410a",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the tag name.",
+                          "isRequired": false,
+                          "value": "international",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "colour_code",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "3ae52c9d-0b98-4b74-bf1b-ee83c6963b59",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "enough",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "tlp",
+                  "description": "Returns the TLP assigned to the threat data object.",
+                  "isRequired": false,
+                  "value": "GREEN",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the type of threat data object (object type).",
+                  "isRequired": false,
+                  "value": "indicator",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "valid_from",
+                  "description": "Returns the epoch date and time since when this threat data object is valid.",
+                  "isRequired": false,
+                  "value": "1618440468",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "valid_until",
+                  "description": "Returns the epoch date and time until when this threat data object is valid.",
+                  "isRequired": false,
+                  "value": "1620380864",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "analyst_score",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "analyst_tlp",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "confidence_score",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "40",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "confidence_type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ctix",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "country",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "India",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1641555724",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_created",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1641555726",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ctix_modified",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1641555726",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "first_seen",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "2c84156c-f202-4435-8831-d1bd8b5997bd",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "indicator_type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ipv4-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ioc_type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ipv4-addr",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_actioned",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_deprecated",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_false_positive",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_reviewed",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_revoked",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_whitelisted",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "last_seen",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1641977341",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "175.40.128.242",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "null",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "primary_attribute",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published_collections",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "severity",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source_collections",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "86973a79-74af-49a1-a457-241e78121b53",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "orion-static-100-coll-0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "5db40c19-d50f-4c6a-9eac-eb3c7e71b497",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "orion-static-100-coll-0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "2",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "502b640a-92a4-4a65-8eb2-1d04b17d39a3",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "orion-static-100-coll-0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "source_confidence",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "NONE",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sources",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "bd64b20e-2cad-4089-bfa8-d3c6fdbd13f3",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Orion 2.1 bug test",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "source_type",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "CUSTOM_STIX_SOURCES",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "c38aeede-606c-4e88-b247-87dbfe8192b1",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Orion 2.1 testing bug",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "source_type",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "CUSTOM_STIX_SOURCES",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "2",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "d5aa9fe4-be15-4b2c-a9bd-d0f3e452eabb",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "orion2.1",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "source_type",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "CUSTOM_STIX_SOURCES",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "sub_type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "value",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscriber_collections",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "subscribers",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tags",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "colour_code",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "5c1ae39c-3ad8-4c0c-894b-809dae861de1",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "oil",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "tlp",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "indicator",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "valid_from",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1606741461",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "valid_until",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1607453510",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total",
+          "description": "Returns the total number of threat data objects in Intel Exchange.",
+          "isRequired": false,
+          "value": "33345",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

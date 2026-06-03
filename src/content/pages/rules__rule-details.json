@@ -1,0 +1,1640 @@
+{
+  "slug": "rules/rule-details",
+  "title": "Get Rule Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "rules",
+    "rule-details"
+  ],
+  "description": "Retrieves the details of a rule.",
+  "method": "GET",
+  "path": "ingestion/rules/{rule_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve records.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records to retrieve on each page.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 100,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "rule_id",
+        "description": "Pass the unique ID of a rule.",
+        "isRequired": false,
+        "value": "0039ac88-7fe2-4f0e-a472-7ccfe2f1db49",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69394b4bb49385adf3c48e80"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the ID of the rule.\n",
+          "isRequired": false,
+          "value": "1322b13d-f866-4a82-a61b-c95cd191ee76",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the rule.\n",
+          "isRequired": false,
+          "value": "Rule with Simple Condition",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the rule.\n",
+          "isRequired": false,
+          "value": "Rule with Simple Condition",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "actions",
+          "description": "Returns the list of actions applied to the rule.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "extra_fields",
+                  "description": "Returns extra parameters required for the action execution.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "account",
+                      "description": "Returns the account configuration used to execute the action.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "extra_fields",
+                          "description": "Returns the additional fields associated with the account",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "ssl_encrypted",
+                          "description": "Indicates whether SSL encryption is enabled for this account.",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "access_key",
+                          "description": "Placeholder for an access key.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "secret_key",
+                          "description": "Placeholder for a secret key.",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "The unique identifier for the account.",
+                          "isRequired": false,
+                          "value": "8325a2a6-16a0-4806-b1ce-f049168515b3",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "The name of the account.",
+                          "isRequired": false,
+                          "value": "default account",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_active",
+                          "description": "Indicates whether the account is currently active.",
+                          "isRequired": false,
+                          "value": "true",
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "operation",
+                      "description": "Returns the action type to be performed on the label.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier for the operation.",
+                          "isRequired": false,
+                          "value": "0",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the operation",
+                          "isRequired": false,
+                          "value": "Add",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "labels_list",
+                      "description": "List of labels to apply as part of the action.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "colour_code",
+                              "description": "Returns the colour code defined in the instance.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "created",
+                              "description": "Returns the Unix timestamp when the label was created.",
+                              "isRequired": false,
+                              "value": "1643809109",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "created_by",
+                              "description": "Returns the details of the user who created the report.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "email",
+                                  "description": "Returns the email address of the user who created the report.",
+                                  "isRequired": false,
+                                  "value": "youremail@example.com",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "first_name",
+                                  "description": "Returns the first name of the user who created the report.",
+                                  "isRequired": false,
+                                  "value": "System",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "id",
+                                  "description": "Returns the ID of the user who created the report.",
+                                  "isRequired": false,
+                                  "value": "010f5d90-f510-40e5-82a0-dd90f4546dd2",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "last_name",
+                                  "description": "Returns the last name of the user who created the report.",
+                                  "isRequired": false,
+                                  "value": "Default1",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "id",
+                              "description": "Returns the unique identifier for the label.",
+                              "isRequired": false,
+                              "value": "f63c98e5-cc3f-4886-8dab-9453e5918a8b",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "modified",
+                              "description": "Returns the Unix timestamp when the label was last modified.",
+                              "isRequired": false,
+                              "value": "1643809109",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "modified_by",
+                              "description": "Returns the details of the user who modified the report.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "email",
+                                  "description": "Returns the email address of the user who last modified the report.",
+                                  "isRequired": false,
+                                  "value": "youremail@example.com",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "first_name",
+                                  "description": "Returns the first name of the user who last modified the report.",
+                                  "isRequired": false,
+                                  "value": "System",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "id",
+                                  "description": "Returns the user ID of the user who last modified the report.",
+                                  "isRequired": false,
+                                  "value": "010f5d90-f510-40e5-82a0-dd90f4546dd2",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "last_name",
+                                  "description": "Returns the last name of the user who last modified the report.",
+                                  "isRequired": false,
+                                  "value": "Default1",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "name",
+                              "description": "Returns the name of the label.",
+                              "isRequired": false,
+                              "value": "APT",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "type",
+                              "description": "Returns the label type.",
+                              "isRequired": false,
+                              "value": "automated",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "action",
+                  "description": "Returns the action that will be triggered.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the action.",
+                      "isRequired": false,
+                      "value": "87439e16-0e1c-43c6-ace1-1a4584a1249a",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "title",
+                      "description": "Returns the title of the action.",
+                      "isRequired": false,
+                      "value": "Update Tag",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "slug",
+                      "description": "Returns the short, URL-safe identifier for the action.",
+                      "isRequired": false,
+                      "value": "update_tag",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tp_apps_actions",
+                      "description": "Returns the third-party application mappings for this action.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "id",
+                              "description": "Returns the unique ID linking the app to the action.",
+                              "isRequired": false,
+                              "value": "43ed6977-a58c-407b-be3e-19f490d27bca",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "title",
+                              "description": "Returns the name of the third-party app.",
+                              "isRequired": false,
+                              "value": "CTIX",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "is_active",
+                              "description": "Indicates if the app is currently active.",
+                              "isRequired": false,
+                              "value": "true",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "app_config_unique_id",
+                              "description": "Returns the unique identifier for the app’s configuration instance.",
+                              "isRequired": false,
+                              "value": "8325a2a6-16a0-4806-b1ce-f049168515b3",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "related_fields",
+                      "description": "Returns the field required to configure the action.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "key",
+                              "description": "Returns the unique identifier of the field.",
+                              "isRequired": false,
+                              "value": "operation",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "order",
+                              "description": "Returns the position of the field in the UI or logic flow.",
+                              "isRequired": false,
+                              "value": "3",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "rules",
+                              "description": "Returns the validation rules.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "required",
+                                  "description": "Returns a boolean indicating whether the field is mandatory when configuring the rule action.",
+                                  "isRequired": false,
+                                  "value": "true",
+                                  "valueType": "boolean",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "field_type",
+                              "description": "Returns the UI input type for the field.",
+                              "isRequired": false,
+                              "value": "select",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "identifier",
+                              "description": "Returns a list of modules or entities that this field is associated with.",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "0",
+                                  "description": "This is an example value.",
+                                  "isRequired": false,
+                                  "value": "rule",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "display_name",
+                              "description": "Returns the display name.",
+                              "isRequired": false,
+                              "value": "Operation",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "1",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "",
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "key",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "labels_list",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "order",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "8",
+                              "valueType": "number",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "rules",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "",
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "required",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "true",
+                                  "valueType": "boolean",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "multiple",
+                              "description": "Returns a boolean indicating whether multiple values can be selected for this field.",
+                              "isRequired": false,
+                              "value": "true",
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "field_type",
+                              "description": "",
+                              "isRequired": false,
+                              "value": "select",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "api_component",
+                              "description": "Returns the associated API component or data source from which the field values are fetched.",
+                              "isRequired": false,
+                              "value": "tags",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "app_config",
+                  "description": "Returns the app configuration used to execute the action.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier for the app configuration.",
+                      "isRequired": false,
+                      "value": "43ed6977-a58c-407b-be3e-19f490d27bca",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "title",
+                      "description": "Returns the app name.",
+                      "isRequired": false,
+                      "value": "CTIX",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_active",
+                      "description": "Indicates whether the app configuration is active.",
+                      "isRequired": false,
+                      "value": "true",
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "app_config_unique_id",
+                      "description": "Returns a unique ID for the app config instance.",
+                      "isRequired": false,
+                      "value": "8325a2a6-16a0-4806-b1ce-f049168515b3",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rule",
+          "description": "Returns the list of conditions applied to the rule.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "expression",
+                  "description": "Returns the condition that must be satisfied.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "field",
+                      "description": "Returns the field being evaluated.",
+                      "isRequired": false,
+                      "value": "TITLE",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "value",
+                      "description": "Returns the expected value for the field.",
+                      "isRequired": false,
+                      "value": "test",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "selector",
+                      "description": "Returns the comparison operator.",
+                      "isRequired": false,
+                      "value": "EQUAL",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "component",
+                      "description": "Returns the object type where the field resides.",
+                      "isRequired": false,
+                      "value": "Indicator",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "actioned_objects",
+                      "description": "Returns the list of object types to which this rule applies",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "This is an example value.",
+                          "isRequired": false,
+                          "value": "indicator",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "expressions",
+                  "description": "Returns the compound conditions or logical groupings",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "related_object_source",
+                  "description": "Returns the context about related objects",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "rule_source",
+          "description": "Returns the list of source objects of the rule.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "source",
+                  "description": "Returns the source object details",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique identifier of the source.",
+                      "isRequired": false,
+                      "value": "98bdbd31-c51a-4cd9-a8b4-1b6093cf5df1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "name",
+                      "description": "Returns the name of the source.",
+                      "isRequired": false,
+                      "value": "Crowdstrike",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "collections",
+                  "description": "Returns the collection details",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "id",
+                          "description": "Returns the unique identifier of the collection.",
+                          "isRequired": false,
+                          "value": "79b9444e-8441-4b34-9e9c-83342449018a",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "name",
+                          "description": "Returns the name of the collection.",
+                          "isRequired": false,
+                          "value": "Crowdstrike",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "no_conditions",
+          "description": "Returns true if no conditions are configured on the rule, else returns false.\n",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the rule is active, else returns false.\n",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the rule as Active, Inactive, or Draft.\n",
+          "isRequired": false,
+          "value": "ACTIVE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tags",
+          "description": "Returns the list of tags applied to the rule.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the ID of the user who created the rule.\n",
+          "isRequired": false,
+          "value": "(unknown)",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "updated_by",
+          "description": "Returns the ID of the user who last modified the rule.\n",
+          "isRequired": false,
+          "value": "(unknown)",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "trigger_on_update",
+          "description": "Returns true if a rule is configured to trigger on an update, else returns false.\n",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "run_rule_after_enrich",
+          "description": "Returns true if the rule is configured to run after the enrichment policy, else returns false.\n",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "exclude_wl",
+          "description": "Returns true to exclude allowed threat data from passing in the rules, else returns false.\n",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "exclude_fp",
+          "description": "Returns true to exclude false-positive threat data from passing in the rules, else returns false.\n",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_follow",
+          "description": "Returns true if the current user follows the rule, else returns false.\n",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_created",
+          "description": "Returns the time and date when the rule was created.\n",
+          "isRequired": false,
+          "value": "1632762270",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ctix_modified",
+          "description": "Returns the time and date when the rule was last modified.\n",
+          "isRequired": false,
+          "value": "1632762270",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "all_sources_and_collections",
+          "description": "Returns true if all sources are configured on the rule, else returns false.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

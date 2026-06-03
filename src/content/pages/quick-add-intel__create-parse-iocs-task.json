@@ -1,0 +1,81 @@
+{
+  "slug": "quick-add-intel/create-parse-iocs-task",
+  "title": "Create Parse IOCs Task",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "quick-add-intel",
+    "create-parse-iocs-task"
+  ],
+  "description": "Creates an IOC parsing task to extract STIX objects from free text data or a web page.\n\n\n\n> [!NOTE]\n> Currently, this API endpoint does not support parsing IOCs from files such as PDF, CSV, XLS, and others.",
+  "method": "POST",
+  "path": "conversion/quick-intel/free-text/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "data",
+        "description": "Pass the free text data within 50,000 characters or a web page URL to extract STIX objects.  If the number of characters in the passed text data or the web page exceeds the character limit, then the initial 50,000 characters are parsed.",
+        "isRequired": true,
+        "value": "1.2.3.11, 1.1.2.1, domain.com",
+        "valueType": "string",
+        "options": {
+          "enumValue": [],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "url",
+        "description": "Pass `true` to extract STIX objects from a web page. If you pass `false`, then the URL passed in the data parameter is parsed as free text.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6870ead0e86fa45bcc1abe9e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "task_id",
+          "description": "Returns the ID of the parsing task. To retrieve the parsing task status, use the **Retrieve Parse IOCs Task Status** endpoint.",
+          "isRequired": false,
+          "value": "4310c8e6-c26e-4526-a3b2-7445c6798511",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

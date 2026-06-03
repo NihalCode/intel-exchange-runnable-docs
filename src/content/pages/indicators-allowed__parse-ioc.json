@@ -1,0 +1,181 @@
+{
+  "slug": "indicators-allowed/parse-ioc",
+  "title": "Parse IOC",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "indicators-allowed",
+    "parse-ioc"
+  ],
+  "description": "Parse the IOCs provided by the user. Further, validate and categorize the IOCs as valid or invalid.",
+  "method": "POST",
+  "path": "conversion/allowed_indicators/parse-ioc/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "type",
+        "description": "Pass the type of IOCs.",
+        "isRequired": false,
+        "value": "ipv4-addr",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "ipv4-addr",
+              "description": ""
+            },
+            {
+              "value": "ipv6-addr",
+              "description": ""
+            },
+            {
+              "value": "autonomous-system",
+              "description": ""
+            },
+            {
+              "value": "email-addr",
+              "description": ""
+            },
+            {
+              "value": "MD5",
+              "description": ""
+            },
+            {
+              "value": "SHA-1",
+              "description": ""
+            },
+            {
+              "value": "SHA-224",
+              "description": ""
+            },
+            {
+              "value": "SHA-256",
+              "description": ""
+            },
+            {
+              "value": "SHA-384",
+              "description": ""
+            },
+            {
+              "value": "SHA-512",
+              "description": ""
+            },
+            {
+              "value": "SSDEEP",
+              "description": ""
+            },
+            {
+              "value": "url",
+              "description": ""
+            },
+            {
+              "value": "cidr",
+              "description": ""
+            },
+            {
+              "value": "domain-name",
+              "description": ""
+            },
+            {
+              "value": "mutex",
+              "description": ""
+            },
+            {
+              "value": "windows-registry-key",
+              "description": ""
+            },
+            {
+              "value": "user-agent",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "values",
+        "description": "Pass the value of the IOC.",
+        "isRequired": false,
+        "value": "23.32.23.121 12.23.3.3",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68740778aecb8721e090627b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "valid_ioc",
+          "description": "Returns a list of valid parsed IOCs.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "23.32.23.121",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "invalid_ioc",
+          "description": "Returns a list of invalid parsed IOCs.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,97 @@
+{
+  "slug": "detailed-submission/attack-pattern/bulk-delete-attack-pattern-sdo",
+  "title": "Bulk Delete Attack Pattern SDO",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "detailed-submission",
+    "attack-pattern",
+    "bulk-delete-attack-pattern-sdo"
+  ],
+  "description": "Bulk deletes particular SDOs added to the detailed STIX form submission using the unique identifiers of the SDO.",
+  "method": "DELETE",
+  "path": "conversion/shareable-intel/{intel-id}/attack-pattern/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "ids",
+        "description": "Pass the list of IDs of the attack pattern SDO to delete.\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "This is an example ID.",
+            "isRequired": false,
+            "value": "attack-pattern--6cd0b806-b675-4894-9a42-f3a0254a3036",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "intel-id",
+        "description": "Pass the unique ID of intel submission.\n\n",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "684fe4b5657970f7175d47b4"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "This request does not return any response body",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

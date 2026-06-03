@@ -1,0 +1,390 @@
+{
+  "slug": "tag-groups/get-tag-group-details",
+  "title": "List Tags in Tag Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "tag-groups",
+    "get-tag-group-details"
+  ],
+  "description": "Returns detailed information about a specific tag group using its unique identifier.",
+  "method": "GET",
+  "path": "ingestion/tags/{tag_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "component",
+        "description": "Pass `tags` to include all the tags, irrespective of the status.",
+        "isRequired": false,
+        "value": "tags",
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "tag_id",
+        "description": "Pass the ID of a tag group to retrieve the details.",
+        "isRequired": true,
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "68efa896242f952da3104249"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "associated_tags",
+          "description": "Returns a list of associated tags.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "colour_code",
+                  "description": "Returns the hex color code defined for the tag.",
+                  "isRequired": false,
+                  "value": "#45505E",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "icon",
+                  "description": "Returns the icon of the tag.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "id",
+                  "description": "Returns the unique ID of the tag.",
+                  "isRequired": false,
+                  "value": "bff4064a-a0b2-4163-92c6-043d148a5ef5",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "name",
+                  "description": "Returns the name of the tag.",
+                  "isRequired": false,
+                  "value": "Ransomware",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tag_type",
+                  "description": "Returns the details of the tag type.",
+                  "isRequired": false,
+                  "value": "source",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "theme",
+                  "description": "Returns the theme associated with the tag.",
+                  "isRequired": false,
+                  "value": "neutral",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "associated_tags_count",
+          "description": "Returns the number of tags associated with this tag group.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "colour_code",
+          "description": "Returns the hex color code defined for the tag group.",
+          "isRequired": false,
+          "value": "#DCDEE4",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the created date and time of the tag group in epoch format.",
+          "isRequired": false,
+          "value": 1760518269,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user details who created the tag group.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who created the tag.",
+              "isRequired": false,
+              "value": "john.doe@example.com",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the tag.",
+              "isRequired": false,
+              "value": "John",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the user ID of the user who created the tag.",
+              "isRequired": false,
+              "value": "7e12ace1-d04a-455a-b025-49a67a05f596",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the tag.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the tag group.",
+          "isRequired": false,
+          "value": "Rasomware Grouping",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "groups",
+          "description": "Returns a list of groups associated with this tag group.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "icon",
+          "description": "Returns the icon of the tag group.",
+          "isRequired": false,
+          "value": "cyicon-tags-solid",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the tag group.",
+          "isRequired": false,
+          "value": "17326141-dc74-46d0-8189-e4c4dbb8f098",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the tag group is active in Intel Exchange.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the modified date and time of a tag group in epoch format.",
+          "isRequired": false,
+          "value": 1760518269,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the details of the user who modified the tag group details.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the user who modified the tag.",
+              "isRequired": false,
+              "value": "john.doe@example.com",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who modified the tag.",
+              "isRequired": false,
+              "value": "John",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "id",
+              "description": "Returns the ID of the user who modified the tag.",
+              "isRequired": false,
+              "value": "7e12ace1-d04a-455a-b025-49a67a05f596",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who modified the tag.\n\n",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "name",
+          "description": "Returns the name of the tag group.",
+          "isRequired": false,
+          "value": "Group Test",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tag_type",
+          "description": "Returns the details of the tag type.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "id",
+              "description": "Returns the tag type ID.",
+              "isRequired": false,
+              "value": "group",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "name",
+              "description": "Returns the tag type name.",
+              "isRequired": false,
+              "value": "Group",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "theme",
+          "description": "Returns the theme associated with the tag group.",
+          "isRequired": false,
+          "value": "white",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

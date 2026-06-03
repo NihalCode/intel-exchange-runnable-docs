@@ -1,0 +1,122 @@
+{
+  "slug": "fang-defang/fang-defang-indicators",
+  "title": "Fang/Defang Indicators",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "fang-defang",
+    "fang-defang-indicators"
+  ],
+  "description": "Convert fanged data into defanged format and vice versa.\n\n\n\n> [!NOTE]\n> If categorize = true is passed in the request parameters, then the response includes the IOC types and the fanged or defanged data as key-value pairs.",
+  "method": "POST",
+  "path": "conversion/analyst-tools/fang-defang-text/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "text",
+        "description": "Pass the data to Fang or Defang.",
+        "isRequired": true,
+        "value": "1.1.1.1\nwww.domain.com\nsample@domain.com\nhttps://www.domain.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "categorize",
+        "description": "Pass true to categorize the passed data into IOC types.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "false",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass one of the following.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "fang",
+              "description": "Converts defanged data into fanged format"
+            },
+            {
+              "value": "defang",
+              "description": "Converts fanged data into defanged format"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693804b0b49385adf3bf12db"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "raw_text",
+          "description": "Returns the fanged or defanged data in raw test format.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "This is an example value.",
+              "isRequired": false,
+              "value": "1[.]1[.]1[.]1\nwww[.]domain[.]com\nsample(at)domain[.]com\nhXXps://www[.]domain[.]com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

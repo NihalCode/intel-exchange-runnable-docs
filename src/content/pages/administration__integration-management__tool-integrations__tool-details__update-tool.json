@@ -1,0 +1,84 @@
+{
+  "slug": "administration/integration-management/tool-integrations/tool-details/update-tool",
+  "title": "Update Tool",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "administration",
+    "integration-management",
+    "tool-integrations",
+    "tool-details",
+    "update-tool"
+  ],
+  "description": "Update the status of the tool to active or inactive. Resetting a tool can erase saved accounts, credentials, and other data.",
+  "method": "PUT",
+  "path": "integration/apps/reset_tool/{app_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "is_active",
+        "description": "Pass true to activate the tool, else pass false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "app_id",
+        "description": "Pass the tool ID to update the status.",
+        "isRequired": true,
+        "value": "ede4240a-6688-4e36-ad02-9c274acb6027",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6936ba09b49385adf3bbb337"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "details",
+          "description": "Returns a success message.",
+          "isRequired": false,
+          "value": "success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}
