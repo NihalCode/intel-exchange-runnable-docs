@@ -195,10 +195,23 @@ export function runJsInSandbox(
         })
           .then((r) => r.json())
           .then((result: Record<string, unknown>) => {
-            iframe.contentWindow?.postMessage(
-              { __sbx: nonce, type: "fetchResp", id: data.payload?.id, ...result },
-              "*"
-            );
+            // Proxy error responses have {error, durationMs} — surface as fetch rejection.
+            if (result.error && !result.status) {
+              iframe.contentWindow?.postMessage(
+                {
+                  __sbx: nonce,
+                  type: "fetchResp",
+                  id: data.payload?.id,
+                  err: String(result.error),
+                },
+                "*"
+              );
+            } else {
+              iframe.contentWindow?.postMessage(
+                { __sbx: nonce, type: "fetchResp", id: data.payload?.id, ...result },
+                "*"
+              );
+            }
           })
           .catch((err: Error) => {
             iframe.contentWindow?.postMessage(
