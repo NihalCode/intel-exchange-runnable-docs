@@ -82,8 +82,24 @@ export function stripInlineHtml(md) {
     .join("");
 }
 
+/** Remove Theneo export glitches and fix broken techdocs link suffixes. */
+export function fixMarkdownArtifacts(md) {
+  if (!md) return "";
+  return md
+    // Leaked HTML/script tail from upstream export (e.g. `\"}'>` on overview page).
+    .replace(/\\?"\}'>\s*/g, "")
+    // Techdocs links often end with `.html##)` or `?foo=bar##)` instead of `)`.
+    .replace(/(\]\([^)]+?)##\)/g, "$1)")
+    .replace(/(\]\([^)]+?)##(?=\))/g, "$1")
+    // Collapse excessive blank lines left after artifact removal.
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 /** Normalize prose: code blocks -> fences, callouts -> blockquotes, drop html. */
 export function cleanProse(text) {
   if (!text) return "";
-  return stripInlineHtml(convertCallouts(convertCodeBlocks(text))).trim();
+  return fixMarkdownArtifacts(
+    stripInlineHtml(convertCallouts(convertCodeBlocks(text)))
+  ).trim();
 }

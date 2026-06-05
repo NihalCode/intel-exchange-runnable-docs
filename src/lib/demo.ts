@@ -1,4 +1,5 @@
 import { DISPLAY_BASE } from "./constants";
+import { isSensitiveName, looksLikePlaceholder, maskValue } from "./security";
 
 /** True when the site should not call a real Cyware tenant (clone / local demo). */
 export function isDemoModeEnabled(): boolean {
@@ -52,8 +53,17 @@ export function buildDemoResponse(
 ): DemoProxyResult {
   const m = method.toUpperCase();
   let path = "/";
+  let queryParams: Record<string, string> = {};
   try {
-    path = new URL(url).pathname;
+    const u = new URL(url);
+    path = u.pathname;
+    u.searchParams.forEach((value, name) => {
+      if (isSensitiveName(name) || looksLikePlaceholder(value)) {
+        queryParams[name] = value ? maskValue(value) : "(not set)";
+      } else {
+        queryParams[name] = value;
+      }
+    });
   } catch {
     /* ignore */
   }
@@ -68,6 +78,7 @@ export function buildDemoResponse(
       message: "pong",
       demo: true,
       note: "Simulated response — this docs clone does not call a live Cyware tenant.",
+      ...(Object.keys(queryParams).length ? { query: queryParams } : {}),
     };
   } else if (m === "GET" || m === "HEAD") {
     payload = {
@@ -77,6 +88,7 @@ export function buildDemoResponse(
       results: [],
       count: 0,
       message: "Simulated GET response for documentation preview.",
+      ...(Object.keys(queryParams).length ? { query: queryParams } : {}),
     };
   } else {
     let parsedBody: unknown = undefined;

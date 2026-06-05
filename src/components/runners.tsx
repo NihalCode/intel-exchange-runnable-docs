@@ -358,7 +358,6 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
       {useDemo ? (
         <div className="mt-2 rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
           <strong>Demo mode.</strong> Responses are simulated on this server — no Cyware tenant or credentials required.
-          Credentials below are optional and only needed if you point API Settings at a real tenant URL.
         </div>
       ) : demoMode && !isPlaceholderBase(baseUrl) ? null : !demoMode && isPlaceholderBase(baseUrl) ? (
         <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
@@ -367,7 +366,7 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
         </div>
       ) : null}
 
-      <CredentialsForm fields={credFields} />
+      {!useDemo ? <CredentialsForm fields={credFields} /> : null}
 
       <QueryParamEditor
         params={editableParams}

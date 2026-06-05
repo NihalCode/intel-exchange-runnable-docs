@@ -6,14 +6,14 @@
     "import-intel",
     "import-intel"
   ],
-  "description": "Imports threat data to Intel Exchange.\n\nThe formats supported for import are as follows:\n\n\n  \n    MISP\n    misp\n    .json\n    misp\n  \n  \n    Open IOC\n    openioc\n    .xml\n    openioc\n  \n  \n    STIX 1.x\n    stix1\n    .xml\n    .xml\n  \n  \n    STIX 2.1\n    stix2\n    .json\n    Stix2\n  \n  \n    STIX 2.0\n    stix20\n    .json\n    Stix2\n  \n  \n    STIX 1.x URL\n    stix1url\n    URL\n    url\n  \n  \n    CSV (Recorded Future)\n    csv-recorded-future\n    .csv\n    csv\n  \n  \n    CSV (Cyware)\n    cy-csv\n    .csv\n    csv\n  \n\n\nOptionally, you can specify a collection to which the file is imported. If no collection is specified, the data is imported to the default collection. To retrieve import collections, use the **Get Source Collections** endpoint.\n\n\n\n> [!NOTE]\n> For STIX 1.x URL, the body must include the URL value. For more information, see the example request.",
+  "description": "Imports threat data to Intel Exchange.\n\nThe formats supported for import are as follows:\n\n  \n    MISP\n    misp\n    .json\n    misp\n  \n  \n    Open IOC\n    openioc\n    .xml\n    openioc\n  \n  \n    STIX 1.x\n    stix1\n    .xml\n    .xml\n  \n  \n    STIX 2.1\n    stix2\n    .json\n    Stix2\n  \n  \n    STIX 2.0\n    stix20\n    .json\n    Stix2\n  \n  \n    STIX 1.x URL\n    stix1url\n    URL\n    url\n  \n  \n    CSV (Recorded Future)\n    csv-recorded-future\n    .csv\n    csv\n  \n  \n    CSV (Cyware)\n    cy-csv\n    .csv\n    csv\n  \n\nOptionally, you can specify a collection to which the file is imported. If no collection is specified, the data is imported to the default collection. To retrieve import collections, use the **Get Source Collections** endpoint.\n\n> [!NOTE]\n> For STIX 1.x URL, the body must include the URL value. For more information, see the example request.",
   "method": "POST",
   "path": "conversion/import/{format}/",
   "request": {
     "query": [
       {
         "name": "version",
-        "description": "If the format (path variable) value is stix1 or stix2, enter the STIX version. ",
+        "description": "If the format (path variable) value is stix1 or stix2, enter the STIX version.",
         "isRequired": false,
         "value": "2.1",
         "valueType": "string",

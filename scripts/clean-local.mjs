@@ -17,11 +17,26 @@ for (const f of files) {
   const full = path.join(PAGES_DIR, f);
   const rec = JSON.parse(await readFile(full, "utf8"));
   let dirty = false;
-  if (rec.kind === "endpoint" && typeof rec.description === "string") {
-    const cleaned = cleanProse(rec.description);
-    if (cleaned !== rec.description) {
-      rec.description = cleaned;
-      dirty = true;
+  if (rec.kind === "endpoint") {
+    if (typeof rec.description === "string") {
+      const cleaned = cleanProse(rec.description);
+      if (cleaned !== rec.description) {
+        rec.description = cleaned;
+        dirty = true;
+      }
+    }
+    for (const key of ["query", "body", "header", "path"]) {
+      const fields = rec.request?.[key];
+      if (!Array.isArray(fields)) continue;
+      for (const field of fields) {
+        if (typeof field.description === "string") {
+          const cleaned = cleanProse(field.description);
+          if (cleaned !== field.description) {
+            field.description = cleaned;
+            dirty = true;
+          }
+        }
+      }
     }
   }
   if (rec.kind === "section" && typeof rec.markdown === "string") {
