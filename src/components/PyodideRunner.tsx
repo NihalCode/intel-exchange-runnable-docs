@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { DISPLAY_BASE } from "@/lib/constants";
-import { isPlaceholderBase } from "@/lib/demo";
 import { isSensitiveName, maskText } from "@/lib/security";
 import type { CredField } from "@/lib/resolve-request";
 import { useRunSettings } from "./RunSettings";
@@ -158,14 +157,13 @@ function extractCredFields(code: string): CredField[] {
 // ---------------------------------------------------------------------------
 
 export function PyodideRunner({ code }: { code: string }) {
-  const { baseUrl, secretValues, demoMode, getCredential, setCredential } = useRunSettings();
+  const { baseUrl, secretValues, getCredential, setCredential } = useRunSettings();
   const [phase, setPhase] = useState<"idle" | "loading-pyodide" | "running">("idle");
   const [logs, setLogs] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const pyRef = useRef<Pyodide | null>(null);
 
   const credFields = extractCredFields(code);
-  const useDemo = demoMode && isPlaceholderBase(baseUrl);
 
   const buildCreds = () => {
     const c: Record<string, string> = {};
@@ -205,7 +203,7 @@ export function PyodideRunner({ code }: { code: string }) {
 
   return (
     <div>
-      {credFields.length > 0 && !useDemo ? (
+      {credFields.length > 0 ? (
         <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
           <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
             <LockIcon />
