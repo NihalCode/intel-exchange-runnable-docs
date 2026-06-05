@@ -1,9 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import type { CodeSnippet, EndpointPage, ParamField } from "@/lib/types";
 import { DISPLAY_BASE } from "@/lib/constants";
+import { buildRunnableRequest } from "@/lib/snippets";
 import { CodeBlock } from "./CodeBlock";
 import { Markdown } from "./Markdown";
+import { RequestPlaygroundPanel, RequestPlaygroundProvider } from "./RequestPlayground";
 
 const METHOD_COLORS: Record<string, string> = {
   GET: "bg-emerald-600",
@@ -80,6 +83,8 @@ export function EndpointView({
   page: EndpointPage;
   snippets: CodeSnippet[];
 }) {
+  const runnableRequest = useMemo(() => buildRunnableRequest(page), [page]);
+
   return (
     <article className="mx-auto max-w-4xl">
       <div className="mb-3 flex flex-wrap items-center gap-3">
@@ -109,13 +114,23 @@ export function EndpointView({
       <section className="mt-8">
         <h2 className="mb-1 text-lg font-semibold">Run it</h2>
         <p className="mb-3 text-sm text-zinc-500">
-          Each snippet below is runnable in demo mode (simulated responses — no Cyware tenant
-          required). Edit query parameters and request bodies before running. Optional: set a
-          real tenant URL and credentials in API Settings to call a live API.
+          Use the <strong>Request parameters</strong> panel to enter path IDs, query values, JSON
+          body, and credentials. Then run any snippet below — all languages use the same values.
+          Base URL: <code className="font-mono text-xs">{DISPLAY_BASE}</code> (change in API Settings).
         </p>
-        {snippets.map((snippet, i) => (
-          <CodeBlock key={`${snippet.label}-${i}`} snippet={snippet} />
-        ))}
+        <RequestPlaygroundProvider
+          request={runnableRequest}
+          meta={{
+            pathFields: page.request?.path,
+            queryFields: page.request?.query,
+            bodyFields: page.request?.body,
+          }}
+        >
+          <RequestPlaygroundPanel />
+          {snippets.map((snippet, i) => (
+            <CodeBlock key={`${snippet.label}-${i}`} snippet={snippet} />
+          ))}
+        </RequestPlaygroundProvider>
       </section>
     </article>
   );

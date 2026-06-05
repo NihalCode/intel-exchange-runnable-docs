@@ -1,22 +1,34 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { DISPLAY_BASE } from "@/lib/constants";
-import { isPlaceholderBase, isPlaceholderRequestUrl } from "@/lib/demo";
+import {
+  ensureOpenApiAuth,
+  injectOpenApiAuthIntoUrl,
+  substituteSnippetPlaceholders,
+} from "@/lib/credential-placeholders";
+import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
+import { isPlaceholderBase } from "@/lib/demo";
 import { runJsInSandbox } from "@/lib/js-sandbox";
 import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
 import {
+  applyPathParams,
   credFieldsForExec,
   credFieldsForRequest,
   needsCredential,
   previewRequest,
   resolveExec,
   resolveStructured,
+  unresolvedPathParams,
   type CredField,
 } from "@/lib/resolve-request";
 import { isMutating, maskText } from "@/lib/security";
 import type { CodeSnippet, KeyValue, RunnableRequest } from "@/lib/types";
 import { PyodideRunner } from "./PyodideRunner";
+import {
+  buildPlaygroundExec,
+  previewPlaygroundRequest,
+  useRequestPlayground,
+} from "./RequestPlayground";
 import { useRunSettings } from "./RunSettings";
 
 /* --------------------------------- shared -------------------------------- */
@@ -124,6 +136,43 @@ function RunButton({
  */
 function editableQueryParams(query: KeyValue[]): KeyValue[] {
   return query.filter((p) => !needsCredential(p.name, p.value));
+}
+
+function PathParamEditor({
+  params,
+  values,
+  onChange,
+}: {
+  params: KeyValue[];
+  values: Record<string, string>;
+  onChange: (name: string, value: string) => void;
+}) {
+  if (params.length === 0) return null;
+  return (
+    <div className="mt-2 rounded-md border border-violet-300 bg-violet-50/50 p-3 dark:border-violet-800 dark:bg-violet-950/20">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">
+        Path Parameters
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {params.map((p) => (
+          <label key={p.name} className="flex flex-col gap-1 text-xs">
+            <span className="font-medium opacity-80">
+              {p.name} <span className="text-violet-600 dark:text-violet-400">(required in URL)</span>
+            </span>
+            <input
+              type="text"
+              autoComplete="off"
+              spellCheck={false}
+              placeholder={p.value || `Enter ${p.name}`}
+              value={values[p.name] ?? p.value}
+              onChange={(e) => onChange(p.name, e.target.value)}
+              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-violet-500 dark:border-zinc-600 dark:bg-zinc-900"
+            />
+          </label>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function QueryParamEditor({
@@ -236,9 +285,30 @@ function formatMaybeJson(text: string): string {
   return text;
 }
 
+async function proxyHttpRequest(exec: ExecRequest): Promise<HttpResult> {
+  const res = await fetch("/api/run", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      method: exec.method,
+      url: exec.url,
+      headers: exec.headers,
+      body: exec.body,
+      demo: false,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) {
+    throw new Error(data.error || `Proxy error (HTTP ${res.status}).`);
+  }
+  return data as HttpResult;
+}
+
 function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
   const settings = useRunSettings();
-  const { baseUrl, secretValues, demoMode } = settings;
+  const { baseUrl, secretValues, generateAuth, accessId, secretKey } = settings;
+  const playground = useRequestPlayground();
+  const usingPlayground = !!playground && !!request;
 
   const parsed = useMemo<ExecRequest | null>(
     () => (request ? null : parseHttpSnippet(code)),
@@ -246,26 +316,42 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   );
   const credFields = useMemo<CredField[]>(
     () =>
-      request
-        ? credFieldsForRequest(request)
-        : parsed
-          ? credFieldsForExec(parsed)
-          : [],
-    [request, parsed]
+      usingPlayground
+        ? playground!.credFields
+        : request
+          ? credFieldsForRequest(request)
+          : parsed
+            ? credFieldsForExec(parsed)
+            : [],
+    [usingPlayground, playground, request, parsed]
   );
 
-  // Non-credential query params that the user can edit
+  const pathParams = useMemo<KeyValue[]>(
+    () => (usingPlayground ? playground!.pathParams : request?.pathParams ?? []),
+    [usingPlayground, playground, request]
+  );
+
   const editableParams = useMemo<KeyValue[]>(
-    () => editableQueryParams(request?.query ?? []),
-    [request]
+    () =>
+      usingPlayground
+        ? playground!.editableParams
+        : editableQueryParams(request?.query ?? []),
+    [usingPlayground, playground, request]
   );
 
-  // State: query param overrides (only non-credential params)
+  const [pathValues, setPathValues] = useState<Record<string, string>>(() =>
+    Object.fromEntries(pathParams.map((p) => [p.name, p.value]))
+  );
+
   const [queryValues, setQueryValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(editableParams.map((p) => [p.name, p.value]))
   );
 
-  const initialBody = request ? request.body : parsed?.body;
+  const initialBody = usingPlayground
+    ? playground!.bodyText
+    : request
+      ? request.body
+      : parsed?.body;
   const method = (request?.method || parsed?.method || "GET").toUpperCase();
   const parseFailed = !request && !parsed;
 
@@ -276,13 +362,15 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const useDemo = demoMode && isPlaceholderBase(baseUrl);
-  const sendDemoFlag = (url: string) =>
-    isPlaceholderRequestUrl(url) || useDemo;
+  const needsBaseUrl = isPlaceholderBase(baseUrl);
 
   function handleBodyChange(v: string) {
     setBodyText(v);
     setJsonError(validateJson(v));
+  }
+
+  function handlePathChange(name: string, value: string) {
+    setPathValues((prev) => ({ ...prev, [name]: value }));
   }
 
   function handleQueryChange(name: string, value: string) {
@@ -290,40 +378,64 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   }
 
   const buildExec = (): ExecRequest =>
-    request
-      ? resolveStructured(
-          request,
-          baseUrl,
-          settings.getCredential,
-          bodyText || undefined,
-          queryValues
-        )
-      : resolveExec(parsed!, baseUrl, settings.getCredential, bodyText || undefined);
+    usingPlayground
+      ? buildPlaygroundExec(playground!, baseUrl, settings.getCredential)
+      : request
+        ? resolveStructured(
+            request,
+            baseUrl,
+            settings.getCredential,
+            bodyText || undefined,
+            queryValues,
+            pathValues
+          )
+        : resolveExec(parsed!, baseUrl, settings.getCredential, bodyText || undefined);
+
+  async function ensureAuthReady(): Promise<string | null> {
+    return ensureOpenApiAuth(
+      credFields,
+      settings.getCredential,
+      generateAuth,
+      accessId,
+      secretKey
+    );
+  }
 
   async function execute() {
+    const authErr = await ensureAuthReady();
+    if (authErr) {
+      setError(authErr);
+      setPhase("idle");
+      return;
+    }
+
+    const validationError = usingPlayground
+      ? playground!.validateForRun()
+      : request?.pathParams?.length
+        ? (() => {
+            const resolved = applyPathParams(request.path, request.pathParams, pathValues);
+            const missing = unresolvedPathParams(resolved);
+            return missing.length > 0
+              ? `Missing path parameter(s): ${missing.join(", ")}. Fill in the Path Parameters fields above (e.g. an ID from a list endpoint).`
+              : null;
+          })()
+        : null;
+    if (validationError) {
+      setError(validationError);
+      setPhase("idle");
+      return;
+    }
+
     const exec = buildExec();
-    setPreview(maskText(previewRequest(exec), secretValues));
+    const previewText = usingPlayground
+      ? previewPlaygroundRequest(playground!, baseUrl, settings.getCredential)
+      : previewRequest(exec);
+    setPreview(maskText(previewText, secretValues));
     setPhase("loading");
     setError(null);
     setResult(null);
     try {
-      const res = await fetch("/api/run", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          method: exec.method,
-          url: exec.url,
-          headers: exec.headers,
-          body: exec.body,
-          demo: sendDemoFlag(exec.url),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || data.error) {
-        setError(data.error || `Proxy error (HTTP ${res.status}).`);
-      } else {
-        setResult(data as HttpResult);
-      }
+      setResult(await proxyHttpRequest(exec));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error.");
     } finally {
@@ -336,8 +448,9 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
       setError("This snippet could not be parsed into an HTTP request.");
       return;
     }
-    if (jsonError) {
-      setError(`Fix the JSON body before running: ${jsonError}`);
+    const bodyErr = usingPlayground ? playground!.jsonError : jsonError;
+    if (bodyErr) {
+      setError(`Fix the JSON body before running: ${bodyErr}`);
       return;
     }
     if (isMutating(method)) {
@@ -347,41 +460,56 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
     void execute();
   }
 
-  // Show body editor for non-GET methods when there's body content or a structured request
   const showBody =
+    !usingPlayground &&
     method !== "GET" &&
     method !== "HEAD" &&
     (bodyText !== "" || request?.body !== undefined);
 
   return (
     <div>
-      {useDemo ? (
-        <div className="mt-2 rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
-          <strong>Demo mode.</strong> Responses are simulated — enter credentials and query params below to
-          see them reflected in the request. Point API Settings at a real tenant URL to call a live API.
-        </div>
-      ) : demoMode && !isPlaceholderBase(baseUrl) ? null : !demoMode && isPlaceholderBase(baseUrl) ? (
-        <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
-          <strong>Set your base URL.</strong> Enter your Cyware tenant URL in <em>API Settings</em>, or set{" "}
-          <code className="font-mono">NEXT_PUBLIC_DEMO_MODE=true</code> to use simulated responses.
-        </div>
-      ) : null}
+      {usingPlayground ? (
+        <p className="mt-1 text-[11px] opacity-60">
+          Uses values from <strong>Request parameters</strong> above.
+        </p>
+      ) : (
+        <>
+          {needsBaseUrl ? (
+            <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+              <strong>Set your base URL.</strong> Enter the Cyware tenant API base in the header
+              (default: <code className="font-mono">{DISPLAY_BASE}</code>).
+            </div>
+          ) : (
+            <div className="mt-2 rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
+              <strong>Live API.</strong> Requests are sent to{" "}
+              <code className="font-mono">{baseUrl}</code>. Enter AccessID, Signature, and Expires
+              below, or use <em>API Settings → Generate Auth</em>.
+            </div>
+          )}
 
-      <CredentialsForm fields={credFields} />
+          <CredentialsForm fields={credFields} />
 
-      <QueryParamEditor
-        params={editableParams}
-        values={queryValues}
-        onChange={handleQueryChange}
-      />
+          <PathParamEditor
+            params={pathParams}
+            values={pathValues}
+            onChange={handlePathChange}
+          />
 
-      {showBody ? (
-        <PayloadEditor
-          value={bodyText}
-          onChange={handleBodyChange}
-          jsonError={jsonError}
-        />
-      ) : null}
+          <QueryParamEditor
+            params={editableParams}
+            values={queryValues}
+            onChange={handleQueryChange}
+          />
+
+          {showBody ? (
+            <PayloadEditor
+              value={bodyText}
+              onChange={handleBodyChange}
+              jsonError={jsonError}
+            />
+          ) : null}
+        </>
+      )}
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <RunButton onClick={handleRun} busy={phase === "loading"}>
@@ -486,38 +614,64 @@ function JsonRunner({ code }: { code: string }) {
 /* ----------------------------- JavaScript -------------------------------- */
 
 function JsRunner({ code }: { code: string }) {
-  const { baseUrl, secretValues, getCredential } = useRunSettings();
+  const {
+    baseUrl,
+    secretValues,
+    getCredential,
+    generateAuth,
+    accessId,
+    secretKey,
+  } = useRunSettings();
+  const playground = useRequestPlayground();
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [result, setResult] = useState<string | undefined>();
   const [error, setError] = useState<string | undefined>();
+  const [httpResult, setHttpResult] = useState<HttpResult | null>(null);
 
-  // Substitute placeholder base URL + credentials into the JS code
+  const jsCredFields = useMemo(() => {
+    if (playground) return playground.credFields;
+    const fields: CredField[] = [
+      { name: "AccessID", example: "<your access id>" },
+      { name: "Signature", example: "<generated signature>" },
+      { name: "Expires", example: "<unix expiry>" },
+    ];
+    return fields;
+  }, [playground]);
+
   function prepareCode(): string {
-    let out = code.replace(
-      /https:\/\/tenantname\.com\/ctixapi/g,
-      baseUrl.replace(/\/+$/, "")
-    );
-    // Substitute credential placeholders in the URL query string
-    for (const key of ["AccessID", "Signature", "Expires"]) {
-      const val = getCredential(key);
-      if (val) {
-        out = out.replace(
-          new RegExp(encodeURIComponent(`<${key.toLowerCase().replace("id", " id")}>`), "gi"),
-          encodeURIComponent(val)
-        );
-        out = out.replace(
-          new RegExp(`<your ${key.toLowerCase()}>`, "gi"),
-          val
-        );
-        out = out.replace(
-          new RegExp(`"<${key.toLowerCase()}>"`, "gi"),
-          JSON.stringify(val)
-        );
+    let out = substituteSnippetPlaceholders(code, getCredential);
+    out = out.replace(DISPLAY_BASE_RE, baseUrl.replace(/\/+$/, ""));
+    out = out.replace(/const url = "([^"]+)"/g, (_m, rawUrl: string) => {
+      let u = rawUrl;
+      if (u.startsWith(DISPLAY_BASE)) {
+        u = baseUrl.replace(/\/+$/, "") + u.slice(DISPLAY_BASE.length);
       }
-    }
+      u = injectOpenApiAuthIntoUrl(u, getCredential);
+      return `const url = ${JSON.stringify(u)}`;
+    });
     return out;
+  }
+
+  async function runViaPlayground() {
+    const validationError = playground!.validateForRun();
+    if (validationError) throw new Error(validationError);
+
+    const authErr = await ensureOpenApiAuth(
+      playground!.credFields,
+      getCredential,
+      generateAuth,
+      accessId,
+      secretKey
+    );
+    if (authErr) throw new Error(authErr);
+
+    const exec = buildPlaygroundExec(playground!, baseUrl, getCredential);
+    const data = await proxyHttpRequest(exec);
+    setHttpResult(data);
+    setLogs([`${data.status} ${data.statusText}`]);
+    setResult(formatMaybeJson(data.body));
   }
 
   async function run() {
@@ -525,34 +679,79 @@ function JsRunner({ code }: { code: string }) {
     setDone(false);
     setError(undefined);
     setResult(undefined);
+    setHttpResult(null);
     setLogs([]);
-    const r = await runJsInSandbox(prepareCode(), { baseUrl, secretValues });
-    setLogs(r.logs || []);
-    setResult(r.result);
-    setError(r.error);
-    setDone(true);
-    setBusy(false);
+
+    try {
+      if (playground) {
+        await runViaPlayground();
+      } else {
+        const authErr = await ensureOpenApiAuth(
+          jsCredFields,
+          getCredential,
+          generateAuth,
+          accessId,
+          secretKey
+        );
+        if (authErr) throw new Error(authErr);
+
+        const r = await runJsInSandbox(prepareCode(), {
+          baseUrl,
+          secretValues,
+          getCredential,
+        });
+        setLogs(r.logs || []);
+        setResult(r.result);
+        if (r.error) setError(r.error);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Run failed.");
+    } finally {
+      setDone(true);
+      setBusy(false);
+    }
   }
 
   return (
     <div>
+      {playground ? (
+        <p className="mt-1 text-[11px] opacity-60">
+          Uses values from <strong>Request parameters</strong> above.
+        </p>
+      ) : null}
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <RunButton onClick={run} busy={busy}>
           <PlayIcon />
-          {busy ? "Running…" : "Run (sandboxed)"}
+          {busy ? "Running…" : playground ? "Run" : "Run (sandboxed)"}
         </RunButton>
         <span className="text-[11px] opacity-50">
-          Sandboxed iframe · API calls proxied server-side
+          {playground
+            ? "Sends the resolved request via server proxy"
+            : "Sandboxed iframe · API calls proxied server-side"}
         </span>
       </div>
       {done ? (
-        <ResultBox tone={error ? "error" : "success"} title="Console output">
+        <ResultBox tone={error ? "error" : httpResult && !httpResult.ok ? "error" : "success"} title={playground && httpResult ? "Response" : "Console output"}>
+          {httpResult ? (
+            <div className="mb-2 font-mono text-xs">
+              <span
+                className={`font-semibold ${httpResult.ok ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+              >
+                {httpResult.status} {httpResult.statusText}
+              </span>
+              {typeof httpResult.durationMs === "number" ? (
+                <span className="opacity-50"> · {httpResult.durationMs} ms</span>
+              ) : null}
+            </div>
+          ) : null}
           {logs.length > 0 ? (
             <Pre text={maskText(logs.join("\n"), secretValues)} />
           ) : null}
           {result !== undefined ? (
             <div className="mt-1">
-              <span className="text-[11px] opacity-60">return value: </span>
+              {playground ? null : (
+                <span className="text-[11px] opacity-60">return value: </span>
+              )}
               <Pre text={maskText(result, secretValues)} />
             </div>
           ) : null}

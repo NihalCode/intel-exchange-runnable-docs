@@ -1,40 +1,23 @@
-import { DISPLAY_BASE } from "./constants";
 import { isSensitiveName, looksLikePlaceholder, maskValue } from "./security";
 
-/** True when the site should not call a real Cyware tenant (clone / local demo). */
+/** Optional simulated responses when `NEXT_PUBLIC_DEMO_MODE=true` and client sends `demo: true`. */
 export function isDemoModeEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
+  return process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 }
 
-/** Snippet display base or unset — not a reachable tenant. */
+/** Only an unset base URL is treated as unconfigured. */
 export function isPlaceholderBase(baseUrl: string): boolean {
-  const b = (baseUrl || "").trim();
-  if (!b) return true;
-  if (b === DISPLAY_BASE) return true;
-  try {
-    return new URL(b).hostname === "tenantname.com";
-  } catch {
-    return false;
-  }
+  return !(baseUrl || "").trim();
 }
 
-/** Request targets the docs placeholder host (never resolvable). */
-export function isPlaceholderRequestUrl(url: string): boolean {
-  try {
-    return new URL(url).hostname === "tenantname.com";
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Whether /api/run should return a simulated response instead of calling the network.
- * Placeholder host `tenantname.com` is always simulated — it is not a real API endpoint.
- */
-export function shouldSimulateRequest(url: string, explicitDemo?: boolean): boolean {
-  if (explicitDemo) return true;
-  if (isPlaceholderRequestUrl(url)) return true;
+/** Live API requests are never auto-simulated by hostname. */
+export function isPlaceholderRequestUrl(_url: string): boolean {
   return false;
+}
+
+/** Simulate only when the client explicitly opts in and demo mode is enabled. */
+export function shouldSimulateRequest(_url: string, explicitDemo?: boolean): boolean {
+  return Boolean(explicitDemo && isDemoModeEnabled());
 }
 
 export interface DemoProxyResult {
@@ -77,7 +60,7 @@ export function buildDemoResponse(
       status: "ok",
       message: "pong",
       demo: true,
-      note: "Simulated response — this docs clone does not call a live Cyware tenant.",
+      note: "Simulated response (explicit demo mode).",
       ...(Object.keys(queryParams).length ? { query: queryParams } : {}),
     };
   } else if (m === "GET" || m === "HEAD") {

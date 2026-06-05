@@ -1,4 +1,5 @@
 import { DISPLAY_BASE } from "./constants";
+import { applyPathParams } from "./resolve-request";
 import type {
   CodeSnippet,
   EndpointPage,
@@ -70,11 +71,17 @@ function normalizePath(path: string): string {
   return path.startsWith("/") ? path : `/${path}`;
 }
 
+/** Keep only params with a non-empty value (optional params are omitted). */
+function withValues(pairs: KeyValue[]): KeyValue[] {
+  return pairs.filter((p) => (p.value ?? "").trim() !== "");
+}
+
 function queryString(pairs: KeyValue[]): string {
-  if (pairs.length === 0) return "";
+  const filled = withValues(pairs);
+  if (filled.length === 0) return "";
   return (
     "?" +
-    pairs
+    filled
       .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(p.value)}`)
       .join("&")
   );
@@ -98,9 +105,12 @@ export function buildRunnableRequest(page: EndpointPage): RunnableRequest {
     headers.unshift({ name: "Content-Type", value: contentType });
   }
 
+  const pathParams = fieldsToKeyValues(page.request?.path);
+
   return {
     method: page.method,
     path: normalizePath(page.path),
+    pathParams: pathParams.length > 0 ? pathParams : undefined,
     query,
     headers,
     body: hasBody ? JSON.stringify(bodyObj, null, 2) : undefined,
@@ -108,8 +118,12 @@ export function buildRunnableRequest(page: EndpointPage): RunnableRequest {
   };
 }
 
+function resolvedPath(req: RunnableRequest): string {
+  return applyPathParams(req.path, req.pathParams);
+}
+
 function curlSnippet(req: RunnableRequest): string {
-  const url = `${DISPLAY_BASE}${req.path}${queryString(req.query)}`;
+  const url = `${DISPLAY_BASE}${resolvedPath(req)}${queryString(req.query)}`;
   const lines = [`curl --request ${req.method} \\`, `  --url "${url}"`];
   for (const h of req.headers) {
     lines[lines.length - 1] += " \\";
@@ -123,7 +137,7 @@ function curlSnippet(req: RunnableRequest): string {
 }
 
 function jsSnippet(req: RunnableRequest): string {
-  const url = `${DISPLAY_BASE}${req.path}${queryString(req.query)}`;
+  const url = `${DISPLAY_BASE}${resolvedPath(req)}${queryString(req.query)}`;
   const headerObj: Record<string, string> = {};
   for (const h of req.headers) headerObj[h.name] = h.value;
   const init: string[] = [`  method: "${req.method}",`];
@@ -151,11 +165,11 @@ function pySnippet(req: RunnableRequest): string {
   const headerObj: Record<string, string> = {};
   for (const h of req.headers) headerObj[h.name] = h.value;
   const params: Record<string, string> = {};
-  for (const q of req.query) params[q.name] = q.value;
+  for (const q of withValues(req.query)) params[q.name] = q.value;
   const lines = [
     `import requests`,
     ``,
-    `url = "${DISPLAY_BASE}${req.path}"`,
+    `url = "${DISPLAY_BASE}${resolvedPath(req)}"`,
     `params = ${pyDict(params)}`,
     `headers = ${pyDict(headerObj)}`,
   ];

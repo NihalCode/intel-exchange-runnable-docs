@@ -11,7 +11,7 @@ export interface AuthParams {
 export async function generateAuthParams(
   accessId: string,
   secretKey: string,
-  expiryOffsetSeconds = 25
+  expiryOffsetSeconds = 20
 ): Promise<AuthParams> {
   const expires = Math.floor(Date.now() / 1000) + expiryOffsetSeconds;
   const toSign = `${accessId}\n${expires}`;

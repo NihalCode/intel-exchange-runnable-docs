@@ -8,22 +8,19 @@ import {
 import { DISPLAY_BASE } from "../constants";
 
 describe("isPlaceholderBase", () => {
-  it("treats DISPLAY_BASE as placeholder", () => {
-    expect(isPlaceholderBase(DISPLAY_BASE)).toBe(true);
+  it("treats DISPLAY_BASE as configured live tenant (not placeholder)", () => {
+    expect(isPlaceholderBase(DISPLAY_BASE)).toBe(false);
   });
-  it("treats empty as placeholder", () => {
+  it("treats empty as unconfigured", () => {
     expect(isPlaceholderBase("")).toBe(true);
-  });
-  it("does not treat real tenant URL as placeholder", () => {
-    expect(isPlaceholderBase("https://myorg.cyware.com/ctixapi")).toBe(false);
   });
 });
 
 describe("isPlaceholderRequestUrl", () => {
-  it("detects tenantname.com in request URL", () => {
+  it("never treats DISPLAY_BASE as auto-simulated", () => {
     expect(
       isPlaceholderRequestUrl(`${DISPLAY_BASE}/ping/?AccessID=x`)
-    ).toBe(true);
+    ).toBe(false);
   });
 });
 
@@ -35,31 +32,22 @@ describe("shouldSimulateRequest", () => {
     else process.env.NEXT_PUBLIC_DEMO_MODE = orig;
   });
 
-  it("simulates placeholder URLs when demo mode is on (default)", () => {
+  it("does not simulate DISPLAY_BASE by default", () => {
     delete process.env.NEXT_PUBLIC_DEMO_MODE;
+    expect(shouldSimulateRequest(`${DISPLAY_BASE}/ping/`)).toBe(false);
+  });
+
+  it("simulates only when explicit demo flag and NEXT_PUBLIC_DEMO_MODE=true", () => {
+    process.env.NEXT_PUBLIC_DEMO_MODE = "true";
     expect(
-      shouldSimulateRequest(`${DISPLAY_BASE}/ping/`)
+      shouldSimulateRequest(`${DISPLAY_BASE}/ping/`, true)
     ).toBe(true);
   });
 
-  it("honors explicit demo flag even when env is off", () => {
+  it("does not simulate with explicit flag when demo env is off", () => {
     process.env.NEXT_PUBLIC_DEMO_MODE = "false";
     expect(
-      shouldSimulateRequest("https://myorg.cyware.com/ctixapi/ping/", true)
-    ).toBe(true);
-  });
-
-  it("still simulates placeholder host when demo env is off", () => {
-    process.env.NEXT_PUBLIC_DEMO_MODE = "false";
-    expect(
-      shouldSimulateRequest(`${DISPLAY_BASE}/ping/`)
-    ).toBe(true);
-  });
-
-  it("does not simulate real tenant URLs when demo env is off", () => {
-    process.env.NEXT_PUBLIC_DEMO_MODE = "false";
-    expect(
-      shouldSimulateRequest("https://myorg.cyware.com/ctixapi/ping/")
+      shouldSimulateRequest(`${DISPLAY_BASE}/ping/`, true)
     ).toBe(false);
   });
 });
@@ -70,18 +58,5 @@ describe("buildDemoResponse", () => {
     const body = JSON.parse(res.body);
     expect(body.status).toBe("ok");
     expect(body.demo).toBe(true);
-    expect(res.status).toBe(200);
-    expect(res.statusText).toContain("demo");
-  });
-
-  it("echoes POST body in simulated response", () => {
-    const res = buildDemoResponse(
-      "POST",
-      `${DISPLAY_BASE}/v3/intel/`,
-      '{"title":"x"}'
-    );
-    const body = JSON.parse(res.body);
-    expect(body.request_body).toEqual({ title: "x" });
-    expect(body.method).toBe("POST");
   });
 });

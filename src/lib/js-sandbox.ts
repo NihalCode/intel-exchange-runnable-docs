@@ -5,8 +5,8 @@
 // fetch() calls inside the sandbox are intercepted and relayed through the
 // parent → /api/run server-side proxy, so they work despite the opaque origin.
 
+import { injectOpenApiAuthIntoUrl } from "./credential-placeholders";
 import { DISPLAY_BASE } from "./constants";
-import { isPlaceholderRequestUrl } from "./demo";
 
 export interface SandboxResult {
   logs: string[];
@@ -20,6 +20,8 @@ export interface SandboxOptions {
   baseUrl?: string;
   /** Extra secrets to scrub from output */
   secretValues?: string[];
+  /** Inject AccessID / Signature / Expires into proxied fetch URLs */
+  getCredential?: (name: string) => string;
 }
 
 const TIMEOUT_MS = 12_000;
@@ -142,7 +144,7 @@ export function runJsInSandbox(
   options: SandboxOptions = {}
 ): Promise<SandboxResult> {
   return new Promise((resolve) => {
-    const { baseUrl = DISPLAY_BASE, secretValues = [] } = options;
+    const { baseUrl = DISPLAY_BASE, secretValues = [], getCredential } = options;
     const nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
     const iframe = document.createElement("iframe");
@@ -180,9 +182,12 @@ export function runJsInSandbox(
       if (data.type === "fetch") {
         // Relay through the /api/run proxy, substituting the display base URL.
         const originalUrl: string = data.payload?.url ?? "";
-        const proxiedUrl = originalUrl.startsWith(DISPLAY_BASE)
+        let proxiedUrl = originalUrl.startsWith(DISPLAY_BASE)
           ? baseUrl.replace(/\/+$/, "") + originalUrl.slice(DISPLAY_BASE.length)
           : originalUrl;
+        if (getCredential) {
+          proxiedUrl = injectOpenApiAuthIntoUrl(proxiedUrl, getCredential);
+        }
 
         fetch("/api/run", {
           method: "POST",
@@ -192,7 +197,6 @@ export function runJsInSandbox(
             url: proxiedUrl,
             headers: data.payload?.headers ?? [],
             body: data.payload?.body,
-            demo: isPlaceholderRequestUrl(proxiedUrl),
           }),
         })
           .then((r) => r.json())

@@ -90,8 +90,10 @@ export interface KeyValue {
 /** A structured request that the HTTP runner can execute against a base URL. */
 export interface RunnableRequest {
   method: HttpMethod;
-  /** path relative to the base URL, may start with "/" */
+  /** Path template relative to base URL; may contain `{param}` segments. */
   path: string;
+  /** Values substituted into `{name}` segments in `path`. */
+  pathParams?: KeyValue[];
   query: KeyValue[];
   headers: KeyValue[];
   /** JSON (or raw) request body as a string, if any */

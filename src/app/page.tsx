@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Markdown } from "@/components/Markdown";
+import { DISPLAY_BASE, DOCS_REFERENCE_URL } from "@/lib/constants";
 import { getManifest, getPage, getRootSlug } from "@/lib/content";
 
 export default async function Home() {
@@ -15,11 +16,14 @@ export default async function Home() {
           Intel Exchange API — Runnable Reference
         </h1>
         <p className="mt-2 max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          An unofficial, runnable mirror of the Cyware Intel Exchange API reference.
-          Every code snippet has a <strong>Run</strong> control — responses are{" "}
-          <strong>simulated in demo mode</strong> so you can try the docs without a Cyware
-          tenant. Validate JSON, edit query params and payloads, or run JavaScript/Python
-          in the browser. {manifest.count} pages indexed.
+          An unofficial, runnable mirror of the{" "}
+          <a href={DOCS_REFERENCE_URL} className="text-sky-600 underline" target="_blank" rel="noreferrer">
+            Cyware Intel Exchange API reference
+          </a>
+          . Every snippet has a <strong>Run</strong> control that calls your CTIX Open API base (
+          <code className="font-mono text-xs">{DISPLAY_BASE}</code> by default, or the Endpoint URL from your credentials CSV).
+          Set Open API credentials in the header, edit query params and payloads, or run
+          JavaScript/Python in the browser. {manifest.count} pages indexed.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {topSections.map((s) => (

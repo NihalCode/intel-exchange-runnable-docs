@@ -1,9 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { DISPLAY_BASE } from "@/lib/constants";
+import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
+import { ensureOpenApiAuth, substituteSnippetPlaceholders } from "@/lib/credential-placeholders";
 import { isSensitiveName, maskText } from "@/lib/security";
 import type { CredField } from "@/lib/resolve-request";
+import { buildPlaygroundExec, useRequestPlayground } from "./RequestPlayground";
 import { useRunSettings } from "./RunSettings";
 
 // ---------------------------------------------------------------------------
@@ -71,8 +73,7 @@ async def _ctix_request(method, url, params=None, headers=None, json=None, data=
     elif data is not None:
         body_str = _json.dumps(data) if isinstance(data, dict) else str(data)
     proxy_payload = {"method": method, "url": full_url,
-        "headers": [{"name": k, "value": str(v)} for k, v in hdrs.items()],
-        "demo": "tenantname.com" in full_url}
+        "headers": [{"name": k, "value": str(v)} for k, v in hdrs.items()]}
     if body_str is not None:
         proxy_payload["body"] = body_str
     resp = await _pyfetch("/api/run", method="POST",
@@ -103,20 +104,9 @@ function transformCode(code: string, baseUrl: string, creds: Record<string, stri
   let out = code;
 
   // Substitute placeholder base URL.
-  out = out.replace(/https:\/\/tenantname\.com\/ctixapi/g, baseUrl.replace(/\/+$/, ""));
+  out = out.replace(DISPLAY_BASE_RE, baseUrl.replace(/\/+$/, ""));
 
-  // Substitute credential placeholders.
-  for (const [name, value] of Object.entries(creds)) {
-    if (!value) continue;
-    // e.g. "<your access id>", "<enter access id>"
-    const safeName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    out = out.replace(
-      new RegExp(`["']<[^>]*${safeName}[^>]*>["']`, "gi"),
-      JSON.stringify(value)
-    );
-    // Also replace bare placeholder wrapped in double quotes
-    out = out.replace(new RegExp(`"<${safeName}>"`, "gi"), JSON.stringify(value));
-  }
+  out = substituteSnippetPlaceholders(out, (name) => creds[name.toLowerCase()] ?? "");
 
   // Add `await` before `requests.*(...)` calls so top-level await works.
   out = out.replace(
@@ -156,14 +146,68 @@ function extractCredFields(code: string): CredField[] {
 // Component
 // ---------------------------------------------------------------------------
 
+interface HttpProxyResult {
+  ok: boolean;
+  status: number;
+  statusText: string;
+  body: string;
+  durationMs?: number;
+}
+
+async function proxyHttpRequest(exec: {
+  method: string;
+  url: string;
+  headers: { name: string; value: string }[];
+  body?: string;
+}): Promise<HttpProxyResult> {
+  const res = await fetch("/api/run", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      method: exec.method,
+      url: exec.url,
+      headers: exec.headers,
+      body: exec.body,
+      demo: false,
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok || data.error) {
+    throw new Error(data.error || `Proxy error (HTTP ${res.status}).`);
+  }
+  return data as HttpProxyResult;
+}
+
+function formatMaybeJson(text: string): string {
+  const t = (text || "").trim();
+  if (!t) return "";
+  if (t.startsWith("{") || t.startsWith("[")) {
+    try {
+      return JSON.stringify(JSON.parse(t), null, 2);
+    } catch {
+      /* not json */
+    }
+  }
+  return text;
+}
+
 export function PyodideRunner({ code }: { code: string }) {
-  const { baseUrl, secretValues, getCredential, setCredential } = useRunSettings();
+  const {
+    baseUrl,
+    secretValues,
+    getCredential,
+    setCredential,
+    generateAuth,
+    accessId,
+    secretKey,
+  } = useRunSettings();
+  const playground = useRequestPlayground();
   const [phase, setPhase] = useState<"idle" | "loading-pyodide" | "running">("idle");
   const [logs, setLogs] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const pyRef = useRef<Pyodide | null>(null);
 
-  const credFields = extractCredFields(code);
+  const credFields = playground ? playground.credFields : extractCredFields(code);
 
   const buildCreds = () => {
     const c: Record<string, string> = {};
@@ -171,16 +215,49 @@ export function PyodideRunner({ code }: { code: string }) {
     return c;
   };
 
+  async function runViaPlayground() {
+    const validationError = playground!.validateForRun();
+    if (validationError) throw new Error(validationError);
+
+    const authErr = await ensureOpenApiAuth(
+      playground!.credFields,
+      getCredential,
+      generateAuth,
+      accessId,
+      secretKey
+    );
+    if (authErr) throw new Error(authErr);
+
+    const exec = buildPlaygroundExec(playground!, baseUrl, getCredential);
+    const data = await proxyHttpRequest(exec);
+    setLogs([String(data.status), formatMaybeJson(data.body)]);
+  }
+
   async function run() {
     setLogs([]);
     setError("");
     const collectedLogs: string[] = [];
 
     try {
+      if (playground) {
+        setPhase("running");
+        await runViaPlayground();
+        return;
+      }
+
       if (!pyRef.current) {
         setPhase("loading-pyodide");
         pyRef.current = await loadPyodide();
       }
+      const authErr = await ensureOpenApiAuth(
+        credFields,
+        getCredential,
+        generateAuth,
+        accessId,
+        secretKey
+      );
+      if (authErr) throw new Error(authErr);
+
       setPhase("running");
       const py = pyRef.current;
 
@@ -192,7 +269,7 @@ export function PyodideRunner({ code }: { code: string }) {
       setLogs(collectedLogs);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      setLogs(collectedLogs);
+      if (!playground) setLogs(collectedLogs);
       setError(msg);
     } finally {
       setPhase("idle");
@@ -203,7 +280,12 @@ export function PyodideRunner({ code }: { code: string }) {
 
   return (
     <div>
-      {credFields.length > 0 ? (
+      {playground ? (
+        <p className="mt-1 text-[11px] opacity-60">
+          Uses values from <strong>Request parameters</strong> above.
+        </p>
+      ) : null}
+      {!playground && credFields.length > 0 ? (
         <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
           <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
             <LockIcon />
@@ -240,9 +322,15 @@ export function PyodideRunner({ code }: { code: string }) {
             ? "Loading Python runtime…"
             : phase === "running"
               ? "Running…"
-              : "Run Python"}
+              : playground
+                ? "Run"
+                : "Run Python"}
         </button>
-        {phase === "loading-pyodide" ? (
+        {playground ? (
+          <span className="text-[11px] opacity-50">
+            Sends the resolved request via server proxy
+          </span>
+        ) : phase === "loading-pyodide" ? (
           <span className="text-[11px] opacity-50">
             First run downloads Pyodide (~10 s) then caches it.
           </span>

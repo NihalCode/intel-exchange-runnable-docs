@@ -1,7 +1,8 @@
 // Shared, dependency-free security helpers (safe for client + server).
 
 /** Header/param names that should be treated as sensitive. */
-const SENSITIVE_NAME = /(authorization|api[-_ ]?key|secret|token|signature|password|access[-_ ]?id|bearer|x-api-key|client[-_ ]?secret)/i;
+const SENSITIVE_NAME =
+  /(authorization|api[-_ ]?key|secret|token|signature|password|access[-_ ]?id|expires?|bearer|x-api-key|client[-_ ]?secret)/i;
 
 /** Placeholder patterns commonly used for credentials in docs snippets. */
 const PLACEHOLDER = /(<[^>]*>|\{\{[^}]*\}\}|YOUR_[A-Z_]+|enter (access id|secret key)|xxxx+|your-?(token|key|secret))/i;

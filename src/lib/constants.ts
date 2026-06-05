@@ -1,3 +1,14 @@
-/** Placeholder base URL used in displayed snippets; swapped for the user's
- *  configured base URL at run time. */
-export const DISPLAY_BASE = "https://tenantname.com/ctixapi";
+/** Official Cyware Intel Exchange API reference (Theneo docs SPA). */
+export const DOCS_REFERENCE_URL =
+  "https://ctixapiv3.cyware.com/intel-exchange-api-reference/intel-exchange-api-reference";
+
+export const DOCS_ORIGIN = "https://ctixapiv3.cyware.com";
+
+/** Default Cyware CTIX Open API tenant (cs-testv2). */
+export const DISPLAY_BASE = "https://cs-testv2.cyware.com/ctixapi";
+
+/** Global regex for replacing DISPLAY_BASE in generated snippet code. */
+export const DISPLAY_BASE_RE = new RegExp(
+  DISPLAY_BASE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+  "g"
+);

@@ -63,7 +63,7 @@ src/
     Sidebar.tsx                 Navigation tree with filter
   lib/
     auth-gen.ts                 HMAC-SHA1 signature generator (Web Crypto API)
-    constants.ts                DISPLAY_BASE placeholder URL
+    constants.ts                DISPLAY_BASE live tenant URL (https://cs-testv2.cyware.com/ctixapi)
     content.ts                  Server-side helpers to load JSON page data
     js-sandbox.ts               Sandboxed iframe for JavaScript execution + fetch relay
     parse-request.ts            Parser for raw curl / HTTP snippets in Markdown
@@ -210,13 +210,13 @@ Then commit the updated `src/content/pages/*.json` and `src/content/manifest.jso
 
 ---
 
-## Demo mode (no Cyware tenant)
+## Live tenant and optional demo mode
 
-This clone is meant to run snippets without a live tenant. By default `NEXT_PUBLIC_DEMO_MODE` is enabled (anything except `"false"`).
+**Default live tenant**: `DISPLAY_BASE` is `https://cs-testv2.cyware.com/ctixapi`. Snippets and the HTTP runner target this URL directly; requests go through `/api/run` to the real API. The [official API reference](https://ctixapiv3.cyware.com/intel-exchange-api-reference/intel-exchange-api-reference) is docs-only (`DOCS_REFERENCE_URL`).
 
-When demo mode is on and the request URL uses the placeholder host `tenantname.com` (from `DISPLAY_BASE` in snippets), `/api/run` returns simulated JSON via `src/lib/demo.ts` instead of performing DNS/fetch.
+**Credentials**: Users need Access ID, Secret Key, and a generated Signature + Expires (API Settings) for successful calls.
 
-To call a **real** Cyware tenant: set `NEXT_PUBLIC_DEMO_MODE=false` in Vercel env, deploy, then enter the tenant base URL and credentials in API Settings.
+**Optional demo** (offline / no tenant): set `NEXT_PUBLIC_DEMO_MODE=true` in env. Simulation runs only when the client sends `demo: true` to `/api/run` (not used by default UI). `buildDemoResponse` in `src/lib/demo.ts` returns generic JSON.
 
 ---
 
@@ -234,7 +234,7 @@ To call a **real** Cyware tenant: set `NEXT_PUBLIC_DEMO_MODE=false` in Vercel en
 
 | Pitfall | Solution |
 |---|---|
-| `Could not resolve host: tenantname.com` | Demo mode is off (`NEXT_PUBLIC_DEMO_MODE=false`) but base URL is still the placeholder. Default is demo on: `/api/run` simulates JSON for `tenantname.com` URLs. Set a real tenant URL only when calling a live API. |
+| `401` / `403` from live Run | Wrong tenant URL, invalid/expired credentials, or inactive Open API key. Confirm base URL matches your CTIX Integrators CSV and regenerate Signature & Expires. |
 | `SyntaxError: Unexpected end of JSON input` in JS runner | The API returned a non-JSON body. The generated JS snippets use `response.text()` + graceful JSON parse — never call `response.json()` directly. |
 | `npm ci` fails on Vercel with missing platform deps | Lock file was generated on a different OS. Remove the `installCommand` override in `vercel.json` (use Vercel's default install). |
 | `reactCompiler: true` slows builds | Keep it `false` in `next.config.ts`. The React Compiler adds Babel to every file. |

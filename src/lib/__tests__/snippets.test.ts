@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { DISPLAY_BASE } from "../constants";
 import { buildEndpointSnippets, buildRunnableRequest } from "../snippets";
 import type { EndpointPage } from "../types";
 
@@ -103,6 +104,13 @@ describe("buildEndpointSnippets", () => {
     expect(curl?.request).toBeDefined();
   });
 
+  it("cURL snippet uses DISPLAY_BASE (cs-testv2 tenant)", () => {
+    const snippets = buildEndpointSnippets(PING_PAGE);
+    const curl = snippets.find((s) => s.label === "cURL");
+    expect(curl?.code).toContain(`${DISPLAY_BASE}/ping/`);
+    expect(DISPLAY_BASE).toContain("cs-testv2.cyware.com");
+  });
+
   it("JavaScript snippet has runKind=javascript", () => {
     const snippets = buildEndpointSnippets(PING_PAGE);
     const js = snippets.find((s) => s.label === "JavaScript");
@@ -145,6 +153,72 @@ describe("buildEndpointSnippets", () => {
     const snippets = buildEndpointSnippets(PING_PAGE);
     const py = snippets.find((s) => s.label === "Python");
     expect(py?.code).toContain("/ping/");
+  });
+
+  it("substitutes path parameters in generated snippets", () => {
+    const page: EndpointPage = {
+      slug: "admin/custom/retrieve",
+      title: "Get Custom Attribute",
+      kind: "endpoint",
+      breadcrumb: ["Admin"],
+      description: "Retrieve one.",
+      method: "GET",
+      path: "ingestion/configuration/custom-attribute/{custom_attribute_id}/",
+      request: {
+        path: [
+          {
+            name: "custom_attribute_id",
+            value: "f8ac8849-097c-446f-abe6-449fa1d6b89c",
+            valueType: "string",
+            isRequired: true,
+          },
+        ],
+      },
+      responses: [],
+    };
+    const snippets = buildEndpointSnippets(page);
+    const curl = snippets.find((s) => s.label === "cURL");
+    expect(curl?.code).toContain("f8ac8849-097c-446f-abe6-449fa1d6b89c");
+    expect(curl?.code).not.toContain("{custom_attribute_id}");
+    expect(curl?.request?.pathParams?.[0]?.name).toBe("custom_attribute_id");
+  });
+
+  it("omits empty optional query params from generated snippets", () => {
+    const page: EndpointPage = {
+      slug: "feed/collection",
+      title: "Feed Sources",
+      kind: "endpoint",
+      breadcrumb: ["Feed"],
+      description: "List feed sources.",
+      method: "GET",
+      path: "/conversion/feed-sources/collection/",
+      request: {
+        query: [
+          { name: "source", value: "" },
+          { name: "category", value: "" },
+          { name: "page", value: "" },
+          { name: "page_size", value: "" },
+          { name: "sort", value: "" },
+        ],
+      },
+      responses: [],
+    };
+    const snippets = buildEndpointSnippets(page);
+    const curl = snippets.find((s) => s.label === "cURL");
+    const js = snippets.find((s) => s.label === "JavaScript");
+    const py = snippets.find((s) => s.label === "Python");
+
+    for (const code of [curl?.code, js?.code]) {
+      expect(code).not.toContain("source=");
+      expect(code).not.toContain("page=&");
+      expect(code).not.toContain("page_size=");
+      expect(code).not.toContain("sort=");
+    }
+    // Python params dict should not list the empty optional keys
+    expect(py?.code).not.toContain('"source"');
+    expect(py?.code).not.toContain('"page_size"');
+    // Auth params are still present
+    expect(curl?.code).toContain("AccessID");
   });
 });
 

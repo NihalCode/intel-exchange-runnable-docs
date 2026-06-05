@@ -29,18 +29,67 @@ export function credFieldsFromPairs(pairs: KeyValue[]): CredField[] {
   return out;
 }
 
+function resolveCredValue(name: string, getCred: GetCred): string {
+  const cred = getCred(name)?.trim();
+  if (cred && !looksLikePlaceholder(cred)) return cred;
+  return "";
+}
+
 function applyCreds(pairs: KeyValue[], getCred: GetCred): KeyValue[] {
   return pairs.map((p) =>
     needsCredential(p.name, p.value)
-      ? { name: p.name, value: getCred(p.name) || p.value }
+      ? { name: p.name, value: resolveCredValue(p.name, getCred) }
       : p
   );
+}
+
+/** Auth query params still using placeholders or missing values. */
+export function missingAuthCredentials(
+  pairs: KeyValue[],
+  getCred: GetCred
+): string[] {
+  const missing: string[] = [];
+  for (const p of pairs) {
+    if (!needsCredential(p.name, p.value)) continue;
+    if (!resolveCredValue(p.name, getCred)) missing.push(p.name);
+  }
+  return missing;
 }
 
 function joinBase(base: string, path: string): string {
   const b = (base || "").replace(/\/+$/, "");
   const p = path.startsWith("/") ? path : `/${path}`;
   return `${b}${p}`;
+}
+
+/** Replace `{param}` segments in a path template. */
+export function applyPathParams(
+  template: string,
+  params: KeyValue[] | undefined,
+  overrides?: Record<string, string>
+): string {
+  let out = template;
+  for (const p of params ?? []) {
+    const value =
+      overrides && Object.prototype.hasOwnProperty.call(overrides, p.name)
+        ? overrides[p.name]
+        : p.value ?? "";
+    if ((value ?? "").trim() === "") continue;
+    out = out.replaceAll(`{${p.name}}`, encodeURIComponent(value.trim()));
+  }
+  if (overrides) {
+    for (const [name, value] of Object.entries(overrides)) {
+      if ((value ?? "").trim() === "") continue;
+      if (params?.some((p) => p.name === name)) continue;
+      out = out.replaceAll(`{${name}}`, encodeURIComponent(value.trim()));
+    }
+  }
+  return out;
+}
+
+/** `{param}` segments still present after substitution. */
+export function unresolvedPathParams(path: string): string[] {
+  return [...path.matchAll(/\{([^}]+)\}/g)].map((m) => m[1]);
 }
 
 function queryString(pairs: KeyValue[]): string {
@@ -76,7 +125,9 @@ export function resolveStructured(
   getCred: GetCred,
   bodyOverride?: string,
   /** User-edited values for non-credential query params. Key = param name (exact case). */
-  queryOverrides?: Record<string, string>
+  queryOverrides?: Record<string, string>,
+  /** User-edited values for `{name}` path segments. */
+  pathOverrides?: Record<string, string>
 ): ExecRequest {
   // Apply user overrides before credential substitution so cred values win.
   const mergedQuery = (req.query || []).map((p) =>
@@ -84,9 +135,15 @@ export function resolveStructured(
       ? { name: p.name, value: queryOverrides[p.name] }
       : p
   );
-  const query = applyCreds(mergedQuery, getCred);
-  const headers = applyCreds(req.headers || [], getCred);
-  const url = joinBase(baseUrl, req.path) + queryString(query);
+  // Drop empty/optional query params: sending `page=` makes CTIX do int('') → 400.
+  const query = applyCreds(mergedQuery, getCred).filter(
+    (p) => (p.value ?? "").trim() !== ""
+  );
+  const headers = applyCreds(req.headers || [], getCred).filter(
+    (h) => (h.value ?? "").trim() !== ""
+  );
+  const resolvedPath = applyPathParams(req.path, req.pathParams, pathOverrides);
+  const url = joinBase(baseUrl, resolvedPath) + queryString(query);
   return {
     method: req.method,
     url,
@@ -115,6 +172,8 @@ export function resolveExec(
     for (const key of [...u.searchParams.keys()]) u.searchParams.delete(key);
     for (const [name, value] of entries) {
       const nv = needsCredential(name, value) ? getCred(name) || value : value;
+      // Drop empty params so the server doesn't parse "" as an int.
+      if ((nv ?? "").trim() === "") continue;
       u.searchParams.append(name, nv);
     }
     url = u.toString();

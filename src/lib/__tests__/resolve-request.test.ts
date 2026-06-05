@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
+  applyPathParams,
   credFieldsForRequest,
   needsCredential,
   resolveStructured,
   resolveExec,
   previewRequest,
+  unresolvedPathParams,
 } from "../resolve-request";
 import type { RunnableRequest } from "../types";
 import { DISPLAY_BASE } from "../constants";
@@ -73,6 +75,27 @@ describe("credFieldsForRequest", () => {
   });
 });
 
+describe("applyPathParams", () => {
+  it("substitutes {name} segments with example values", () => {
+    const out = applyPathParams(
+      "/ingestion/configuration/custom-attribute/{custom_attribute_id}/",
+      [{ name: "custom_attribute_id", value: "abc-123" }]
+    );
+    expect(out).toBe("/ingestion/configuration/custom-attribute/abc-123/");
+    expect(unresolvedPathParams(out)).toHaveLength(0);
+  });
+
+  it("prefers user overrides over defaults", () => {
+    const out = applyPathParams(
+      "/rules/{rule_id}/",
+      [{ name: "rule_id", value: "old-id" }],
+      { rule_id: "new-id" }
+    );
+    expect(out).toContain("new-id");
+    expect(out).not.toContain("old-id");
+  });
+});
+
 describe("resolveStructured — URL construction", () => {
   const getCred = (name: string) => {
     const map: Record<string, string> = {
@@ -82,6 +105,23 @@ describe("resolveStructured — URL construction", () => {
     };
     return map[name.toLowerCase()] ?? "";
   };
+
+  it("substitutes path parameters into the URL", () => {
+    const req: RunnableRequest = {
+      method: "GET",
+      path: "/ingestion/configuration/custom-attribute/{custom_attribute_id}/",
+      pathParams: [{ name: "custom_attribute_id", value: "f8ac8849-097c-446f-abe6-449fa1d6b89c" }],
+      query: [
+        { name: "AccessID", value: "<your access id>" },
+        { name: "Signature", value: "<generated signature>" },
+        { name: "Expires", value: "<unix expiry>" },
+      ],
+      headers: [],
+    };
+    const exec = resolveStructured(req, "https://tenant.com/ctixapi", getCred);
+    expect(exec.url).toContain("/custom-attribute/f8ac8849-097c-446f-abe6-449fa1d6b89c/");
+    expect(exec.url).not.toContain("{custom_attribute_id}");
+  });
 
   it("joins base URL and path correctly", () => {
     const exec = resolveStructured(SAMPLE_REQUEST, "https://tenant.com/ctixapi", getCred);
@@ -105,6 +145,53 @@ describe("resolveStructured — URL construction", () => {
     const exec = resolveStructured(SAMPLE_REQUEST, "https://tenant.com/ctixapi", getCred);
     expect(exec.url).not.toContain("<your access id>");
     expect(exec.url).not.toContain("<generated signature>");
+  });
+
+  it("drops empty optional query params (avoids int('') 400)", () => {
+    const reqWithEmpty: RunnableRequest = {
+      method: "GET",
+      path: "/conversion/feed-sources/collection/",
+      query: [
+        { name: "source", value: "" },
+        { name: "category", value: "" },
+        { name: "page", value: "" },
+        { name: "page_size", value: "" },
+        { name: "sort", value: "" },
+        { name: "AccessID", value: "<your access id>" },
+        { name: "Signature", value: "<generated signature>" },
+        { name: "Expires", value: "<unix expiry>" },
+      ],
+      headers: [],
+    };
+    const exec = resolveStructured(reqWithEmpty, "https://tenant.com/ctixapi", getCred);
+    expect(exec.url).not.toContain("source=");
+    expect(exec.url).not.toContain("page=");
+    expect(exec.url).not.toContain("page_size=");
+    expect(exec.url).not.toContain("sort=");
+    expect(exec.url).toContain("AccessID=MYACCESSID");
+    expect(exec.url).toContain("Expires=9999");
+  });
+
+  it("keeps optional params when a value is supplied via overrides", () => {
+    const reqWithEmpty: RunnableRequest = {
+      method: "GET",
+      path: "/conversion/feed-sources/collection/",
+      query: [
+        { name: "page", value: "" },
+        { name: "AccessID", value: "<your access id>" },
+        { name: "Signature", value: "<generated signature>" },
+        { name: "Expires", value: "<unix expiry>" },
+      ],
+      headers: [],
+    };
+    const exec = resolveStructured(
+      reqWithEmpty,
+      "https://tenant.com/ctixapi",
+      getCred,
+      undefined,
+      { page: "3" }
+    );
+    expect(exec.url).toContain("page=3");
   });
 
   it("applies query overrides for non-credential params", () => {
@@ -158,7 +245,7 @@ describe("resolveExec — URL substitution", () => {
       getCred
     );
     expect(exec.url).toContain("https://tenant.com/ctixapi");
-    expect(exec.url).not.toContain("tenantname.com");
+    expect(exec.url).not.toContain(new URL(DISPLAY_BASE).hostname);
   });
 });
 
