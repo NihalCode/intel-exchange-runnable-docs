@@ -23,6 +23,37 @@ const WORKFLOW_PATTERNS: { keywords: string[]; slugs: string[]; intro: string }[
   },
 ];
 
+const APP_PATTERNS: {
+  keywords: string[];
+  slugs: string[];
+  intro: string;
+  title: string;
+}[] = [
+  {
+    keywords: ["phishing", "email", "ioc", "indicator", "analyze", "extract", "tag", "tlp"],
+    slugs: [
+      "quick-add-intel/create-parse-iocs-task",
+      "quick-add-intel/retrieve-parsed-iocs",
+      "threat-data/list-threat-data",
+      "tags/list-tags",
+      "quick-add-intel/quick-add-intel",
+    ],
+    intro:
+      "Parse IOCs from email text, look them up in threat data, manage tags, and create intel via Quick Add.",
+    title: "Phishing Email Analyzer",
+  },
+  {
+    keywords: ["import", "stix", "upload", "bundle"],
+    slugs: [
+      "import-intel/source-collections",
+      "import-intel/import-intel",
+      "threat-data/list-threat-data",
+    ],
+    intro: "Import STIX bundles and verify indicators in threat data.",
+    title: "STIX Import Portal",
+  },
+];
+
 function citationFromChunk(chunk: ScoredChunk): AgentCitation {
   return {
     slug: chunk.slug,
@@ -47,6 +78,54 @@ function matchWorkflowPattern(query: string): typeof WORKFLOW_PATTERNS[0] | null
     }
   }
   return bestHits >= 2 ? best : null;
+}
+
+function matchAppPattern(query: string): (typeof APP_PATTERNS)[0] | null {
+  const q = query.toLowerCase();
+  let best: (typeof APP_PATTERNS)[0] | null = null;
+  let bestHits = 0;
+  for (const pattern of APP_PATTERNS) {
+    const hits = pattern.keywords.filter((k) => q.includes(k)).length;
+    if (hits > bestHits) {
+      bestHits = hits;
+      best = pattern;
+    }
+  }
+  return bestHits >= 2 ? best : null;
+}
+
+export function planAppFromRetrieval(
+  query: string,
+  chunks: ScoredChunk[],
+  confidence: number
+): AgentPlan & { appTitle?: string } {
+  const pattern = matchAppPattern(query);
+  if (pattern) {
+    const steps = stepsFromSlugs(pattern.slugs, chunks, pattern.intro);
+    return {
+      workflow:
+        `App blueprint: **${pattern.title}**\n\n${pattern.intro}\n\n` +
+        `Run the workflow steps below to validate each API call, then use the generated app scaffold. ` +
+        `Credentials stay in server env vars — never in the frontend.`,
+      confidence: Math.max(confidence, 0.75),
+      steps,
+      citations: steps.map((s) => {
+        const chunk = chunks.find((c) => c.slug === s.slug);
+        return chunk
+          ? citationFromChunk(chunk)
+          : { slug: s.slug, title: s.slug, url: `/docs/${s.slug}` };
+      }),
+      appTitle: pattern.title,
+    };
+  }
+  const base = planFromRetrieval(query, chunks, confidence);
+  return {
+    ...base,
+    workflow:
+      `App scaffold based on documented endpoints:\n\n${base.workflow}\n\n` +
+      `Customize parameters in each step, then download the generated Next.js files.`,
+    appTitle: undefined,
+  };
 }
 
 function stepsFromSlugs(

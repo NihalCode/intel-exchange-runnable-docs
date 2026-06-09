@@ -2,16 +2,19 @@ import "server-only";
 
 import { getManifest, getPage } from "../content";
 import { DISPLAY_BASE } from "../constants";
+import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
 import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
-import { planFromRetrieval } from "./planner";
+import { detectAgentMode } from "./mode";
+import { planAppFromRetrieval, planFromRetrieval } from "./planner";
 import {
   confidenceFromScores,
   isLowConfidence,
   retrieveLexical,
   retrieveWithEmbedding,
 } from "./retrieve";
+import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
   AgentRequest,
   AgentResponse,
@@ -26,10 +29,35 @@ function endpointSlugSet(): Set<string> {
   );
 }
 
+async function buildStepResults(
+  validated: ReturnType<typeof validatePlan>["steps"],
+  pages: Map<string, EndpointPage>,
+  language: AgentRequest["language"],
+  baseUrl: string
+): Promise<AgentStepResult[]> {
+  const stepResults: AgentStepResult[] = [];
+  for (const step of validated) {
+    const page = pages.get(step.slug);
+    if (!page) continue;
+    const { code, request } = generateStepCode(page, step.params, language ?? "python", baseUrl);
+    stepResults.push({
+      ...step,
+      code,
+      request,
+      meta: buildStepPlaygroundMeta(page),
+      spec: buildStepSpec(page, request, baseUrl),
+    });
+  }
+  return stepResults;
+}
+
 export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const query = req.query?.trim();
+  const mode = detectAgentMode(query ?? "", req.mode);
+
   if (!query) {
     return {
+      mode,
       workflow: "Please describe what you want to do with the Intel Exchange API.",
       confidence: 0,
       fallback: true,
@@ -43,12 +71,12 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const language = req.language ?? "python";
   const baseUrl = getManifest().defaultBaseUrl || DISPLAY_BASE;
 
-  let scored = retrieveLexical(query, index, 14);
+  let scored = retrieveLexical(query, index, mode === "app" ? 20 : 14);
 
   if (apiKey && index.hasEmbeddings) {
     try {
       const embedding = await embedQuery(query, apiKey);
-      scored = retrieveWithEmbedding(query, index, embedding, 14);
+      scored = retrieveWithEmbedding(query, index, embedding, mode === "app" ? 20 : 14);
     } catch {
       /* lexical only */
     }
@@ -57,8 +85,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const confidence = confidenceFromScores(scored);
   const lowConfidence = isLowConfidence(scored);
 
-  let plan;
-  if (apiKey && !lowConfidence) {
+  let plan: ReturnType<typeof planFromRetrieval> & { appTitle?: string };
+  if (mode === "app") {
+    plan = planAppFromRetrieval(query, scored, confidence);
+  } else if (apiKey && !lowConfidence) {
     try {
       plan = await planWithLlm(query, scored, apiKey, req.history);
     } catch {
@@ -80,18 +110,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   const { steps: validated, dropped } = validatePlan(plan, pages, endpointSlugs);
-
-  const stepResults: AgentStepResult[] = [];
-  for (const step of validated) {
-    const page = pages.get(step.slug);
-    if (!page) continue;
-    const { code, request } = generateStepCode(page, step.params, language, baseUrl);
-    stepResults.push({
-      ...step,
-      code,
-      request,
-    });
-  }
+  const stepResults = await buildStepResults(validated, pages, language, baseUrl);
 
   const fallback =
     lowConfidence ||
@@ -100,7 +119,8 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const titleBySlug = new Map(getManifest().pages.map((p) => [p.slug, p.title]));
 
-  return {
+  const response: AgentResponse = {
+    mode,
     workflow: plan.workflow,
     confidence: plan.confidence ?? confidence,
     fallback,
@@ -116,4 +136,16 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       score: Number(c.score.toFixed(3)),
     })),
   };
+
+  if (mode === "app" && stepResults.length > 0) {
+    const title = plan.appTitle ?? appTitleFromQuery(query);
+    response.app = generateAppBlueprint(
+      query,
+      title,
+      plan.workflow,
+      stepResults
+    );
+  }
+
+  return response;
 }

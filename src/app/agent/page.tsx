@@ -12,9 +12,10 @@ export default function AgentPage() {
     <div className="mx-auto max-w-3xl">
       <h1 className="mb-1 text-2xl font-bold tracking-tight">Documentation Agent</h1>
       <p className="mb-6 text-sm text-zinc-600 dark:text-zinc-400">
-        Describe what you want to do with the Intel Exchange API. The agent searches the
-        official docs mirror, plans a workflow from real endpoints only, and generates runnable
-        code you can execute with your tenant credentials.
+        Describe a Cyware CTIX task or full app in plain English. The agent maps your request to
+        documented endpoints, lets you edit path/query/body parameters like the docs playground,
+        run each step in sequence, and (in Build app mode) generates a Next.js scaffold with secure
+        backend routes — credentials stay in environment variables, never in frontend code.
       </p>
       <AgentChat />
     </div>
