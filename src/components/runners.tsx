@@ -9,6 +9,7 @@ import {
 } from "@/lib/credential-placeholders";
 import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
 import { isPlaceholderBase } from "@/lib/demo";
+import { proxyHttpRequest } from "@/lib/http-run";
 import { runJsInSandbox } from "@/lib/js-sandbox";
 import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
 import {
@@ -284,25 +285,6 @@ function formatMaybeJson(text: string): string {
   return text;
 }
 
-async function proxyHttpRequest(exec: ExecRequest): Promise<HttpResult> {
-  const res = await fetch("/api/run", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      method: exec.method,
-      url: exec.url,
-      headers: exec.headers,
-      body: exec.body,
-      demo: false,
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok || data.error) {
-    throw new Error(data.error || `Proxy error (HTTP ${res.status}).`);
-  }
-  return data as HttpResult;
-}
-
 function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
   const settings = useRunSettings();
   const { baseUrl, secretValues, ensureFreshAuth } = settings;
@@ -376,7 +358,7 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
     setQueryValues((prev) => ({ ...prev, [name]: value }));
   }
 
-  const buildExec = (): ExecRequest =>
+  const buildExec = async (): Promise<ExecRequest> =>
     usingPlayground
       ? buildPlaygroundExec(playground!, baseUrl, settings.getCredential)
       : request
@@ -419,9 +401,9 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
       return;
     }
 
-    const exec = buildExec();
+    const exec = await buildExec();
     const previewText = usingPlayground
-      ? previewPlaygroundRequest(playground!, baseUrl, settings.getCredential)
+      ? await previewPlaygroundRequest(playground!, baseUrl, settings.getCredential)
       : previewRequest(exec);
     setPreview(maskText(previewText, secretValues));
     setPhase("loading");
@@ -657,7 +639,7 @@ function JsRunner({ code }: { code: string }) {
     if (authErr) throw new Error(authErr);
 
     const exec = buildPlaygroundExec(playground!, baseUrl, getCredential);
-    const data = await proxyHttpRequest(exec);
+    const data = await proxyHttpRequest(await exec);
     setHttpResult(data);
     setLogs([`${data.status} ${data.statusText}`]);
     setResult(formatMaybeJson(data.body));

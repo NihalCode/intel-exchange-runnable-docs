@@ -2,6 +2,7 @@ import { DISPLAY_BASE } from "./constants";
 import type { ExecRequest } from "./parse-request";
 import { isSensitiveName, looksLikePlaceholder } from "./security";
 import type { KeyValue, RunnableRequest } from "./types";
+import type { MultipartPart } from "./multipart";
 
 export interface CredField {
   name: string;
@@ -127,7 +128,8 @@ export function resolveStructured(
   /** User-edited values for non-credential query params. Key = param name (exact case). */
   queryOverrides?: Record<string, string>,
   /** User-edited values for `{name}` path segments. */
-  pathOverrides?: Record<string, string>
+  pathOverrides?: Record<string, string>,
+  multipartParts?: MultipartPart[]
 ): ExecRequest {
   // Apply user overrides before credential substitution so cred values win.
   const mergedQuery = (req.query || []).map((p) =>
@@ -144,6 +146,16 @@ export function resolveStructured(
   );
   const resolvedPath = applyPathParams(req.path, req.pathParams, pathOverrides);
   const url = joinBase(baseUrl, resolvedPath) + queryString(query);
+
+  if (multipartParts && multipartParts.length > 0) {
+    return {
+      method: req.method,
+      url,
+      headers: headers.filter((h) => h.name.toLowerCase() !== "content-type"),
+      multipartParts,
+    };
+  }
+
   return {
     method: req.method,
     url,
@@ -192,6 +204,18 @@ export function resolveExec(
 export function previewRequest(exec: ExecRequest): string {
   const lines = [`${exec.method} ${exec.url}`];
   for (const h of exec.headers) lines.push(`${h.name}: ${h.value}`);
+  if (exec.multipartParts?.length) {
+    lines.push("Content-Type: multipart/form-data");
+    lines.push("");
+    for (const p of exec.multipartParts) {
+      if (p.kind === "file") {
+        lines.push(`${p.name}: (file) ${p.filename ?? "upload"}`);
+      } else {
+        lines.push(`${p.name}: ${p.value ?? ""}`);
+      }
+    }
+    return lines.join("\n");
+  }
   if (exec.body) {
     lines.push("");
     lines.push(exec.body);

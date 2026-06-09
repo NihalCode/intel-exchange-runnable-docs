@@ -87,6 +87,14 @@ export interface KeyValue {
   value: string;
 }
 
+export interface FormBodyField {
+  name: string;
+  kind: "file" | "text";
+  description?: string;
+  isRequired?: boolean;
+  defaultValue?: string;
+}
+
 /** A structured request that the HTTP runner can execute against a base URL. */
 export interface RunnableRequest {
   method: HttpMethod;
@@ -99,6 +107,9 @@ export interface RunnableRequest {
   /** JSON (or raw) request body as a string, if any */
   body?: string;
   contentType?: string;
+  /** Multipart form fields (file upload endpoints). */
+  multipart?: boolean;
+  formFields?: FormBodyField[];
 }
 
 /** A single rendered code block on a page. */

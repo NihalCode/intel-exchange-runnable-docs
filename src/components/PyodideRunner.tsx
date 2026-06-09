@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
 import { ensureOpenApiAuth, substituteSnippetPlaceholders } from "@/lib/credential-placeholders";
+import { proxyHttpRequest } from "@/lib/http-run";
 import { isSensitiveName, maskText } from "@/lib/security";
 import type { CredField } from "@/lib/resolve-request";
 import { buildPlaygroundExec, useRequestPlayground } from "./RequestPlayground";
@@ -146,38 +147,6 @@ function extractCredFields(code: string): CredField[] {
 // Component
 // ---------------------------------------------------------------------------
 
-interface HttpProxyResult {
-  ok: boolean;
-  status: number;
-  statusText: string;
-  body: string;
-  durationMs?: number;
-}
-
-async function proxyHttpRequest(exec: {
-  method: string;
-  url: string;
-  headers: { name: string; value: string }[];
-  body?: string;
-}): Promise<HttpProxyResult> {
-  const res = await fetch("/api/run", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      method: exec.method,
-      url: exec.url,
-      headers: exec.headers,
-      body: exec.body,
-      demo: false,
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok || data.error) {
-    throw new Error(data.error || `Proxy error (HTTP ${res.status}).`);
-  }
-  return data as HttpProxyResult;
-}
-
 function formatMaybeJson(text: string): string {
   const t = (text || "").trim();
   if (!t) return "";
@@ -223,7 +192,7 @@ export function PyodideRunner({ code }: { code: string }) {
     );
     if (authErr) throw new Error(authErr);
 
-    const exec = buildPlaygroundExec(playground!, baseUrl, getCredential);
+    const exec = await buildPlaygroundExec(playground!, baseUrl, getCredential);
     const data = await proxyHttpRequest(exec);
     setLogs([String(data.status), formatMaybeJson(data.body)]);
   }

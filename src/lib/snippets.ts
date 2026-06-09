@@ -1,5 +1,9 @@
 import { DISPLAY_BASE } from "./constants";
 import { applyPathParams } from "./resolve-request";
+import {
+  endpointUsesMultipart,
+  formFieldsFromBody,
+} from "./multipart";
 import type {
   CodeSnippet,
   EndpointPage,
@@ -97,15 +101,30 @@ function fieldsToKeyValues(fields: ParamField[] | undefined): KeyValue[] {
 export function buildRunnableRequest(page: EndpointPage): RunnableRequest {
   const query = [...fieldsToKeyValues(page.request?.query), ...AUTH_QUERY];
   const headers = fieldsToKeyValues(page.request?.header);
-  const contentType = page.contentType || "application/json";
+  const contentType = page.request?.contentType || page.contentType || "application/json";
+  const multipart = endpointUsesMultipart(page);
+  const pathParams = fieldsToKeyValues(page.request?.path);
+
+  if (multipart) {
+    const formFields = formFieldsFromBody(page.request?.body);
+    return {
+      method: page.method,
+      path: normalizePath(page.path),
+      pathParams: pathParams.length > 0 ? pathParams : undefined,
+      query,
+      headers: headers.filter((h) => h.name.toLowerCase() !== "content-type"),
+      contentType,
+      multipart: true,
+      formFields,
+    };
+  }
+
   const bodyObj = buildBody(page.request?.body);
   const hasBody = bodyObj !== undefined && page.method !== "GET";
 
   if (hasBody && !headers.some((h) => h.name.toLowerCase() === "content-type")) {
     headers.unshift({ name: "Content-Type", value: contentType });
   }
-
-  const pathParams = fieldsToKeyValues(page.request?.path);
 
   return {
     method: page.method,
@@ -126,10 +145,22 @@ function curlSnippet(req: RunnableRequest): string {
   const url = `${DISPLAY_BASE}${resolvedPath(req)}${queryString(req.query)}`;
   const lines = [`curl --request ${req.method} \\`, `  --url "${url}"`];
   for (const h of req.headers) {
+    if (h.name.toLowerCase() === "content-type") continue;
     lines[lines.length - 1] += " \\";
     lines.push(`  --header "${h.name}: ${h.value}"`);
   }
-  if (req.body) {
+  if (req.multipart && req.formFields?.length) {
+    for (const f of req.formFields) {
+      lines[lines.length - 1] += " \\";
+      if (f.kind === "file") {
+        lines.push(`  --form '${f.name}=@/path/to/your/file'`);
+      } else if ((f.defaultValue ?? "").trim()) {
+        lines.push(`  --form '${f.name}=${f.defaultValue}'`);
+      } else {
+        lines.push(`  --form '${f.name}='`);
+      }
+    }
+  } else if (req.body) {
     lines[lines.length - 1] += " \\";
     lines.push(`  --data '${req.body}'`);
   }
@@ -139,7 +170,35 @@ function curlSnippet(req: RunnableRequest): string {
 function jsSnippet(req: RunnableRequest): string {
   const url = `${DISPLAY_BASE}${resolvedPath(req)}${queryString(req.query)}`;
   const headerObj: Record<string, string> = {};
-  for (const h of req.headers) headerObj[h.name] = h.value;
+  for (const h of req.headers) {
+    if (h.name.toLowerCase() === "content-type") continue;
+    headerObj[h.name] = h.value;
+  }
+  if (req.multipart && req.formFields?.length) {
+    const formLines = req.formFields.map((f) => {
+      if (f.kind === "file") {
+        return `formData.append("${f.name}", fileInput.files[0]); // select <input type="file" id="fileInput">`;
+      }
+      const val = f.defaultValue ?? "";
+      return `formData.append("${f.name}", ${JSON.stringify(val)});`;
+    });
+    return [
+      `const url = "${url}";`,
+      `const formData = new FormData();`,
+      ...formLines,
+      ``,
+      `const response = await fetch(url, {`,
+      `  method: "${req.method}",`,
+      Object.keys(headerObj).length ? `  headers: ${JSON.stringify(headerObj, null, 2).replace(/\n/g, "\n  ")},` : "",
+      `  body: formData,`,
+      `});`,
+      ``,
+      `const text = await response.text();`,
+      `console.log(response.status, text);`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+  }
   const init: string[] = [`  method: "${req.method}",`];
   if (req.headers.length > 0) {
     init.push(`  headers: ${JSON.stringify(headerObj, null, 2).replace(/\n/g, "\n  ")},`);
@@ -163,7 +222,10 @@ function jsSnippet(req: RunnableRequest): string {
 
 function pySnippet(req: RunnableRequest): string {
   const headerObj: Record<string, string> = {};
-  for (const h of req.headers) headerObj[h.name] = h.value;
+  for (const h of req.headers) {
+    if (h.name.toLowerCase() === "content-type") continue;
+    headerObj[h.name] = h.value;
+  }
   const params: Record<string, string> = {};
   for (const q of withValues(req.query)) params[q.name] = q.value;
   const lines = [
@@ -173,7 +235,20 @@ function pySnippet(req: RunnableRequest): string {
     `params = ${pyDict(params)}`,
     `headers = ${pyDict(headerObj)}`,
   ];
-  if (req.body) {
+  if (req.multipart && req.formFields?.length) {
+    lines.push(`files = {}`);
+    lines.push(`data = {}`);
+    for (const f of req.formFields) {
+      if (f.kind === "file") {
+        lines.push(`files["${f.name}"] = open("/path/to/your/file", "rb")`);
+      } else if ((f.defaultValue ?? "").trim()) {
+        lines.push(`data["${f.name}"] = ${JSON.stringify(f.defaultValue)}`);
+      }
+    }
+    lines.push(
+      `response = requests.request("${req.method}", url, params=params, headers=headers, files=files, data=data)`
+    );
+  } else if (req.body) {
     lines.push(`payload = ${req.body}`);
     lines.push(
       `response = requests.request("${req.method}", url, params=params, headers=headers, json=payload)`
@@ -233,12 +308,27 @@ export function buildEndpointSnippets(page: EndpointPage): CodeSnippet[] {
     runKind: "python",
   });
 
-  if (req.body) {
+  if (req.body && !req.multipart) {
     snippets.push({
       lang: "json",
       label: "Request Body",
       code: req.body,
       runKind: "json",
+    });
+  }
+
+  if (req.multipart && req.formFields?.length) {
+    snippets.push({
+      lang: "text",
+      label: "Form Fields",
+      code: req.formFields
+        .map((f) =>
+          f.kind === "file"
+            ? `${f.name}: (file upload)`
+            : `${f.name}: ${f.defaultValue || "(text)"}`
+        )
+        .join("\n"),
+      runKind: "none",
     });
   }
 

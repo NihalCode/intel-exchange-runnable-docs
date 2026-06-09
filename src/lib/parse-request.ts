@@ -2,12 +2,14 @@
 // Pure functions — safe on client and server.
 
 import type { KeyValue } from "./types";
+import type { MultipartPart } from "./multipart";
 
 export interface ExecRequest {
   method: string;
   url: string;
   headers: KeyValue[];
   body?: string;
+  multipartParts?: MultipartPart[];
 }
 
 export type RunKind = "http" | "json" | "javascript" | "python" | "none";

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import dns from "node:dns/promises";
 import net from "node:net";
 import { buildDemoResponse, shouldSimulateRequest } from "@/lib/demo";
+import type { MultipartPart } from "@/lib/multipart";
+import { MAX_UPLOAD_BYTES } from "@/lib/multipart";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +16,7 @@ interface RunBody {
   url?: string;
   headers?: { name: string; value: string }[];
   body?: string;
+  multipartParts?: MultipartPart[];
   /** When true, return a simulated JSON response (docs clone / no tenant). */
   demo?: boolean;
 }
@@ -118,27 +121,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const headers = new Headers();
-  for (const h of payload.headers || []) {
-    if (!h?.name) continue;
-    // Strip hop-by-hop / forbidden headers the proxy shouldn't forward.
-    if (/^(host|content-length|connection)$/i.test(h.name)) continue;
-    try {
-      headers.set(h.name, h.value ?? "");
-    } catch {
-      /* ignore invalid header names */
-    }
-  }
-
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   const started = Date.now();
 
   try {
+    const outboundBody = await buildOutboundBody(method, payload);
     const res = await fetch(target.toString(), {
       method,
-      headers,
-      body: method === "GET" || method === "HEAD" ? undefined : payload.body,
+      headers: outboundBody.headers,
+      body: outboundBody.body,
       redirect: "follow",
       signal: controller.signal,
     });
@@ -201,4 +193,47 @@ function concat(chunks: Uint8Array[]): Uint8Array {
     off += c.byteLength;
   }
   return out;
+}
+
+async function buildOutboundBody(
+  method: string,
+  payload: RunBody
+): Promise<{ headers: Headers; body: BodyInit | undefined }> {
+  const headers = new Headers();
+  for (const h of payload.headers || []) {
+    if (!h?.name) continue;
+    if (/^(host|content-length|connection)$/i.test(h.name)) continue;
+    if (payload.multipartParts?.length && h.name.toLowerCase() === "content-type") continue;
+    try {
+      headers.set(h.name, h.value ?? "");
+    } catch {
+      /* ignore invalid header names */
+    }
+  }
+
+  if (method === "GET" || method === "HEAD") {
+    return { headers, body: undefined };
+  }
+
+  if (payload.multipartParts?.length) {
+    const form = new FormData();
+    let totalBytes = 0;
+    for (const part of payload.multipartParts) {
+      if (part.kind === "file") {
+        if (!part.dataBase64) continue;
+        const buf = Buffer.from(part.dataBase64, "base64");
+        totalBytes += buf.byteLength;
+        if (totalBytes > MAX_UPLOAD_BYTES) {
+          throw new Error(`Upload exceeds ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB limit.`);
+        }
+        const blob = new Blob([buf], { type: part.contentType || "application/octet-stream" });
+        form.append(part.name, blob, part.filename || "upload");
+      } else if (part.value !== undefined) {
+        form.append(part.name, part.value);
+      }
+    }
+    return { headers, body: form };
+  }
+
+  return { headers, body: payload.body };
 }

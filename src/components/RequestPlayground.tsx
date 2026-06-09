@@ -21,6 +21,12 @@ import {
   type CredField,
 } from "@/lib/resolve-request";
 import type { KeyValue, ParamField, RunnableRequest } from "@/lib/types";
+import {
+  attachFileData,
+  buildMultipartParts,
+  initialFormTextValues,
+  validateMultipartForRun,
+} from "@/lib/multipart";
 import { AutoAuthNotice, useRunSettings } from "./RunSettings";
 
 /* ----------------------------- context ---------------------------------- */
@@ -40,12 +46,18 @@ export interface RequestPlaygroundState {
   pathParams: KeyValue[];
   editableParams: KeyValue[];
   showBody: boolean;
+  showMultipart: boolean;
+  formFields: NonNullable<RunnableRequest["formFields"]>;
+  formTextValues: Record<string, string>;
+  formFiles: Record<string, File | null>;
   credFields: CredField[];
   requiredPath: Set<string>;
   requiredQuery: Set<string>;
   setPathValue: (name: string, value: string) => void;
   setQueryValue: (name: string, value: string) => void;
   setBodyText: (text: string) => void;
+  setFormText: (name: string, value: string) => void;
+  setFormFile: (name: string, file: File | null) => void;
   validateForRun: () => string | null;
 }
 
@@ -96,7 +108,10 @@ export function RequestPlaygroundProvider({
   const requiredQuery = useMemo(() => requiredNames(meta?.queryFields), [meta?.queryFields]);
 
   const method = request.method.toUpperCase();
+  const showMultipart = !!request.multipart && (request.formFields?.length ?? 0) > 0;
+  const formFields = request.formFields ?? [];
   const showBody =
+    !showMultipart &&
     method !== "GET" &&
     method !== "HEAD" &&
     (request.body !== undefined || (meta?.bodyFields?.length ?? 0) > 0);
@@ -110,6 +125,12 @@ export function RequestPlaygroundProvider({
   const [bodyText, setBodyTextState] = useState(request.body ?? "");
   const [jsonError, setJsonError] = useState<string | null>(() =>
     validateJson(request.body ?? "")
+  );
+  const [formTextValues, setFormTextValues] = useState<Record<string, string>>(() =>
+    initialFormTextValues(formFields)
+  );
+  const [formFiles, setFormFiles] = useState<Record<string, File | null>>(() =>
+    Object.fromEntries(formFields.filter((f) => f.kind === "file").map((f) => [f.name, null]))
   );
 
   const setPathValue = useCallback((name: string, value: string) => {
@@ -125,6 +146,14 @@ export function RequestPlaygroundProvider({
     setJsonError(validateJson(text));
   }, []);
 
+  const setFormText = useCallback((name: string, value: string) => {
+    setFormTextValues((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const setFormFile = useCallback((name: string, file: File | null) => {
+    setFormFiles((prev) => ({ ...prev, [name]: file }));
+  }, []);
+
   const value = useMemo<RequestPlaygroundState>(() => {
     return {
       request,
@@ -135,14 +164,25 @@ export function RequestPlaygroundProvider({
       pathParams,
       editableParams,
       showBody,
+      showMultipart,
+      formFields,
+      formTextValues,
+      formFiles,
       credFields,
       requiredPath,
       requiredQuery,
       setPathValue,
       setQueryValue,
       setBodyText,
+      setFormText,
+      setFormFile,
       validateForRun: () => {
-        if (jsonError) return `Fix the JSON body before running: ${jsonError}`;
+        if (showMultipart) {
+          const mpErr = validateMultipartForRun(formFields, formTextValues, formFiles);
+          if (mpErr) return mpErr;
+        } else if (jsonError) {
+          return `Fix the JSON body before running: ${jsonError}`;
+        }
         if (pathParams.length > 0) {
           const resolved = applyPathParams(request.path, request.pathParams, pathValues);
           const missing = unresolvedPathParams(resolved);
@@ -172,12 +212,18 @@ export function RequestPlaygroundProvider({
     pathParams,
     editableParams,
     showBody,
+    showMultipart,
+    formFields,
+    formTextValues,
+    formFiles,
     credFields,
     requiredPath,
     requiredQuery,
     setPathValue,
     setQueryValue,
     setBodyText,
+    setFormText,
+    setFormFile,
   ]);
 
   return (
@@ -313,6 +359,75 @@ function PayloadEditor({
   );
 }
 
+function MultipartFormEditor({
+  fields,
+  textValues,
+  files,
+  onTextChange,
+  onFileChange,
+}: {
+  fields: NonNullable<RunnableRequest["formFields"]>;
+  textValues: Record<string, string>;
+  files: Record<string, File | null>;
+  onTextChange: (name: string, value: string) => void;
+  onFileChange: (name: string, file: File | null) => void;
+}) {
+  if (fields.length === 0) return null;
+  return (
+    <div className="rounded-md border border-orange-300 bg-orange-50/50 p-3 dark:border-orange-800 dark:bg-orange-950/20">
+      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-orange-800 dark:text-orange-300">
+        Form data (multipart upload)
+      </div>
+      <div className="grid gap-3">
+        {fields.map((f) =>
+          f.kind === "file" ? (
+            <label key={f.name} className="flex flex-col gap-1 text-xs">
+              <span className="font-medium opacity-80">
+                {f.name}{" "}
+                <span className="font-normal text-orange-700 dark:text-orange-400">(file)</span>
+              </span>
+              {f.description ? (
+                <span className="text-[11px] opacity-60">{f.description}</span>
+              ) : null}
+              <input
+                type="file"
+                onChange={(e) => onFileChange(f.name, e.target.files?.[0] ?? null)}
+                className="text-xs file:mr-2 file:rounded file:border-0 file:bg-sky-600 file:px-2 file:py-1 file:text-xs file:font-semibold file:text-white hover:file:bg-sky-500"
+              />
+              {files[f.name] ? (
+                <span className="font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
+                  Selected: {files[f.name]!.name} ({Math.round(files[f.name]!.size / 1024)} KB)
+                </span>
+              ) : (
+                <span className="text-[11px] opacity-50">No file selected</span>
+              )}
+            </label>
+          ) : (
+            <label key={f.name} className="flex flex-col gap-1 text-xs">
+              <span className="font-medium opacity-80">
+                {f.name}{" "}
+                <span className="font-normal text-zinc-400">(text field)</span>
+              </span>
+              {f.description ? (
+                <span className="text-[11px] opacity-60">{f.description}</span>
+              ) : null}
+              <input
+                type="text"
+                autoComplete="off"
+                spellCheck={false}
+                placeholder={f.defaultValue || `(optional)`}
+                value={textValues[f.name] ?? f.defaultValue ?? ""}
+                onChange={(e) => onTextChange(f.name, e.target.value)}
+                className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-orange-500 dark:border-zinc-600 dark:bg-zinc-900"
+              />
+            </label>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** Shared parameter editors shown once per endpoint page. */
 export function RequestPlaygroundPanel() {
   const playground = useRequestPlayground();
@@ -361,6 +476,16 @@ export function RequestPlaygroundPanel() {
         onChange={playground.setQueryValue}
       />
 
+      {playground.showMultipart ? (
+        <MultipartFormEditor
+          fields={playground.formFields}
+          textValues={playground.formTextValues}
+          files={playground.formFiles}
+          onTextChange={playground.setFormText}
+          onFileChange={playground.setFormFile}
+        />
+      ) : null}
+
       {playground.showBody ? (
         <PayloadEditor
           value={playground.bodyText}
@@ -372,11 +497,28 @@ export function RequestPlaygroundPanel() {
   );
 }
 
-export function buildPlaygroundExec(
+export async function buildPlaygroundExec(
   playground: RequestPlaygroundState,
   baseUrl: string,
   getCredential: (name: string) => string
-): ExecRequest {
+): Promise<ExecRequest> {
+  if (playground.showMultipart) {
+    const parts = buildMultipartParts(
+      playground.formFields,
+      playground.formTextValues,
+      playground.formFiles
+    );
+    const withData = await attachFileData(parts, playground.formFiles);
+    return resolveStructured(
+      playground.request,
+      baseUrl,
+      getCredential,
+      undefined,
+      playground.queryValues,
+      playground.pathValues,
+      withData
+    );
+  }
   return resolveStructured(
     playground.request,
     baseUrl,
@@ -387,10 +529,10 @@ export function buildPlaygroundExec(
   );
 }
 
-export function previewPlaygroundRequest(
+export async function previewPlaygroundRequest(
   playground: RequestPlaygroundState,
   baseUrl: string,
   getCredential: (name: string) => string
-): string {
-  return previewRequest(buildPlaygroundExec(playground, baseUrl, getCredential));
+): Promise<string> {
+  return previewRequest(await buildPlaygroundExec(playground, baseUrl, getCredential));
 }
