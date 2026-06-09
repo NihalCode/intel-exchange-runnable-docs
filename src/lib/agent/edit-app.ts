@@ -1,7 +1,7 @@
 import "server-only";
 
-import type { AgentAppBlueprint, AppBlueprintFile } from "./types";
-import { diffAppFiles } from "./app-diff";
+import { applyRuleBasedEdits, mergeFileUpdates, normalizeLlmCode } from "./app-edit-rules";
+import type { AgentAppBlueprint } from "./types";
 
 const MODEL = "gpt-4o-mini";
 
@@ -10,14 +10,6 @@ interface LlmEditJson {
   workflow?: string;
   files?: { path?: string; code?: string }[];
 }
-
-const EDITABLE_PATHS = new Set([
-  "app/page.tsx",
-  "app/globals.css",
-  "app/layout.tsx",
-  "README.md",
-  "lib/cyware/client.ts",
-]);
 
 function inferLanguage(path: string): string {
   if (path.endsWith(".tsx")) return "typescript";
@@ -35,31 +27,60 @@ function describeFile(path: string): string {
   return path;
 }
 
+function pickFilesForPrompt(blueprint: AgentAppBlueprint): { path: string; code: string }[] {
+  const priority = ["app/page.tsx", "app/globals.css", "app/layout.tsx"];
+  const picked: { path: string; code: string }[] = [];
+
+  for (const path of priority) {
+    const f = blueprint.files.find((x) => x.path === path);
+    if (f) picked.push({ path: f.path, code: f.code });
+  }
+
+  for (const f of blueprint.files) {
+    if (f.path.startsWith("app/api/") && !picked.some((p) => p.path === f.path)) {
+      picked.push({ path: f.path, code: f.code.slice(0, 8000) });
+    }
+  }
+
+  return picked;
+}
+
 export async function editAppWithLlm(
   query: string,
   existing: AgentAppBlueprint,
   apiKey: string,
   history?: { role: "user" | "assistant"; content: string }[]
 ): Promise<{ blueprint: AgentAppBlueprint; summary: string; changedPaths: string[] }> {
+  // Rule-based edits first — no API call, always reliable
+  const ruleResult = applyRuleBasedEdits(query, existing);
+  if (ruleResult) {
+    return ruleResult;
+  }
+
   const fileIndex = existing.files.map((f) => f.path).join("\n");
-  const keyFiles = existing.files
-    .filter((f) => EDITABLE_PATHS.has(f.path) || f.path.startsWith("app/api/"))
-    .map((f) => `### ${f.path}\n\`\`\`\n${f.code.slice(0, 12000)}\n\`\`\``)
+  const promptFiles = pickFilesForPrompt(existing);
+  const fileContext = promptFiles
+    .map((f) => `### ${f.path}\n\`\`\`\n${f.code}\n\`\`\``)
     .join("\n\n");
 
   const system = `You edit an existing Next.js Cyware integration app.
-Return JSON: { "summary": string, "workflow": string, "files": [{ "path": string, "code": string }] }
-Only include files you changed. Preserve HMAC auth patterns and server-only API routes.
-Do not remove package.json or env.example unless explicitly asked.
-For IOC extraction changes, edit app/page.tsx extractIOCs logic.
-Never expose Cyware secrets in client code.`;
+Return JSON: { "summary": string, "files": [{ "path": string, "code": string }] }
+
+REQUIREMENTS:
+- You MUST include at least one file in "files" with the COMPLETE updated file content (not a diff snippet).
+- Only include files you actually changed.
+- Return valid TypeScript/TSX that compiles.
+- Preserve HMAC auth in API routes and lib/cyware/client.ts unless explicitly asked to change auth.
+- For IOC extraction logic, edit app/page.tsx function extractIOCs.
+- Never put Cyware secrets in client-side code.
+- Do not wrap code in markdown fences inside the JSON string values.`;
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
     { role: "system", content: system },
   ];
   if (history?.length) {
-    for (const h of history.slice(-6)) {
-      messages.push({ role: h.role, content: h.content });
+    for (const h of history.slice(-8)) {
+      messages.push({ role: h.role, content: h.content.slice(0, 2000) });
     }
   }
   messages.push({
@@ -69,8 +90,8 @@ Never expose Cyware secrets in client code.`;
 All project files:
 ${fileIndex}
 
-Current source (key files):
-${keyFiles}`,
+Current source of files most likely to change:
+${fileContext}`,
   });
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -81,7 +102,8 @@ ${keyFiles}`,
     },
     body: JSON.stringify({
       model: MODEL,
-      temperature: 0.2,
+      temperature: 0.15,
+      max_tokens: 16384,
       response_format: { type: "json_object" },
       messages,
     }),
@@ -103,42 +125,43 @@ ${keyFiles}`,
 
   const updates = new Map<string, string>();
   for (const f of parsed.files ?? []) {
-    if (f.path && f.code !== undefined) updates.set(f.path, f.code);
-  }
-
-  const knownPaths = new Set(existing.files.map((f) => f.path));
-  const mergedFiles: AppBlueprintFile[] = existing.files.map((f) => {
-    const updated = updates.get(f.path);
-    if (updated === undefined) return f;
-    return { ...f, code: updated };
-  });
-
-  for (const [path, code] of updates) {
-    if (!knownPaths.has(path)) {
-      mergedFiles.push({
-        path,
-        code,
-        language: inferLanguage(path),
-        description: describeFile(path),
-      });
+    if (f.path && f.code !== undefined && f.code.trim().length > 0) {
+      updates.set(f.path, normalizeLlmCode(f.code));
     }
   }
 
-  const changedPaths = [...updates.keys()];
+  if (updates.size === 0) {
+    throw new Error(
+      "The AI did not return any file changes. Try a more specific request, e.g. " +
+        '"Update extractIOCs in app/page.tsx to skip recipient email domains."'
+    );
+  }
+
+  // Verify at least one file actually changed
+  const changedPaths: string[] = [];
+  for (const [path, code] of updates) {
+    const prev = existing.files.find((f) => f.path === path)?.code;
+    if (prev !== code) changedPaths.push(path);
+  }
+
+  if (changedPaths.length === 0) {
+    throw new Error("Edit produced identical file content — no changes applied. Rephrase your request.");
+  }
+
+  const merged = mergeFileUpdates(existing, updates);
 
   return {
     blueprint: {
-      ...existing,
+      ...merged,
       description: parsed.summary ?? existing.description,
-      files: mergedFiles,
     },
-    summary: parsed.summary ?? `Updated ${changedPaths.join(", ") || "app"}`,
+    summary: parsed.summary ?? `Updated ${changedPaths.join(", ")}`,
     changedPaths,
   };
 }
 
 export function attachDiff(
-  diff: ReturnType<typeof diffAppFiles>,
+  diff: import("./app-diff").AgentAppDiff,
   fromVersion: number,
   toVersion: number,
   summary: string

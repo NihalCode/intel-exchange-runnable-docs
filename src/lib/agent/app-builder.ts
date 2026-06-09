@@ -492,6 +492,12 @@ function extractIOCs(text: string): IOC[] {
     if (!seen.has(key)) { seen.add(key); iocs.push({ type, value }); }
   }
 
+  // Domains — skip if only seen as an email hostname (recipient org false positive)
+  const emailDomains = new Set<string>();
+  for (const m of text.matchAll(/\\b[a-z0-9._%+\\-]+@([a-z0-9.\\-]+\\.[a-z]{2,})\\b/gi)) {
+    emailDomains.add(m[1].toLowerCase());
+  }
+
   // URLs first (captures full URLs before domain extraction)
   for (const m of text.matchAll(/https?:\\/\\/[^\\s<>"'\\]\\[()]+/gi)) add(m[0], "url");
 
@@ -506,9 +512,12 @@ function extractIOCs(text: string): IOC[] {
     if (!isPrivate) add(m[0], "ipv4");
   }
 
-  // Domains (not already captured inside a URL)
+  // Domains (not in URL, not only a recipient email hostname)
   for (const m of text.matchAll(/\\b(?:[a-z0-9](?:[a-z0-9\\-]{0,61}[a-z0-9])?\\.)+(?:com|net|org|io|co|info|biz|edu|gov|mil|[a-z]{2})\\b/gi)) {
-    if (!iocs.find(i => i.type === "url" && i.value.includes(m[0]))) add(m[0].toLowerCase(), "domain");
+    const domain = m[0].toLowerCase();
+    if (iocs.find(i => i.type === "url" && i.value.includes(domain))) continue;
+    if (emailDomains.has(domain)) continue;
+    add(domain, "domain");
   }
 
   // Email addresses

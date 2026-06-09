@@ -52,19 +52,46 @@ function historyForApi(messages: ChatMessage[]): { role: "user" | "assistant"; c
     .map((m) => ({ role: m.role, content: m.content }));
 }
 
-function existingAppContext(activeAppId: string | null): ExistingAppContext | undefined {
-  if (!activeAppId) return undefined;
-  const app = getSavedApp(activeAppId);
-  const version = app ? getLatestVersion(app) : undefined;
-  if (!app || !version) return undefined;
-  return {
-    appId: app.id,
-    title: app.title,
-    version: version.version,
-    vercelProjectName: app.vercelProjectName,
-    deploymentUrl: app.deploymentUrl,
-    files: version.files,
-  };
+function existingAppContext(
+  activeAppId: string | null,
+  messages: ChatMessage[]
+): ExistingAppContext | undefined {
+  if (activeAppId) {
+    const app = getSavedApp(activeAppId);
+    const version = app ? getLatestVersion(app) : undefined;
+    if (app && version) {
+      return {
+        appId: app.id,
+        title: app.title,
+        version: version.version,
+        vercelProjectName: app.vercelProjectName,
+        deploymentUrl: app.deploymentUrl,
+        files: version.files,
+      };
+    }
+  }
+
+  // Fall back to the most recent app blueprint in this chat (same session edits)
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.role !== "assistant" || !m.response.app?.files?.length) continue;
+    const app = m.response.app;
+    return {
+      appId: app.appId,
+      title: app.title,
+      version: app.version ?? 1,
+      vercelProjectName: app.vercelProjectName,
+      deploymentUrl: app.deploymentUrl,
+      files: app.files.map((f) => ({
+        path: f.path,
+        code: f.code,
+        language: f.language,
+        description: f.description,
+      })),
+    };
+  }
+
+  return undefined;
 }
 
 export function AgentChat() {
@@ -135,8 +162,9 @@ export function AgentChat() {
     setInput("");
     setLoading(true);
 
-    const existingApp =
-      mode === "app" ? existingAppContext(activeAppId) : undefined;
+    const priorMessages = [...messages, userMsg].slice(0, -1);
+    const existingApp = existingAppContext(activeAppId, priorMessages);
+    const effectiveMode = existingApp ? "app" : mode;
 
     try {
       const res = await fetch("/api/agent", {
@@ -144,10 +172,10 @@ export function AgentChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: q,
-          mode,
+          mode: effectiveMode,
           language,
           llmApiKey: llmKey.trim() || undefined,
-          history: historyForApi([...messages, userMsg].slice(0, -1)),
+          history: historyForApi(priorMessages),
           existingApp,
         }),
       });
@@ -155,6 +183,10 @@ export function AgentChat() {
       if (!res.ok) throw new Error(data.error ?? `Request failed (${res.status})`);
 
       persistAppResponse(data);
+
+      if (data.mode === "app" && data.app) {
+        setMode("app");
+      }
 
       const assistantMsg: AssistantMessage = {
         id: uid(),

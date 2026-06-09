@@ -4,6 +4,7 @@ import { getManifest, getPage } from "../content";
 import { DISPLAY_BASE } from "../constants";
 import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
 import { diffAppFiles, slugifyProjectName } from "./app-diff";
+import { applyRuleBasedEdits } from "./app-edit-rules";
 import { attachDiff, editAppWithLlm } from "./edit-app";
 import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
@@ -84,7 +85,12 @@ function blueprintFromContext(ctx: ExistingAppContext): AgentAppBlueprint {
 
 export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const query = req.query?.trim();
-  const mode = detectAgentMode(query ?? "", req.mode);
+  const hasExistingApp = (req.existingApp?.files?.length ?? 0) > 0;
+  // When editing a saved/in-chat app, always stay in app mode
+  const mode =
+    hasExistingApp || req.mode === "app"
+      ? "app"
+      : detectAgentMode(query ?? "", req.mode);
 
   if (!query) {
     return {
@@ -99,19 +105,53 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const apiKey = req.llmApiKey?.trim() || process.env.OPENAI_API_KEY?.trim();
 
-  // Fast path: edit an existing saved / imported app in place
-  if (mode === "app" && req.existingApp?.files?.length && apiKey) {
+  // Edit path: patch existing app in place (never silently regenerate from scratch)
+  if (hasExistingApp) {
+    const ctx = req.existingApp!;
+    const previous = ctx.files;
+    const base = blueprintFromContext(ctx);
+
     try {
-      const ctx = req.existingApp;
-      const previous = ctx.files;
-      const edited = await editAppWithLlm(
-        query,
-        blueprintFromContext(ctx),
-        apiKey,
-        req.history
-      );
+      let edited: { blueprint: AgentAppBlueprint; summary: string; changedPaths: string[] };
+
+      if (apiKey) {
+        edited = await editAppWithLlm(query, base, apiKey, req.history);
+      } else {
+        const ruleResult = applyRuleBasedEdits(query, base);
+        if (!ruleResult) {
+          return {
+            mode: "app",
+            workflow:
+              "Could not apply this edit without an OpenAI API key. Add your key in Settings, " +
+              "or try a supported rule-based change (e.g. skip recipient email domains, dark mode).",
+            confidence: 0,
+            fallback: true,
+            citations: [],
+            steps: [],
+            app: base,
+          };
+        }
+        edited = ruleResult;
+      }
+
       const fromVersion = ctx.version ?? 0;
       const toVersion = fromVersion + 1;
+      const diff = diffAppFiles(previous, edited.blueprint.files, edited.summary);
+
+      if (diff.files.length === 0) {
+        return {
+          mode: "app",
+          workflow:
+            "No file changes were detected. Try being more specific about which file to change " +
+            `(e.g. app/page.tsx). Request: "${query}"`,
+          confidence: 0.5,
+          fallback: true,
+          citations: [],
+          steps: [],
+          app: base,
+        };
+      }
+
       return {
         mode: "app",
         workflow: edited.summary,
@@ -126,16 +166,20 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           vercelProjectName: ctx.vercelProjectName ?? slugifyProjectName(edited.blueprint.title),
           deploymentUrl: ctx.deploymentUrl,
         },
-        appDiff: attachDiff(
-          diffAppFiles(previous, edited.blueprint.files, edited.summary),
-          fromVersion,
-          toVersion,
-          edited.summary
-        ),
+        appDiff: attachDiff(diff, fromVersion, toVersion, edited.summary),
         appEdit: true,
       };
-    } catch {
-      /* fall through to full plan + regenerate */
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "App edit failed";
+      return {
+        mode: "app",
+        workflow: `Edit failed: ${message}`,
+        confidence: 0,
+        fallback: true,
+        citations: [],
+        steps: [],
+        app: base,
+      };
     }
   }
 
@@ -219,22 +263,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   if (mode === "app" && stepResults.length > 0) {
     const title = plan.appTitle ?? appTitleFromQuery(query);
-    const previousFiles = req.existingApp?.files;
     response.app = generateAppBlueprint(query, title, plan.workflow, stepResults);
-    if (previousFiles?.length) {
-      const fromVersion = req.existingApp?.version ?? 0;
-      response.appDiff = attachDiff(
-        diffAppFiles(previousFiles, response.app.files, "Regenerated app"),
-        fromVersion,
-        fromVersion + 1,
-        "Regenerated app"
-      );
-      response.app.appId = req.existingApp?.appId;
-      response.app.version = fromVersion + 1;
-      response.app.vercelProjectName =
-        req.existingApp?.vercelProjectName ?? slugifyProjectName(response.app.title);
-      response.app.deploymentUrl = req.existingApp?.deploymentUrl;
-    }
   }
 
   return response;
