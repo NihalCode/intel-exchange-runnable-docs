@@ -15,9 +15,9 @@ function packageJson(appSlug: string): string {
         lint: "next lint",
       },
       dependencies: {
-        next: "15.1.6",
-        react: "^19.0.0",
-        "react-dom": "^19.0.0",
+        next: "latest",
+        react: "latest",
+        "react-dom": "latest",
       },
       devDependencies: {
         "@types/node": "^20",
