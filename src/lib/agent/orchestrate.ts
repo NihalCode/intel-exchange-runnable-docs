@@ -3,6 +3,8 @@ import "server-only";
 import { getManifest, getPage } from "../content";
 import { DISPLAY_BASE } from "../constants";
 import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
+import { diffAppFiles, slugifyProjectName } from "./app-diff";
+import { attachDiff, editAppWithLlm } from "./edit-app";
 import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
@@ -16,9 +18,11 @@ import {
 } from "./retrieve";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
+  AgentAppBlueprint,
   AgentRequest,
   AgentResponse,
   AgentStepResult,
+  ExistingAppContext,
 } from "./types";
 import type { EndpointPage } from "../types";
 import { validatePlan } from "./validate";
@@ -51,6 +55,33 @@ async function buildStepResults(
   return stepResults;
 }
 
+function blueprintFromContext(ctx: ExistingAppContext): AgentAppBlueprint {
+  return {
+    title: ctx.title,
+    description: "Saved Cyware integration app",
+    architecture: [
+      "Browser (React UI)",
+      "  ↓ fetch /api/cyware/*",
+      "Next.js API Routes (server)",
+      "  ↓ HMAC-signed requests",
+      "Cyware Intel Exchange Open API",
+    ].join("\n"),
+    setupInstructions:
+      "Copy .env.example → .env.local, add Cyware credentials, npm install && npm run dev.",
+    envExample: ctx.files.find((f) => f.path === ".env.example")?.code ?? "",
+    files: ctx.files.map((f) => ({
+      path: f.path,
+      code: f.code,
+      language: f.language ?? "typescript",
+      description: f.description ?? f.path,
+    })),
+    appId: ctx.appId,
+    version: ctx.version,
+    vercelProjectName: ctx.vercelProjectName,
+    deploymentUrl: ctx.deploymentUrl,
+  };
+}
+
 export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const query = req.query?.trim();
   const mode = detectAgentMode(query ?? "", req.mode);
@@ -66,8 +97,49 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     };
   }
 
-  const index = await loadAgentIndex();
   const apiKey = req.llmApiKey?.trim() || process.env.OPENAI_API_KEY?.trim();
+
+  // Fast path: edit an existing saved / imported app in place
+  if (mode === "app" && req.existingApp?.files?.length && apiKey) {
+    try {
+      const ctx = req.existingApp;
+      const previous = ctx.files;
+      const edited = await editAppWithLlm(
+        query,
+        blueprintFromContext(ctx),
+        apiKey,
+        req.history
+      );
+      const fromVersion = ctx.version ?? 0;
+      const toVersion = fromVersion + 1;
+      return {
+        mode: "app",
+        workflow: edited.summary,
+        confidence: 0.95,
+        fallback: false,
+        citations: [],
+        steps: [],
+        app: {
+          ...edited.blueprint,
+          appId: ctx.appId,
+          version: toVersion,
+          vercelProjectName: ctx.vercelProjectName ?? slugifyProjectName(edited.blueprint.title),
+          deploymentUrl: ctx.deploymentUrl,
+        },
+        appDiff: attachDiff(
+          diffAppFiles(previous, edited.blueprint.files, edited.summary),
+          fromVersion,
+          toVersion,
+          edited.summary
+        ),
+        appEdit: true,
+      };
+    } catch {
+      /* fall through to full plan + regenerate */
+    }
+  }
+
+  const index = await loadAgentIndex();
   const language = req.language ?? "python";
   const baseUrl = getManifest().defaultBaseUrl || DISPLAY_BASE;
 
@@ -147,12 +219,22 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   if (mode === "app" && stepResults.length > 0) {
     const title = plan.appTitle ?? appTitleFromQuery(query);
-    response.app = generateAppBlueprint(
-      query,
-      title,
-      plan.workflow,
-      stepResults
-    );
+    const previousFiles = req.existingApp?.files;
+    response.app = generateAppBlueprint(query, title, plan.workflow, stepResults);
+    if (previousFiles?.length) {
+      const fromVersion = req.existingApp?.version ?? 0;
+      response.appDiff = attachDiff(
+        diffAppFiles(previousFiles, response.app.files, "Regenerated app"),
+        fromVersion,
+        fromVersion + 1,
+        "Regenerated app"
+      );
+      response.app.appId = req.existingApp?.appId;
+      response.app.version = fromVersion + 1;
+      response.app.vercelProjectName =
+        req.existingApp?.vercelProjectName ?? slugifyProjectName(response.app.title);
+      response.app.deploymentUrl = req.existingApp?.deploymentUrl;
+    }
   }
 
   return response;

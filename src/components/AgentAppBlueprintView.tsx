@@ -15,6 +15,7 @@ interface DeployState {
 interface DeployResult {
   url: string | null;
   deploymentId: string | null;
+  projectName?: string;
   message: string;
   inspectorUrl?: string;
 }
@@ -22,9 +23,15 @@ interface DeployResult {
 function DeployModal({
   app,
   onClose,
+  onDeploySuccess,
 }: {
   app: AgentAppBlueprint;
   onClose: () => void;
+  onDeploySuccess?: (info: {
+    deploymentUrl: string;
+    deploymentId: string;
+    projectName: string;
+  }) => void;
 }) {
   const [form, setForm] = useState<DeployState>({
     vercelToken: "",
@@ -51,6 +58,7 @@ function DeployModal({
         body: JSON.stringify({
           files: app.files.map((f) => ({ path: f.path, code: f.code })),
           appName: app.title,
+          projectName: app.vercelProjectName,
           vercelToken: form.vercelToken.trim(),
           envVars: {
             CYWARE_BASE_URL: form.baseUrl.trim(),
@@ -62,6 +70,13 @@ function DeployModal({
       const data = (await res.json()) as DeployResult & { error?: string };
       if (!res.ok) throw new Error(data.error ?? "Deployment failed");
       setResult(data);
+      if (data.url && data.deploymentId) {
+        onDeploySuccess?.({
+          deploymentUrl: data.url,
+          deploymentId: data.deploymentId,
+          projectName: data.projectName ?? app.vercelProjectName ?? app.title,
+        });
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Deployment failed");
     } finally {
@@ -188,7 +203,17 @@ function DeployModal({
   );
 }
 
-export function AgentAppBlueprintView({ app }: { app: AgentAppBlueprint }) {
+export function AgentAppBlueprintView({
+  app,
+  onDeploySuccess,
+}: {
+  app: AgentAppBlueprint;
+  onDeploySuccess?: (info: {
+    deploymentUrl: string;
+    deploymentId: string;
+    projectName: string;
+  }) => void;
+}) {
   const [activePath, setActivePath] = useState(app.files[0]?.path ?? "");
   const [showDeploy, setShowDeploy] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -281,13 +306,35 @@ export function AgentAppBlueprintView({ app }: { app: AgentAppBlueprint }) {
 
   return (
     <>
-      {showDeploy && <DeployModal app={app} onClose={() => setShowDeploy(false)} />}
+      {showDeploy && (
+        <DeployModal
+          app={app}
+          onClose={() => setShowDeploy(false)}
+          onDeploySuccess={onDeploySuccess}
+        />
+      )}
 
       <section className="space-y-4 rounded-xl border border-indigo-300/50 bg-indigo-50/20 p-4 dark:border-indigo-900 dark:bg-indigo-950/20">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-indigo-950 dark:text-indigo-100">{app.title}</h2>
-            <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-400">{app.files.length} files — complete, deployable Next.js app</p>
+            <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-400">
+              {app.files.length} files
+              {app.version ? ` · v${app.version}` : ""}
+              {app.deploymentUrl ? (
+                <>
+                  {" · "}
+                  <a
+                    href={app.deploymentUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sky-600 hover:underline dark:text-sky-400"
+                  >
+                    live site ↗
+                  </a>
+                </>
+              ) : null}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button

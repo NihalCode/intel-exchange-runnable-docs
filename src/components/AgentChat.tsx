@@ -1,8 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AgentMessageView } from "./AgentMessageView";
-import type { AgentLanguage, AgentMode, AgentResponse } from "@/lib/agent/types";
+import {
+  AgentSavedAppsBar,
+  ImportVercelModal,
+  blueprintFromVersion,
+  getLatestVersion,
+  getSavedApp,
+} from "./AgentSavedAppsBar";
+import type { AgentLanguage, AgentMode, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
+import {
+  loadActiveAppId,
+  saveAppVersion,
+  setActiveAppId,
+} from "@/lib/agent/saved-apps-client";
+import { slugifyProjectName } from "@/lib/agent/app-diff";
 
 const WORKFLOW_EXAMPLES = [
   "Import a STIX 2.1 bundle and verify the indicator appears in threat data",
@@ -36,10 +49,22 @@ function historyForApi(messages: ChatMessage[]): { role: "user" | "assistant"; c
   return messages
     .filter((m): m is UserMessage | AssistantMessage => m.role === "user" || m.role === "assistant")
     .slice(-10)
-    .map((m) => ({
-      role: m.role,
-      content: m.role === "assistant" ? m.content : m.content,
-    }));
+    .map((m) => ({ role: m.role, content: m.content }));
+}
+
+function existingAppContext(activeAppId: string | null): ExistingAppContext | undefined {
+  if (!activeAppId) return undefined;
+  const app = getSavedApp(activeAppId);
+  const version = app ? getLatestVersion(app) : undefined;
+  if (!app || !version) return undefined;
+  return {
+    appId: app.id,
+    title: app.title,
+    version: version.version,
+    vercelProjectName: app.vercelProjectName,
+    deploymentUrl: app.deploymentUrl,
+    files: version.files,
+  };
 }
 
 export function AgentChat() {
@@ -49,16 +74,51 @@ export function AgentChat() {
   const [language, setLanguage] = useState<AgentLanguage>("python");
   const [llmKey, setLlmKey] = useState("");
   const [showSettings, setShowSettings] = useState(false);
+  const [showImport, setShowImport] = useState(false);
+  const [activeAppId, setActiveAppIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const examples = mode === "app" ? APP_EXAMPLES : WORKFLOW_EXAMPLES;
   const isEmpty = messages.length === 0;
+  const activeApp = activeAppId ? getSavedApp(activeAppId) : undefined;
+
+  useEffect(() => {
+    setActiveAppIdState(loadActiveAppId());
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  const handleSelectApp = useCallback((appId: string | null) => {
+    setActiveAppIdState(appId);
+    setMode("app");
+  }, []);
+
+  const persistAppResponse = useCallback(
+    (data: AgentResponse, deploy?: { deploymentUrl: string; deploymentId: string; projectName: string }) => {
+      if (data.mode !== "app" || !data.app) return;
+      const saved = saveAppVersion({
+        appId: data.app.appId ?? activeAppId ?? undefined,
+        title: data.app.title,
+        summary: data.workflow,
+        files: data.app.files,
+        deploymentUrl: deploy?.deploymentUrl ?? data.app.deploymentUrl,
+        deploymentId: deploy?.deploymentId,
+        vercelProjectName: deploy?.projectName ?? data.app.vercelProjectName,
+      });
+      setActiveAppIdState(saved.id);
+      if (data.app) {
+        data.app.appId = saved.id;
+        data.app.version = saved.versions[saved.versions.length - 1]?.version;
+        data.app.vercelProjectName = saved.vercelProjectName;
+        data.app.deploymentUrl = saved.deploymentUrl;
+      }
+    },
+    [activeAppId]
+  );
 
   function newChat() {
     setMessages([]);
@@ -75,6 +135,9 @@ export function AgentChat() {
     setInput("");
     setLoading(true);
 
+    const existingApp =
+      mode === "app" ? existingAppContext(activeAppId) : undefined;
+
     try {
       const res = await fetch("/api/agent", {
         method: "POST",
@@ -85,10 +148,13 @@ export function AgentChat() {
           language,
           llmApiKey: llmKey.trim() || undefined,
           history: historyForApi([...messages, userMsg].slice(0, -1)),
+          existingApp,
         }),
       });
       const data = (await res.json()) as AgentResponse & { error?: string };
       if (!res.ok) throw new Error(data.error ?? `Request failed (${res.status})`);
+
+      persistAppResponse(data);
 
       const assistantMsg: AssistantMessage = {
         id: uid(),
@@ -117,9 +183,68 @@ export function AgentChat() {
     }
   }
 
+  function handleDeploySuccess(info: {
+    deploymentUrl: string;
+    deploymentId: string;
+    projectName: string;
+  }) {
+    if (!activeAppId) return;
+    const app = getSavedApp(activeAppId);
+    const version = app ? getLatestVersion(app) : undefined;
+    if (!app || !version) return;
+    saveAppVersion({
+      appId: app.id,
+      title: app.title,
+      summary: version.summary,
+      files: version.files.map((f) => ({
+        path: f.path,
+        code: f.code,
+        language: f.language ?? "typescript",
+        description: f.description ?? f.path,
+      })),
+      deploymentUrl: info.deploymentUrl,
+      deploymentId: info.deploymentId,
+      vercelProjectName: info.projectName,
+    });
+  }
+
+  function loadSavedAppIntoChat(appId: string) {
+    const app = getSavedApp(appId);
+    const version = app ? getLatestVersion(app) : undefined;
+    if (!app || !version) return;
+    setActiveAppIdState(appId);
+    setMode("app");
+    const blueprint = blueprintFromVersion(app, version);
+    const response: AgentResponse = {
+      mode: "app",
+      workflow: `Loaded **${app.title}** v${version.version} from saved projects. Describe changes to edit in place, then redeploy to the same Vercel project (\`${app.vercelProjectName}\`).`,
+      confidence: 1,
+      fallback: false,
+      citations: [],
+      steps: [],
+      app: blueprint,
+    };
+    setMessages([
+      {
+        id: uid(),
+        role: "assistant",
+        content: response.workflow,
+        response,
+      },
+    ]);
+  }
+
   return (
     <div className="flex h-[calc(100vh-12rem)] min-h-[520px] flex-col rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-      {/* Header */}
+      {showImport && (
+        <ImportVercelModal
+          onClose={() => setShowImport(false)}
+          onImported={(id) => {
+            loadSavedAppIntoChat(id);
+          }}
+        />
+      )}
+
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
         <div className="flex flex-wrap gap-1.5">
           <button
@@ -165,7 +290,33 @@ export function AgentChat() {
         </div>
       </div>
 
-      {/* Settings panel */}
+      {mode === "app" && (
+        <AgentSavedAppsBar
+          activeAppId={activeAppId}
+          onSelectApp={(id) => {
+            if (id) loadSavedAppIntoChat(id);
+            else {
+              setActiveAppIdState(null);
+              setActiveAppId(null);
+            }
+          }}
+          onImportClick={() => setShowImport(true)}
+        />
+      )}
+
+      {mode === "app" && activeApp && (
+        <div className="shrink-0 border-b border-indigo-200/60 bg-indigo-50/40 px-4 py-1.5 text-[11px] text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
+          Editing <strong>{activeApp.title}</strong> v{activeApp.versions.length}
+          {activeApp.deploymentUrl ? (
+            <>
+              {" · redeploy updates "}
+              <code className="font-mono">{activeApp.vercelProjectName || slugifyProjectName(activeApp.title)}</code>
+              {" in place"}
+            </>
+          ) : null}
+        </div>
+      )}
+
       {showSettings ? (
         <div className="shrink-0 border-b border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/50">
           <div className="flex flex-wrap items-end gap-3">
@@ -184,9 +335,7 @@ export function AgentChat() {
               </select>
             </label>
             <label className="flex min-w-[220px] flex-1 flex-col gap-1 text-xs">
-              <span className="font-semibold text-zinc-600 dark:text-zinc-400">
-                OpenAI API key (optional)
-              </span>
+              <span className="font-semibold text-zinc-600 dark:text-zinc-400">OpenAI API key (optional)</span>
               <input
                 type="password"
                 value={llmKey}
@@ -200,7 +349,6 @@ export function AgentChat() {
         </div>
       ) : null}
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
         {isEmpty ? (
           <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
@@ -210,8 +358,8 @@ export function AgentChat() {
             <h2 className="text-lg font-semibold">Cyware Documentation Agent</h2>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               {mode === "app"
-                ? "Describe an app to build. Follow up to refine — add features, change endpoints, redeploy."
-                : "Ask about any Cyware API workflow. Follow up to refine steps, change parameters, or ask questions."}
+                ? "Build or import an app. Saved projects persist across new chats — edit in place and redeploy to the same Vercel URL."
+                : "Ask about any Cyware API workflow. Follow up to refine steps or parameters."}
             </p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               {examples.map((ex) => (
@@ -219,7 +367,7 @@ export function AgentChat() {
                   key={ex}
                   type="button"
                   onClick={() => void send(ex)}
-                  className="rounded-full border border-zinc-200 px-3 py-1 text-[11px] text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-sky-800 dark:hover:bg-sky-950/30"
+                  className="rounded-full border border-zinc-200 px-3 py-1 text-[11px] text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400"
                 >
                   {ex.length > 48 ? `${ex.slice(0, 48)}…` : ex}
                 </button>
@@ -255,7 +403,11 @@ export function AgentChat() {
                         AI
                       </span>
                       <span className="text-xs font-semibold text-zinc-500">
-                        {msg.response.mode === "app" ? "App builder" : "Workflow planner"}
+                        {msg.response.appEdit
+                          ? "App editor"
+                          : msg.response.mode === "app"
+                            ? "App builder"
+                            : "Workflow planner"}
                         {msg.response.confidence > 0
                           ? ` · ${Math.round(msg.response.confidence * 100)}% match`
                           : ""}
@@ -264,7 +416,11 @@ export function AgentChat() {
                     <div className="prose prose-sm max-w-none whitespace-pre-wrap dark:prose-invert">
                       {msg.content}
                     </div>
-                    <AgentMessageView response={msg.response} language={language} />
+                    <AgentMessageView
+                      response={msg.response}
+                      language={language}
+                      onDeploySuccess={handleDeploySuccess}
+                    />
                   </div>
                 </div>
               );
@@ -276,13 +432,8 @@ export function AgentChat() {
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs dark:bg-sky-950">
                     AI
                   </span>
-                  <span className="flex items-center gap-1.5 text-sm text-zinc-500">
-                    <span className="inline-flex gap-0.5">
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:0ms]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:150ms]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-zinc-400 [animation-delay:300ms]" />
-                    </span>
-                    Searching docs…
+                  <span className="text-sm text-zinc-500">
+                    {activeAppId && mode === "app" ? "Editing app…" : "Searching docs…"}
                   </span>
                 </div>
               </div>
@@ -292,7 +443,6 @@ export function AgentChat() {
         )}
       </div>
 
-      {/* Input */}
       <div className="shrink-0 border-t border-zinc-200 p-3 dark:border-zinc-800">
         <form
           onSubmit={(e) => {
@@ -309,7 +459,9 @@ export function AgentChat() {
             rows={1}
             placeholder={
               mode === "app"
-                ? "Describe or refine your app…"
+                ? activeAppId
+                  ? "Describe changes to your saved app…"
+                  : "Describe an app to build…"
                 : "Ask a question or refine the workflow…"
             }
             disabled={loading}
@@ -324,7 +476,7 @@ export function AgentChat() {
           </button>
         </form>
         <p className="mx-auto mt-1.5 max-w-3xl text-center text-[10px] text-zinc-400">
-          Enter to send · Shift+Enter for new line · Conversation context is kept for follow-ups
+          Apps saved in this browser · New chat keeps your project · Redeploy uses the same Vercel project name
         </p>
       </div>
     </div>

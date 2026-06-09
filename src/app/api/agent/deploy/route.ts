@@ -4,6 +4,7 @@ interface DeployRequest {
   files: { path: string; code: string }[];
   appName: string;
   vercelToken: string;
+  projectName?: string;
   envVars?: Record<string, string>;
 }
 
@@ -17,7 +18,7 @@ interface VercelDeployResponse {
 
 export async function POST(req: Request) {
   try {
-    const { files, appName, vercelToken, envVars } = (await req.json()) as DeployRequest;
+    const { files, appName, vercelToken, projectName, envVars } = (await req.json()) as DeployRequest;
 
     if (!vercelToken?.trim()) {
       return Response.json({ error: "Vercel token is required" }, { status: 400 });
@@ -26,12 +27,14 @@ export async function POST(req: Request) {
       return Response.json({ error: "No files provided" }, { status: 400 });
     }
 
-    const name = appName
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 52);
+    const name =
+      projectName?.trim() ||
+      appName
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 52);
 
     const payload = {
       name,
@@ -77,9 +80,10 @@ export async function POST(req: Request) {
       url: data.url ? `https://${data.url}` : null,
       readyState: data.readyState,
       inspectorUrl: data.inspectorUrl,
+      projectName: name,
       message:
-        "Deployment started. Your app will be live in ~2 minutes at the URL above. " +
-        "If Cyware env vars were not set here, add them in Vercel Project → Settings → Environment Variables.",
+        `Deployment started for project "${name}". Your app will be live in ~2 minutes at the URL above. ` +
+        "Redeploying with the same project name updates the existing site in place.",
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Deployment failed";

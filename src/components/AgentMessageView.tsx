@@ -1,15 +1,22 @@
 "use client";
 
 import { AgentAppBlueprintView } from "./AgentAppBlueprintView";
+import { AgentAppDiffView } from "./AgentAppDiffView";
 import { AgentWorkflowStep } from "./AgentWorkflowStep";
 import type { AgentLanguage, AgentResponse } from "@/lib/agent/types";
 
 export function AgentMessageView({
   response,
   language,
+  onDeploySuccess,
 }: {
   response: AgentResponse;
   language: AgentLanguage;
+  onDeploySuccess?: (info: {
+    deploymentUrl: string;
+    deploymentId: string;
+    projectName: string;
+  }) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -30,8 +37,10 @@ export function AgentMessageView({
         </div>
       ) : null}
 
+      {response.appDiff ? <AgentAppDiffView diff={response.appDiff} /> : null}
+
       {response.mode === "app" && response.app ? (
-        <AgentAppBlueprintView app={response.app} />
+        <AgentAppBlueprintView app={response.app} onDeploySuccess={onDeploySuccess} />
       ) : null}
 
       {response.steps.length > 1 ? (

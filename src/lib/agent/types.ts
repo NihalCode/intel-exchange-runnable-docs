@@ -141,6 +141,55 @@ export interface AgentAppBlueprint {
   setupInstructions: string;
   envExample: string;
   files: AppBlueprintFile[];
+  appId?: string;
+  version?: number;
+  vercelProjectName?: string;
+  deploymentUrl?: string;
+  deploymentId?: string;
+}
+
+export type FileChangeStatus = "added" | "removed" | "modified" | "unchanged";
+
+export interface AppFileDiff {
+  path: string;
+  status: Exclude<FileChangeStatus, "unchanged">;
+  additions: number;
+  deletions: number;
+  preview: string;
+}
+
+export interface AgentAppDiff {
+  fromVersion: number;
+  toVersion: number;
+  summary: string;
+  files: AppFileDiff[];
+  stats: { added: number; removed: number; modified: number; unchanged: number };
+}
+
+export interface SavedAppVersion {
+  version: number;
+  createdAt: string;
+  summary: string;
+  files: { path: string; code: string; language?: string; description?: string }[];
+}
+
+export interface SavedAppProject {
+  id: string;
+  title: string;
+  vercelProjectName: string;
+  deploymentUrl?: string;
+  deploymentId?: string;
+  updatedAt: string;
+  versions: SavedAppVersion[];
+}
+
+export interface ExistingAppContext {
+  appId?: string;
+  title: string;
+  version?: number;
+  vercelProjectName?: string;
+  deploymentUrl?: string;
+  files: { path: string; code: string; language?: string; description?: string }[];
 }
 
 export interface AgentResponse {
@@ -153,6 +202,8 @@ export interface AgentResponse {
   questions?: string[];
   retrieval?: { slug: string; title: string; score: number }[];
   app?: AgentAppBlueprint;
+  appDiff?: AgentAppDiff;
+  appEdit?: boolean;
 }
 
 export interface AgentRequest {
@@ -161,4 +212,5 @@ export interface AgentRequest {
   language?: AgentLanguage;
   history?: { role: "user" | "assistant"; content: string }[];
   llmApiKey?: string;
+  existingApp?: ExistingAppContext;
 }
