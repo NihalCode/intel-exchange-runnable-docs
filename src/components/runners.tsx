@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import {
   ensureOpenApiAuth,
   injectOpenApiAuthIntoUrl,
+  isOpenApiAuthParam,
   substituteSnippetPlaceholders,
 } from "@/lib/credential-placeholders";
 import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
@@ -29,7 +30,7 @@ import {
   previewPlaygroundRequest,
   useRequestPlayground,
 } from "./RequestPlayground";
-import { useRunSettings } from "./RunSettings";
+import { AutoAuthNotice, useRunSettings } from "./RunSettings";
 
 /* --------------------------------- shared -------------------------------- */
 
@@ -67,17 +68,18 @@ function Pre({ text }: { text: string }) {
   );
 }
 
-function CredentialsForm({ fields }: { fields: CredField[] }) {
+function ManualCredentialsForm({ fields }: { fields: CredField[] }) {
   const { getCredential, setCredential } = useRunSettings();
-  if (fields.length === 0) return null;
+  const manual = fields.filter((f) => !isOpenApiAuthParam(f.name));
+  if (manual.length === 0) return null;
   return (
     <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
       <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
         <LockIcon />
-        Credentials (kept in memory only)
+        Additional credentials
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
-        {fields.map((f) => (
+        {manual.map((f) => (
           <label key={f.name} className="flex flex-col gap-1 text-xs">
             <span className="font-medium opacity-80">{f.name}</span>
             <input
@@ -92,9 +94,6 @@ function CredentialsForm({ fields }: { fields: CredField[] }) {
           </label>
         ))}
       </div>
-      <p className="mt-2 text-[11px] opacity-60">
-        Secrets are never written to localStorage and are masked in output.
-      </p>
     </div>
   );
 }
@@ -306,7 +305,7 @@ async function proxyHttpRequest(exec: ExecRequest): Promise<HttpResult> {
 
 function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
   const settings = useRunSettings();
-  const { baseUrl, secretValues, generateAuth, accessId, secretKey } = settings;
+  const { baseUrl, secretValues, ensureFreshAuth } = settings;
   const playground = useRequestPlayground();
   const usingPlayground = !!playground && !!request;
 
@@ -392,13 +391,7 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
         : resolveExec(parsed!, baseUrl, settings.getCredential, bodyText || undefined);
 
   async function ensureAuthReady(): Promise<string | null> {
-    return ensureOpenApiAuth(
-      credFields,
-      settings.getCredential,
-      generateAuth,
-      accessId,
-      secretKey
-    );
+    return ensureOpenApiAuth(credFields, settings.getCredential, ensureFreshAuth);
   }
 
   async function execute() {
@@ -482,12 +475,12 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
           ) : (
             <div className="mt-2 rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
               <strong>Live API.</strong> Requests are sent to{" "}
-              <code className="font-mono">{baseUrl}</code>. Enter AccessID, Signature, and Expires
-              below, or use <em>API Settings → Generate Auth</em>.
+              <code className="font-mono">{baseUrl}</code>.
             </div>
           )}
 
-          <CredentialsForm fields={credFields} />
+          <AutoAuthNotice />
+          <ManualCredentialsForm fields={credFields} />
 
           <PathParamEditor
             params={pathParams}
@@ -618,9 +611,7 @@ function JsRunner({ code }: { code: string }) {
     baseUrl,
     secretValues,
     getCredential,
-    generateAuth,
-    accessId,
-    secretKey,
+    ensureFreshAuth,
   } = useRunSettings();
   const playground = useRequestPlayground();
   const [busy, setBusy] = useState(false);
@@ -661,9 +652,7 @@ function JsRunner({ code }: { code: string }) {
     const authErr = await ensureOpenApiAuth(
       playground!.credFields,
       getCredential,
-      generateAuth,
-      accessId,
-      secretKey
+      ensureFreshAuth
     );
     if (authErr) throw new Error(authErr);
 
@@ -689,9 +678,7 @@ function JsRunner({ code }: { code: string }) {
         const authErr = await ensureOpenApiAuth(
           jsCredFields,
           getCredential,
-          generateAuth,
-          accessId,
-          secretKey
+          ensureFreshAuth
         );
         if (authErr) throw new Error(authErr);
 

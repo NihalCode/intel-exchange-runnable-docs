@@ -82,8 +82,9 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
       <p className="mb-2 text-xs font-semibold">Open API Credentials</p>
       <p className="mb-3 text-[11px] text-zinc-500">
         From your Cyware tenant: <strong>Admin → Open API → Generate Credentials</strong>.
-        Enter Access ID and Secret Key — Signature and Expires are generated automatically (~20 s).
-        Secrets stay in memory only.
+        Enter Access ID and Secret Key once — Signature and Expires are generated automatically
+        when you click <strong>Run</strong> (refreshed only after they expire).
+        Access ID is saved in this browser; Secret Key is kept in session storage for this tab.
       </p>
 
       <div className="grid grid-cols-2 gap-2">
@@ -121,9 +122,9 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
         {authStatus === "generating" ? (
           <><Spinner /> Generating…</>
         ) : authStatus === "ok" ? (
-          <><CheckIcon /> Signature generated — valid ~20 s (click to refresh)</>
+          <><CheckIcon /> Auth ready — auto-refreshes on Run when expired</>
         ) : (
-          <><KeyIcon /> Generate Signature &amp; Expires</>
+          <><KeyIcon /> Generate Signature &amp; Expires now (optional)</>
         )}
       </button>
 

@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   injectOpenApiAuthIntoUrl,
+  isOpenApiAuthFresh,
+  isValidExpiresValue,
   substituteSnippetPlaceholders,
 } from "../credential-placeholders";
 
@@ -53,5 +55,40 @@ describe("injectOpenApiAuthIntoUrl", () => {
     expect(u.searchParams.get("AccessID")).toBe("aid-123");
     expect(u.searchParams.get("Signature")).toBe("sig-abc");
     expect(u.searchParams.get("Expires")).toBe("1700000020");
+  });
+});
+
+describe("isOpenApiAuthFresh", () => {
+  it("returns true when signature and unexpired expires are set", () => {
+    const future = String(Math.floor(Date.now() / 1000) + 60);
+    const getCred = (name: string) =>
+      ({
+        accessid: "aid",
+        signature: "sig",
+        expires: future,
+      })[name.toLowerCase()] ?? "";
+    expect(isOpenApiAuthFresh(getCred)).toBe(true);
+  });
+
+  it("returns false when expires is in the past", () => {
+    const past = String(Math.floor(Date.now() / 1000) - 1);
+    const getCred = (name: string) =>
+      ({
+        accessid: "aid",
+        signature: "sig",
+        expires: past,
+      })[name.toLowerCase()] ?? "";
+    expect(isOpenApiAuthFresh(getCred)).toBe(false);
+    expect(isValidExpiresValue(past)).toBe(false);
+  });
+
+  it("returns false for placeholder signature", () => {
+    const getCred = (name: string) =>
+      ({
+        accessid: "aid",
+        signature: "<generated signature>",
+        expires: "9999999999",
+      })[name.toLowerCase()] ?? "";
+    expect(isOpenApiAuthFresh(getCred)).toBe(false);
   });
 });

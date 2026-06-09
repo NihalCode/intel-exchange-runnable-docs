@@ -1,6 +1,4 @@
-import { missingAuthCredentials } from "./resolve-request";
 import { looksLikePlaceholder } from "./security";
-import type { KeyValue } from "./types";
 
 const AUTH_PARAM_KEYS: { param: string; key: string }[] = [
   { param: "AccessID", key: "accessid" },
@@ -66,39 +64,32 @@ export function injectOpenApiAuthIntoUrl(
 }
 
 export async function ensureOpenApiAuth(
-  authFields: { name: string; example: string }[],
+  _authFields: { name: string; example: string }[],
   getCred: (name: string) => string,
-  generateAuth: () => Promise<void>,
-  accessId: string,
-  secretKey: string
+  ensureFreshAuth: () => Promise<string | null>
 ): Promise<string | null> {
-  const pairs: KeyValue[] = authFields.map((f) => ({
-    name: f.name,
-    value: f.example,
-  }));
-
-  let missing = missingAuthCredentials(pairs, getCred);
-  const exp = getCred("Expires") || getCred("expires");
-  if (!missing.includes("Expires") && exp && !isValidExpiresValue(exp)) {
-    missing = [...missing, "Expires"];
-  }
-  if (missing.length === 0) return null;
-
-  if (accessId.trim() && secretKey.trim()) {
-    await generateAuth();
-    missing = missingAuthCredentials(pairs, getCred);
-    const exp2 = getCred("Expires") || getCred("expires");
-    if (!missing.includes("Expires") && exp2 && !isValidExpiresValue(exp2)) {
-      missing = [...missing, "Expires"];
-    }
-    if (missing.length === 0) return null;
-  }
-
-  return `Missing or expired auth: ${missing.join(", ")}. Use API Settings → Generate Signature & Expires, then Run within ~20 s.`;
+  if (isOpenApiAuthFresh(getCred)) return null;
+  return ensureFreshAuth();
 }
 
 export function isValidExpiresValue(value: string): boolean {
   const n = Number(String(value).trim());
   if (!Number.isFinite(n) || n <= 0) return false;
   return n > Math.floor(Date.now() / 1000);
+}
+
+export function isOpenApiAuthParam(name: string): boolean {
+  const k = name.toLowerCase();
+  return k === "accessid" || k === "signature" || k === "expires";
+}
+
+/** True when AccessID, Signature, and Expires are present and Expires is still in the future. */
+export function isOpenApiAuthFresh(getCred: (name: string) => string): boolean {
+  const accessId = getCred("AccessID") || getCred("accessid");
+  const signature = getCred("Signature") || getCred("signature");
+  const expires = getCred("Expires") || getCred("expires");
+  if (!accessId || looksLikePlaceholder(accessId)) return false;
+  if (!signature || looksLikePlaceholder(signature)) return false;
+  if (!expires || !isValidExpiresValue(expires)) return false;
+  return true;
 }

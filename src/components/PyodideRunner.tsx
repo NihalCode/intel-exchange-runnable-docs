@@ -6,7 +6,7 @@ import { ensureOpenApiAuth, substituteSnippetPlaceholders } from "@/lib/credenti
 import { isSensitiveName, maskText } from "@/lib/security";
 import type { CredField } from "@/lib/resolve-request";
 import { buildPlaygroundExec, useRequestPlayground } from "./RequestPlayground";
-import { useRunSettings } from "./RunSettings";
+import { AutoAuthNotice, useRunSettings } from "./RunSettings";
 
 // ---------------------------------------------------------------------------
 // Pyodide loader (cached singleton)
@@ -196,10 +196,7 @@ export function PyodideRunner({ code }: { code: string }) {
     baseUrl,
     secretValues,
     getCredential,
-    setCredential,
-    generateAuth,
-    accessId,
-    secretKey,
+    ensureFreshAuth,
   } = useRunSettings();
   const playground = useRequestPlayground();
   const [phase, setPhase] = useState<"idle" | "loading-pyodide" | "running">("idle");
@@ -222,9 +219,7 @@ export function PyodideRunner({ code }: { code: string }) {
     const authErr = await ensureOpenApiAuth(
       playground!.credFields,
       getCredential,
-      generateAuth,
-      accessId,
-      secretKey
+      ensureFreshAuth
     );
     if (authErr) throw new Error(authErr);
 
@@ -252,9 +247,7 @@ export function PyodideRunner({ code }: { code: string }) {
       const authErr = await ensureOpenApiAuth(
         credFields,
         getCredential,
-        generateAuth,
-        accessId,
-        secretKey
+        ensureFreshAuth
       );
       if (authErr) throw new Error(authErr);
 
@@ -284,31 +277,11 @@ export function PyodideRunner({ code }: { code: string }) {
         <p className="mt-1 text-[11px] opacity-60">
           Uses values from <strong>Request parameters</strong> above.
         </p>
-      ) : null}
-      {!playground && credFields.length > 0 ? (
-        <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
-          <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-            <LockIcon />
-            Credentials (in-memory only)
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {credFields.map((f) => (
-              <label key={f.name} className="flex flex-col gap-1 text-xs">
-                <span className="font-medium opacity-80">{f.name}</span>
-                <input
-                  type="password"
-                  autoComplete="off"
-                  spellCheck={false}
-                  placeholder={f.example || `Enter ${f.name}`}
-                  value={getCredential(f.name)}
-                  onChange={(e) => setCredential(f.name, e.target.value)}
-                  className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
-                />
-              </label>
-            ))}
-          </div>
+      ) : (
+        <div className="mt-2">
+          <AutoAuthNotice />
         </div>
-      ) : null}
+      )}
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button
@@ -383,14 +356,6 @@ function PlayIcon() {
   return (
     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
       <path d="M8 5v14l11-7z" />
-    </svg>
-  );
-}
-function LockIcon() {
-  return (
-    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="11" width="18" height="11" rx="2" />
-      <path d="M7 11V7a5 5 0 0110 0v4" />
     </svg>
   );
 }
