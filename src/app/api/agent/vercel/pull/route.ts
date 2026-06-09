@@ -17,6 +17,8 @@ interface VercelDeployment {
   id: string;
   name?: string;
   url?: string;
+  ownerId?: string;
+  team?: { id?: string; slug?: string };
 }
 
 function hostFromUrl(input: string): string {
@@ -25,6 +27,18 @@ function hostFromUrl(input: string): string {
     return new URL(trimmed).hostname;
   }
   return trimmed.replace(/^https?:\/\//, "").split("/")[0] ?? trimmed;
+}
+
+function teamIdFromDeployment(deployment: VercelDeployment): string | undefined {
+  if (deployment.team?.id) return deployment.team.id;
+  if (deployment.ownerId?.startsWith("team_")) return deployment.ownerId;
+  return undefined;
+}
+
+function withTeamQuery(path: string, teamId?: string): string {
+  if (!teamId) return path;
+  const sep = path.includes("?") ? "&" : "?";
+  return `${path}${sep}teamId=${encodeURIComponent(teamId)}`;
 }
 
 async function vercelFetch(path: string, token: string) {
@@ -46,18 +60,63 @@ async function vercelFetch(path: string, token: string) {
   return data;
 }
 
-/** GET /v8/deployments/{id}/files/{fileId} — contents are base64-encoded in JSON. */
-async function fileContent(
+function decodeFilePayload(data: unknown): string {
+  const payload = data as { data?: string | number[] };
+  if (typeof payload.data === "string") {
+    // Vercel returns base64 for v8 file contents
+    try {
+      return Buffer.from(payload.data, "base64").toString("utf-8");
+    } catch {
+      return payload.data;
+    }
+  }
+  if (Array.isArray(payload.data)) {
+    return Buffer.from(payload.data).toString("utf-8");
+  }
+  return "";
+}
+
+/** Try multiple Vercel file-content APIs (teamId + uid + optional path for Git deploys). */
+async function fetchFileContent(
   deploymentId: string,
-  fileId: string,
-  token: string
+  filePath: string,
+  uid: string | undefined,
+  token: string,
+  teamId?: string
 ): Promise<string> {
-  const data = (await vercelFetch(
-    `/v8/deployments/${encodeURIComponent(deploymentId)}/files/${encodeURIComponent(fileId)}`,
-    token
-  )) as { data?: string };
-  if (!data.data) return "";
-  return Buffer.from(data.data, "base64").toString("utf-8");
+  const attempts: string[] = [];
+
+  if (uid) {
+    // Primary: deployment file by uid (agent uploads use team_XXX-hash ids)
+    attempts.push(
+      withTeamQuery(
+        `/v8/deployments/${encodeURIComponent(deploymentId)}/files/${encodeURIComponent(uid)}`,
+        teamId
+      )
+    );
+    // Git deployments may require path alongside fileId
+    attempts.push(
+      withTeamQuery(
+        `/v8/deployments/${encodeURIComponent(deploymentId)}/files/${encodeURIComponent(uid)}?path=${encodeURIComponent(filePath)}`,
+        teamId
+      )
+    );
+    // Legacy v2 blob store
+    attempts.push(withTeamQuery(`/v2/files/${encodeURIComponent(uid)}`, teamId));
+  }
+
+  let lastError = "Could not read file";
+  for (const path of attempts) {
+    try {
+      const data = await vercelFetch(path, token);
+      const text = decodeFilePayload(data);
+      if (text) return text;
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : lastError;
+    }
+  }
+
+  throw new Error(`${lastError} (${filePath})`);
 }
 
 async function collectFiles(
@@ -65,18 +124,24 @@ async function collectFiles(
   prefix: string,
   deploymentId: string,
   token: string,
-  out: { path: string; code: string }[]
+  teamId: string | undefined,
+  out: { path: string; code: string }[],
+  errors: string[]
 ) {
   for (const node of nodes) {
     const path = prefix ? `${prefix}/${node.name}` : node.name;
     if (node.type === "directory" && node.children?.length) {
-      await collectFiles(node.children, path, deploymentId, token, out);
+      await collectFiles(node.children, path, deploymentId, token, teamId, out, errors);
     } else if (node.type === "file" || node.type === "lambda") {
       if (node.content) {
         out.push({ path, code: node.content });
-      } else if (node.uid) {
-        const code = await fileContent(deploymentId, node.uid, token);
+        continue;
+      }
+      try {
+        const code = await fetchFileContent(deploymentId, path, node.uid, token, teamId);
         if (code) out.push({ path, code });
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : `${path}: fetch failed`);
       }
     }
   }
@@ -97,10 +162,8 @@ export async function POST(req: Request) {
 
     const host = hostFromUrl(deploymentUrl);
 
-    // Correct API: GET /v13/deployments/{idOrUrl} — hostname works as idOrUrl
-    // (Do NOT use ?host= on list deployments — that returns "Invalid API version")
     const deployment = (await vercelFetch(
-      `/v13/deployments/${encodeURIComponent(host)}`,
+      withTeamQuery(`/v13/deployments/${encodeURIComponent(host)}`, undefined),
       vercelToken
     )) as VercelDeployment;
 
@@ -108,10 +171,12 @@ export async function POST(req: Request) {
       return Response.json({ error: `No deployment found for ${host}` }, { status: 404 });
     }
 
+    const teamId = teamIdFromDeployment(deployment);
+
     let tree: VercelFileNode[];
     try {
       tree = (await vercelFetch(
-        `/v6/deployments/${encodeURIComponent(deployment.id)}/files`,
+        withTeamQuery(`/v6/deployments/${encodeURIComponent(deployment.id)}/files`, teamId),
         vercelToken
       )) as VercelFileNode[];
     } catch (err) {
@@ -119,15 +184,24 @@ export async function POST(req: Request) {
       return Response.json(
         {
           error:
-            `${message}. This deployment may have been created from Git without uploaded source files. ` +
-            "If you deployed via the agent's Deploy button, try selecting the app from the Project dropdown instead.",
+            `${message}. Deployments from GitHub often cannot expose source files via API. ` +
+            "If you built the app in this browser, select it from the Project dropdown instead.",
         },
         { status: 404 }
       );
     }
 
     const allFiles: { path: string; code: string }[] = [];
-    await collectFiles(Array.isArray(tree) ? tree : [], "", deployment.id, vercelToken, allFiles);
+    const fetchErrors: string[] = [];
+    await collectFiles(
+      Array.isArray(tree) ? tree : [],
+      "",
+      deployment.id,
+      vercelToken,
+      teamId,
+      allFiles,
+      fetchErrors
+    );
 
     const files = allFiles.filter(
       (f) =>
@@ -137,11 +211,13 @@ export async function POST(req: Request) {
     );
 
     if (files.length === 0) {
+      const detail = fetchErrors.slice(0, 2).join("; ");
       return Response.json(
         {
           error:
-            "No source files found in this deployment. Apps deployed from GitHub may not expose source via API — " +
-            "use the Project dropdown if you built the app in this browser, or redeploy using the agent's Deploy button.",
+            "No source files could be imported from this deployment. " +
+            (detail ? `Details: ${detail}. ` : "") +
+            "Use the Project dropdown if you built the app here, or redeploy via the agent Deploy button.",
         },
         { status: 404 }
       );
@@ -151,12 +227,20 @@ export async function POST(req: Request) {
       deployment.name?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) ??
       "Imported App";
 
+    // Prefer stable production alias over deployment-specific preview URLs
+    const stableHost = host.includes("-") && host.endsWith(".vercel.app") && host.split("-").length > 3
+      ? deployment.name
+        ? `${deployment.name}.vercel.app`
+        : host
+      : host;
+
     return Response.json({
       title,
       vercelProjectName: deployment.name ?? host.split(".")[0],
-      deploymentUrl: deploymentUrl.startsWith("http") ? deploymentUrl : `https://${host}`,
+      deploymentUrl: `https://${stableHost}`,
       deploymentId: deployment.id,
       files,
+      warnings: fetchErrors.length > 0 ? fetchErrors.slice(0, 5) : undefined,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Failed to pull deployment";
