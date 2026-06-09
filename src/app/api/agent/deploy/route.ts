@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       })),
       projectSettings: {
         framework: "nextjs",
-        installCommand: "npm install",
+        installCommand: "npm install --legacy-peer-deps",
         buildCommand: "npm run build",
         outputDirectory: ".next",
         nodeVersion: "20.x",
