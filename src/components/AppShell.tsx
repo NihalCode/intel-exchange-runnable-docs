@@ -223,6 +223,17 @@ export function AppShell({
           </span>
         </Link>
 
+        <Link
+          href="/agent"
+          className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
+            pathname === "/agent"
+              ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+              : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+          }`}
+        >
+          AI Agent
+        </Link>
+
         <HeaderBar />
         <ThemeToggle />
       </header>

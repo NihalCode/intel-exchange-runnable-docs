@@ -141,8 +141,8 @@ function resolvedPath(req: RunnableRequest): string {
   return applyPathParams(req.path, req.pathParams);
 }
 
-function curlSnippet(req: RunnableRequest): string {
-  const url = `${DISPLAY_BASE}${resolvedPath(req)}${queryString(req.query)}`;
+function curlSnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): string {
+  const url = `${baseUrl}${resolvedPath(req)}${queryString(req.query)}`;
   const lines = [`curl --request ${req.method} \\`, `  --url "${url}"`];
   for (const h of req.headers) {
     if (h.name.toLowerCase() === "content-type") continue;
@@ -167,8 +167,8 @@ function curlSnippet(req: RunnableRequest): string {
   return lines.join("\n");
 }
 
-function jsSnippet(req: RunnableRequest): string {
-  const url = `${DISPLAY_BASE}${resolvedPath(req)}${queryString(req.query)}`;
+function jsSnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): string {
+  const url = `${baseUrl}${resolvedPath(req)}${queryString(req.query)}`;
   const headerObj: Record<string, string> = {};
   for (const h of req.headers) {
     if (h.name.toLowerCase() === "content-type") continue;
@@ -220,7 +220,7 @@ function jsSnippet(req: RunnableRequest): string {
   ].join("\n");
 }
 
-function pySnippet(req: RunnableRequest): string {
+function pySnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): string {
   const headerObj: Record<string, string> = {};
   for (const h of req.headers) {
     if (h.name.toLowerCase() === "content-type") continue;
@@ -231,7 +231,7 @@ function pySnippet(req: RunnableRequest): string {
   const lines = [
     `import requests`,
     ``,
-    `url = "${DISPLAY_BASE}${resolvedPath(req)}"`,
+    `url = "${baseUrl}${resolvedPath(req)}"`,
     `params = ${pyDict(params)}`,
     `headers = ${pyDict(headerObj)}`,
   ];
@@ -343,4 +343,21 @@ export function buildEndpointSnippets(page: EndpointPage): CodeSnippet[] {
   }
 
   return snippets;
+}
+
+export type SnippetLanguage = "curl" | "javascript" | "python";
+
+export function codeForRunnableRequest(
+  req: RunnableRequest,
+  lang: SnippetLanguage,
+  baseUrl: string = DISPLAY_BASE
+): string {
+  switch (lang) {
+    case "curl":
+      return curlSnippet(req, baseUrl);
+    case "javascript":
+      return jsSnippet(req, baseUrl);
+    case "python":
+      return pySnippet(req, baseUrl);
+  }
 }
