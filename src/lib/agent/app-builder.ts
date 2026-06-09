@@ -320,7 +320,7 @@ export async function POST(req: Request) {
       count?: number;
     }>({
       method: "POST",
-      path: "/ingestion/threat-data/list/",
+      path: "ingestion/threat-data/list/",
       body: { query },
       query: { page: "1", page_size: "1" },
     });
@@ -351,36 +351,51 @@ interface CreateIntelRequest {
   value: string;
   type: string;
   tlp?: string;
-  tags?: string[];
 }
 
-const IOC_STIX_TYPE: Record<string, string> = {
+/** Frontend extractor type → Quick Add Intel \`indicators\` object key (see docs) */
+const IOC_INDICATOR_KEY: Record<string, string> = {
   ipv4: "ipv4-addr",
   ipv6: "ipv6-addr",
-  domain: "domain-name",
+  domain: "domain",
   url: "url",
-  email: "email-addr",
-  md5: "MD5",
-  sha1: "SHA-1",
-  sha256: "SHA-256",
+  email: "email",
+  md5: "md5",
+  sha1: "sha1",
+  sha256: "sha256",
 };
 
 export async function POST(req: Request) {
   try {
-    const { value, type, tlp = "AMBER", tags = [] }: CreateIntelRequest = await req.json();
-    const iocType = IOC_STIX_TYPE[type] ?? type;
+    const { value, type, tlp = "AMBER" }: CreateIntelRequest = await req.json();
+    const indicatorKey = IOC_INDICATOR_KEY[type];
+
+    if (!indicatorKey) {
+      return NextResponse.json({ error: \`Unsupported IOC type: \${type}\` }, { status: 400 });
+    }
+
+    const safeValue = value.replace(/,/g, "").trim();
+    if (!safeValue) {
+      return NextResponse.json({ error: "IOC value is required" }, { status: 400 });
+    }
 
     const client = cywareClientFromEnv();
-    const result = await client.request({
+    const result = await client.request<{ task_id?: string; details?: string }>({
       method: "POST",
-      path: "/ingestion/quick-add-intel/",
+      path: "conversion/quick-intel/create-stix/",
       body: {
-        data: [{ value, type: "indicator", ioc_type: iocType, tlp }],
-        tags,
+        indicators: { [indicatorKey]: safeValue },
+        metadata: { tlp, is_apply_all: true },
+        title: \`Phishing IOC: \${safeValue.slice(0, 80)}\`,
+        create_intel_feed: true,
       },
     });
 
-    return NextResponse.json(result.data, { status: result.status });
+    return NextResponse.json({
+      success: true,
+      taskId: result.data.task_id,
+      message: result.data.details ?? "Intel submitted to Cyware",
+    }, { status: result.status });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Create intel failed";
     return NextResponse.json({ error: message }, { status: 502 });

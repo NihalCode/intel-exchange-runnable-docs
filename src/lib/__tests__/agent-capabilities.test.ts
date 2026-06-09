@@ -74,4 +74,18 @@ describe("generateAppBlueprint", () => {
     expect(app.files.some((f) => f.path.includes("api/cyware"))).toBe(true);
     expect(app.files.some((f) => f.path === "README.md")).toBe(true);
   });
+
+  it("phishing app uses documented Quick Add Intel endpoint", () => {
+    const app = generateAppBlueprint(
+      "Build a phishing email analyzer",
+      "Phishing Email Analyzer",
+      "desc",
+      []
+    );
+    const createRoute = app.files.find((f) => f.path === "app/api/cyware/create-intel/route.ts");
+    expect(createRoute).toBeDefined();
+    expect(createRoute?.code).toContain("conversion/quick-intel/create-stix/");
+    expect(createRoute?.code).toContain('indicators: { [indicatorKey]: safeValue }');
+    expect(createRoute?.code).not.toContain("/ingestion/quick-add-intel/");
+  });
 });
