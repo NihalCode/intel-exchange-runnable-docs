@@ -49,6 +49,10 @@ export async function POST(req: Request) {
         buildCommand: "npm run build",
         outputDirectory: ".next",
         nodeVersion: "20.x",
+        // Files are uploaded flat at the deployment root. Clear any stale
+        // Root Directory the project may have so Vercel finds package.json at
+        // the root instead of /vercel/pathN/<rootDir>/package.json.
+        rootDirectory: null,
       },
       target: "production",
       env: envVars ?? {},
