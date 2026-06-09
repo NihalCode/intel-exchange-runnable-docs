@@ -71,12 +71,20 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const language = req.language ?? "python";
   const baseUrl = getManifest().defaultBaseUrl || DISPLAY_BASE;
 
-  let scored = retrieveLexical(query, index, mode === "app" ? 20 : 14);
+  // Combine recent user turns so follow-ups like "add pagination" still retrieve relevant docs
+  const retrievalQuery = req.history?.length
+    ? [
+        ...req.history.filter((h) => h.role === "user").slice(-2).map((h) => h.content),
+        query,
+      ].join(" ")
+    : query;
+
+  let scored = retrieveLexical(retrievalQuery, index, mode === "app" ? 20 : 14);
 
   if (apiKey && index.hasEmbeddings) {
     try {
-      const embedding = await embedQuery(query, apiKey);
-      scored = retrieveWithEmbedding(query, index, embedding, mode === "app" ? 20 : 14);
+      const embedding = await embedQuery(retrievalQuery, apiKey);
+      scored = retrieveWithEmbedding(retrievalQuery, index, embedding, mode === "app" ? 20 : 14);
     } catch {
       /* lexical only */
     }
