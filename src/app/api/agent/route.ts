@@ -2,6 +2,9 @@ import { runAgent } from "@/lib/agent/orchestrate";
 import type { AgentRequest } from "@/lib/agent/types";
 
 export const runtime = "nodejs";
+// LLM-backed planning/edits can take 20-40s; Vercel's default function
+// duration (10s on Hobby) kills the request mid-flight otherwise.
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {

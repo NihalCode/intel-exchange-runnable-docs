@@ -179,7 +179,19 @@ export function AgentChat() {
           existingApp,
         }),
       });
-      const data = (await res.json()) as AgentResponse & { error?: string | { message?: string; code?: string } };
+      const bodyText = await res.text();
+      let data: AgentResponse & { error?: string | { message?: string; code?: string } };
+      try {
+        data = JSON.parse(bodyText);
+      } catch {
+        // Vercel timeout/crash pages are plain text, not JSON
+        throw new Error(
+          res.ok
+            ? "The server returned an unreadable response. Try again."
+            : `Server error (${res.status}): ${bodyText.slice(0, 200) || res.statusText}. ` +
+              "If this is a timeout, try a shorter or more specific edit request."
+        );
+      }
       if (!res.ok) {
         // Vercel infrastructure errors return { error: { message, code } } (an object, not a string).
         const raw = data.error;
