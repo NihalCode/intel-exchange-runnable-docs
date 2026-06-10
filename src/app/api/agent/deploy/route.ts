@@ -1,4 +1,5 @@
 import { formatProblems, validateAppFiles } from "@/lib/agent/validate-app";
+import { repairAppFiles } from "@/lib/agent/repair-app";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -174,8 +175,9 @@ export async function POST(req: Request) {
     await clearProjectRootDirectory(name, token);
 
     const normalizedFiles = hardenFiles(normalizeFilePaths(files));
+    const { files: repairedFiles, notes: repairNotes } = repairAppFiles(normalizedFiles);
 
-    if (!normalizedFiles.some((f) => f.path === "package.json")) {
+    if (!repairedFiles.some((f) => f.path === "package.json")) {
       return Response.json(
         {
           error:
@@ -188,14 +190,13 @@ export async function POST(req: Request) {
 
     // Catch broken source before uploading — a failed Vercel build wastes
     // minutes and surfaces a log the agent can't see.
-    const problems = validateAppFiles(normalizedFiles);
+    const problems = validateAppFiles(repairedFiles);
     if (problems.length > 0) {
       return Response.json(
         {
           error:
             `Deploy blocked: the app has syntax errors that would fail the Vercel build — ${formatProblems(problems)}. ` +
-            "These were likely introduced by an earlier AI edit. Ask the agent to fix the broken file " +
-            "(e.g. \"fix the syntax error in app/page.tsx\"), or rebuild the app fresh.",
+            "Ask the agent to fix the broken file, or rebuild the app fresh.",
         },
         { status: 400 }
       );
@@ -203,7 +204,7 @@ export async function POST(req: Request) {
 
     const payload = {
       name,
-      files: normalizedFiles.map((f) => ({
+      files: repairedFiles.map((f) => ({
         file: f.path,
         data: f.code,
       })),
@@ -248,6 +249,7 @@ export async function POST(req: Request) {
       message:
         `Deployment started for project "${name}". Your app will be live in ~2 minutes at the URL above. ` +
         "Redeploying with the same project name updates the existing site in place.",
+      warnings: repairNotes.length > 0 ? repairNotes : undefined,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Deployment failed";

@@ -18,6 +18,7 @@ interface DeployResult {
   projectName?: string;
   message: string;
   inspectorUrl?: string;
+  warnings?: string[];
 }
 
 function DeployModal({
@@ -100,6 +101,16 @@ function DeployModal({
               <p className="font-semibold text-emerald-800 dark:text-emerald-200">Deployment started!</p>
               <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">{result.message}</p>
             </div>
+            {result.warnings && result.warnings.length > 0 ? (
+              <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+                <p className="font-semibold">Auto-repaired before deploy</p>
+                <ul className="mt-1 list-disc space-y-0.5 pl-4">
+                  {result.warnings.map((w) => (
+                    <li key={w}>{w}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {result.url && (
               <a
                 href={result.url}

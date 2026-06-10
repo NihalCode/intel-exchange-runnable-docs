@@ -947,6 +947,11 @@ Set \`CYWARE_BASE_URL\`, \`CYWARE_ACCESS_ID\`, \`CYWARE_SECRET_KEY\` in your hos
 
 /* ─────────────────────── main export ──────────────────────────────── */
 
+/** Known-good stylesheet for generated apps — used to recover broken CSS at deploy. */
+export function defaultGlobalsCss(): string {
+  return globalsCss();
+}
+
 export function generateAppBlueprint(
   query: string,
   title: string,

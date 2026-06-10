@@ -7,6 +7,7 @@ import {
   normalizeLlmCode,
 } from "./app-edit-rules";
 import { formatProblems, validateAppFiles } from "./validate-app";
+import { repairCssOrphans } from "./repair-app";
 import type { AgentAppBlueprint } from "./types";
 
 const MODEL = "gpt-4o-mini";
@@ -230,18 +231,23 @@ ${fileContext}`,
     throw new Error("Edit produced identical file content — no changes applied. Rephrase your request.");
   }
 
-  // Reject the edit outright if it would produce files that can't compile —
-  // a broken version must never be saved or deployed.
-  const editedFiles = changedPaths.map((p) => ({ path: p, code: updates.get(p)! }));
-  const problems = validateAppFiles(editedFiles);
+  // Reject the edit if the full merged app would fail to build.
+  const merged = mergeFileUpdates(existing, updates);
+  const finalFiles = merged.files.map((f) => {
+    if (!f.path.endsWith(".css")) return f;
+    const { code } = repairCssOrphans(f.code);
+    return { ...f, code };
+  });
+
+  const problems = validateAppFiles(
+    finalFiles.map((f) => ({ path: f.path, code: f.code }))
+  );
   if (problems.length > 0) {
     throw new Error(
       `The AI edit was rejected because it would break the app (${formatProblems(problems)}). ` +
         "Your app is unchanged — try rephrasing the request."
     );
   }
-
-  const merged = mergeFileUpdates(existing, updates);
 
   let summary = parsed.summary ?? `Updated ${changedPaths.join(", ")}`;
   if (failedEdits.length > 0) {
@@ -251,6 +257,7 @@ ${fileContext}`,
   return {
     blueprint: {
       ...merged,
+      files: finalFiles,
       description: parsed.summary ?? existing.description,
     },
     summary,
