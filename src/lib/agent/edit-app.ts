@@ -6,6 +6,7 @@ import {
   mergeFileUpdates,
   normalizeLlmCode,
 } from "./app-edit-rules";
+import { formatProblems, validateAppFiles } from "./validate-app";
 import type { AgentAppBlueprint } from "./types";
 
 const MODEL = "gpt-4o-mini";
@@ -227,6 +228,17 @@ ${fileContext}`,
 
   if (changedPaths.length === 0) {
     throw new Error("Edit produced identical file content — no changes applied. Rephrase your request.");
+  }
+
+  // Reject the edit outright if it would produce files that can't compile —
+  // a broken version must never be saved or deployed.
+  const editedFiles = changedPaths.map((p) => ({ path: p, code: updates.get(p)! }));
+  const problems = validateAppFiles(editedFiles);
+  if (problems.length > 0) {
+    throw new Error(
+      `The AI edit was rejected because it would break the app (${formatProblems(problems)}). ` +
+        "Your app is unchanged — try rephrasing the request."
+    );
   }
 
   const merged = mergeFileUpdates(existing, updates);

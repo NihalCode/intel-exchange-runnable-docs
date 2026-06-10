@@ -1,3 +1,5 @@
+import { formatProblems, validateAppFiles } from "@/lib/agent/validate-app";
+
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
@@ -179,6 +181,21 @@ export async function POST(req: Request) {
           error:
             "package.json is missing from the app files, so the Vercel build would fail. " +
             "Re-import the app from Vercel (the import now fixes file paths) or rebuild it via the agent.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Catch broken source before uploading — a failed Vercel build wastes
+    // minutes and surfaces a log the agent can't see.
+    const problems = validateAppFiles(normalizedFiles);
+    if (problems.length > 0) {
+      return Response.json(
+        {
+          error:
+            `Deploy blocked: the app has syntax errors that would fail the Vercel build — ${formatProblems(problems)}. ` +
+            "These were likely introduced by an earlier AI edit. Ask the agent to fix the broken file " +
+            "(e.g. \"fix the syntax error in app/page.tsx\"), or rebuild the app fresh.",
         },
         { status: 400 }
       );
