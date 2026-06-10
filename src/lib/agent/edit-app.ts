@@ -107,20 +107,38 @@ Current source of files most likely to change:
 ${fileContext}`,
   });
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      temperature: 0.15,
-      max_tokens: 8192,
-      response_format: { type: "json_object" },
-      messages,
-    }),
-  });
+  // Abort before Vercel's 60s function limit so the user gets a clear error
+  // instead of a platform-killed request ("Internal Server Error").
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 50_000);
+  let res: Response;
+  try {
+    res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        temperature: 0.15,
+        max_tokens: 8192,
+        response_format: { type: "json_object" },
+        messages,
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(
+        "The edit took too long and was cancelled. Try splitting the request into smaller steps, " +
+          'e.g. first "apply a dark Cyware color palette", then "add glassmorphism cards", etc.'
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!res.ok) {
     const err = await res.text();
