@@ -63,12 +63,46 @@ export default function Page() {
     expect(problems[0].error).toContain("JSON");
   });
 
-  it("passes valid JSON and ignores CSS/MD files", () => {
+  it("passes valid JSON and ignores MD files", () => {
     const problems = validateAppFiles([
       { path: "package.json", code: `{ "name": "x" }` },
-      { path: "app/globals.css", code: "body { color: red;" },
       { path: "README.md", code: "# hi" },
     ]);
     expect(problems).toEqual([]);
+  });
+
+  it("passes valid CSS", () => {
+    const problems = validateAppFiles([
+      {
+        path: "app/globals.css",
+        code: `body { color: red; }
+.card { border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+@media (max-width: 600px) { .card { padding: 1rem; } }`,
+      },
+    ]);
+    expect(problems).toEqual([]);
+  });
+
+  it("catches orphaned closing brace in CSS (real Vercel build failure)", () => {
+    const problems = validateAppFiles([
+      {
+        path: "app/globals.css",
+        code: `  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+textarea, input[type="text"] { width: 100%; }`,
+      },
+    ]);
+    expect(problems.length).toBeGreaterThan(0);
+    expect(problems[0].path).toBe("app/globals.css");
+    expect(problems[0].error).toContain("CSS");
+  });
+
+  it("catches unclosed block in CSS", () => {
+    const problems = validateAppFiles([
+      { path: "app/globals.css", code: "body { color: red;" },
+    ]);
+    expect(problems.length).toBeGreaterThan(0);
   });
 });

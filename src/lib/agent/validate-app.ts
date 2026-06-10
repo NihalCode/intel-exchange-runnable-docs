@@ -1,3 +1,4 @@
+import postcss from "postcss";
 import ts from "typescript";
 
 export interface AppFileProblem {
@@ -45,6 +46,16 @@ export function validateAppFiles(
         JSON.parse(f.code);
       } catch {
         problems.push({ path: f.path, error: "invalid JSON" });
+      }
+    } else if (f.path.endsWith(".css")) {
+      try {
+        postcss.parse(f.code, { from: f.path });
+      } catch (err) {
+        const e = err as { reason?: string; line?: number };
+        problems.push({
+          path: f.path,
+          error: `CSS syntax error: ${e.reason ?? "parse failed"}${e.line ? ` (line ${e.line})` : ""}`,
+        });
       }
     }
   }
