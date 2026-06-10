@@ -16,6 +16,43 @@ interface VercelDeployResponse {
   error?: { message?: string; code?: string };
 }
 
+/**
+ * If the project already exists and has a rootDirectory configured, clear it.
+ * rootDirectory is a project-level setting that is NOT overridable in the
+ * deployment payload's projectSettings — it must be patched via the Projects API.
+ * A stale rootDirectory causes Vercel to look for package.json in a subdirectory
+ * that doesn't exist in our flat file upload, producing "ENOENT package.json".
+ */
+async function clearProjectRootDirectory(
+  projectName: string,
+  token: string
+): Promise<void> {
+  try {
+    const getRes = await fetch(
+      `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!getRes.ok) return; // Project doesn't exist yet — nothing to patch
+
+    const project = (await getRes.json()) as { rootDirectory?: string | null };
+    if (!project.rootDirectory) return; // Already clear
+
+    await fetch(
+      `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rootDirectory: "" }),
+      }
+    );
+  } catch {
+    // Non-fatal: if the patch fails we still attempt the deployment.
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const { files, appName, vercelToken, projectName, envVars } = (await req.json()) as DeployRequest;
@@ -36,6 +73,9 @@ export async function POST(req: Request) {
         .replace(/^-+|-+$/g, "")
         .slice(0, 52);
 
+    // Clear stale rootDirectory before deploying so package.json is found at root.
+    await clearProjectRootDirectory(name, vercelToken.trim());
+
     const payload = {
       name,
       files: files.map((f) => ({
@@ -49,10 +89,6 @@ export async function POST(req: Request) {
         buildCommand: "npm run build",
         outputDirectory: ".next",
         nodeVersion: "20.x",
-        // Files are uploaded flat at the deployment root. Clear any stale
-        // Root Directory the project may have so Vercel finds package.json at
-        // the root instead of /vercel/pathN/<rootDir>/package.json.
-        rootDirectory: null,
       },
       target: "production",
       env: envVars ?? {},
