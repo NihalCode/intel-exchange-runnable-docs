@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CodeBlock } from "./CodeBlock";
 import type { AgentAppBlueprint } from "@/lib/agent/types";
 import type { CodeSnippet } from "@/lib/types";
+import {
+  hasDeploySettings,
+  loadDeploySettings,
+  saveDeploySettings,
+} from "@/lib/agent/deploy-settings-client";
+import { useRunSettings } from "./RunSettings";
 
 interface DeployState {
   vercelToken: string;
@@ -34,19 +40,47 @@ function DeployModal({
     projectName: string;
   }) => void;
 }) {
-  const [form, setForm] = useState<DeployState>({
-    vercelToken: "",
-    baseUrl: "",
-    accessId: "",
-    secretKey: "",
-  });
+  const run = useRunSettings();
+  const [form, setForm] = useState<DeployState>(() => loadDeploySettings());
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DeployResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const credentialsSaved = hasDeploySettings();
+
+  // Seed from RunSettings (Auth panel) when deploy memory is still empty
+  useEffect(() => {
+    setForm((prev) => {
+      const next = {
+        vercelToken: prev.vercelToken,
+        baseUrl: prev.baseUrl || run.baseUrl,
+        accessId: prev.accessId || run.accessId,
+        secretKey: prev.secretKey || run.secretKey,
+      };
+      if (
+        next.baseUrl !== prev.baseUrl ||
+        next.accessId !== prev.accessId ||
+        next.secretKey !== prev.secretKey
+      ) {
+        saveDeploySettings(next);
+      }
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed once on open
+  }, []);
+
+  function patchForm(patch: Partial<DeployState>) {
+    setForm((prev) => {
+      const next = { ...prev, ...patch };
+      saveDeploySettings(next);
+      if (patch.baseUrl !== undefined) run.setBaseUrl(patch.baseUrl);
+      if (patch.accessId !== undefined) run.setAccessId(patch.accessId);
+      if (patch.secretKey !== undefined) run.setSecretKey(patch.secretKey);
+      return next;
+    });
+  }
 
   function set(k: keyof DeployState) {
-    return (e: React.ChangeEvent<HTMLInputElement>) =>
-      setForm((prev) => ({ ...prev, [k]: e.target.value }));
+    return (e: React.ChangeEvent<HTMLInputElement>) => patchForm({ [k]: e.target.value });
   }
 
   async function deploy() {
@@ -138,8 +172,8 @@ function DeployModal({
         ) : (
           <div className="space-y-4 p-5">
             <p className="text-xs text-zinc-600 dark:text-zinc-400">
-              Your Cyware credentials are sent directly to Vercel and set as deployment environment variables.
-              They are not stored anywhere else.
+              Credentials are kept in memory for this browser session only — not written to disk.
+              {credentialsSaved ? " Saved values are pre-filled below." : ""}
             </p>
 
             <div className="rounded-md border border-amber-300/60 bg-amber-50/60 p-2.5 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">

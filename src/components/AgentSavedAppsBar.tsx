@@ -3,6 +3,10 @@
 import { useState } from "react";
 import type { SavedAppProject } from "@/lib/agent/types";
 import {
+  loadDeploySettings,
+  saveDeploySettings,
+} from "@/lib/agent/deploy-settings-client";
+import {
   blueprintFromVersion,
   deleteSavedApp,
   getLatestVersion,
@@ -20,9 +24,14 @@ export function ImportVercelModal({
   onImported: (appId: string) => void;
 }) {
   const [url, setUrl] = useState("");
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(() => loadDeploySettings().vercelToken);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function setVercelToken(value: string) {
+    setToken(value);
+    saveDeploySettings({ vercelToken: value });
+  }
 
   async function pull() {
     setLoading(true);
@@ -94,7 +103,7 @@ export function ImportVercelModal({
             <input
               type="password"
               value={token}
-              onChange={(e) => setToken(e.target.value)}
+              onChange={(e) => setVercelToken(e.target.value)}
               placeholder="vercel_…"
               className="w-full rounded-md border border-zinc-300 px-2.5 py-1.5 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-900"
             />
