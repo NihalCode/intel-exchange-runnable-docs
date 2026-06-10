@@ -16,46 +16,75 @@ interface VercelDeployResponse {
   error?: { message?: string; code?: string };
 }
 
+async function vercelGet(path: string, token: string) {
+  const res = await fetch(`https://api.vercel.com${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) return null;
+  return res.json() as Promise<Record<string, unknown>>;
+}
+
+/** Get the user's defaultTeamId so team-owned projects can be patched. */
+async function getDefaultTeamId(token: string): Promise<string | undefined> {
+  try {
+    const data = await vercelGet("/v2/user", token);
+    const tid = (data as { user?: { defaultTeamId?: string } } | null)?.user?.defaultTeamId;
+    return tid ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
- * If the project already exists and has a rootDirectory configured, clear it.
- * rootDirectory is a project-level setting that is NOT overridable in the
- * deployment payload's projectSettings — it must be patched via the Projects API.
- * A stale rootDirectory causes Vercel to look for package.json in a subdirectory
- * that doesn't exist in our flat file upload, producing "ENOENT package.json".
+ * Before deploying, clear any stale rootDirectory on the Vercel project.
+ * rootDirectory is a project-level setting; it cannot be overridden in the
+ * deployment payload. If set, Vercel runs npm install from the wrong subdirectory
+ * causing "ENOENT: no such file or directory, open '/vercel/pathN/package.json'".
+ *
+ * We try with teamId (team-owned projects) and without (personal accounts).
  */
 async function clearProjectRootDirectory(
   projectName: string,
   token: string
 ): Promise<void> {
-  try {
-    const getRes = await fetch(
-      `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (!getRes.ok) return; // Project doesn't exist yet — nothing to patch
+  const teamId = await getDefaultTeamId(token);
 
-    const project = (await getRes.json()) as { rootDirectory?: string | null };
-    if (!project.rootDirectory) return; // Already clear
+  const candidateUrls = [
+    teamId
+      ? `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}?teamId=${encodeURIComponent(teamId)}`
+      : null,
+    `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
+  ].filter(Boolean) as string[];
 
-    await fetch(
-      `https://api.vercel.com/v9/projects/${encodeURIComponent(projectName)}`,
-      {
+  for (const url of candidateUrls) {
+    try {
+      const getRes = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!getRes.ok) continue;
+
+      const project = (await getRes.json()) as { rootDirectory?: string | null };
+      if (!project.rootDirectory) return; // already clear — nothing to do
+
+      await fetch(url, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ rootDirectory: "" }),
-      }
-    );
-  } catch {
-    // Non-fatal: if the patch fails we still attempt the deployment.
+      });
+      return; // patched successfully
+    } catch {
+      // try next candidate
+    }
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const { files, appName, vercelToken, projectName, envVars } = (await req.json()) as DeployRequest;
+    const { files, appName, vercelToken, projectName, envVars } =
+      (await req.json()) as DeployRequest;
 
     if (!vercelToken?.trim()) {
       return Response.json({ error: "Vercel token is required" }, { status: 400 });
@@ -63,6 +92,8 @@ export async function POST(req: Request) {
     if (!Array.isArray(files) || files.length === 0) {
       return Response.json({ error: "No files provided" }, { status: 400 });
     }
+
+    const token = vercelToken.trim();
 
     const name =
       projectName?.trim() ||
@@ -73,15 +104,14 @@ export async function POST(req: Request) {
         .replace(/^-+|-+$/g, "")
         .slice(0, 52);
 
-    // Clear stale rootDirectory before deploying so package.json is found at root.
-    await clearProjectRootDirectory(name, vercelToken.trim());
+    // Clear stale rootDirectory before deploying (with teamId for team accounts).
+    await clearProjectRootDirectory(name, token);
 
     const payload = {
       name,
       files: files.map((f) => ({
         file: f.path,
         data: f.code,
-        encoding: "utf-8",
       })),
       projectSettings: {
         framework: "nextjs",
@@ -97,7 +127,7 @@ export async function POST(req: Request) {
     const res = await fetch("https://api.vercel.com/v13/deployments", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${vercelToken.trim()}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
