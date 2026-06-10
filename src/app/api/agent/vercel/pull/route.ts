@@ -203,7 +203,18 @@ export async function POST(req: Request) {
       fetchErrors
     );
 
-    const files = allFiles.filter(
+    // Vercel's deployment file tree wraps user source files in a top-level
+    // "src/" directory (sibling of "out/", ".vercel/" etc.). Strip that wrapper
+    // so package.json lands at the project root on redeploy.
+    const normalized = allFiles
+      .filter((f) => !f.path.startsWith("out/") && !f.path.startsWith(".vercel/"))
+      .map((f) =>
+        f.path.startsWith("src/") && allFiles.some((x) => x.path === "src/package.json")
+          ? { ...f, path: f.path.slice(4) }
+          : f
+      );
+
+    const files = normalized.filter(
       (f) =>
         !f.path.startsWith(".next/") &&
         !f.path.startsWith("node_modules/") &&

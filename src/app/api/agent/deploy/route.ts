@@ -81,6 +81,27 @@ async function clearProjectRootDirectory(
   }
 }
 
+/**
+ * Apps imported from Vercel before the import fix have paths wrapped in "src/"
+ * (Vercel's deployment file tree nests sources there). npm then can't find
+ * package.json at the deployment root. Strip the wrapper if package.json
+ * is missing at root but present under a single common directory.
+ */
+function normalizeFilePaths(
+  files: { path: string; code: string }[]
+): { path: string; code: string }[] {
+  const hasRootPkg = files.some((f) => f.path === "package.json");
+  if (hasRootPkg) return files;
+
+  const wrapped = files.find((f) => /^[^/]+\/package\.json$/.test(f.path));
+  if (!wrapped) return files;
+
+  const prefix = wrapped.path.slice(0, -"package.json".length); // e.g. "src/"
+  if (!files.every((f) => f.path.startsWith(prefix))) return files;
+
+  return files.map((f) => ({ ...f, path: f.path.slice(prefix.length) }));
+}
+
 export async function POST(req: Request) {
   try {
     const { files, appName, vercelToken, projectName, envVars } =
@@ -107,9 +128,22 @@ export async function POST(req: Request) {
     // Clear stale rootDirectory before deploying (with teamId for team accounts).
     await clearProjectRootDirectory(name, token);
 
+    const normalizedFiles = normalizeFilePaths(files);
+
+    if (!normalizedFiles.some((f) => f.path === "package.json")) {
+      return Response.json(
+        {
+          error:
+            "package.json is missing from the app files, so the Vercel build would fail. " +
+            "Re-import the app from Vercel (the import now fixes file paths) or rebuild it via the agent.",
+        },
+        { status: 400 }
+      );
+    }
+
     const payload = {
       name,
-      files: files.map((f) => ({
+      files: normalizedFiles.map((f) => ({
         file: f.path,
         data: f.code,
       })),
