@@ -136,3 +136,57 @@ describe("file upload rule-based edit", () => {
     expect(applyRuleBasedEdits("add drag and drop upload", bp)).toBeNull();
   });
 });
+
+describe("theme switcher rule-based edit", () => {
+  const THEME_PROMPT = `Add a theme switcher so users can toggle between light mode and dark mode.
+Default to dark mode, save selected theme in local storage, respect system theme only when no saved preference exists.
+Make dark mode vivid with --cyware-dark, gradients, glassmorphism, and glows.`;
+
+  it("injects a working theme switcher into an old-template app", () => {
+    const bp = minimalBlueprint(OLD_TEMPLATE_PAGE);
+    const result = applyRuleBasedEdits(THEME_PROMPT, bp);
+
+    expect(result).not.toBeNull();
+    expect(result!.changedPaths).toContain("app/page.tsx");
+    expect(result!.changedPaths).toContain("app/globals.css");
+    expect(result!.summary).toContain("theme switcher");
+
+    const page = result!.blueprint.files.find((f) => f.path === "app/page.tsx")!.code;
+    expect(page).toContain('import { useState, useEffect } from "react";');
+    expect(page).toContain('useState<"light" | "dark">("dark")');
+    expect(page).toContain('localStorage.getItem("cyware-theme")');
+    expect(page).toContain('localStorage.setItem("cyware-theme", theme)');
+    expect(page).toContain("prefers-color-scheme: light");
+    expect(page).toContain("agent:theme-switcher");
+    expect(page).toContain("theme-toggle");
+
+    const css = result!.blueprint.files.find((f) => f.path === "app/globals.css")!.code;
+    expect(css).toContain("--cyware-dark");
+    expect(css).toContain("radial-gradient");
+    expect(css).toContain(".theme-toggle");
+
+    expect(
+      validateAppFiles(result!.blueprint.files.map((f) => ({ path: f.path, code: f.code })))
+    ).toEqual([]);
+  });
+
+  it("does not double-apply the theme switcher", () => {
+    const bp = minimalBlueprint(OLD_TEMPLATE_PAGE);
+    const once = applyRuleBasedEdits(THEME_PROMPT, bp)!;
+    expect(applyRuleBasedEdits(THEME_PROMPT, once.blueprint)).toBeNull();
+  });
+
+  it("handles files that already import useEffect", () => {
+    const bp = minimalBlueprint(
+      OLD_TEMPLATE_PAGE.replace(
+        'import { useState } from "react";',
+        'import { useState, useEffect } from "react";'
+      )
+    );
+    const result = applyRuleBasedEdits(THEME_PROMPT, bp);
+    expect(result).not.toBeNull();
+    const page = result!.blueprint.files.find((f) => f.path === "app/page.tsx")!.code;
+    expect(page.match(/useEffect/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(page).not.toContain("useEffect, useEffect");
+  });
+});

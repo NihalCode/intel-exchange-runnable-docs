@@ -328,11 +328,198 @@ function patchDarkMode(code: string): string | null {
   );
 }
 
+/* ───────────────────── theme switcher feature patch ───────────────────── */
+
+const THEME_STATE_PATCH = `  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("cyware-theme");
+    const initial =
+      saved === "light" || saved === "dark"
+        ? saved
+        : window.matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark";
+    setTheme(initial);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("cyware-theme", theme);
+  }, [theme]);
+
+`;
+
+const THEME_TOGGLE_PATCH = `      {/* agent:theme-switcher */}
+      <header className="app-header">
+        <div>
+          <span className="eyebrow">Cyware Intel Exchange</span>
+        </div>
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+          aria-label="Toggle light and dark theme"
+        >
+          <span>{theme === "dark" ? "🌙" : "☀️"}</span>
+          {theme === "dark" ? "Dark" : "Light"}
+        </button>
+      </header>
+`;
+
+const THEME_CSS_PATCH = `
+
+/* agent:theme-switcher */
+:root {
+  --cyware-blue: #2563eb;
+  --cyware-purple: #8b5cf6;
+  --cyware-teal: #19c99a;
+  --cyware-dark: #07111f;
+  --app-bg: #f8fafc;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-soft: #ffffff;
+  --surface-hover: #eff6ff;
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --border-subtle: #e2e8f0;
+  --shadow-soft: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] {
+  --app-bg: radial-gradient(circle at 12% 8%, rgba(37, 99, 235, 0.26), transparent 28%),
+    radial-gradient(circle at 86% 12%, rgba(139, 92, 246, 0.24), transparent 30%),
+    radial-gradient(circle at 70% 88%, rgba(25, 201, 154, 0.18), transparent 32%),
+    var(--cyware-dark);
+  --surface: rgba(15, 23, 42, 0.72);
+  --surface-soft: rgba(17, 24, 39, 0.86);
+  --surface-hover: rgba(37, 99, 235, 0.18);
+  --text-primary: #eef6ff;
+  --text-muted: #a9b8d4;
+  --border-subtle: rgba(148, 163, 184, 0.26);
+  --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.4), 0 0 34px rgba(37, 99, 235, 0.12);
+}
+
+html, body { background: var(--app-bg); color: var(--text-primary); }
+body { min-height: 100vh; }
+.container { color: var(--text-primary); }
+.app-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin-bottom: 1.25rem; padding: 0.875rem 1rem;
+  border: 1px solid var(--border-subtle); border-radius: 16px;
+  background: var(--surface); box-shadow: var(--shadow-soft); backdrop-filter: blur(18px);
+}
+.eyebrow {
+  display: inline-block; color: var(--text-muted); font-size: 0.72rem;
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.theme-toggle {
+  display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid var(--border-subtle);
+  background: linear-gradient(135deg, rgba(37,99,235,0.16), rgba(139,92,246,0.12));
+  color: var(--text-primary); border-radius: 999px; padding: 0.5rem 0.8rem;
+  font-weight: 700; cursor: pointer; box-shadow: 0 0 0 rgba(37,99,235,0);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.theme-toggle:hover {
+  transform: translateY(-1px); border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 22px rgba(37,99,235,0.28), 0 0 30px rgba(139,92,246,0.18);
+}
+.card, .summary-card, .table-wrapper {
+  background: var(--surface); border-color: var(--border-subtle);
+  box-shadow: var(--shadow-soft); backdrop-filter: blur(18px);
+}
+.card:hover, .summary-card:hover { box-shadow: var(--shadow-soft), 0 0 28px rgba(37,99,235,0.14); }
+textarea, input, select {
+  background: var(--surface-soft); color: var(--text-primary); border-color: var(--border-subtle);
+}
+textarea::placeholder, input::placeholder { color: var(--text-muted); }
+th { background: var(--surface-soft); color: var(--text-muted); border-color: var(--border-subtle); }
+td { border-color: var(--border-subtle); }
+tbody tr:hover td { background: var(--surface-hover); }
+.value-cell, .risk-score-value { color: var(--text-primary); }
+.type-cell, .id-cell, .summary-label, .upload-meta, .risk-score-na { color: var(--text-muted); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyware-blue), #3b82f6); color: #fff;
+  box-shadow: 0 0 18px rgba(37,99,235,0.24);
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1d4ed8, var(--cyware-blue));
+  box-shadow: 0 0 26px rgba(37,99,235,0.36);
+}
+.btn-ghost { color: var(--text-primary); border-color: var(--border-subtle); }
+.btn-ghost:hover:not(:disabled) { background: var(--surface-hover); box-shadow: 0 0 18px rgba(139,92,246,0.18); }
+.badge-blue { background: rgba(37,99,235,0.16); color: #93c5fd; }
+.badge-green, .status-found, .upload-done .upload-status { color: var(--cyware-teal); }
+.alert-info { background: rgba(37,99,235,0.12); border-color: rgba(37,99,235,0.3); color: var(--text-primary); }
+.alert-success { background: rgba(25,201,154,0.12); border-color: rgba(25,201,154,0.3); color: var(--cyware-teal); }
+`;
+
+function ensureUseEffectImport(code: string): string {
+  if (/import\s*\{\s*[^}]*useEffect[^}]*\}\s*from\s*["']react["']/.test(code)) return code;
+  return code.replace(/import\s*\{\s*([^}]*)\}\s*from\s*["']react["'];/, (_m, imports: string) => {
+    const names = imports.split(",").map((s: string) => s.trim()).filter(Boolean);
+    if (!names.includes("useEffect")) names.push("useEffect");
+    return `import { ${names.join(", ")} } from "react";`;
+  });
+}
+
+function patchThemeSwitcherPage(code: string): string | null {
+  if (code.includes("agent:theme-switcher") || code.includes("cyware-theme")) return null;
+
+  let next = ensureUseEffectImport(code);
+  if (!next.includes("useEffect")) return null;
+
+  const firstState = next.match(/[ \t]*const \[[^\]]+\] = useState\([^;]+;[^\n]*\n/);
+  if (!firstState || firstState.index === undefined) return null;
+
+  const mainMatch = next.match(/<main(?:\s+[^>]*)?>/);
+  if (!mainMatch || mainMatch.index === undefined) return null;
+
+  const inserts: { at: number; text: string }[] = [
+    { at: firstState.index + firstState[0].length, text: THEME_STATE_PATCH },
+    { at: mainMatch.index + mainMatch[0].length, text: "\n" + THEME_TOGGLE_PATCH },
+  ].sort((a, b) => b.at - a.at);
+
+  for (const ins of inserts) {
+    next = next.slice(0, ins.at) + ins.text + next.slice(ins.at);
+  }
+  return next;
+}
+
+function patchThemeSwitcherFeature(blueprint: AgentAppBlueprint): EditResult | null {
+  const page = blueprint.files.find((f) => f.path === "app/page.tsx");
+  if (!page) return null;
+  const nextPage = patchThemeSwitcherPage(page.code);
+  if (nextPage === null) return null;
+
+  const changedPaths = ["app/page.tsx"];
+  const files = blueprint.files.map((f) => {
+    if (f.path === "app/page.tsx") return { ...f, code: nextPage };
+    if (f.path === "app/globals.css" && !f.code.includes("agent:theme-switcher")) {
+      changedPaths.push(f.path);
+      return { ...f, code: f.code + THEME_CSS_PATCH };
+    }
+    return f;
+  });
+
+  return {
+    blueprint: { ...blueprint, files },
+    summary: "Added theme switcher",
+    changedPaths,
+  };
+}
+
 const RULES: {
   test: (q: string) => boolean;
   apply: (blueprint: AgentAppBlueprint) => EditResult | null;
   summary: string;
 }[] = [
+  {
+    test: (q) => /theme switch|theme toggle|toggle.*theme|light mode.*dark mode|dark mode.*light mode/i.test(q),
+    summary:
+      "Added a light/dark theme switcher in the header, defaulting to dark mode, saving preference in localStorage, " +
+      "respecting system theme only when no preference exists, and polishing both light and vivid Cyware dark modes.",
+    apply: patchThemeSwitcherFeature,
+  },
   {
     test: (q) =>
       /recipient|email address|user@|false positive|company\.org|skip.*domain|domain.*email|email.*domain/i.test(
@@ -342,7 +529,9 @@ const RULES: {
     apply: (bp) => patchFile(bp, "app/page.tsx", replaceExtractIocs),
   },
   {
-    test: (q) => /dark mode|dark theme|dark ui|night mode/i.test(q),
+    test: (q) =>
+      /dark mode|dark theme|dark ui|night mode/i.test(q) &&
+      !/theme switch|theme toggle|toggle.*theme|light mode.*dark mode|dark mode.*light mode/i.test(q),
     summary: "Add dark mode styles",
     apply: (bp) => patchFile(bp, "app/globals.css", patchDarkMode),
   },
