@@ -16,6 +16,12 @@ import {
   setActiveAppId,
 } from "@/lib/agent/saved-apps-client";
 import { slugifyProjectName } from "@/lib/agent/app-diff";
+import {
+  AGENT_UPLOAD_ACCEPT,
+  attachmentFromFile,
+  buildQueryWithAttachments,
+  type AgentAttachment,
+} from "@/lib/agent/file-extract-client";
 
 const WORKFLOW_EXAMPLES = [
   "Import a STIX 2.1 bundle and verify the indicator appears in threat data",
@@ -104,8 +110,12 @@ export function AgentChat() {
   const [showImport, setShowImport] = useState(false);
   const [activeAppId, setActiveAppIdState] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [attachments, setAttachments] = useState<AgentAttachment[]>([]);
+  const [extracting, setExtracting] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const examples = mode === "app" ? APP_EXAMPLES : WORKFLOW_EXAMPLES;
   const isEmpty = messages.length === 0;
@@ -150,16 +160,52 @@ export function AgentChat() {
   function newChat() {
     setMessages([]);
     setInput("");
+    setAttachments([]);
+    inputRef.current?.focus();
+  }
+
+  async function addFiles(list: FileList | File[] | null) {
+    if (!list || loading) return;
+    const files = Array.from(list);
+    if (files.length === 0) return;
+    setExtracting(true);
+    const errors: string[] = [];
+    for (const file of files) {
+      try {
+        const att = await attachmentFromFile(file);
+        setAttachments((prev) => [...prev, att]);
+      } catch (e) {
+        errors.push(e instanceof Error ? e.message : `${file.name}: failed to read`);
+      }
+    }
+    if (errors.length > 0) {
+      setMessages((prev) => [
+        ...prev,
+        { id: uid(), role: "error", content: errors.join(" · ") },
+      ]);
+    }
+    setExtracting(false);
     inputRef.current?.focus();
   }
 
   async function send(text?: string) {
-    const q = (text ?? input).trim();
-    if (!q || loading) return;
+    const typed = (text ?? input).trim();
+    const pendingAttachments = text === undefined ? attachments : [];
+    if ((!typed && pendingAttachments.length === 0) || loading || extracting) return;
 
-    const userMsg: UserMessage = { id: uid(), role: "user", content: q };
+    const q = buildQueryWithAttachments(
+      typed || "Analyze the attached file(s).",
+      pendingAttachments
+    );
+    const displayContent =
+      pendingAttachments.length > 0
+        ? `${typed || "Analyze the attached file(s)."}\n📎 ${pendingAttachments.map((a) => a.name).join(", ")}`
+        : typed;
+
+    const userMsg: UserMessage = { id: uid(), role: "user", content: displayContent };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
+    setAttachments([]);
     setLoading(true);
 
     const priorMessages = [...messages, userMsg].slice(0, -1);
@@ -434,7 +480,7 @@ export function AgentChat() {
               if (msg.role === "user") {
                 return (
                   <div key={msg.id} className="flex justify-end">
-                    <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-sky-600 px-4 py-2.5 text-sm text-white">
+                    <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-sky-600 px-4 py-2.5 text-sm text-white">
                       {msg.content}
                     </div>
                   </div>
@@ -497,7 +543,47 @@ export function AgentChat() {
         )}
       </div>
 
-      <div className="shrink-0 border-t border-zinc-200 p-3 dark:border-zinc-800">
+      <div
+        className={`shrink-0 border-t p-3 transition ${
+          dragOver
+            ? "border-sky-400 bg-sky-50/60 dark:border-sky-700 dark:bg-sky-950/30"
+            : "border-zinc-200 dark:border-zinc-800"
+        }`}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragOver(true);
+        }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragOver(false);
+          void addFiles(e.dataTransfer.files);
+        }}
+      >
+        {(attachments.length > 0 || extracting) && (
+          <div className="mx-auto mb-2 flex max-w-3xl flex-wrap items-center gap-1.5">
+            {attachments.map((a, i) => (
+              <span
+                key={`${a.name}-${i}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] text-sky-800 dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-300"
+              >
+                📎 {a.name}
+                {a.truncated ? " (truncated)" : ""}
+                <button
+                  type="button"
+                  aria-label={`Remove ${a.name}`}
+                  onClick={() => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                  className="text-sky-500 hover:text-sky-700 dark:hover:text-sky-200"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+            {extracting && (
+              <span className="text-[11px] text-zinc-500">Extracting text from files…</span>
+            )}
+          </div>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -505,6 +591,27 @@ export function AgentChat() {
           }}
           className="mx-auto flex max-w-3xl items-end gap-2"
         >
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept={AGENT_UPLOAD_ACCEPT}
+            className="hidden"
+            onChange={(e) => {
+              void addFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loading || extracting}
+            title="Attach files — .eml, .txt, .csv, .xml, STIX 2.x (.json/.stix), PDF, Word (.docx), images (OCR)"
+            aria-label="Attach files"
+            className="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl border border-zinc-300 text-lg text-zinc-500 transition hover:border-sky-400 hover:text-sky-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
+          >
+            📎
+          </button>
           <textarea
             ref={inputRef}
             value={input}
@@ -516,21 +623,21 @@ export function AgentChat() {
                 ? activeAppId
                   ? "Describe changes to your saved app…"
                   : "Describe an app to build…"
-                : "Ask a question or refine the workflow…"
+                : "Ask a question or refine the workflow… (drop files anywhere here)"
             }
             disabled={loading}
             className="max-h-32 min-h-[42px] flex-1 resize-none rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950"
           />
           <button
             type="submit"
-            disabled={loading || !input.trim()}
+            disabled={loading || extracting || (!input.trim() && attachments.length === 0)}
             className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-40"
           >
             Send
           </button>
         </form>
         <p className="mx-auto mt-1.5 max-w-3xl text-center text-[10px] text-zinc-400">
-          Apps saved in this browser · New chat keeps your project · Redeploy uses the same Vercel project name
+          Attach .eml, STIX, PDF, Word, images & more · Apps saved in this browser · Redeploy uses the same Vercel project name
         </p>
       </div>
     </div>
