@@ -27,18 +27,31 @@ function describeFile(path: string): string {
   return path;
 }
 
-function pickFilesForPrompt(blueprint: AgentAppBlueprint): { path: string; code: string }[] {
-  const priority = ["app/page.tsx", "app/globals.css", "app/layout.tsx"];
+const STYLING_KEYWORDS = /style|theme|color|dark|light|beautif|design|glassmorphism|ui|ux|layout|spacing|font|css|tailwind|gradient|padding|margin|border|card|button|responsive/i;
+
+function pickFilesForPrompt(
+  blueprint: AgentAppBlueprint,
+  query: string
+): { path: string; code: string }[] {
+  const isStylingOnly = STYLING_KEYWORDS.test(query);
+  // For pure styling requests only send the frontend files — avoids timing out
+  // on large apps when the user asks for a UI redesign.
+  const priority = isStylingOnly
+    ? ["app/page.tsx", "app/globals.css", "app/layout.tsx"]
+    : ["app/page.tsx", "app/globals.css", "app/layout.tsx"];
+
   const picked: { path: string; code: string }[] = [];
 
   for (const path of priority) {
     const f = blueprint.files.find((x) => x.path === path);
-    if (f) picked.push({ path: f.path, code: f.code });
+    if (f) picked.push({ path: f.path, code: f.code.slice(0, 12000) });
   }
 
-  for (const f of blueprint.files) {
-    if (f.path.startsWith("app/api/") && !picked.some((p) => p.path === f.path)) {
-      picked.push({ path: f.path, code: f.code.slice(0, 8000) });
+  if (!isStylingOnly) {
+    for (const f of blueprint.files) {
+      if (f.path.startsWith("app/api/") && !picked.some((p) => p.path === f.path)) {
+        picked.push({ path: f.path, code: f.code.slice(0, 4000) });
+      }
     }
   }
 
@@ -58,7 +71,7 @@ export async function editAppWithLlm(
   }
 
   const fileIndex = existing.files.map((f) => f.path).join("\n");
-  const promptFiles = pickFilesForPrompt(existing);
+  const promptFiles = pickFilesForPrompt(existing, query);
   const fileContext = promptFiles
     .map((f) => `### ${f.path}\n\`\`\`\n${f.code}\n\`\`\``)
     .join("\n\n");
@@ -103,7 +116,7 @@ ${fileContext}`,
     body: JSON.stringify({
       model: MODEL,
       temperature: 0.15,
-      max_tokens: 16384,
+      max_tokens: 8192,
       response_format: { type: "json_object" },
       messages,
     }),

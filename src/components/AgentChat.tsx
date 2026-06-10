@@ -179,8 +179,18 @@ export function AgentChat() {
           existingApp,
         }),
       });
-      const data = (await res.json()) as AgentResponse & { error?: string };
-      if (!res.ok) throw new Error(data.error ?? `Request failed (${res.status})`);
+      const data = (await res.json()) as AgentResponse & { error?: string | { message?: string; code?: string } };
+      if (!res.ok) {
+        // Vercel infrastructure errors return { error: { message, code } } (an object, not a string).
+        const raw = data.error;
+        const msg =
+          typeof raw === "string"
+            ? raw
+            : typeof raw === "object" && raw !== null
+              ? (raw.message ?? raw.code ?? JSON.stringify(raw))
+              : `Request failed (${res.status})`;
+        throw new Error(msg);
+      }
 
       persistAppResponse(data);
 
