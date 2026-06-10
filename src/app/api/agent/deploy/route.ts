@@ -1,5 +1,6 @@
 import { formatProblems, validateAppFiles } from "@/lib/agent/validate-app";
 import { repairAppFiles } from "@/lib/agent/repair-app";
+import { syncProjectEnvVars, validateCywareEnvVars } from "@/lib/agent/vercel-env";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -162,6 +163,11 @@ export async function POST(req: Request) {
 
     const token = vercelToken.trim();
 
+    const envError = validateCywareEnvVars(envVars);
+    if (envError) {
+      return Response.json({ error: envError }, { status: 400 });
+    }
+
     const name =
       projectName?.trim() ||
       appName
@@ -173,6 +179,19 @@ export async function POST(req: Request) {
 
     // Clear stale rootDirectory before deploying (with teamId for team accounts).
     await clearProjectRootDirectory(name, token);
+
+    const teamId = await getDefaultTeamId(token);
+    const envSync = await syncProjectEnvVars(name, token, envVars!, teamId);
+    if (!envSync.ok) {
+      return Response.json(
+        {
+          error:
+            `Could not save Cyware credentials to Vercel project "${name}": ${envSync.error}. ` +
+            "Check that your Vercel token has access to this project.",
+        },
+        { status: 502 }
+      );
+    }
 
     const normalizedFiles = hardenFiles(normalizeFilePaths(files));
     const { files: repairedFiles, notes: repairNotes } = repairAppFiles(normalizedFiles);
@@ -247,7 +266,8 @@ export async function POST(req: Request) {
       inspectorUrl: data.inspectorUrl,
       projectName: name,
       message:
-        `Deployment started for project "${name}". Your app will be live in ~2 minutes at the URL above. ` +
+        `Deployment started for project "${name}". Cyware credentials were saved to the Vercel project. ` +
+        "Your app will be live in ~2 minutes at the URL above. " +
         "Redeploying with the same project name updates the existing site in place.",
       warnings: repairNotes.length > 0 ? repairNotes : undefined,
     });
