@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { detectAgentMode } from "../agent/mode";
+import { detectAgentMode, resolveAgentRun } from "../agent/mode";
 import { buildStepSpec } from "../agent/spec";
 import { generateAppBlueprint } from "../agent/app-builder";
 import { validateAppFiles } from "../agent/validate-app";
@@ -10,6 +10,50 @@ describe("detectAgentMode", () => {
   it("detects app builder queries", () => {
     expect(detectAgentMode("Build a phishing email analyzer website")).toBe("app");
     expect(detectAgentMode("import stix bundle")).toBe("workflow");
+  });
+
+  it("respects explicit workflow mode even for app-like queries", () => {
+    expect(detectAgentMode("Build a phishing email analyzer website", "workflow")).toBe(
+      "workflow"
+    );
+  });
+});
+
+describe("resolveAgentRun", () => {
+  const savedApp = {
+    appId: "abc",
+    title: "Phishing Email Analyzer",
+    version: 1,
+    files: [{ path: "app/page.tsx", code: "export default function Page() { return null; }" }],
+  };
+
+  it("runs workflow when user selected Run workflow, even with a saved app", () => {
+    const { mode, editExistingApp } = resolveAgentRun({
+      mode: "workflow",
+      query: "List threat data indicators with pagination",
+      existingApp: savedApp,
+    });
+    expect(mode).toBe("workflow");
+    expect(editExistingApp).toBe(false);
+  });
+
+  it("edits saved app only in Build app mode", () => {
+    const { mode, editExistingApp } = resolveAgentRun({
+      mode: "app",
+      query: "Add dark mode",
+      existingApp: savedApp,
+    });
+    expect(mode).toBe("app");
+    expect(editExistingApp).toBe(true);
+  });
+
+  it("builds a new app in app mode when no saved app exists", () => {
+    const { mode, editExistingApp } = resolveAgentRun({
+      mode: "app",
+      query: "Build a phishing analyzer",
+    });
+    expect(mode).toBe("app");
+    expect(editExistingApp).toBe(false);
   });
 });
 

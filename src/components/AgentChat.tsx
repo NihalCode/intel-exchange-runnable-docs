@@ -209,8 +209,9 @@ export function AgentChat() {
     setLoading(true);
 
     const priorMessages = [...messages, userMsg].slice(0, -1);
-    const existingApp = existingAppContext(activeAppId, priorMessages);
-    const effectiveMode = existingApp ? "app" : mode;
+    // Respect the Run workflow / Build app tab — saved apps only apply in app mode.
+    const existingApp =
+      mode === "app" ? existingAppContext(activeAppId, priorMessages) : undefined;
 
     try {
       const res = await fetch("/api/agent", {
@@ -218,7 +219,7 @@ export function AgentChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: q,
-          mode: effectiveMode,
+          mode,
           language,
           llmApiKey: llmKey.trim() || undefined,
           history: historyForApi(priorMessages),
@@ -252,7 +253,7 @@ export function AgentChat() {
 
       persistAppResponse(data);
 
-      if (data.mode === "app" && data.app) {
+      if (mode === "app" && data.mode === "app" && data.app) {
         setMode("app");
       }
 
@@ -389,6 +390,13 @@ export function AgentChat() {
           )}
         </div>
       </div>
+
+      {mode === "workflow" && activeApp && (
+        <div className="shrink-0 border-b border-sky-200/60 bg-sky-50/50 px-4 py-1.5 text-[11px] text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-200">
+          Run workflow mode — your saved app <strong>{activeApp.title}</strong> is paused. Switch to{" "}
+          <strong>Build app</strong> to edit it.
+        </div>
+      )}
 
       {mode === "app" && (
         <AgentSavedAppsBar

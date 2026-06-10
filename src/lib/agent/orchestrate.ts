@@ -10,7 +10,7 @@ import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
-import { detectAgentMode } from "./mode";
+import { detectAgentMode, resolveAgentRun } from "./mode";
 import { planAppFromRetrieval, planFromRetrieval } from "./planner";
 import {
   confidenceFromScores,
@@ -86,12 +86,7 @@ function blueprintFromContext(ctx: ExistingAppContext): AgentAppBlueprint {
 
 export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const query = req.query?.trim();
-  const hasExistingApp = (req.existingApp?.files?.length ?? 0) > 0;
-  // When editing a saved/in-chat app, always stay in app mode
-  const mode =
-    hasExistingApp || req.mode === "app"
-      ? "app"
-      : detectAgentMode(query ?? "", req.mode);
+  const { mode, editExistingApp: hasExistingApp } = resolveAgentRun(req);
 
   if (!query) {
     return {
