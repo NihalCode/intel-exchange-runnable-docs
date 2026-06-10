@@ -4,7 +4,7 @@ export interface ParamField {
   name: string;
   description?: string;
   isRequired?: boolean;
-  value?: string;
+  value?: string | boolean | number | null;
   valueType?: string;
   options?: {
     enumValue?: string[];

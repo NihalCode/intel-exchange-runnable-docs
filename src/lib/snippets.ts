@@ -19,9 +19,34 @@ const AUTH_QUERY: KeyValue[] = [
   { name: "Expires", value: "<unix expiry>" },
 ];
 
+function kvString(value: unknown): string {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "boolean" || typeof value === "number") return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return "";
+  }
+}
+
 function coerceValue(field: ParamField): unknown {
   const type = (field.valueType || "string").toLowerCase();
-  const raw = field.value ?? "";
+  const v = field.value;
+
+  if (type === "boolean") {
+    if (typeof v === "boolean") return v;
+    return kvString(v) === "true";
+  }
+
+  if (type === "integer" || type === "number" || type === "float") {
+    if (typeof v === "number") return v;
+    const raw = kvString(v);
+    const n = Number(raw);
+    return Number.isFinite(n) && raw !== "" ? n : raw;
+  }
+
+  const raw = kvString(v);
 
   if (type === "array") {
     if (field.items && field.items.length > 0) {
@@ -44,13 +69,6 @@ function coerceValue(field: ParamField): unknown {
     } catch {
       return {};
     }
-  }
-
-  if (type === "boolean") return raw === "true";
-
-  if (type === "integer" || type === "number" || type === "float") {
-    const n = Number(raw);
-    return Number.isFinite(n) && raw !== "" ? n : raw;
   }
 
   return raw;
@@ -77,7 +95,7 @@ function normalizePath(path: string): string {
 
 /** Keep only params with a non-empty value (optional params are omitted). */
 function withValues(pairs: KeyValue[]): KeyValue[] {
-  return pairs.filter((p) => (p.value ?? "").trim() !== "");
+  return pairs.filter((p) => kvString(p.value).trim() !== "");
 }
 
 function queryString(pairs: KeyValue[]): string {
@@ -95,7 +113,7 @@ function fieldsToKeyValues(fields: ParamField[] | undefined): KeyValue[] {
   if (!fields) return [];
   return fields
     .filter((f) => f.name)
-    .map((f) => ({ name: f.name, value: f.value ?? "" }));
+    .map((f) => ({ name: f.name, value: kvString(f.value) }));
 }
 
 export function buildRunnableRequest(page: EndpointPage): RunnableRequest {

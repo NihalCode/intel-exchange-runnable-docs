@@ -1,5 +1,16 @@
 import type { FormBodyField, ParamField } from "./types";
 
+function paramValueToString(value: unknown): string {
+  if (value === undefined || value === null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "boolean" || typeof value === "number") return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return "";
+  }
+}
+
 /** One part of a multipart/form-data body sent through the run proxy. */
 export interface MultipartPart {
   name: string;
@@ -39,7 +50,7 @@ export function formFieldsFromBody(fields: ParamField[] | undefined): FormBodyFi
       kind: isFileField(f) ? "file" : "text",
       description: f.description,
       isRequired: f.isRequired,
-      defaultValue: f.value ?? "",
+      defaultValue: paramValueToString(f.value),
     }));
 }
 

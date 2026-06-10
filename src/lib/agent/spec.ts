@@ -1,13 +1,30 @@
 import type { EndpointPage, ParamField, RunnableRequest } from "../types";
 import type { StepEndpointSpec, StepPlaygroundMeta } from "./types";
 
+/** Theneo exports use strings, booleans, numbers, and objects for ParamField.value. */
+export function coerceParamExample(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed || undefined;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return undefined;
+  }
+}
+
 function summarizeField(f: ParamField) {
   return {
     name: f.name,
     type: f.valueType || "string",
     required: !!f.isRequired,
-    description: f.description?.trim() || undefined,
-    example: f.value?.trim() || undefined,
+    description: coerceParamExample(f.description) ?? undefined,
+    example: coerceParamExample(f.value),
   };
 }
 
@@ -28,7 +45,7 @@ function responseExample(page: EndpointPage): StepEndpointSpec["expectedResponse
 
   return {
     statusCode: ok.statusCode ?? 200,
-    description: ok.description?.trim() || undefined,
+    description: coerceParamExample(ok.description),
     example,
   };
 }
