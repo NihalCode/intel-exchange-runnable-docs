@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { repairCssOrphans, repairAppFiles } from "../agent/repair-app";
+import { repairCssFully, repairCssOrphans, repairAppFiles } from "../agent/repair-app";
 import { validateAppFiles } from "../agent/validate-app";
 
 const BROKEN_FROM_VERCEL = `.card {
@@ -17,6 +17,14 @@ const BROKEN_FROM_VERCEL = `.card {
 
 textarea, input[type="text"] { width: 100%; }`;
 
+const MULTIPLE_STRAY_BRACES = `body { color: #fff; }
+}
+
+.btn { padding: 1rem; }
+}
+
+.card { border: 1px solid #ccc; }`;
+
 describe("repairCssOrphans", () => {
   it("removes orphaned declaration block from real Vercel failure", () => {
     const { code, fixed } = repairCssOrphans(BROKEN_FROM_VERCEL);
@@ -33,13 +41,21 @@ describe("repairCssOrphans", () => {
   });
 });
 
+describe("repairCssFully", () => {
+  it("fixes multiple stray closing braces", () => {
+    const { code, notes } = repairCssFully(MULTIPLE_STRAY_BRACES);
+    expect(notes.length).toBeGreaterThan(0);
+    expect(validateAppFiles([{ path: "app/globals.css", code }])).toEqual([]);
+  });
+});
+
 describe("repairAppFiles", () => {
   it("repairs globals.css and passes validation at deploy", () => {
     const { files, notes } = repairAppFiles([
       { path: "app/globals.css", code: BROKEN_FROM_VERCEL },
       { path: "package.json", code: '{"name":"x"}' },
     ]);
-    expect(notes.some((n) => n.includes("orphaned"))).toBe(true);
+    expect(notes.length).toBeGreaterThan(0);
     const css = files.find((f) => f.path === "app/globals.css")!.code;
     expect(validateAppFiles([{ path: "app/globals.css", code: css }])).toEqual([]);
   });

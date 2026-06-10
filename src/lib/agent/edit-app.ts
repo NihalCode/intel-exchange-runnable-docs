@@ -7,7 +7,7 @@ import {
   normalizeLlmCode,
 } from "./app-edit-rules";
 import { formatProblems, validateAppFiles } from "./validate-app";
-import { repairCssOrphans } from "./repair-app";
+import { repairAppFiles, repairBlueprint } from "./repair-app";
 import type { AgentAppBlueprint } from "./types";
 
 const MODEL = "gpt-4o-mini";
@@ -75,13 +75,22 @@ function pickFilesForPrompt(
 
 export async function editAppWithLlm(
   query: string,
-  existing: AgentAppBlueprint,
+  existingRaw: AgentAppBlueprint,
   apiKey: string,
   history?: { role: "user" | "assistant"; content: string }[]
 ): Promise<{ blueprint: AgentAppBlueprint; summary: string; changedPaths: string[] }> {
+  // Fix CSS corruption from earlier edits so new edits aren't blocked
+  const { blueprint: existing, notes: prepNotes } = repairBlueprint(existingRaw);
+
   // Rule-based edits first — no API call, always reliable
   const ruleResult = applyRuleBasedEdits(query, existing);
   if (ruleResult) {
+    if (prepNotes.length > 0) {
+      return {
+        ...ruleResult,
+        summary: `${ruleResult.summary} (auto-repaired: ${prepNotes.join("; ")})`,
+      };
+    }
     return ruleResult;
   }
 
@@ -233,9 +242,11 @@ ${fileContext}`,
 
   // Reject the edit if the full merged app would fail to build.
   const merged = mergeFileUpdates(existing, updates);
+  const { files: repairedFiles, notes: repairNotes } = repairAppFiles(
+    merged.files.map((f) => ({ path: f.path, code: f.code }))
+  );
   const finalFiles = merged.files.map((f) => {
-    if (!f.path.endsWith(".css")) return f;
-    const { code } = repairCssOrphans(f.code);
+    const code = repairedFiles.find((r) => r.path === f.path)?.code ?? f.code;
     return { ...f, code };
   });
 
@@ -250,6 +261,10 @@ ${fileContext}`,
   }
 
   let summary = parsed.summary ?? `Updated ${changedPaths.join(", ")}`;
+  const allRepairNotes = [...prepNotes, ...repairNotes];
+  if (allRepairNotes.length > 0) {
+    summary += ` (auto-repaired: ${allRepairNotes.slice(0, 2).join("; ")})`;
+  }
   if (failedEdits.length > 0) {
     summary += ` (note: ${failedEdits.length} edit(s) could not be applied — review the result)`;
   }

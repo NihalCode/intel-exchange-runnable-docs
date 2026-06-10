@@ -6,6 +6,7 @@ import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
 import { diffAppFiles, slugifyProjectName } from "./app-diff";
 import { applyRuleBasedEdits } from "./app-edit-rules";
 import { attachDiff, editAppWithLlm } from "./edit-app";
+import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
@@ -109,7 +110,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   if (hasExistingApp) {
     const ctx = req.existingApp!;
     const previous = ctx.files;
-    const base = blueprintFromContext(ctx);
+    const { blueprint: base, notes: prepNotes } = repairBlueprint(blueprintFromContext(ctx));
 
     try {
       let edited: { blueprint: AgentAppBlueprint; summary: string; changedPaths: string[] };
@@ -132,6 +133,12 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           };
         }
         edited = ruleResult;
+        if (prepNotes.length > 0) {
+          edited = {
+            ...edited,
+            summary: `${edited.summary} (auto-repaired: ${prepNotes.slice(0, 2).join("; ")})`,
+          };
+        }
       }
 
       const fromVersion = ctx.version ?? 0;

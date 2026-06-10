@@ -1,10 +1,11 @@
+import postcss from "postcss";
 import { defaultGlobalsCss } from "./app-builder";
+import type { AgentAppBlueprint } from "./types";
 import { validateAppFiles } from "./validate-app";
 
 /**
  * Remove orphaned CSS declaration blocks left behind when an AI edit deletes
- * a selector but keeps its properties + closing brace (common search/replace
- * failure — causes "Unexpected }" in next build).
+ * a selector but keeps its properties + closing brace.
  */
 export function repairCssOrphans(code: string): { code: string; fixed: boolean } {
   const lines = code.split("\n");
@@ -23,7 +24,6 @@ export function repairCssOrphans(code: string): { code: string; fixed: boolean }
   while (i < lines.length) {
     const line = lines[i];
 
-    // Orphan block: indented properties after a closed rule (blank lines allowed)
     if (/^\s+[a-z-]+:\s/.test(line) && prevNonEmpty() === "}") {
       fixed = true;
       while (i < lines.length && lines[i].trim() !== "}") i++;
@@ -38,6 +38,53 @@ export function repairCssOrphans(code: string): { code: string; fixed: boolean }
   return { code: out.join("\n"), fixed };
 }
 
+/** Run orphan removal in a loop, then strip stray closing braces postcss rejects. */
+export function repairCssFully(code: string): { code: string; notes: string[] } {
+  const notes: string[] = [];
+  let current = code;
+
+  for (let pass = 0; pass < 12; pass++) {
+    const { code: next, fixed } = repairCssOrphans(current);
+    if (!fixed) break;
+    notes.push("Removed orphaned CSS declarations");
+    current = next;
+  }
+
+  for (let attempt = 0; attempt < 24; attempt++) {
+    try {
+      postcss.parse(current, { from: "app/globals.css" });
+      return { code: current, notes };
+    } catch (err) {
+      const e = err as { line?: number; reason?: string };
+      const lines = current.split("\n");
+      let removed = false;
+
+      if (e.line && e.line >= 1 && e.line <= lines.length) {
+        const idx = e.line - 1;
+        if (lines[idx].trim() === "}") {
+          lines.splice(idx, 1);
+          notes.push(`Removed stray "}" near line ${e.line}`);
+          removed = true;
+        }
+      }
+
+      if (!removed && e.reason?.includes("Unexpected }")) {
+        const idx = lines.findIndex((l) => l.trim() === "}");
+        if (idx >= 0) {
+          lines.splice(idx, 1);
+          notes.push("Removed stray closing brace");
+          removed = true;
+        }
+      }
+
+      if (!removed) break;
+      current = lines.join("\n");
+    }
+  }
+
+  return { code: current, notes };
+}
+
 export function repairAppFiles(
   files: { path: string; code: string }[]
 ): { files: { path: string; code: string }[]; notes: string[] } {
@@ -46,17 +93,14 @@ export function repairAppFiles(
   const repaired = files.map((f) => {
     if (!f.path.endsWith(".css")) return f;
 
-    const { code: stripped, fixed } = repairCssOrphans(f.code);
-    if (fixed) {
-      notes.push(`Removed orphaned CSS in ${f.path} (leftover from a partial AI edit)`);
-    }
+    const { code: stripped, notes: cssNotes } = repairCssFully(f.code);
+    notes.push(...cssNotes.map((n) => `${f.path}: ${n}`));
 
     const problems = validateAppFiles([{ path: f.path, code: stripped }]);
     if (problems.length === 0) {
       return { ...f, code: stripped };
     }
 
-    // Last resort: restore the known-good default so deploy never fails on CSS
     if (f.path === "app/globals.css") {
       notes.push(
         `Replaced broken ${f.path} with the default stylesheet — re-apply styling via the agent`
@@ -68,4 +112,24 @@ export function repairAppFiles(
   });
 
   return { files: repaired, notes };
+}
+
+/** Repair a saved/edited app blueprint before any edit or deploy operation. */
+export function repairBlueprint(
+  blueprint: AgentAppBlueprint
+): { blueprint: AgentAppBlueprint; notes: string[] } {
+  const { files, notes } = repairAppFiles(
+    blueprint.files.map((f) => ({ path: f.path, code: f.code }))
+  );
+  const byPath = new Map(files.map((f) => [f.path, f.code]));
+  return {
+    notes,
+    blueprint: {
+      ...blueprint,
+      files: blueprint.files.map((f) => ({
+        ...f,
+        code: byPath.get(f.path) ?? f.code,
+      })),
+    },
+  };
 }
