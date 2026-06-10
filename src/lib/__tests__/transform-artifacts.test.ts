@@ -1,6 +1,4 @@
 import { describe, it, expect } from "vitest";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error — shared ingest helper (ESM)
 import { fixMarkdownArtifacts, cleanProse } from "../../../scripts/transform.mjs";
 
 describe("fixMarkdownArtifacts", () => {

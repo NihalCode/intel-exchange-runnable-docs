@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { detectAgentMode } from "../agent/mode";
 import { buildStepSpec } from "../agent/spec";
 import { generateAppBlueprint } from "../agent/app-builder";
+import { validateAppFiles } from "../agent/validate-app";
 import type { AgentStepResult } from "../agent/types";
 import type { EndpointPage } from "../types";
 
@@ -87,5 +88,50 @@ describe("generateAppBlueprint", () => {
     expect(createRoute?.code).toContain("conversion/quick-intel/create-stix/");
     expect(createRoute?.code).toContain('indicators: { [indicatorKey]: safeValue }');
     expect(createRoute?.code).not.toContain("/ingestion/quick-add-intel/");
+  });
+
+  it("generated phishing app passes full syntax validation", () => {
+    const app = generateAppBlueprint(
+      "Build a phishing email analyzer",
+      "Phishing Email Analyzer",
+      "desc",
+      []
+    );
+    expect(validateAppFiles(app.files.map((f) => ({ path: f.path, code: f.code })))).toEqual([]);
+  });
+
+  it("phishing app supports file uploads for all intel file types", () => {
+    const app = generateAppBlueprint(
+      "Build a phishing email analyzer",
+      "Phishing Email Analyzer",
+      "desc",
+      []
+    );
+    const page = app.files.find((f) => f.path === "app/page.tsx");
+    expect(page?.code).toContain("extractTextFromFile");
+    expect(page?.code).toContain("stixToText");
+    // pdf, word, image OCR via CDN — no new package.json deps
+    expect(page?.code).toContain("pdf.min.js");
+    expect(page?.code).toContain("mammoth");
+    expect(page?.code).toContain("tesseract");
+    expect(page?.code).toContain(".stix2");
+    expect(page?.code).toContain(".eml");
+    expect(page?.code).toContain("handleFiles");
+    const pkg = app.files.find((f) => f.path === "package.json");
+    expect(pkg?.code).not.toContain("tesseract");
+  });
+
+  it("phishing search route fetches risk score with refresh-score fallback", () => {
+    const app = generateAppBlueprint(
+      "Build a phishing email analyzer",
+      "Phishing Email Analyzer",
+      "desc",
+      []
+    );
+    const searchRoute = app.files.find((f) => f.path === "app/api/cyware/search/route.ts");
+    const page = app.files.find((f) => f.path === "app/page.tsx");
+    expect(searchRoute?.code).toContain("refresh-score");
+    expect(searchRoute?.code).toContain("parseRiskScore");
+    expect(page?.code).toContain("risk-score-bar");
   });
 });

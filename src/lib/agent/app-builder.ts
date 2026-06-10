@@ -180,6 +180,26 @@ tbody tr:hover td { background: #f8fafc; }
 .status-checking { color: #2563eb; }
 .status-pending { color: #94a3b8; }
 
+.risk-score-cell { min-width: 120px; }
+.risk-score-value { font-weight: 700; font-size: 0.875rem; color: var(--text-primary, #0f172a); }
+.risk-score-bar {
+  margin-top: 0.25rem; height: 6px; border-radius: 9999px;
+  background: var(--border-subtle, #e2e8f0); overflow: hidden;
+}
+.risk-score-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #19C99A, #f59e0b, #ef4444); }
+.risk-score-na { color: var(--text-muted, #64748b); font-size: 0.8125rem; }
+
+.upload-zone {
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.875rem 1rem; margin-bottom: 1rem;
+  border: 1.5px dashed var(--border-subtle, #cbd5e1); border-radius: 10px;
+  background: var(--surface-subtle, #f8fafc);
+  color: var(--text-muted, #64748b); font-size: 0.8125rem; text-align: center;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.upload-zone:hover { border-color: #3b82f6; background: var(--surface-hover, #eff6ff); }
+.upload-files { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+
 .alert { padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; margin-bottom: 1rem; }
 .alert-error { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
 .alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
@@ -303,6 +323,21 @@ interface IOCRequest {
   value: string;
 }
 
+function parseRiskScore(raw: unknown): number | undefined {
+  if (raw === undefined || raw === null || raw === "" || raw === "NA") return undefined;
+  const n = typeof raw === "number" ? raw : parseFloat(String(raw));
+  if (Number.isNaN(n) || n < 0) return undefined;
+  return Math.round(n);
+}
+
+function riskScoreFromRecord(row: Record<string, unknown>): number | undefined {
+  return (
+    parseRiskScore(row.confidence_score) ??
+    parseRiskScore(row.analyst_score) ??
+    parseRiskScore(row.risk_score)
+  );
+}
+
 export async function POST(req: Request) {
   try {
     const { ioc }: { ioc: IOCRequest } = await req.json();
@@ -318,7 +353,7 @@ export async function POST(req: Request) {
 
     const client = cywareClientFromEnv();
     const result = await client.request<{
-      results?: { id: string; tlp?: string; confidence_score?: number; value?: string }[];
+      results?: Record<string, unknown>[];
       count?: number;
     }>({
       method: "POST",
@@ -329,13 +364,27 @@ export async function POST(req: Request) {
 
     const first = result.data.results?.[0];
     const found = (result.data.results?.length ?? 0) > 0;
+    let confidenceScore = first ? riskScoreFromRecord(first) : undefined;
+
+    // List API sometimes omits score — fetch via Refresh Confidence Score when we have an ID
+    if (found && first?.id && confidenceScore === undefined) {
+      try {
+        const scoreRes = await client.request<{ score?: number | string }>({
+          method: "GET",
+          path: \`ingestion/threat-data/indicator/\${encodeURIComponent(String(first.id))}/refresh-score/\`,
+        });
+        confidenceScore = parseRiskScore(scoreRes.data.score);
+      } catch {
+        /* score optional */
+      }
+    }
 
     return NextResponse.json({
       found,
-      id: found ? first?.id : undefined,
-      tlp: found ? first?.tlp : undefined,
-      confidence_score: found ? first?.confidence_score : undefined,
-      value: found ? first?.value : undefined,
+      id: found ? String(first?.id ?? "") : undefined,
+      tlp: found ? (first?.tlp as string | undefined) : undefined,
+      confidence_score: confidenceScore,
+      value: found ? (first?.value as string | undefined) : undefined,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Search failed";
@@ -537,11 +586,134 @@ function extractIOCs(text: string): IOC[] {
   return iocs;
 }
 
+/* ───────── file upload → text extraction (all client-side, CDN libs) ───────── */
+
+const CDN = {
+  pdfjs: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",
+  pdfjsWorker: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
+  mammoth: "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js",
+  tesseract: "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js",
+};
+
+function loadScript(src: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[src="' + src + '"]');
+    if (existing) {
+      if (existing.getAttribute("data-loaded") === "true") return resolve();
+      existing.addEventListener("load", () => resolve());
+      existing.addEventListener("error", () => reject(new Error("Failed to load " + src)));
+      return;
+    }
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = () => { s.setAttribute("data-loaded", "true"); resolve(); };
+    s.onerror = () => reject(new Error("Failed to load " + src));
+    document.head.appendChild(s);
+  });
+}
+
+/** Pull every IOC-bearing string out of a STIX 1.x/2.x JSON document. */
+function stixToText(node: unknown, out: string[]): void {
+  if (typeof node === "string") return;
+  if (Array.isArray(node)) { for (const n of node) stixToText(n, out); return; }
+  if (node && typeof node === "object") {
+    for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+      if (typeof v === "string" && ["pattern", "value", "name", "url", "address_value"].includes(k)) {
+        out.push(v);
+      } else if (k === "hashes" && v && typeof v === "object") {
+        for (const h of Object.values(v as Record<string, unknown>)) {
+          if (typeof h === "string") out.push(h);
+        }
+      } else if (v && typeof v === "object") {
+        stixToText(v, out);
+      }
+    }
+  }
+}
+
+const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "tif", "tiff"];
+
+async function extractTextFromFile(file: File): Promise<string> {
+  const ext = (file.name.split(".").pop() ?? "").toLowerCase();
+
+  if (ext === "pdf" || file.type === "application/pdf") {
+    await loadScript(CDN.pdfjs);
+    const pdfjs = (window as unknown as { pdfjsLib: any }).pdfjsLib;
+    pdfjs.GlobalWorkerOptions.workerSrc = CDN.pdfjsWorker;
+    const doc = await pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
+    const pages: string[] = [];
+    for (let p = 1; p <= doc.numPages; p++) {
+      const content = await (await doc.getPage(p)).getTextContent();
+      pages.push(content.items.map((it: { str?: string }) => it.str ?? "").join(" "));
+    }
+    return pages.join("\\n");
+  }
+
+  if (ext === "docx") {
+    await loadScript(CDN.mammoth);
+    const mammoth = (window as unknown as { mammoth: any }).mammoth;
+    const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+    return String(result.value ?? "");
+  }
+
+  if (ext === "doc") {
+    throw new Error(file.name + ": legacy .doc is not supported — save it as .docx and retry");
+  }
+
+  if (IMAGE_EXTS.includes(ext) || file.type.startsWith("image/")) {
+    await loadScript(CDN.tesseract);
+    const Tesseract = (window as unknown as { Tesseract: any }).Tesseract;
+    const result = await Tesseract.recognize(file, "eng");
+    return String(result.data?.text ?? "");
+  }
+
+  // STIX 2.x bundles and other JSON intel exports
+  if (["json", "stix", "stix2"].includes(ext) || file.type === "application/json") {
+    const text = await file.text();
+    try {
+      const out: string[] = [];
+      stixToText(JSON.parse(text), out);
+      if (out.length > 0) return out.join("\\n");
+    } catch { /* not valid JSON — fall through to raw text */ }
+    return text;
+  }
+
+  // eml, msg, txt, csv, xml, html, log… — IOC regexes work on raw text
+  return await file.text();
+}
+
+const UPLOAD_ACCEPT =
+  ".eml,.msg,.txt,.csv,.log,.html,.htm,.xml,.json,.stix,.stix2,.pdf,.docx,.doc,image/*";
+
 export default function PhishingAnalyzerPage() {
   const [emailText, setEmailText] = useState("");
   const [iocs, setIOCs] = useState<IOC[]>([]);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [checking, setChecking] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadedNames, setUploadedNames] = useState<string[]>([]);
+
+  async function handleFiles(list: FileList | null) {
+    if (!list || list.length === 0) return;
+    setUploading(true);
+    setGlobalError(null);
+    const errors: string[] = [];
+    for (const file of Array.from(list)) {
+      try {
+        const text = await extractTextFromFile(file);
+        if (text.trim()) {
+          setEmailText((prev) => (prev.trim() ? prev + "\\n\\n" : "") + text.trim());
+          setUploadedNames((prev) => [...prev, file.name]);
+        } else {
+          errors.push(file.name + ": no text could be extracted");
+        }
+      } catch (e) {
+        errors.push(e instanceof Error ? e.message : file.name + ": failed to read");
+      }
+    }
+    if (errors.length > 0) setGlobalError(errors.join(" · "));
+    setUploading(false);
+  }
 
   function handleExtract() {
     setGlobalError(null);
@@ -606,12 +778,25 @@ export default function PhishingAnalyzerPage() {
   const foundCount = checked.filter((i) => i.found).length;
   const notFoundCount = checked.filter((i) => !i.found).length;
 
+  function riskBar(score: number | undefined) {
+    if (score === undefined) return <span className="risk-score-na">N/A</span>;
+    return (
+      <div className="risk-score-cell">
+        <div className="risk-score-value">{score}</div>
+        <div className="risk-score-bar" title={\`Risk score \${score}/100\`}>
+          <div className="risk-score-fill" style={{ width: \`\${Math.min(100, Math.max(0, score))}%\` }} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <main className="container">
       <h1>${title}</h1>
       <p className="subtitle">
-        Paste phishing email content. IOCs are extracted in your browser; all Cyware lookups
-        happen through secure server routes — your credentials never reach the client.
+        Paste phishing email content or upload files (.eml, STIX 2.x, PDF, Word, images, and more).
+        IOCs are extracted in your browser; all Cyware lookups happen through secure server
+        routes — your credentials never reach the client.
       </p>
 
       {/* Input */}
@@ -621,8 +806,33 @@ export default function PhishingAnalyzerPage() {
           rows={8}
           value={emailText}
           onChange={(e) => setEmailText(e.target.value)}
-          placeholder="Paste raw email source or body here…&#10;&#10;Example: From: attacker@evil-domain.com&#10;Visit http://malware.example.com/payload&#10;C2: 198.51.100.42"
+          placeholder="Paste raw email source or body here, or upload files below…&#10;&#10;Example: From: attacker@evil-domain.com&#10;Visit http://malware.example.com/payload&#10;C2: 198.51.100.42"
         />
+        <label
+          className="upload-zone"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => { e.preventDefault(); void handleFiles(e.dataTransfer.files); }}
+        >
+          <input
+            type="file"
+            multiple
+            accept={UPLOAD_ACCEPT}
+            style={{ display: "none" }}
+            onChange={(e) => { void handleFiles(e.target.files); e.target.value = ""; }}
+          />
+          {uploading ? (
+            <span className="status-checking"><span className="spinner" style={{ borderTopColor: "#2563eb" }} /> Extracting text from files…</span>
+          ) : (
+            <span>
+              Drop files here or click to upload — .eml, .msg, .txt, .csv, .xml, STIX 2.x (.json/.stix), PDF, Word (.docx), images (OCR)
+            </span>
+          )}
+        </label>
+        {uploadedNames.length > 0 && (
+          <div className="upload-files">
+            {uploadedNames.map((n, i) => <span key={i} className="badge badge-blue">{n}</span>)}
+          </div>
+        )}
         <div className="toolbar">
           <button
             type="button"
@@ -711,7 +921,7 @@ export default function PhishingAnalyzerPage() {
                         </span>
                       ) : "—"}
                     </td>
-                    <td>{ioc.confidenceScore ?? "—"}</td>
+                    <td>{riskBar(ioc.confidenceScore)}</td>
                     <td className="id-cell">{ioc.cywareId ? ioc.cywareId.slice(0, 8) + "…" : "—"}</td>
                     <td>
                       {ioc.found === false && !ioc.created && (
