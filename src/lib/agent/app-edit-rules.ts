@@ -159,6 +159,49 @@ export function mergeFileUpdates(
   return { ...existing, files: mergedFiles };
 }
 
+/**
+ * Apply a search/replace edit. Falls back to whitespace-tolerant line matching
+ * when the exact string isn't found (models often mangle indentation).
+ */
+export function applySearchReplace(
+  code: string,
+  search: string,
+  replace: string
+): string | null {
+  if (search.length === 0) return null;
+  if (code.includes(search)) {
+    return code.replace(search, replace);
+  }
+
+  // Whitespace-tolerant fallback: match a window of lines comparing trimmed content
+  const codeLines = code.split("\n");
+  const searchLines = search
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l, i, arr) => !(l === "" && (i === 0 || i === arr.length - 1)));
+  if (searchLines.length === 0) return null;
+
+  for (let i = 0; i <= codeLines.length - searchLines.length; i++) {
+    let match = true;
+    for (let j = 0; j < searchLines.length; j++) {
+      if (codeLines[i + j].trim() !== searchLines[j]) {
+        match = false;
+        break;
+      }
+    }
+    if (match) {
+      const next = [
+        ...codeLines.slice(0, i),
+        ...replace.split("\n"),
+        ...codeLines.slice(i + searchLines.length),
+      ];
+      return next.join("\n");
+    }
+  }
+
+  return null;
+}
+
 /** Strip markdown code fences LLMs sometimes wrap around file content. */
 export function normalizeLlmCode(raw: string): string {
   let code = raw.trim();

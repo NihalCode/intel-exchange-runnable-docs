@@ -1,6 +1,11 @@
 import "server-only";
 
-import { applyRuleBasedEdits, mergeFileUpdates, normalizeLlmCode } from "./app-edit-rules";
+import {
+  applyRuleBasedEdits,
+  applySearchReplace,
+  mergeFileUpdates,
+  normalizeLlmCode,
+} from "./app-edit-rules";
 import type { AgentAppBlueprint } from "./types";
 
 const MODEL = "gpt-4o-mini";
@@ -8,8 +13,14 @@ const MODEL = "gpt-4o-mini";
 interface LlmEditJson {
   summary?: string;
   workflow?: string;
+  /** Targeted edits: search must be an exact snippet from the current file. */
+  edits?: { path?: string; search?: string; replace?: string }[];
+  /** Brand-new files (full content). */
+  newFiles?: { path?: string; code?: string }[];
+  /** Legacy full-file format — still accepted if the model uses it. */
   files?: { path?: string; code?: string }[];
 }
+
 
 function inferLanguage(path: string): string {
   if (path.endsWith(".tsx")) return "typescript";
@@ -42,9 +53,11 @@ function pickFilesForPrompt(
 
   const picked: { path: string; code: string }[] = [];
 
+  // Send full file content (input tokens are fast/cheap; truncation would break
+  // exact-match search snippets near the end of a file)
   for (const path of priority) {
     const f = blueprint.files.find((x) => x.path === path);
-    if (f) picked.push({ path: f.path, code: f.code.slice(0, 12000) });
+    if (f) picked.push({ path: f.path, code: f.code.slice(0, 32000) });
   }
 
   if (!isStylingOnly) {
@@ -76,17 +89,28 @@ export async function editAppWithLlm(
     .map((f) => `### ${f.path}\n\`\`\`\n${f.code}\n\`\`\``)
     .join("\n\n");
 
-  const system = `You edit an existing Next.js Cyware integration app.
-Return JSON: { "summary": string, "files": [{ "path": string, "code": string }] }
+  const system = `You edit an existing Next.js Cyware integration app using targeted search/replace edits.
+Return JSON:
+{
+  "summary": string,
+  "edits": [{ "path": string, "search": string, "replace": string }],
+  "newFiles": [{ "path": string, "code": string }]
+}
+
+EDIT RULES:
+- "search" MUST be an EXACT, contiguous snippet copied from the current file content shown below — including indentation. It must appear exactly once in that file.
+- "replace" is the full replacement for that snippet.
+- Keep each search snippet as small as possible while staying unique (typically 2-15 lines).
+- Use multiple edits for multiple changes — even within the same file.
+- Use "newFiles" only for brand-new files (full content, no fences).
+- For large restyles, prefer editing app/globals.css (selectors apply across the app) over rewriting JSX.
 
 REQUIREMENTS:
-- You MUST include at least one file in "files" with the COMPLETE updated file content (not a diff snippet).
-- Only include files you actually changed.
-- Return valid TypeScript/TSX that compiles.
+- Return valid TypeScript/TSX/CSS that compiles after your edits are applied.
 - Preserve HMAC auth in API routes and lib/cyware/client.ts unless explicitly asked to change auth.
 - For IOC extraction logic, edit app/page.tsx function extractIOCs.
 - Never put Cyware secrets in client-side code.
-- Do not wrap code in markdown fences inside the JSON string values.`;
+- Do not wrap code in markdown fences inside JSON string values.`;
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
     { role: "system", content: system },
@@ -131,8 +155,7 @@ ${fileContext}`,
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
       throw new Error(
-        "The edit took too long and was cancelled. Try splitting the request into smaller steps, " +
-          'e.g. first "apply a dark Cyware color palette", then "add glassmorphism cards", etc.'
+        "The AI service took too long to respond and the edit was cancelled. Please try again."
       );
     }
     throw err;
@@ -155,6 +178,32 @@ ${fileContext}`,
   }
 
   const updates = new Map<string, string>();
+  const failedEdits: string[] = [];
+
+  // Targeted search/replace edits (fast path — small LLM output)
+  for (const e of parsed.edits ?? []) {
+    if (!e.path || !e.search || e.replace === undefined) continue;
+    const current = updates.get(e.path) ?? existing.files.find((f) => f.path === e.path)?.code;
+    if (current === undefined) {
+      failedEdits.push(`${e.path}: file not found`);
+      continue;
+    }
+    const next = applySearchReplace(current, normalizeLlmCode(e.search), normalizeLlmCode(e.replace));
+    if (next === null) {
+      failedEdits.push(`${e.path}: search snippet not found`);
+      continue;
+    }
+    updates.set(e.path, next);
+  }
+
+  // Brand-new files
+  for (const f of parsed.newFiles ?? []) {
+    if (f.path && f.code !== undefined && f.code.trim().length > 0) {
+      updates.set(f.path, normalizeLlmCode(f.code));
+    }
+  }
+
+  // Legacy full-file format (if the model returned it anyway)
   for (const f of parsed.files ?? []) {
     if (f.path && f.code !== undefined && f.code.trim().length > 0) {
       updates.set(f.path, normalizeLlmCode(f.code));
@@ -162,9 +211,10 @@ ${fileContext}`,
   }
 
   if (updates.size === 0) {
+    const detail = failedEdits.length > 0 ? ` (${failedEdits.slice(0, 3).join("; ")})` : "";
     throw new Error(
-      "The AI did not return any file changes. Try a more specific request, e.g. " +
-        '"Update extractIOCs in app/page.tsx to skip recipient email domains."'
+      `The AI's edits could not be applied${detail}. Try rephrasing or being more specific about the file, ` +
+        'e.g. "In app/page.tsx, style the email textarea with a dark background."'
     );
   }
 
@@ -181,12 +231,17 @@ ${fileContext}`,
 
   const merged = mergeFileUpdates(existing, updates);
 
+  let summary = parsed.summary ?? `Updated ${changedPaths.join(", ")}`;
+  if (failedEdits.length > 0) {
+    summary += ` (note: ${failedEdits.length} edit(s) could not be applied — review the result)`;
+  }
+
   return {
     blueprint: {
       ...merged,
       description: parsed.summary ?? existing.description,
     },
-    summary: parsed.summary ?? `Updated ${changedPaths.join(", ")}`,
+    summary,
     changedPaths,
   };
 }
