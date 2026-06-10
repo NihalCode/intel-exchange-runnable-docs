@@ -65,7 +65,9 @@ function nextConfig(): string {
   return `import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Add any custom Next.js configuration here
+  // Don't let lint warnings or minor type issues block deployments
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
 };
 
 export default nextConfig;

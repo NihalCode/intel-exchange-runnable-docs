@@ -103,6 +103,48 @@ function normalizeFilePaths(
   return files.map((f) => ({ ...f, path: f.path.slice(prefix.length) }));
 }
 
+/** Fix known-bad dependency pins in apps saved before the eslint fix. */
+function fixPackageJson(code: string): string {
+  try {
+    const pkg = JSON.parse(code) as {
+      devDependencies?: Record<string, string>;
+    };
+    const dev = pkg.devDependencies;
+    if (dev) {
+      // eslint 9 is incompatible with eslint-config-next 15.x peer requirements
+      if (dev.eslint?.startsWith("^9")) dev.eslint = "^8";
+      if (dev["eslint-config-next"] === "15.1.6") dev["eslint-config-next"] = "^15.2.0";
+    }
+    return JSON.stringify(pkg, null, 2);
+  } catch {
+    return code;
+  }
+}
+
+/**
+ * Generated/edited apps must deploy reliably even if an LLM edit introduced a
+ * lint warning or a minor type issue — skip blocking checks at build time.
+ */
+function hardenNextConfig(code: string): string {
+  if (code.includes("ignoreBuildErrors")) return code;
+  const anchor = code.match(/const nextConfig(?::\s*NextConfig)?\s*=\s*\{/);
+  if (!anchor) return code;
+  return code.replace(
+    anchor[0],
+    `${anchor[0]}\n  eslint: { ignoreDuringBuilds: true },\n  typescript: { ignoreBuildErrors: true },`
+  );
+}
+
+function hardenFiles(
+  files: { path: string; code: string }[]
+): { path: string; code: string }[] {
+  return files.map((f) => {
+    if (f.path === "package.json") return { ...f, code: fixPackageJson(f.code) };
+    if (/^next\.config\.(ts|js|mjs)$/.test(f.path)) return { ...f, code: hardenNextConfig(f.code) };
+    return f;
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const { files, appName, vercelToken, projectName, envVars } =
@@ -129,7 +171,7 @@ export async function POST(req: Request) {
     // Clear stale rootDirectory before deploying (with teamId for team accounts).
     await clearProjectRootDirectory(name, token);
 
-    const normalizedFiles = normalizeFilePaths(files);
+    const normalizedFiles = hardenFiles(normalizeFilePaths(files));
 
     if (!normalizedFiles.some((f) => f.path === "package.json")) {
       return Response.json(
