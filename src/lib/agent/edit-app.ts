@@ -6,11 +6,120 @@ import {
   mergeFileUpdates,
   normalizeLlmCode,
 } from "./app-edit-rules";
-import { formatProblems, validateAppFiles } from "./validate-app";
+import { formatProblems, validateAppFiles, type AppFileProblem } from "./validate-app";
 import { repairAppFiles, repairBlueprint } from "./repair-app";
 import type { AgentAppBlueprint } from "./types";
 
 const MODEL = "gpt-4o-mini";
+
+async function callOpenAi(
+  messages: { role: "system" | "user" | "assistant"; content: string }[],
+  apiKey: string,
+  timeoutMs: number
+): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  let res: Response;
+  try {
+    res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        temperature: 0.15,
+        max_tokens: 8192,
+        response_format: { type: "json_object" },
+        messages,
+      }),
+      signal: controller.signal,
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(
+        "The AI service took too long to respond and the edit was cancelled. Please try again."
+      );
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`App edit failed (${res.status}): ${err.slice(0, 300)}`);
+  }
+
+  const data = (await res.json()) as { choices: { message: { content: string } }[] };
+  return data.choices[0]?.message?.content ?? "{}";
+}
+
+type EditedFile = { path: string; code: string; language?: string; description?: string };
+
+/**
+ * One corrective LLM pass when an edit produced files that fail syntax
+ * validation (e.g. "JSX expressions must have one parent element"). Sends only
+ * the broken files + errors and asks for full corrected file content.
+ */
+async function attemptValidationFix<F extends EditedFile>(
+  files: F[],
+  problems: AppFileProblem[],
+  apiKey: string,
+  startedAt: number
+): Promise<F[] | null> {
+  // Stay well inside the 60s function limit
+  if (Date.now() - startedAt > 32_000) return null;
+
+  const brokenPaths = new Set(problems.map((p) => p.path));
+  const context = files
+    .filter((f) => brokenPaths.has(f.path))
+    .map((f) => {
+      const error = problems.find((p) => p.path === f.path)?.error ?? "syntax error";
+      return `### ${f.path}\nValidation error: ${error}\n\`\`\`\n${f.code.slice(0, 24000)}\n\`\`\``;
+    })
+    .join("\n\n");
+
+  const system = `You fix syntax errors in Next.js app files. Return JSON:
+{ "files": [{ "path": string, "code": string }] }
+
+- "code" is the FULL corrected file content (no markdown fences).
+- Fix ONLY the reported syntax errors — change as little as possible.
+- Common fix: wrap adjacent JSX expressions in a fragment (<>...</>) or close unclosed tags/braces.`;
+
+  try {
+    const raw = await callOpenAi(
+      [
+        { role: "system", content: system },
+        { role: "user", content: `Fix these files:\n\n${context}` },
+      ],
+      apiKey,
+      18_000
+    );
+    const parsed = JSON.parse(raw) as { files?: { path?: string; code?: string }[] };
+    const updates = new Map<string, string>();
+    for (const f of parsed.files ?? []) {
+      if (f.path && brokenPaths.has(f.path) && f.code && f.code.trim().length > 0) {
+        updates.set(f.path, normalizeLlmCode(f.code));
+      }
+    }
+    if (updates.size === 0) return null;
+
+    const next = files.map((f) =>
+      updates.has(f.path) ? { ...f, code: updates.get(f.path)! } : f
+    );
+    const { files: repaired } = repairAppFiles(next.map((f) => ({ path: f.path, code: f.code })));
+    const final = next.map((f) => ({
+      ...f,
+      code: repaired.find((r) => r.path === f.path)?.code ?? f.code,
+    }));
+    const remaining = validateAppFiles(final.map((f) => ({ path: f.path, code: f.code })));
+    return remaining.length === 0 ? final : null;
+  } catch {
+    return null;
+  }
+}
 
 interface LlmEditJson {
   summary?: string;
@@ -143,44 +252,10 @@ ${fileContext}`,
   });
 
   // Abort before Vercel's 60s function limit so the user gets a clear error
-  // instead of a platform-killed request ("Internal Server Error").
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 50_000);
-  let res: Response;
-  try {
-    res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        temperature: 0.15,
-        max_tokens: 8192,
-        response_format: { type: "json_object" },
-        messages,
-      }),
-      signal: controller.signal,
-    });
-  } catch (err) {
-    if (err instanceof Error && err.name === "AbortError") {
-      throw new Error(
-        "The AI service took too long to respond and the edit was cancelled. Please try again."
-      );
-    }
-    throw err;
-  } finally {
-    clearTimeout(timer);
-  }
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`App edit failed (${res.status}): ${err.slice(0, 300)}`);
-  }
-
-  const data = (await res.json()) as { choices: { message: { content: string } }[] };
-  const raw = data.choices[0]?.message?.content ?? "{}";
+  // instead of a platform-killed request ("Internal Server Error"). Budget
+  // leaves room for one corrective pass if validation fails.
+  const startedAt = Date.now();
+  const raw = await callOpenAi(messages, apiKey, 40_000);
   let parsed: LlmEditJson;
   try {
     parsed = JSON.parse(raw) as LlmEditJson;
@@ -245,7 +320,7 @@ ${fileContext}`,
   const { files: repairedFiles, notes: repairNotes } = repairAppFiles(
     merged.files.map((f) => ({ path: f.path, code: f.code }))
   );
-  const finalFiles = merged.files.map((f) => {
+  let finalFiles = merged.files.map((f) => {
     const code = repairedFiles.find((r) => r.path === f.path)?.code ?? f.code;
     return { ...f, code };
   });
@@ -253,14 +328,23 @@ ${fileContext}`,
   const problems = validateAppFiles(
     finalFiles.map((f) => ({ path: f.path, code: f.code }))
   );
+  let validationFixed = false;
   if (problems.length > 0) {
-    throw new Error(
-      `The AI edit was rejected because it would break the app (${formatProblems(problems)}). ` +
-        "Your app is unchanged — try rephrasing the request."
-    );
+    const fixed = await attemptValidationFix(finalFiles, problems, apiKey, startedAt);
+    if (!fixed) {
+      throw new Error(
+        `The AI edit was rejected because it would break the app (${formatProblems(problems)}). ` +
+          "Your app is unchanged — try rephrasing the request."
+      );
+    }
+    finalFiles = fixed;
+    validationFixed = true;
   }
 
   let summary = parsed.summary ?? `Updated ${changedPaths.join(", ")}`;
+  if (validationFixed) {
+    summary += " (auto-fixed a syntax error the edit introduced)";
+  }
   const allRepairNotes = [...prepNotes, ...repairNotes];
   if (allRepairNotes.length > 0) {
     summary += ` (auto-repaired: ${allRepairNotes.slice(0, 2).join("; ")})`;
