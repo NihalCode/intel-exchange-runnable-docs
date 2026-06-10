@@ -26,6 +26,7 @@ function minimalBlueprint(pageCode: string): AgentAppBlueprint {
     envExample: "",
     files: [
       { path: "app/page.tsx", language: "typescript", description: "UI", code: pageCode },
+      { path: "app/layout.tsx", language: "typescript", description: "Layout", code: `import "./globals.css";\nexport default function RootLayout({ children }: { children: React.ReactNode }) {\n  return <html lang="en"><body>{children}</body></html>;\n}\n` },
       { path: "app/globals.css", language: "css", description: "css", code: "body {}" },
     ],
   };
@@ -113,7 +114,8 @@ describe("file upload rule-based edit", () => {
     expect(page).toContain("File exceeds 10 MB limit");
 
     const css = result!.blueprint.files.find((f) => f.path === "app/globals.css")!.code;
-    expect(css).toContain("agent:file-upload");
+    expect(css).toContain(".card {");
+    expect(css).toContain("upload-list");
 
     // The patched app must still pass full syntax validation
     expect(
@@ -149,6 +151,7 @@ Make dark mode vivid with --cyware-dark, gradients, glassmorphism, and glows.`;
     expect(result).not.toBeNull();
     expect(result!.changedPaths).toContain("app/page.tsx");
     expect(result!.changedPaths).toContain("app/globals.css");
+    expect(result!.changedPaths).toContain("app/layout.tsx");
     expect(result!.summary).toContain("theme switcher");
 
     const page = result!.blueprint.files.find((f) => f.path === "app/page.tsx")!.code;
@@ -161,9 +164,13 @@ Make dark mode vivid with --cyware-dark, gradients, glassmorphism, and glows.`;
     expect(page).toContain("theme-toggle");
 
     const css = result!.blueprint.files.find((f) => f.path === "app/globals.css")!.code;
+    expect(css).toContain(".card {");
     expect(css).toContain("--cyware-dark");
     expect(css).toContain("radial-gradient");
     expect(css).toContain(".theme-toggle");
+
+    const layout = result!.blueprint.files.find((f) => f.path === "app/layout.tsx")!.code;
+    expect(layout).toContain('data-theme="dark"');
 
     expect(
       validateAppFiles(result!.blueprint.files.map((f) => ({ path: f.path, code: f.code })))
@@ -188,5 +195,28 @@ Make dark mode vivid with --cyware-dark, gradients, glassmorphism, and glows.`;
     const page = result!.blueprint.files.find((f) => f.path === "app/page.tsx")!.code;
     expect(page.match(/useEffect/g)?.length).toBeGreaterThanOrEqual(3);
     expect(page).not.toContain("useEffect, useEffect");
+  });
+});
+
+describe("repair UI rule-based edit", () => {
+  it("restores full stylesheet when globals.css was truncated by a bad edit", () => {
+    const themedPage = applyRuleBasedEdits(
+      "Add a theme switcher with light and dark mode",
+      minimalBlueprint(OLD_TEMPLATE_PAGE)
+    )!.blueprint.files.find((f) => f.path === "app/page.tsx")!.code;
+
+    const brokenCss = "/* agent:theme-switcher */\n.theme-toggle { color: #fff; }\n";
+    const bp = minimalBlueprint(themedPage);
+    bp.files = bp.files.map((f) => (f.path === "app/globals.css" ? { ...f, code: brokenCss } : f));
+
+    const result = applyRuleBasedEdits("Fix the broken UI and restore styling so npm run build works", bp);
+    expect(result).not.toBeNull();
+
+    const css = result!.blueprint.files.find((f) => f.path === "app/globals.css")!.code;
+    expect(css).toContain(".card {");
+    expect(css).toContain(".btn-primary");
+    expect(css).toContain("agent:theme-switcher");
+    expect(css.length).toBeGreaterThan(3000);
+    expect(validateAppFiles(result!.blueprint.files.map((f) => ({ path: f.path, code: f.code })))).toEqual([]);
   });
 });
