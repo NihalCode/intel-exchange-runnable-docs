@@ -120,7 +120,12 @@ export function RequestPlaygroundProvider({
 
   const method = request.method.toUpperCase();
   const showMultipart = !!request.multipart && (request.formFields?.length ?? 0) > 0;
-  const formFields = request.formFields ?? [];
+  // Stabilise with useMemo so its identity is consistent across renders; without
+  // this, formFields ?? [] produces a new array every render, which causes
+  // defaultFormTextValues to recompute every render, which triggers the load
+  // effect every render, which resets skipNextSave.current = true every render,
+  // which means the save effect always skips and edits are never persisted.
+  const formFields = useMemo(() => request.formFields ?? [], [request.formFields]);
   const showBody =
     !showMultipart &&
     method !== "GET" &&
