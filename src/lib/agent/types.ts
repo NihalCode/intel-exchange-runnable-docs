@@ -192,6 +192,18 @@ export interface ExistingAppContext {
   files: { path: string; code: string; language?: string; description?: string }[];
 }
 
+export type ScriptLanguage = "python" | "javascript";
+
+/** A single self-contained, runnable workflow script (auth + retries + chaining baked in). */
+export interface WorkflowScript {
+  language: ScriptLanguage;
+  label: string;
+  filename: string;
+  code: string;
+  /** Human-readable notes about chaining/conditionals the generator applied. */
+  notes: string[];
+}
+
 export interface AgentResponse {
   mode: AgentMode;
   workflow: string;
@@ -204,6 +216,8 @@ export interface AgentResponse {
   app?: AgentAppBlueprint;
   appDiff?: AgentAppDiff;
   appEdit?: boolean;
+  /** Standalone runnable scripts implementing the whole workflow (workflow mode). */
+  scripts?: WorkflowScript[];
 }
 
 export interface AgentRequest {

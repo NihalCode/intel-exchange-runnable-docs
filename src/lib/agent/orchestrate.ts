@@ -18,6 +18,7 @@ import {
   retrieveLexical,
   retrieveWithEmbedding,
 } from "./retrieve";
+import { buildWorkflowScripts } from "./script-builder";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
   AgentAppBlueprint,
@@ -266,6 +267,14 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   if (mode === "app" && stepResults.length > 0) {
     const title = plan.appTitle ?? appTitleFromQuery(query);
     response.app = generateAppBlueprint(query, title, plan.workflow, stepResults);
+  }
+
+  if (mode === "workflow" && stepResults.length > 0) {
+    response.scripts = buildWorkflowScripts(
+      stepResults,
+      baseUrl,
+      plan.appTitle ?? appTitleFromQuery(query)
+    );
   }
 
   return response;

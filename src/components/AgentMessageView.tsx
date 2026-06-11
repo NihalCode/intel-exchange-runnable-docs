@@ -2,6 +2,7 @@
 
 import { AgentAppBlueprintView } from "./AgentAppBlueprintView";
 import { AgentAppDiffView } from "./AgentAppDiffView";
+import { AgentWorkflowScript } from "./AgentWorkflowScript";
 import { AgentWorkflowStep } from "./AgentWorkflowStep";
 import type { AgentLanguage, AgentResponse } from "@/lib/agent/types";
 
@@ -58,6 +59,10 @@ export function AgentMessageView({
           totalSteps={response.steps.length}
         />
       ))}
+
+      {response.mode === "workflow" && response.scripts && response.scripts.length > 0 ? (
+        <AgentWorkflowScript scripts={response.scripts} />
+      ) : null}
 
       {response.citations.length > 0 ? (
         <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
