@@ -4,10 +4,18 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import {
+  loadPlaygroundDraft,
+  mergeBodyText,
+  mergeStringRecords,
+  savePlaygroundDraft,
+} from "@/lib/playground-session";
 import { DISPLAY_BASE } from "@/lib/constants";
 import { isPlaceholderBase } from "@/lib/demo";
 import type { ExecRequest } from "@/lib/parse-request";
@@ -92,10 +100,13 @@ function requiredNames(fields: ParamField[] | undefined): Set<string> {
 export function RequestPlaygroundProvider({
   request,
   meta,
+  storageId,
   children,
 }: {
   request: RunnableRequest;
   meta?: RequestPlaygroundMeta;
+  /** Doc slug or agent step slug — restores path/query/body edits across navigation. */
+  storageId?: string;
   children: ReactNode;
 }) {
   const pathParams = useMemo<KeyValue[]>(() => request.pathParams ?? [], [request.pathParams]);
@@ -116,19 +127,46 @@ export function RequestPlaygroundProvider({
     method !== "HEAD" &&
     (request.body !== undefined || (meta?.bodyFields?.length ?? 0) > 0);
 
-  const [pathValues, setPathValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(pathParams.map((p) => [p.name, p.value]))
+  const defaultPathValues = useMemo(
+    () => Object.fromEntries(pathParams.map((p) => [p.name, p.value])),
+    [pathParams]
   );
-  const [queryValues, setQueryValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(editableParams.map((p) => [p.name, p.value]))
+  const defaultQueryValues = useMemo(
+    () => Object.fromEntries(editableParams.map((p) => [p.name, p.value])),
+    [editableParams]
   );
-  const [bodyText, setBodyTextState] = useState(request.body ?? "");
-  const [jsonError, setJsonError] = useState<string | null>(() =>
-    validateJson(request.body ?? "")
+  const defaultBodyText = request.body ?? "";
+  const defaultFormTextValues = useMemo(
+    () => initialFormTextValues(formFields),
+    [formFields]
   );
-  const [formTextValues, setFormTextValues] = useState<Record<string, string>>(() =>
-    initialFormTextValues(formFields)
-  );
+
+  const [pathValues, setPathValues] = useState<Record<string, string>>(defaultPathValues);
+  const [queryValues, setQueryValues] = useState<Record<string, string>>(defaultQueryValues);
+  const [bodyText, setBodyTextState] = useState(defaultBodyText);
+  const [jsonError, setJsonError] = useState<string | null>(() => validateJson(defaultBodyText));
+  const [formTextValues, setFormTextValues] =
+    useState<Record<string, string>>(defaultFormTextValues);
+  const skipNextSave = useRef(true);
+
+  useEffect(() => {
+    skipNextSave.current = true;
+    if (!storageId) return;
+    const saved = loadPlaygroundDraft(storageId);
+    if (!saved) return;
+    setPathValues(mergeStringRecords(defaultPathValues, saved.pathValues));
+    setQueryValues(mergeStringRecords(defaultQueryValues, saved.queryValues));
+    const nextBody = mergeBodyText(defaultBodyText, saved.bodyText);
+    setBodyTextState(nextBody);
+    setJsonError(validateJson(nextBody));
+    setFormTextValues(mergeStringRecords(defaultFormTextValues, saved.formTextValues));
+  }, [
+    storageId,
+    defaultPathValues,
+    defaultQueryValues,
+    defaultBodyText,
+    defaultFormTextValues,
+  ]);
   const [formFiles, setFormFiles] = useState<Record<string, File | null>>(() =>
     Object.fromEntries(formFields.filter((f) => f.kind === "file").map((f) => [f.name, null]))
   );
@@ -153,6 +191,20 @@ export function RequestPlaygroundProvider({
   const setFormFile = useCallback((name: string, file: File | null) => {
     setFormFiles((prev) => ({ ...prev, [name]: file }));
   }, []);
+
+  useEffect(() => {
+    if (!storageId) return;
+    if (skipNextSave.current) {
+      skipNextSave.current = false;
+      return;
+    }
+    savePlaygroundDraft(storageId, {
+      pathValues,
+      queryValues,
+      bodyText,
+      formTextValues,
+    });
+  }, [storageId, pathValues, queryValues, bodyText, formTextValues]);
 
   const value = useMemo<RequestPlaygroundState>(() => {
     return {

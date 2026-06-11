@@ -120,6 +120,7 @@ export function EndpointView({
         </p>
         <RequestPlaygroundProvider
           request={runnableRequest}
+          storageId={page.slug}
           meta={{
             pathFields: page.request?.path,
             queryFields: page.request?.query,

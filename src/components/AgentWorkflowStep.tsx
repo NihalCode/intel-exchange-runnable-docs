@@ -167,7 +167,7 @@ export function AgentWorkflowStep({
           </div>
         ) : null}
 
-        <RequestPlaygroundProvider request={step.request} meta={step.meta}>
+        <RequestPlaygroundProvider request={step.request} meta={step.meta} storageId={step.slug}>
           <RequestPlaygroundPanel />
           <p className="text-[11px] text-zinc-500">
             Edit path, query, body, and form fields above — the Run button uses your values, not the static snippet text.
