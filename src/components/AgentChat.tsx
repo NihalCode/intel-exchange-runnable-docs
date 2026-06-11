@@ -1,27 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { AgentMessageView } from "./AgentMessageView";
-import {
-  AgentSavedAppsBar,
-  ImportVercelModal,
-  blueprintFromVersion,
-  getLatestVersion,
-  getSavedApp,
-} from "./AgentSavedAppsBar";
-import type { AgentLanguage, AgentMode, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
-import {
-  loadActiveAppId,
-  saveAppVersion,
-  setActiveAppId,
-} from "@/lib/agent/saved-apps-client";
+import { AgentSavedAppsBar, ImportVercelModal, getSavedApp } from "./AgentSavedAppsBar";
+import { useAgentChat } from "./agent-chat-state";
 import { slugifyProjectName } from "@/lib/agent/app-diff";
-import {
-  AGENT_UPLOAD_ACCEPT,
-  attachmentFromFile,
-  buildQueryWithAttachments,
-  type AgentAttachment,
-} from "@/lib/agent/file-extract-client";
+import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
 
 const WORKFLOW_EXAMPLES = [
   "Import a STIX 2.1 bundle and verify the indicator appears in threat data",
@@ -34,7 +18,7 @@ const APP_EXAMPLES = [
   "Build a STIX import portal with a dashboard",
 ];
 
-const LANGUAGES: { value: AgentLanguage; label: string }[] = [
+const LANGUAGES: { value: import("@/lib/agent/types").AgentLanguage; label: string }[] = [
   { value: "python", label: "Python" },
   { value: "javascript", label: "JavaScript" },
   { value: "curl", label: "cURL" },
@@ -42,297 +26,53 @@ const LANGUAGES: { value: AgentLanguage; label: string }[] = [
   { value: "go", label: "Go" },
 ];
 
-type UserMessage = { id: string; role: "user"; content: string };
-type AssistantMessage = { id: string; role: "assistant"; content: string; response: AgentResponse };
-type ErrorMessage = { id: string; role: "error"; content: string };
-type ChatMessage = UserMessage | AssistantMessage | ErrorMessage;
-
-function uid(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function historyForApi(messages: ChatMessage[]): { role: "user" | "assistant"; content: string }[] {
-  return messages
-    .filter((m): m is UserMessage | AssistantMessage => m.role === "user" || m.role === "assistant")
-    .slice(-10)
-    .map((m) => ({ role: m.role, content: m.content }));
-}
-
-function existingAppContext(
-  activeAppId: string | null,
-  messages: ChatMessage[]
-): ExistingAppContext | undefined {
-  if (activeAppId) {
-    const app = getSavedApp(activeAppId);
-    const version = app ? getLatestVersion(app) : undefined;
-    if (app && version) {
-      return {
-        appId: app.id,
-        title: app.title,
-        version: version.version,
-        vercelProjectName: app.vercelProjectName,
-        deploymentUrl: app.deploymentUrl,
-        files: version.files,
-      };
-    }
-  }
-
-  // Fall back to the most recent app blueprint in this chat (same session edits)
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const m = messages[i];
-    if (m.role !== "assistant" || !m.response.app?.files?.length) continue;
-    const app = m.response.app;
-    return {
-      appId: app.appId,
-      title: app.title,
-      version: app.version ?? 1,
-      vercelProjectName: app.vercelProjectName,
-      deploymentUrl: app.deploymentUrl,
-      files: app.files.map((f) => ({
-        path: f.path,
-        code: f.code,
-        language: f.language,
-        description: f.description,
-      })),
-    };
-  }
-
-  return undefined;
-}
-
 export function AgentChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [mode, setMode] = useState<AgentMode>("workflow");
-  const [language, setLanguage] = useState<AgentLanguage>("python");
-  const [llmKey, setLlmKey] = useState("");
-  const [showSettings, setShowSettings] = useState(false);
-  const [showImport, setShowImport] = useState(false);
-  const [activeAppId, setActiveAppIdState] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [attachments, setAttachments] = useState<AgentAttachment[]>([]);
-  const [extracting, setExtracting] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const chat = useAgentChat();
+  const {
+    messages,
+    input,
+    setInput,
+    mode,
+    setMode,
+    language,
+    setLanguage,
+    llmKey,
+    setLlmKey,
+    showSettings,
+    setShowSettings,
+    showImport,
+    setShowImport,
+    activeAppId,
+    loading,
+    attachments,
+    extracting,
+    dragOver,
+    setDragOver,
+    bottomRef,
+    inputRef,
+    fileInputRef,
+    newChat,
+    addFiles,
+    send,
+    handleDeploySuccess,
+    loadSavedAppIntoChat,
+    clearActiveApp,
+    removeAttachment,
+  } = chat;
 
   const examples = mode === "app" ? APP_EXAMPLES : WORKFLOW_EXAMPLES;
   const isEmpty = messages.length === 0;
   const activeApp = activeAppId ? getSavedApp(activeAppId) : undefined;
 
   useEffect(() => {
-    setActiveAppIdState(loadActiveAppId());
-  }, []);
-
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
-  const handleSelectApp = useCallback((appId: string | null) => {
-    setActiveAppIdState(appId);
-    setMode("app");
-  }, []);
-
-  const persistAppResponse = useCallback(
-    (data: AgentResponse, deploy?: { deploymentUrl: string; deploymentId: string; projectName: string }) => {
-      if (data.mode !== "app" || !data.app) return;
-      const saved = saveAppVersion({
-        appId: data.app.appId ?? activeAppId ?? undefined,
-        title: data.app.title,
-        summary: data.workflow,
-        files: data.app.files,
-        deploymentUrl: deploy?.deploymentUrl ?? data.app.deploymentUrl,
-        deploymentId: deploy?.deploymentId,
-        vercelProjectName: deploy?.projectName ?? data.app.vercelProjectName,
-      });
-      setActiveAppIdState(saved.id);
-      if (data.app) {
-        data.app.appId = saved.id;
-        data.app.version = saved.versions[saved.versions.length - 1]?.version;
-        data.app.vercelProjectName = saved.vercelProjectName;
-        data.app.deploymentUrl = saved.deploymentUrl;
-      }
-    },
-    [activeAppId]
-  );
-
-  function newChat() {
-    setMessages([]);
-    setInput("");
-    setAttachments([]);
-    inputRef.current?.focus();
-  }
-
-  async function addFiles(list: FileList | File[] | null) {
-    if (!list || loading) return;
-    const files = Array.from(list);
-    if (files.length === 0) return;
-    setExtracting(true);
-    const errors: string[] = [];
-    for (const file of files) {
-      try {
-        const att = await attachmentFromFile(file);
-        setAttachments((prev) => [...prev, att]);
-      } catch (e) {
-        errors.push(e instanceof Error ? e.message : `${file.name}: failed to read`);
-      }
-    }
-    if (errors.length > 0) {
-      setMessages((prev) => [
-        ...prev,
-        { id: uid(), role: "error", content: errors.join(" · ") },
-      ]);
-    }
-    setExtracting(false);
-    inputRef.current?.focus();
-  }
-
-  async function send(text?: string) {
-    const typed = (text ?? input).trim();
-    const pendingAttachments = text === undefined ? attachments : [];
-    if ((!typed && pendingAttachments.length === 0) || loading || extracting) return;
-
-    const q = buildQueryWithAttachments(
-      typed || "Analyze the attached file(s).",
-      pendingAttachments
-    );
-    const displayContent =
-      pendingAttachments.length > 0
-        ? `${typed || "Analyze the attached file(s)."}\n📎 ${pendingAttachments.map((a) => a.name).join(", ")}`
-        : typed;
-
-    const userMsg: UserMessage = { id: uid(), role: "user", content: displayContent };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setAttachments([]);
-    setLoading(true);
-
-    const priorMessages = [...messages, userMsg].slice(0, -1);
-    // Respect the Run workflow / Build app tab — saved apps only apply in app mode.
-    const existingApp =
-      mode === "app" ? existingAppContext(activeAppId, priorMessages) : undefined;
-
-    try {
-      const res = await fetch("/api/agent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: q,
-          mode,
-          language,
-          llmApiKey: llmKey.trim() || undefined,
-          history: historyForApi(priorMessages),
-          existingApp,
-        }),
-      });
-      const bodyText = await res.text();
-      let data: AgentResponse & { error?: string | { message?: string; code?: string } };
-      try {
-        data = JSON.parse(bodyText);
-      } catch {
-        // Vercel timeout/crash pages are plain text, not JSON
-        throw new Error(
-          res.ok
-            ? "The server returned an unreadable response. Try again."
-            : `Server error (${res.status}): ${bodyText.slice(0, 200) || res.statusText}. ` +
-              "If this is a timeout, try a shorter or more specific edit request."
-        );
-      }
-      if (!res.ok) {
-        // Vercel infrastructure errors return { error: { message, code } } (an object, not a string).
-        const raw = data.error;
-        const msg =
-          typeof raw === "string"
-            ? raw
-            : typeof raw === "object" && raw !== null
-              ? (raw.message ?? raw.code ?? JSON.stringify(raw))
-              : `Request failed (${res.status})`;
-        throw new Error(msg);
-      }
-
-      persistAppResponse(data);
-
-      if (mode === "app" && data.mode === "app" && data.app) {
-        setMode("app");
-      }
-
-      const assistantMsg: AssistantMessage = {
-        id: uid(),
-        role: "assistant",
-        content: data.workflow,
-        response: data,
-      };
-      setMessages((prev) => [...prev, assistantMsg]);
-    } catch (err) {
-      const errMsg: ErrorMessage = {
-        id: uid(),
-        role: "error",
-        content: err instanceof Error ? err.message : "Something went wrong",
-      };
-      setMessages((prev) => [...prev, errMsg]);
-    } finally {
-      setLoading(false);
-      inputRef.current?.focus();
-    }
-  }
+  }, [messages, loading, bottomRef]);
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       void send();
     }
-  }
-
-  function handleDeploySuccess(info: {
-    deploymentUrl: string;
-    deploymentId: string;
-    projectName: string;
-  }) {
-    if (!activeAppId) return;
-    const app = getSavedApp(activeAppId);
-    const version = app ? getLatestVersion(app) : undefined;
-    if (!app || !version) return;
-    saveAppVersion({
-      appId: app.id,
-      title: app.title,
-      summary: version.summary,
-      files: version.files.map((f) => ({
-        path: f.path,
-        code: f.code,
-        language: f.language ?? "typescript",
-        description: f.description ?? f.path,
-      })),
-      deploymentUrl: info.deploymentUrl,
-      deploymentId: info.deploymentId,
-      vercelProjectName: info.projectName,
-    });
-  }
-
-  function loadSavedAppIntoChat(appId: string) {
-    const app = getSavedApp(appId);
-    const version = app ? getLatestVersion(app) : undefined;
-    if (!app || !version) return;
-    setActiveAppIdState(appId);
-    setMode("app");
-    const blueprint = blueprintFromVersion(app, version);
-    const response: AgentResponse = {
-      mode: "app",
-      workflow: `Loaded **${app.title}** v${version.version} from saved projects. Describe changes to edit in place, then redeploy to the same Vercel project (\`${app.vercelProjectName}\`).`,
-      confidence: 1,
-      fallback: false,
-      citations: [],
-      steps: [],
-      app: blueprint,
-    };
-    setMessages([
-      {
-        id: uid(),
-        role: "assistant",
-        content: response.workflow,
-        response,
-      },
-    ]);
   }
 
   return (
@@ -403,10 +143,7 @@ export function AgentChat() {
           activeAppId={activeAppId}
           onSelectApp={(id) => {
             if (id) loadSavedAppIntoChat(id);
-            else {
-              setActiveAppIdState(null);
-              setActiveAppId(null);
-            }
+            else clearActiveApp();
           }}
           onImportClick={() => setShowImport(true)}
         />
@@ -432,7 +169,7 @@ export function AgentChat() {
               <span className="font-semibold text-zinc-600 dark:text-zinc-400">Snippet language</span>
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value as AgentLanguage)}
+                onChange={(e) => setLanguage(e.target.value as typeof language)}
                 className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-950"
               >
                 {LANGUAGES.map((l) => (
@@ -580,7 +317,7 @@ export function AgentChat() {
                 <button
                   type="button"
                   aria-label={`Remove ${a.name}`}
-                  onClick={() => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                  onClick={() => removeAttachment(i)}
                   className="text-sky-500 hover:text-sky-700 dark:hover:text-sky-200"
                 >
                   ×
