@@ -15,6 +15,7 @@
 import { applyPathParams } from "../resolve-request";
 import type { HttpMethod, RunnableRequest } from "../types";
 import type { AgentStepResult, ScriptLanguage, WorkflowScript } from "./types";
+import { extractTagNameFromQuery } from "../workflow-step-context";
 
 const AUTH_NAMES = new Set(["AccessID", "Signature", "Expires"]);
 const PATH_PREFIXES = new Set([
@@ -654,6 +655,123 @@ function buildJavascript(plan: ScriptPlan, baseUrl: string, title: string): stri
 }
 
 /* -------------------------------- public --------------------------------- */
+
+function enrichQuery(query: { name: string; value: string }[], extra: Record<string, string>) {
+  const map = new Map(query.map((q) => [q.name, q.value]));
+  for (const [name, value] of Object.entries(extra)) {
+    if (!map.get(name)?.trim()) map.set(name, value);
+  }
+  return [...map.entries()].map(([name, value]) => ({ name, value }));
+}
+
+function mergePathParams(
+  params: { name: string; value: string }[] | undefined,
+  overrides: Record<string, string>
+) {
+  const map = new Map((params ?? []).map((p) => [p.name, p.value]));
+  for (const [name, value] of Object.entries(overrides)) {
+    map.set(name, value);
+  }
+  return [...map.entries()].map(([name, value]) => ({ name, value }));
+}
+
+/** Pre-fill step request bodies/path params for chaining (UI + scripts). */
+export function applyScriptPlanToSteps(
+  steps: AgentStepResult[],
+  query?: string
+): AgentStepResult[] {
+  if (steps.length === 0) return steps;
+  const tagName = query ? extractTagNameFromQuery(query) : undefined;
+  const plan = inferScriptPlan(steps);
+
+  const bodyByOrder = new Map<number, unknown>();
+  const pathByOrder = new Map<number, Record<string, string>>();
+
+  for (const op of plan.ops) {
+    if (op.type === "call") {
+      bodyByOrder.set(op.step.index, op.step.body);
+      if (op.step.slug.includes("bulk-add-remove-tags")) {
+        pathByOrder.set(op.step.index, { action_type: "add_tag" });
+      }
+    }
+    if (op.type === "findOrCreate") {
+      bodyByOrder.set(op.listStep.index, op.listStep.body);
+      const createBody =
+        op.createStep.body && typeof op.createStep.body === "object" && !Array.isArray(op.createStep.body)
+          ? { ...(op.createStep.body as Record<string, unknown>), ...(tagName ? { name: tagName } : {}) }
+          : tagName
+            ? { name: tagName, colour_code: "#0068FA" }
+            : op.createStep.body;
+      bodyByOrder.set(op.createStep.index, createBody);
+    }
+  }
+
+  return steps.map((s) => {
+    let request = { ...s.request };
+
+    if (s.slug.includes("list-threat-data") || s.slug.includes("list-tags")) {
+      request = {
+        ...request,
+        query: enrichQuery(request.query ?? [], { page_size: "100", page: "1" }),
+      };
+    }
+
+    const wiredBody = bodyByOrder.get(s.order);
+    const isBulkAdd = s.slug.includes("bulk-add-remove-tags");
+    const bulkTemplate = {
+      object_type: "indicator",
+      object_ids: "{{threat_data_ids}}",
+      data: { tag_id: ["{{tag_id}}"] },
+    };
+
+    if (isBulkAdd) {
+      const body =
+        wiredBody &&
+        typeof wiredBody === "object" &&
+        !Array.isArray(wiredBody) &&
+        Object.keys(wiredBody as object).length > 0
+          ? wiredBody
+          : bulkTemplate;
+      request = { ...request, body: JSON.stringify(body, null, 2) };
+    } else if (s.slug.includes("create-tag") && tagName) {
+      const current = (() => {
+        try {
+          return JSON.parse(
+            typeof wiredBody === "object" && wiredBody !== null && !Array.isArray(wiredBody)
+              ? JSON.stringify(wiredBody)
+              : (request.body ?? "{}")
+          ) as { name?: string; colour_code?: string };
+        } catch {
+          return {};
+        }
+      })();
+      if (!current.name?.trim() || current.name === "SuperMalware") {
+        request = {
+          ...request,
+          body: JSON.stringify(
+            { ...current, name: tagName, colour_code: current.colour_code ?? "#0068FA" },
+            null,
+            2
+          ),
+        };
+      }
+    } else if (wiredBody !== undefined) {
+      request = { ...request, body: JSON.stringify(wiredBody, null, 2) };
+    }
+
+    const pathOverrides = pathByOrder.get(s.order);
+    if (pathOverrides) {
+      request = { ...request, pathParams: mergePathParams(request.pathParams, pathOverrides) };
+    } else if (isBulkAdd) {
+      request = {
+        ...request,
+        pathParams: mergePathParams(request.pathParams, { action_type: "add_tag" }),
+      };
+    }
+
+    return { ...s, request };
+  });
+}
 
 export function buildWorkflowScripts(
   steps: AgentStepResult[],

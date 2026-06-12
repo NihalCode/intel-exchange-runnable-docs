@@ -21,6 +21,17 @@ const WORKFLOW_PATTERNS: { keywords: string[]; slugs: string[]; intro: string }[
     slugs: ["ping/ping"],
     intro: "Start with the Ping endpoint to confirm API connectivity and credentials.",
   },
+  {
+    keywords: ["tag", "add", "attach", "assign", "indicator", "bulk"],
+    slugs: [
+      "threat-data/list-threat-data",
+      "tags/list-tags",
+      "tags/create-tag",
+      "threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags",
+    ],
+    intro:
+      "Search indicators in threat data, find or create the tag, then bulk-add it to those indicators. Run steps in order — ids chain automatically.",
+  },
 ];
 
 const APP_PATTERNS: {

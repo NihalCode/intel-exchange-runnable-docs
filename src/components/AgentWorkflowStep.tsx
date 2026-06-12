@@ -80,10 +80,12 @@ export function AgentWorkflowStep({
   step,
   language,
   totalSteps,
+  workflowId,
 }: {
   step: AgentStepResult;
   language: AgentLanguage;
   totalSteps: number;
+  workflowId?: string;
 }) {
   const snippet = useMemo(() => snippetForStep(step, language), [step, language]);
 
@@ -167,7 +169,14 @@ export function AgentWorkflowStep({
           </div>
         ) : null}
 
-        <RequestPlaygroundProvider request={step.request} meta={step.meta} storageId={step.slug}>
+        <RequestPlaygroundProvider
+          request={step.request}
+          meta={step.meta}
+          storageId={step.slug}
+          workflowId={workflowId}
+          stepOrder={step.order}
+          stepSlug={step.slug}
+        >
           <RequestPlaygroundPanel />
           <p className="text-[11px] text-zinc-500">
             Edit path, query, body, and form fields above — the Run button uses your values, not the static snippet text.

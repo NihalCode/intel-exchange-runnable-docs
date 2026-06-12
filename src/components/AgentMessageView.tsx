@@ -1,24 +1,45 @@
 "use client";
 
+import { useEffect, useMemo } from "react";
 import { AgentAppBlueprintView } from "./AgentAppBlueprintView";
 import { AgentAppDiffView } from "./AgentAppDiffView";
 import { AgentWorkflowScript } from "./AgentWorkflowScript";
 import { AgentWorkflowStep } from "./AgentWorkflowStep";
 import type { AgentLanguage, AgentResponse } from "@/lib/agent/types";
+import { setWorkflowTagName } from "@/lib/workflow-step-context";
 
 export function AgentMessageView({
   response,
   language,
+  workflowId,
   onDeploySuccess,
 }: {
   response: AgentResponse;
   language: AgentLanguage;
+  workflowId?: string;
   onDeploySuccess?: (info: {
     deploymentUrl: string;
     deploymentId: string;
     projectName: string;
   }) => void;
 }) {
+  const tagName = useMemo(() => {
+    for (const s of response.steps) {
+      if (!s.slug.includes("create-tag") || !s.request.body) continue;
+      try {
+        const parsed = JSON.parse(s.request.body) as { name?: string };
+        if (parsed.name?.trim()) return parsed.name.trim();
+      } catch {
+        /* ignore */
+      }
+    }
+    return undefined;
+  }, [response.steps]);
+
+  useEffect(() => {
+    if (workflowId && tagName) setWorkflowTagName(workflowId, tagName);
+  }, [workflowId, tagName]);
+
   return (
     <div className="space-y-4">
       {response.fallback ? (
@@ -47,7 +68,10 @@ export function AgentMessageView({
       {response.steps.length > 1 ? (
         <div className="rounded-lg border border-sky-300/50 bg-sky-50/40 px-3 py-2 text-xs dark:border-sky-900 dark:bg-sky-950/30">
           <strong className="text-sky-900 dark:text-sky-200">Run in sequence:</strong>{" "}
-          Execute steps 1 → {response.steps.length}. Edit parameters before Run.
+          Run steps 1 → {response.steps.length} in order. Each successful Run stores ids
+          automatically — later steps fill <code className="font-mono">{`{{tag_id}}`}</code> and{" "}
+          <code className="font-mono">{`{{threat_data_ids}}`}</code> for you. Or use the complete
+          workflow script below for one-shot execution.
         </div>
       ) : null}
 
@@ -57,6 +81,7 @@ export function AgentMessageView({
           step={step}
           language={language}
           totalSteps={response.steps.length}
+          workflowId={workflowId}
         />
       ))}
 

@@ -25,6 +25,7 @@ import {
 } from "@/lib/resolve-request";
 import { isMutating, maskText } from "@/lib/security";
 import type { CodeSnippet, KeyValue, RunnableRequest } from "@/lib/types";
+import { captureStepOutput } from "@/lib/workflow-step-context";
 import { PyodideRunner } from "./PyodideRunner";
 import {
   buildPlaygroundExec,
@@ -410,7 +411,27 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
     setError(null);
     setResult(null);
     try {
-      setResult(await proxyHttpRequest(exec));
+      const httpResult = await proxyHttpRequest(exec);
+      setResult(httpResult);
+      if (
+        usingPlayground &&
+        playground!.workflowId &&
+        playground!.stepOrder &&
+        httpResult.ok &&
+        httpResult.body
+      ) {
+        try {
+          captureStepOutput(
+            playground!.workflowId,
+            playground!.stepOrder,
+            playground!.stepSlug ?? "",
+            method,
+            JSON.parse(httpResult.body)
+          );
+        } catch {
+          /* non-json body */
+        }
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error.");
     } finally {

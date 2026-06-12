@@ -16,6 +16,10 @@ import {
   mergeStringRecords,
   savePlaygroundDraft,
 } from "@/lib/playground-session";
+import {
+  resolveWorkflowBodyText,
+  validateWorkflowTokens,
+} from "@/lib/workflow-step-context";
 import { DISPLAY_BASE } from "@/lib/constants";
 import { isPlaceholderBase } from "@/lib/demo";
 import type { ExecRequest } from "@/lib/parse-request";
@@ -67,6 +71,10 @@ export interface RequestPlaygroundState {
   setFormText: (name: string, value: string) => void;
   setFormFile: (name: string, file: File | null) => void;
   validateForRun: () => string | null;
+  /** Agent workflow session — enables step-to-step id chaining. */
+  workflowId?: string;
+  stepOrder?: number;
+  stepSlug?: string;
 }
 
 const RequestPlaygroundContext = createContext<RequestPlaygroundState | null>(null);
@@ -101,12 +109,18 @@ export function RequestPlaygroundProvider({
   request,
   meta,
   storageId,
+  workflowId,
+  stepOrder,
+  stepSlug,
   children,
 }: {
   request: RunnableRequest;
   meta?: RequestPlaygroundMeta;
   /** Doc slug or agent step slug — restores path/query/body edits across navigation. */
   storageId?: string;
+  workflowId?: string;
+  stepOrder?: number;
+  stepSlug?: string;
   children: ReactNode;
 }) {
   const pathParams = useMemo<KeyValue[]>(() => request.pathParams ?? [], [request.pathParams]);
@@ -257,8 +271,15 @@ export function RequestPlaygroundProvider({
             return `Query parameter "${name}" is required.`;
           }
         }
+        if (workflowId && bodyText.includes("{{")) {
+          const tokenErr = validateWorkflowTokens(bodyText, workflowId);
+          if (tokenErr) return tokenErr;
+        }
         return null;
       },
+      workflowId,
+      stepOrder,
+      stepSlug,
     };
   }, [
     request,
@@ -281,6 +302,9 @@ export function RequestPlaygroundProvider({
     setBodyText,
     setFormText,
     setFormFile,
+    workflowId,
+    stepOrder,
+    stepSlug,
   ]);
 
   return (
@@ -580,7 +604,9 @@ export async function buildPlaygroundExec(
     playground.request,
     baseUrl,
     getCredential,
-    playground.bodyText || undefined,
+    playground.workflowId
+      ? resolveWorkflowBodyText(playground.bodyText || "", playground.workflowId)
+      : playground.bodyText || undefined,
     playground.queryValues,
     playground.pathValues
   );

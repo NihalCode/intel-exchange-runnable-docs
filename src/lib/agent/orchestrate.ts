@@ -18,7 +18,7 @@ import {
   retrieveLexical,
   retrieveWithEmbedding,
 } from "./retrieve";
-import { buildWorkflowScripts } from "./script-builder";
+import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
   AgentAppBlueprint,
@@ -237,7 +237,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   const { steps: validated, dropped } = validatePlan(plan, pages, endpointSlugs);
-  const stepResults = await buildStepResults(validated, pages, language, baseUrl);
+  let stepResults = await buildStepResults(validated, pages, language, baseUrl);
+  if (mode === "workflow" && stepResults.length > 0) {
+    stepResults = applyScriptPlanToSteps(stepResults, query);
+  }
 
   const fallback =
     lowConfidence ||

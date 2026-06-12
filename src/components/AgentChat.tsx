@@ -264,6 +264,7 @@ export function AgentChat() {
                     <AgentMessageView
                       response={msg.response}
                       language={language}
+                      workflowId={msg.id}
                       onDeploySuccess={handleDeploySuccess}
                     />
                   </div>
