@@ -11,7 +11,7 @@ import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
 import { detectAgentMode, resolveAgentRun } from "./mode";
-import { planAppFromRetrieval, planFromRetrieval, enforceTagIndicatorPlan } from "./planner";
+import { planAppFromRetrieval, planFromRetrieval, enforceTagIndicatorPlan, enforceTagManagementPlan } from "./planner";
 import {
   confidenceFromScores,
   isLowConfidence,
@@ -226,6 +226,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   if (mode === "workflow") {
+    plan = enforceTagManagementPlan(plan, query, scored);
     plan = enforceTagIndicatorPlan(plan, query, scored);
   }
 

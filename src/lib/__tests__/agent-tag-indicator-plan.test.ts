@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { enforceTagIndicatorPlan, isTagToIndicatorQuery } from "../agent/planner";
+import {
+  enforceTagIndicatorPlan,
+  enforceTagManagementPlan,
+  isTagListVerifyQuery,
+  isTagToIndicatorQuery,
+} from "../agent/planner";
 import type { AgentPlan, ScoredChunk } from "../agent/types";
 
 const chunk = (slug: string, title: string): ScoredChunk => ({
@@ -53,5 +58,42 @@ describe("tag-to-indicator planning", () => {
       )
     ).toBe(true);
     expect(fixed.steps.some((s) => s.slug === "threat-data/list-threat-data")).toBe(true);
+  });
+});
+
+describe("tag list/verify planning", () => {
+  it("detects list/verify tag queries", () => {
+    expect(
+      isTagListVerifyQuery(
+        "List tags with page_size 100 and confirm tag 'SampleTag5' exists. Show its id, name, and is_active from the results."
+      )
+    ).toBe(true);
+    expect(isTagListVerifyQuery('Create a new user tag named "SampleTag5"')).toBe(false);
+  });
+
+  it("replaces wrong plan with Get Tags List for verify query", () => {
+    const plan: AgentPlan = {
+      workflow: "wrong",
+      confidence: 0.9,
+      steps: [
+        {
+          slug: "tag-groups/bulk-action/create-tag-group",
+          order: 1,
+          explanation: "wrong",
+        },
+      ],
+      citations: [],
+    };
+    const chunks = [
+      chunk("tags/list-tags", "Get Tags List"),
+      chunk("tag-groups/bulk-action/create-tag-group", "Create Tag Group"),
+    ];
+    const query =
+      "List tags with page_size 100 and confirm tag 'SampleTag5' exists. Show its id, name, and is_active from the results.";
+    const fixed = enforceTagManagementPlan(plan, query, chunks);
+    expect(fixed.steps).toHaveLength(1);
+    expect(fixed.steps[0].slug).toBe("tags/list-tags");
+    expect(fixed.steps.some((s) => /tag-groups|bulk-actions/.test(s.slug))).toBe(false);
+    expect(fixed.workflow).toMatch(/SampleTag5/i);
   });
 });

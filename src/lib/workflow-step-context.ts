@@ -190,6 +190,7 @@ export function extractTagNameFromQuery(query: string): string | undefined {
   const patterns = [
     /\btag(?:s)?\s+["']([^"']+)["']/i,
     /["']([^"']+)["']\s+tag/i,
+    /\bconfirm\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
     /\bfind(?:\s+or\s+create)?\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
     /\b(?:named|called)\s+["']?([A-Za-z0-9_-]+)/i,
   ];

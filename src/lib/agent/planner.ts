@@ -1,4 +1,12 @@
 import type { AgentCitation, AgentPlan, AgentPlanStep, ScoredChunk } from "./types";
+import { extractTagNameFromQuery } from "../workflow-step-context";
+
+const LIST_TAGS_SLUG = "tags/list-tags";
+const CREATE_TAG_SLUG = "tags/create-tag";
+
+/** Endpoints that are NOT list/create single tag (common LLM mistakes). */
+const TAG_MGMT_WRONG_SLUG =
+  /tag-groups\/|bulk-action|administration\/tag-management\/create-tags|ingestion\/tags\/bulk-actions/i;
 
 const WORKFLOW_PATTERNS: { keywords: string[]; slugs: string[]; intro: string }[] = [
   {
@@ -89,6 +97,100 @@ function matchWorkflowPattern(query: string): typeof WORKFLOW_PATTERNS[0] | null
     }
   }
   return bestHits >= 2 ? best : null;
+}
+
+export function isTagListVerifyQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  const tagIntent = /\btags?\b/.test(q);
+  const listIntent =
+    /\blist\b|\bget\b|\bretrieve\b|\bshow\b|\bconfirm\b|\bverify\b|\bcheck\b|\bexists?\b/.test(q);
+  const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
+  return tagIntent && listIntent && !createIntent;
+}
+
+export function isTagCreateVerifyQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  const tagIntent = /\btags?\b/.test(q);
+  const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
+  const verifyIntent =
+    /\blist\b|\bverify\b|\bconfirm\b|\bcheck\b|\bexists?\b|\bshow\b/.test(q);
+  return tagIntent && createIntent && verifyIntent;
+}
+
+function planStepsForSlugs(
+  slugs: string[],
+  chunks: ScoredChunk[],
+  intro: string
+): { steps: AgentPlanStep[]; citations: AgentCitation[] } {
+  const steps = stepsFromSlugs(slugs, chunks, intro);
+  const citations = steps.map((s) => {
+    const chunk = chunks.find((c) => c.slug === s.slug);
+    return chunk
+      ? citationFromChunk(chunk)
+      : { slug: s.slug, title: s.slug, url: `/docs/${s.slug}` };
+  });
+  return { steps, citations };
+}
+
+export function isTagToIndicatorQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  const hasTag = /\btags?\b/.test(q);
+  const hasTarget = /\bindicators?\b|\biocs?\b|threat\s*data/.test(q);
+  const hasAction = /\badd\b|\battach\b|\bassign\b|\bbulk\b/.test(q);
+  return hasTag && hasTarget && hasAction;
+}
+
+/** List / verify / create tag — never tag-group bulk actions. */
+export function enforceTagManagementPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[]
+): AgentPlan {
+  const tagName = extractTagNameFromQuery(query);
+
+  if (isTagListVerifyQuery(query)) {
+    const intro =
+      tagName
+        ? `List tags (GET \`ingestion/tags/\`, page_size 100), then search \`results[]\` for name **${tagName}**. ` +
+          `Report \`id\`, \`name\`, and \`is_active\` — do not use Create Tag Group or bulk-actions endpoints.`
+        : "List all tags with page_size 100 using **Get Tags List** (`tags/list-tags`).";
+    const { steps, citations } = planStepsForSlugs([LIST_TAGS_SLUG], chunks, intro);
+    return {
+      ...plan,
+      confidence: Math.max(plan.confidence, 0.85),
+      workflow: intro,
+      steps,
+      citations,
+    };
+  }
+
+  if (isTagCreateVerifyQuery(query)) {
+    const intro =
+      `Create the tag${tagName ? ` **${tagName}**` : ""} with **Create Tag** (\`tags/create-tag\`), ` +
+      `then **List Tags** (\`tags/list-tags\`, page_size 100) to verify \`id\`, \`name\`, and \`is_active\` in results.`;
+    const { steps, citations } = planStepsForSlugs(
+      [CREATE_TAG_SLUG, LIST_TAGS_SLUG],
+      chunks,
+      intro
+    );
+    return { ...plan, confidence: Math.max(plan.confidence, 0.85), workflow: intro, steps, citations };
+  }
+
+  // Drop tag-group mistakes when query is tag-only (no indicator bulk-add)
+  if (/\btags?\b/.test(query.toLowerCase()) && !isTagToIndicatorQuery(query)) {
+    const filtered = plan.steps.filter((s) => !TAG_MGMT_WRONG_SLUG.test(s.slug));
+    if (filtered.length !== plan.steps.length) {
+      return {
+        ...plan,
+        steps: filtered.map((s, i) => ({ ...s, order: i + 1 })),
+        workflow:
+          plan.workflow +
+          "\n\n**Note:** Use **Get Tags List** (`tags/list-tags`) to list/verify tags — not Tag Group or `ingestion/tags/bulk-actions/`.",
+      };
+    }
+  }
+
+  return plan;
 }
 
 function matchAppPattern(query: string): (typeof APP_PATTERNS)[0] | null {
@@ -213,14 +315,6 @@ const TAG_TO_INDICATOR_BULK_SLUG =
 /** Wrong endpoints the LLM often picks for "add tag to indicator". */
 const TAG_INDICATOR_WRONG_SLUG =
   /tag-groups\/bulk-action|enable-bulk-tag-group|disable-bulk-tag-group|ingestion\/tags\/bulk-actions/i;
-
-export function isTagToIndicatorQuery(query: string): boolean {
-  const q = query.toLowerCase();
-  const hasTag = /\btags?\b/.test(q);
-  const hasTarget = /\bindicators?\b|\biocs?\b|threat\s*data/.test(q);
-  const hasAction = /\badd\b|\battach\b|\bassign\b|\bbulk\b/.test(q);
-  return hasTag && hasTarget && hasAction;
-}
 
 /** Force the documented tag→indicator workflow; drop tag-group bulk-action mistakes. */
 export function enforceTagIndicatorPlan(
