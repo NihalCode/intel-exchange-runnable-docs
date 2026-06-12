@@ -53,6 +53,7 @@ You MUST only recommend endpoints whose slug appears in the CONTEXT below.
 Never invent endpoints, paths, or parameter names.
 Return JSON with: workflow (markdown string), confidence (0-1), steps (array), questions (optional clarifying questions).
 Each step must include: slug (exact from context), order (1-based), explanation, and optional pathParams/queryParams/body/form objects using ONLY documented parameter names.
+To add a tag to indicator(s), use slug threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags (Bulk Add Tags) with path param action_type=add_tag and body object_ids + data.tag_id. Do NOT use tag-groups/bulk-action or ingestion/tags/bulk-actions (those are for tag groups, not attaching tags to threat data).
 If the request is ambiguous, set confidence below 0.5 and include questions.`;
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [

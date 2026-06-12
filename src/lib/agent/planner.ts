@@ -207,6 +207,71 @@ export function planFromRetrieval(
   return { workflow, confidence, steps, citations };
 }
 
+const TAG_TO_INDICATOR_BULK_SLUG =
+  "threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags";
+
+/** Wrong endpoints the LLM often picks for "add tag to indicator". */
+const TAG_INDICATOR_WRONG_SLUG =
+  /tag-groups\/bulk-action|enable-bulk-tag-group|disable-bulk-tag-group|ingestion\/tags\/bulk-actions/i;
+
+export function isTagToIndicatorQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  const hasTag = /\btags?\b/.test(q);
+  const hasTarget = /\bindicators?\b|\biocs?\b|threat\s*data/.test(q);
+  const hasAction = /\badd\b|\battach\b|\bassign\b|\bbulk\b/.test(q);
+  return hasTag && hasTarget && hasAction;
+}
+
+/** Force the documented tag→indicator workflow; drop tag-group bulk-action mistakes. */
+export function enforceTagIndicatorPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[]
+): AgentPlan {
+  if (!isTagToIndicatorQuery(query)) return plan;
+
+  const pattern = matchWorkflowPattern(query);
+  if (pattern) {
+    const steps = stepsFromSlugs(pattern.slugs, chunks, pattern.intro);
+    return {
+      ...plan,
+      workflow:
+        `${pattern.intro}\n\n**Important:** Use **Bulk Add Tags** on threat data (` +
+        `\`object_ids\` + \`data.tag_id\`) — not Tag Group bulk actions (\`ids\` + \`action\`).`,
+      steps,
+      citations: steps.map((s) => {
+        const chunk = chunks.find((c) => c.slug === s.slug);
+        return chunk
+          ? citationFromChunk(chunk)
+          : { slug: s.slug, title: s.slug, url: `/docs/${s.slug}` };
+      }),
+    };
+  }
+
+  const filtered = plan.steps.filter((s) => !TAG_INDICATOR_WRONG_SLUG.test(s.slug));
+  const hasBulk = filtered.some((s) => s.slug === TAG_TO_INDICATOR_BULK_SLUG);
+  const steps = hasBulk
+    ? filtered
+    : [
+        ...filtered,
+        {
+          slug: TAG_TO_INDICATOR_BULK_SLUG,
+          order: filtered.length + 1,
+          explanation:
+            "Bulk-add the tag to indicators using object_type, object_ids (indicator UUIDs), and data.tag_id.",
+        },
+      ];
+
+  return {
+    ...plan,
+    steps: steps.map((s, i) => ({ ...s, order: i + 1 })),
+    workflow:
+      plan.workflow +
+      "\n\n**Note:** Adding a tag to an indicator uses **Bulk Add Tags** (`object_ids` + `data.tag_id`), " +
+      "not **Enable Bulk Tag Group** (`ids` is for tag *groups*, not indicators).",
+  };
+}
+
 export function formatChunksForPrompt(chunks: ScoredChunk[]): string {
   return chunks
     .slice(0, 10)
