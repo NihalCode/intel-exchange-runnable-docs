@@ -24,6 +24,7 @@ export function AgentMessageView({
   }) => void;
 }) {
   const tagName = useMemo(() => {
+    if (response.tagName?.trim()) return response.tagName.trim();
     for (const s of response.steps) {
       if (!s.slug.includes("create-tag") || !s.request.body) continue;
       try {
@@ -34,7 +35,7 @@ export function AgentMessageView({
       }
     }
     return undefined;
-  }, [response.steps]);
+  }, [response.steps, response.tagName]);
 
   useEffect(() => {
     if (workflowId && tagName) setWorkflowTagName(workflowId, tagName);

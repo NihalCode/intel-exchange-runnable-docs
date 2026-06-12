@@ -218,6 +218,8 @@ export interface AgentResponse {
   appEdit?: boolean;
   /** Standalone runnable scripts implementing the whole workflow (workflow mode). */
   scripts?: WorkflowScript[];
+  /** Tag name extracted from the user query (for search summaries and chaining). */
+  tagName?: string;
 }
 
 export interface AgentRequest {

@@ -3,6 +3,7 @@ import {
   enforceTagIndicatorPlan,
   enforceTagManagementPlan,
   isTagListVerifyQuery,
+  isTagCreateQuery,
   isTagToIndicatorQuery,
 } from "../agent/planner";
 import type { AgentPlan, ScoredChunk } from "../agent/types";
@@ -94,6 +95,25 @@ describe("tag list/verify planning", () => {
     expect(fixed.steps).toHaveLength(1);
     expect(fixed.steps[0].slug).toBe("tags/list-tags");
     expect(fixed.steps.some((s) => /tag-groups|bulk-actions/.test(s.slug))).toBe(false);
-    expect(fixed.workflow).toMatch(/SampleTag5/i);
+    expect(fixed.workflow).toMatch(/q=SampleTag5/i);
+  });
+
+  it("prepends search before create when tag name is known", () => {
+    const plan: AgentPlan = {
+      workflow: "wrong",
+      confidence: 0.9,
+      steps: [{ slug: "tags/create-tag", order: 1, explanation: "create" }],
+      citations: [],
+    };
+    const chunks = [
+      chunk("tags/list-tags", "Get Tags List"),
+      chunk("tags/create-tag", "Create Tag"),
+    ];
+    expect(isTagCreateQuery('Create a user tag named "SampleTag6"')).toBe(true);
+    const fixed = enforceTagManagementPlan(plan, 'Create a user tag named "SampleTag6"', chunks);
+    expect(fixed.steps).toHaveLength(2);
+    expect(fixed.steps[0].slug).toBe("tags/list-tags");
+    expect(fixed.steps[1].slug).toBe("tags/create-tag");
+    expect(fixed.workflow).toMatch(/already exists/i);
   });
 });

@@ -103,9 +103,18 @@ export function isTagListVerifyQuery(query: string): boolean {
   const q = query.toLowerCase();
   const tagIntent = /\btags?\b/.test(q);
   const listIntent =
-    /\blist\b|\bget\b|\bretrieve\b|\bshow\b|\bconfirm\b|\bverify\b|\bcheck\b|\bexists?\b/.test(q);
+    /\blist\b|\bget\b|\bretrieve\b|\bshow\b|\bconfirm\b|\bverify\b|\bcheck\b|\bexists?\b|\bfind\b|\bsearch\b|\btake its id\b/.test(
+      q
+    );
   const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
   return tagIntent && listIntent && !createIntent;
+}
+
+export function isTagCreateQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  const tagIntent = /\btags?\b/.test(q);
+  const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
+  return tagIntent && createIntent && !isTagCreateVerifyQuery(query);
 }
 
 export function isTagCreateVerifyQuery(query: string): boolean {
@@ -149,11 +158,10 @@ export function enforceTagManagementPlan(
   const tagName = extractTagNameFromQuery(query);
 
   if (isTagListVerifyQuery(query)) {
-    const intro =
-      tagName
-        ? `List tags (GET \`ingestion/tags/\`, page_size 100), then search \`results[]\` for name **${tagName}**. ` +
-          `Report \`id\`, \`name\`, and \`is_active\` — do not use Create Tag Group or bulk-actions endpoints.`
-        : "List all tags with page_size 100 using **Get Tags List** (`tags/list-tags`).";
+    const intro = tagName
+      ? `Search for tag **${tagName}** (GET \`ingestion/tags/?q=${tagName}&tag_type=user\`). ` +
+        `After Run, the response summary shows whether it already exists and its **id** — no manual scan of the full list.`
+      : "List all tags with page_size 100 using **Get Tags List** (`tags/list-tags`).";
     const { steps, citations } = planStepsForSlugs([LIST_TAGS_SLUG], chunks, intro);
     return {
       ...plan,
@@ -165,14 +173,23 @@ export function enforceTagManagementPlan(
   }
 
   if (isTagCreateVerifyQuery(query)) {
-    const intro =
-      `Create the tag${tagName ? ` **${tagName}**` : ""} with **Create Tag** (\`tags/create-tag\`), ` +
-      `then **List Tags** (\`tags/list-tags\`, page_size 100) to verify \`id\`, \`name\`, and \`is_active\` in results.`;
+    const intro = tagName
+      ? `Find-or-create **${tagName}**: (1) search with \`q=${tagName}\` — if found, use that id; ` +
+        `(2) else **Create Tag**; (3) search again to confirm \`id\`, \`name\`, \`is_active\`.`
+      : `Create the tag with **Create Tag**, then search **Get Tags List** to verify id, name, and is_active.`;
     const { steps, citations } = planStepsForSlugs(
-      [CREATE_TAG_SLUG, LIST_TAGS_SLUG],
+      tagName ? [LIST_TAGS_SLUG, CREATE_TAG_SLUG, LIST_TAGS_SLUG] : [CREATE_TAG_SLUG, LIST_TAGS_SLUG],
       chunks,
       intro
     );
+    return { ...plan, confidence: Math.max(plan.confidence, 0.85), workflow: intro, steps, citations };
+  }
+
+  if (isTagCreateQuery(query) && tagName) {
+    const intro =
+      `Find-or-create **${tagName}**: search first (\`q=${tagName}\`, \`tag_type=user\`). ` +
+      `If the summary says the tag already exists, use that **id** and skip Create. Otherwise run **Create Tag**.`;
+    const { steps, citations } = planStepsForSlugs([LIST_TAGS_SLUG, CREATE_TAG_SLUG], chunks, intro);
     return { ...plan, confidence: Math.max(plan.confidence, 0.85), workflow: intro, steps, citations };
   }
 

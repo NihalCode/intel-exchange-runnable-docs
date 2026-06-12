@@ -24,8 +24,9 @@ import {
   type CredField,
 } from "@/lib/resolve-request";
 import { isMutating, maskText } from "@/lib/security";
+import { summarizeCreateTagResponse, summarizeTagLookup } from "@/lib/tag-lookup";
 import type { CodeSnippet, KeyValue, RunnableRequest } from "@/lib/types";
-import { captureStepOutput } from "@/lib/workflow-step-context";
+import { captureStepOutput, loadWorkflowContext } from "@/lib/workflow-step-context";
 import { PyodideRunner } from "./PyodideRunner";
 import {
   buildPlaygroundExec,
@@ -346,6 +347,46 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
 
   const needsBaseUrl = isPlaceholderBase(baseUrl);
 
+  const stepSlug = usingPlayground ? (playground!.stepSlug ?? "") : "";
+
+  function tagNameForSummary(): string | undefined {
+    if (usingPlayground && playground!.workflowId) {
+      const fromCtx = loadWorkflowContext(playground!.workflowId)._tagName;
+      if (typeof fromCtx === "string" && fromCtx.trim()) return fromCtx.trim();
+    }
+    const qParam = queryValues.q?.trim();
+    if (qParam) return qParam;
+    if (stepSlug.includes("create-tag") && method === "POST" && bodyText.trim()) {
+      try {
+        const parsed = JSON.parse(bodyText) as { name?: string };
+        if (parsed.name?.trim()) return parsed.name.trim();
+      } catch {
+        /* ignore */
+      }
+    }
+    return undefined;
+  }
+
+  function tagSummaryMessage(): string | null {
+    if (!result?.body) return null;
+    const tagName = tagNameForSummary();
+    if (!tagName) return null;
+    try {
+      const parsed = JSON.parse(result.body);
+      if (stepSlug.includes("create-tag") && method === "POST") {
+        return summarizeCreateTagResponse(parsed, tagName, result.ok);
+      }
+      if (stepSlug.includes("tags") && method === "GET") {
+        return summarizeTagLookup(parsed, tagName).message;
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  const tagSummary = result ? tagSummaryMessage() : null;
+
   function handleBodyChange(v: string) {
     setBodyText(v);
     setJsonError(validateJson(v));
@@ -561,6 +602,19 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
               <span className="text-amber-600"> · response truncated</span>
             ) : null}
           </div>
+          {tagSummary ? (
+            <div
+              className={`mb-2 rounded-md border px-3 py-2 text-sm font-medium ${
+                tagSummary.includes("already exists") || tagSummary.startsWith("Created tag")
+                  ? "border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200"
+                  : tagSummary.includes("not found")
+                    ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
+                    : "border-sky-300 bg-sky-50 text-sky-900 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-200"
+              }`}
+            >
+              {tagSummary}
+            </div>
+          ) : null}
           <Pre text={maskText(formatMaybeJson(result.body), secretValues)} />
         </ResultBox>
       ) : null}

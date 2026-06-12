@@ -709,7 +709,24 @@ export function applyScriptPlanToSteps(
   return steps.map((s) => {
     let request = { ...s.request };
 
-    if (s.slug.includes("list-threat-data") || s.slug.includes("list-tags")) {
+    if (s.slug.includes("list-threat-data")) {
+      request = {
+        ...request,
+        query: enrichQuery(request.query ?? [], { page_size: "100", page: "1" }),
+      };
+    }
+
+    if (tagName && (s.slug.includes("list-tags") || s.slug.includes("retrieve-tags"))) {
+      request = {
+        ...request,
+        query: enrichQuery(request.query ?? [], {
+          q: tagName,
+          tag_type: "user",
+          page_size: "100",
+          page: "1",
+        }),
+      };
+    } else if (s.slug.includes("list-tags") || s.slug.includes("retrieve-tags")) {
       request = {
         ...request,
         query: enrichQuery(request.query ?? [], { page_size: "100", page: "1" }),

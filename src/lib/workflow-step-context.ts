@@ -1,5 +1,7 @@
 /** Session-scoped captures from agent workflow step runs (ids for chaining). */
 
+import { findTagByName, tagResultsFromBody } from "./tag-lookup";
+
 const STORAGE_PREFIX = "cyware-workflow-ctx:";
 
 export type WorkflowContext = Record<string, unknown>;
@@ -109,18 +111,14 @@ export function captureStepOutput(
   }
 
   if (slug.includes("tags") && method === "GET") {
-    let items = dig(parsedBody, "results");
-    if (Array.isArray(items)) {
-      const tagName = ctx._tagName;
-      if (typeof tagName === "string" && tagName) {
-        const match = items.find(
-          (i) => i && typeof i === "object" && (i as Record<string, unknown>).name === tagName
-        ) as Record<string, unknown> | undefined;
-        if (typeof match?.id === "string") ctx.tag_id = match.id;
-      } else if (items.length === 1) {
-        const id = (items[0] as Record<string, unknown>)?.id;
-        if (typeof id === "string") ctx.tag_id = id;
-      }
+    const items = tagResultsFromBody(parsedBody);
+    const tagName = ctx._tagName;
+    if (typeof tagName === "string" && tagName) {
+      const match = findTagByName(items, tagName);
+      if (match) ctx.tag_id = match.id;
+    } else if (items.length === 1) {
+      const id = (items[0] as Record<string, unknown>)?.id;
+      if (typeof id === "string") ctx.tag_id = id;
     }
   }
 
@@ -191,6 +189,7 @@ export function extractTagNameFromQuery(query: string): string | undefined {
     /\btag(?:s)?\s+["']([^"']+)["']/i,
     /["']([^"']+)["']\s+tag/i,
     /\bconfirm\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
+    /\bfind\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
     /\bfind(?:\s+or\s+create)?\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
     /\b(?:named|called)\s+["']?([A-Za-z0-9_-]+)/i,
   ];

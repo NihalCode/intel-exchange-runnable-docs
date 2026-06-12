@@ -19,6 +19,7 @@ import {
   retrieveWithEmbedding,
 } from "./retrieve";
 import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
+import { extractTagNameFromQuery } from "../workflow-step-context";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
   AgentAppBlueprint,
@@ -254,6 +255,8 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const titleBySlug = new Map(getManifest().pages.map((p) => [p.slug, p.title]));
 
+  const tagName = extractTagNameFromQuery(query);
+
   const response: AgentResponse = {
     mode,
     workflow: plan.workflow,
@@ -264,6 +267,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       title: titleBySlug.get(c.slug) ?? c.title,
     })),
     steps: stepResults,
+    tagName,
     questions: plan.questions,
     retrieval: scored.slice(0, 5).map((c) => ({
       slug: c.slug,

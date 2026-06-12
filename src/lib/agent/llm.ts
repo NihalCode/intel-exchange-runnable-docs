@@ -54,8 +54,9 @@ Never invent endpoints, paths, or parameter names.
 Return JSON with: workflow (markdown string), confidence (0-1), steps (array), questions (optional clarifying questions).
 Each step must include: slug (exact from context), order (1-based), explanation, and optional pathParams/queryParams/body/form objects using ONLY documented parameter names.
 To add a tag to indicator(s), use slug threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags (Bulk Add Tags) with path param action_type=add_tag and body object_ids + data.tag_id. Do NOT use tag-groups/bulk-action or ingestion/tags/bulk-actions (those are for tag groups, not attaching tags to threat data).
-To list or verify tags, use slug tags/list-tags (GET ingestion/tags/, query page_size). Do NOT use tag-groups, Create Tag Group, or ingestion/tags/bulk-actions for listing tags.
-To create a tag, use slug tags/create-tag (POST ingestion/tags/, body name + colour_code).
+To list, find, or verify a tag by name, use slug tags/list-tags (GET ingestion/tags/) with query q=<name> and tag_type=user — not a full unpaged list. If q search finds the tag, report "already exists" and its id; do not create again.
+To create a tag, use slug tags/create-tag (POST ingestion/tags/, body name + colour_code). Prefer a search step with q=<name> before create (find-or-create).
+Do NOT use tag-groups, Create Tag Group, or ingestion/tags/bulk-actions for listing tags.
 If the request is ambiguous, set confidence below 0.5 and include questions.`;
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [

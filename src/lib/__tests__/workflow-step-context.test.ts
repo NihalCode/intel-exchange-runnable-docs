@@ -110,6 +110,7 @@ describe("applyScriptPlanToSteps", () => {
     ] as unknown as AgentStepResult[];
 
     const wired = applyScriptPlanToSteps(steps, 'add tag "SampleTag2" to indicators');
+    expect(wired[1].request.query?.find((q) => q.name === "q")?.value).toBe("SampleTag2");
     const bulk = wired[3];
     expect(bulk.request.pathParams?.find((p) => p.name === "action_type")?.value).toBe("add_tag");
     const body = JSON.parse(bulk.request.body ?? "{}");
