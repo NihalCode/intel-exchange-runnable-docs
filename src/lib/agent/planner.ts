@@ -218,6 +218,39 @@ export function enforceTagManagementPlan(
   return plan;
 }
 
+const PING_SLUG = "ping/ping";
+
+/** "is the connection working / test the api / ping" → Ping. */
+export function isPingQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    /\bping\b/.test(q) ||
+    /\b(connection|connectivity|reachable|api)\b.*\b(work|working|up|live|ok|alive|test)\b/.test(q) ||
+    /\b(test|check)\b.*\b(connection|connectivity|api|reachab)/.test(q) ||
+    /\bis (it|the api|the connection|everything) working\b/.test(q)
+  );
+}
+
+export function enforcePingPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[]
+): AgentPlan {
+  if (!isPingQuery(query)) return plan;
+  const intro =
+    "Check connectivity with **Ping** (`GET ping/`). A 200 response means the API and your credentials are working.";
+  const { steps, citations } = planStepsForSlugs([PING_SLUG], chunks, intro);
+  if (steps.length === 0) return plan; // ping chunk not retrieved; leave as-is
+  return {
+    ...plan,
+    confidence: Math.max(plan.confidence, 0.9),
+    workflow: intro,
+    steps,
+    citations,
+    questions: undefined,
+  };
+}
+
 const LIST_THREAT_DATA_SLUG = "threat-data/list-threat-data";
 
 /** Route plain "show me the indicators / threat data" to List Threat Data. */

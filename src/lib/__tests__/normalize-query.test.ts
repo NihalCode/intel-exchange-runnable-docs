@@ -6,6 +6,7 @@ import {
 } from "../agent/normalize-query";
 import {
   isListIndicatorsQuery,
+  isPingQuery,
   isTagCreateQuery,
   isTagListVerifyQuery,
   isTagToIndicatorQuery,
@@ -67,6 +68,18 @@ describe("casual prompts route to the right intent after canonicalize", () => {
   it("'show me the bad ips' is a list-indicators query", () => {
     const c = canonicalizeIntent("show me the bad ips");
     expect(isListIndicatorsQuery(c)).toBe(true);
+  });
+
+  it("connectivity questions are ping queries", () => {
+    expect(isPingQuery("is the connection working?")).toBe(true);
+    expect(isPingQuery("test the api")).toBe(true);
+    expect(isPingQuery("ping the server")).toBe(true);
+    expect(isPingQuery("is everything working")).toBe(true);
+  });
+
+  it("does not misclassify tag/indicator work as ping", () => {
+    expect(isPingQuery("show me all my labels")).toBe(false);
+    expect(isPingQuery("put the label SampleTag6 on the bad ips")).toBe(false);
   });
 });
 

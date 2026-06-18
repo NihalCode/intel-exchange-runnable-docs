@@ -17,6 +17,8 @@ import {
   enforceTagIndicatorPlan,
   enforceTagManagementPlan,
   enforceListIndicatorsPlan,
+  enforcePingPlan,
+  isPingQuery,
 } from "./planner";
 import {
   confidenceFromScores,
@@ -258,9 +260,14 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
     // rule-based enforcers fire for non-technical phrasing.
     const intentQuery = canonicalizeIntent(query);
-    plan = enforceTagManagementPlan(plan, intentQuery, scored);
-    plan = enforceTagIndicatorPlan(plan, intentQuery, scored);
-    plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
+    // Connectivity questions are unambiguous — route to Ping first, ignoring
+    // chat-history contamination that can otherwise mislead the LLM planner.
+    plan = enforcePingPlan(plan, query, scored);
+    if (!isPingQuery(query)) {
+      plan = enforceTagManagementPlan(plan, intentQuery, scored);
+      plan = enforceTagIndicatorPlan(plan, intentQuery, scored);
+      plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
+    }
 
     // Non-technical nudge: if the prompt is too vague to act on, ask a simple
     // question in plain English instead of guessing at an endpoint.

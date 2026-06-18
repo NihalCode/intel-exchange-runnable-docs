@@ -172,7 +172,7 @@ export function AgentWorkflowStep({
         <RequestPlaygroundProvider
           request={step.request}
           meta={step.meta}
-          storageId={step.slug}
+          storageId={workflowId ? `${workflowId}:${step.order}:${step.slug}` : step.slug}
           workflowId={workflowId}
           stepOrder={step.order}
           stepSlug={step.slug}
