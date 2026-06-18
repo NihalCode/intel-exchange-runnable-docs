@@ -47,12 +47,25 @@ function describeParams(fields, label) {
   return `${label}:\n${lines.join("\n")}`;
 }
 
+/** Extra retrieval text for endpoints whose titles are too generic on their own. */
+const DISAMBIGUATION_HINTS = {
+  "threat-mailbox/search-url":
+    "Disambiguation: Threat Mailbox — search for a URL or link inside email feed messages " +
+    "(GET conversion/feed-sources/email/deep-search/). NOT third-party indicator repository search. " +
+    "Use when the user wants to find URLs or IOCs extracted from threat mailbox emails.",
+  "reports/download-file":
+    "Disambiguation: Reports — download an external intel or report file by file_id and token " +
+    "(GET ingestion/external_download/{file_id}/). NOT IOC listing or generic file browse. " +
+    "Use when the user has a report download link, file_id, or authorization token.",
+};
+
 function chunkEndpoint(page) {
   const parts = [
     page.title,
     page.breadcrumb.join(" > "),
     `${page.method} ${page.path}`,
     page.description?.trim() || "",
+    DISAMBIGUATION_HINTS[page.slug],
     describeParams(page.request?.path, "Path parameters"),
     describeParams(page.request?.query, "Query parameters"),
     describeParams(page.request?.header, "Headers"),

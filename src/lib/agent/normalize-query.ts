@@ -29,6 +29,14 @@ const SYNONYM_RULES: SynonymRule[] = [
   { pattern: /\b(delete|remove|get rid of)\b/i, expand: ["delete", "remove"] },
   { pattern: /\b(update|change|edit|rename)\b/i, expand: ["update"] },
   { pattern: /\b(everyone|all of them|all)\b/i, expand: ["bulk"] },
+  {
+    pattern: /\b(threat\s*mailbox|email\s*(message|feed|source)s?)\b/i,
+    expand: ["threat mailbox", "email deep search", "search url"],
+  },
+  {
+    pattern: /\b(report|reports)\b.*\b(download|file|attachment)\b|\b(download|get)\b.*\b(report|intel)\b.*\b(file|attachment)\b/i,
+    expand: ["reports download file", "external download", "file_id token"],
+  },
 ];
 
 /**
