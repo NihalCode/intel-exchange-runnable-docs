@@ -54,9 +54,9 @@ const DISAMBIGUATION_HINTS = {
     "(GET conversion/feed-sources/email/deep-search/). NOT third-party indicator repository search. " +
     "Use when the user wants to find URLs or IOCs extracted from threat mailbox emails.",
   "reports/download-file":
-    "Disambiguation: Reports — download an external intel or report file by file_id and token " +
-    "(GET ingestion/external_download/{file_id}/). NOT IOC listing or generic file browse. " +
-    "Use when the user has a report download link, file_id, or authorization token.",
+    "Disambiguation: Reports module — download a CTIX report or external intel file by file_id and authorization token " +
+    "(GET ingestion/external_download/{file_id}/). NOT threat mailbox email inbox attachments, NOT email message downloads. " +
+    "Use when the user wants to download a shared CTIX report file using a file_id and token.",
 };
 
 function chunkEndpoint(page) {

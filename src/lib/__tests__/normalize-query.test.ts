@@ -7,6 +7,7 @@ import {
 import {
   isListIndicatorsQuery,
   isPingQuery,
+  isReportDownloadQuery,
   isTagCreateQuery,
   isTagListVerifyQuery,
   isTagToIndicatorQuery,
@@ -80,6 +81,13 @@ describe("casual prompts route to the right intent after canonicalize", () => {
   it("does not misclassify tag/indicator work as ping", () => {
     expect(isPingQuery("show me all my labels")).toBe(false);
     expect(isPingQuery("put the label SampleTag6 on the bad ips")).toBe(false);
+  });
+
+  it("report file download is not email attachment download", () => {
+    expect(isReportDownloadQuery("download a report file i was sent")).toBe(true);
+    expect(isReportDownloadQuery("download a report file with my download link")).toBe(true);
+    expect(isReportDownloadQuery("download attachments from my email")).toBe(false);
+    expect(isReportDownloadQuery("download all threat mail attachments")).toBe(false);
   });
 });
 

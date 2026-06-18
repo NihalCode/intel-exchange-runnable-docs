@@ -18,6 +18,8 @@ import {
   enforceTagManagementPlan,
   enforceListIndicatorsPlan,
   enforcePingPlan,
+  enforceReportDownloadPlan,
+  isReportDownloadQuery,
   isPingQuery,
 } from "./planner";
 import {
@@ -264,9 +266,12 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     // chat-history contamination that can otherwise mislead the LLM planner.
     plan = enforcePingPlan(plan, query, scored);
     if (!isPingQuery(query)) {
-      plan = enforceTagManagementPlan(plan, intentQuery, scored);
-      plan = enforceTagIndicatorPlan(plan, intentQuery, scored);
-      plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
+      plan = enforceReportDownloadPlan(plan, intentQuery, scored);
+      if (!isReportDownloadQuery(intentQuery)) {
+        plan = enforceTagManagementPlan(plan, intentQuery, scored);
+        plan = enforceTagIndicatorPlan(plan, intentQuery, scored);
+        plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
+      }
     }
 
     // Non-technical nudge: if the prompt is too vague to act on, ask a simple

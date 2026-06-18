@@ -220,6 +220,48 @@ export function enforceTagManagementPlan(
 
 const PING_SLUG = "ping/ping";
 
+const REPORT_TOKEN_SLUG = "reports/token-to-download-file";
+const REPORT_DOWNLOAD_SLUG = "reports/download-file";
+
+/** "download a report file" → Reports external download (not email inbox attachments). */
+export function isReportDownloadQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  if (/\b(email|inbox|mailbox|attachment|threat\s*mail|message)\b/.test(q)) return false;
+  const wantsReport = /\breports?\b/.test(q);
+  const wantsFile = /\b(file|files)\b/.test(q);
+  const wantsDownload =
+    /\b(download|get|fetch|retrieve)\b/.test(q) ||
+    /\b(link|token|file_id)\b/.test(q);
+  return wantsReport && wantsFile && wantsDownload;
+}
+
+export function enforceReportDownloadPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[]
+): AgentPlan {
+  if (!isReportDownloadQuery(query)) return plan;
+  const intro =
+    "Download a CTIX report or external intel file: first get an authorization token with " +
+    "**Get Token to Download File** (`GET ingestion/file/{file_id}/`), then download with " +
+    "**Get Download File** (`GET ingestion/external_download/{file_id}/?token=...`) using the file_id and token. " +
+    "This is **not** threat mailbox email attachment download.";
+  const { steps, citations } = planStepsForSlugs(
+    [REPORT_TOKEN_SLUG, REPORT_DOWNLOAD_SLUG],
+    chunks,
+    intro
+  );
+  if (steps.length === 0) return plan;
+  return {
+    ...plan,
+    confidence: Math.max(plan.confidence, 0.9),
+    workflow: intro,
+    steps,
+    citations,
+    questions: undefined,
+  };
+}
+
 /** "is the connection working / test the api / ping" → Ping. */
 export function isPingQuery(query: string): boolean {
   const q = query.toLowerCase();

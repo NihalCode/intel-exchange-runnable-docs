@@ -116,8 +116,8 @@ const VAGUE_ENDPOINT_PROMPTS = {
     "find a url in email messages in the threat mailbox",
   ],
   "reports/download-file": [
-    "download a report file i was sent",
-    "get the report file with my download link",
+    "download a report file with my download link",
+    "get a CTIX report file using the file id and token",
   ],
 };
 
