@@ -32,6 +32,13 @@ describe("workflow-step-context", () => {
     expect(extractTagNameFromQuery('find or create tag "SampleTag2"')).toBe("SampleTag2");
   });
 
+  it("extracts a bare tag name after 'tag' or 'label'", () => {
+    expect(extractTagNameFromQuery("add the tag SampleTag6 on all the indicator")).toBe(
+      "SampleTag6"
+    );
+    expect(extractTagNameFromQuery("a label called SampleTag9")).toBe("SampleTag9");
+  });
+
   it("captures threat data ids and resolves object_ids in bulk body", () => {
     const wf = "wf-1";
     captureStepOutput(

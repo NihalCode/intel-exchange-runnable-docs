@@ -11,13 +11,22 @@ import { generateStepCode } from "./codegen";
 import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
 import { detectAgentMode, resolveAgentRun } from "./mode";
-import { planAppFromRetrieval, planFromRetrieval, enforceTagIndicatorPlan, enforceTagManagementPlan } from "./planner";
+import {
+  planAppFromRetrieval,
+  planFromRetrieval,
+  enforceTagIndicatorPlan,
+  enforceTagManagementPlan,
+  enforceListIndicatorsPlan,
+} from "./planner";
 import {
   confidenceFromScores,
   isLowConfidence,
   retrieveLexical,
   retrieveWithEmbedding,
+  scoredChunksByIds,
 } from "./retrieve";
+import { getPineconeConfig, queryPinecone } from "./pinecone";
+import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./normalize-query";
 import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
 import { extractTagNameFromQuery } from "../workflow-step-context";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
@@ -192,19 +201,38 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const baseUrl = getManifest().defaultBaseUrl || DISPLAY_BASE;
 
   // Combine recent user turns so follow-ups like "add pagination" still retrieve relevant docs
-  const retrievalQuery = req.history?.length
+  const baseRetrievalQuery = req.history?.length
     ? [
         ...req.history.filter((h) => h.role === "user").slice(-2).map((h) => h.content),
         query,
       ].join(" ")
     : query;
 
-  let scored = retrieveLexical(retrievalQuery, index, mode === "app" ? 20 : 14);
+  // Simpler-prompt support: expand casual phrasing into canonical doc terms.
+  const retrievalQuery = expandQueryForRetrieval(baseRetrievalQuery);
 
-  if (apiKey && index.hasEmbeddings) {
+  const topK = mode === "app" ? 20 : 14;
+  let scored = retrieveLexical(retrievalQuery, index, topK);
+
+  // Preferred path: embed query, then retrieve from Pinecone. Falls back to the
+  // local hybrid/lexical index whenever creds are missing or any call fails, so
+  // tests, the SSG build, and offline dev keep working unchanged.
+  if (apiKey) {
     try {
       const embedding = await embedQuery(retrievalQuery, apiKey);
-      scored = retrieveWithEmbedding(retrievalQuery, index, embedding, mode === "app" ? 20 : 14);
+      const pineconeCfg = getPineconeConfig();
+      let usedPinecone = false;
+      if (pineconeCfg) {
+        const matches = await queryPinecone(embedding, topK, pineconeCfg);
+        const fromPinecone = scoredChunksByIds(matches, index);
+        if (fromPinecone.length > 0) {
+          scored = fromPinecone;
+          usedPinecone = true;
+        }
+      }
+      if (!usedPinecone && index.hasEmbeddings) {
+        scored = retrieveWithEmbedding(retrievalQuery, index, embedding, topK);
+      }
     } catch {
       /* lexical only */
     }
@@ -227,8 +255,24 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   if (mode === "workflow") {
-    plan = enforceTagManagementPlan(plan, query, scored);
-    plan = enforceTagIndicatorPlan(plan, query, scored);
+    // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
+    // rule-based enforcers fire for non-technical phrasing.
+    const intentQuery = canonicalizeIntent(query);
+    plan = enforceTagManagementPlan(plan, intentQuery, scored);
+    plan = enforceTagIndicatorPlan(plan, intentQuery, scored);
+    plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
+
+    // Non-technical nudge: if the prompt is too vague to act on, ask a simple
+    // question in plain English instead of guessing at an endpoint.
+    if (isVagueQuery(query) && plan.steps.length === 0) {
+      plan = {
+        ...plan,
+        questions: plan.questions ?? [
+          "What would you like to do — view, create, update, or delete something?",
+          "Which item is this about (for example: tags, indicators, threat data, or feeds)?",
+        ],
+      };
+    }
   }
 
   const endpointSlugs = endpointSlugSet();
@@ -255,7 +299,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const titleBySlug = new Map(getManifest().pages.map((p) => [p.slug, p.title]));
 
-  const tagName = extractTagNameFromQuery(query);
+  const tagName = extractTagNameFromQuery(canonicalizeIntent(query));
 
   const response: AgentResponse = {
     mode,

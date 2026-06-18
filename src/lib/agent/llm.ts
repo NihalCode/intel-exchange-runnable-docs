@@ -1,5 +1,5 @@
 import type { AgentPlan, ScoredChunk } from "./types";
-import { formatChunksForPrompt } from "./planner";
+import { formatTrimmedContext } from "./trim-context";
 
 const MODEL = "gpt-4o-mini";
 
@@ -46,7 +46,9 @@ export async function planWithLlm(
   history?: { role: "user" | "assistant"; content: string }[]
 ): Promise<AgentPlan> {
   const allowedSlugs = [...new Set(chunks.map((c) => c.slug))];
-  const context = formatChunksForPrompt(chunks);
+  // Trim each retrieved chunk to signature + required/mentioned params so the
+  // context window carries only the relevant data (RAG, not the whole doc).
+  const context = formatTrimmedContext(chunks, query, 8);
 
   const system = `You are a Cyware Intel Exchange API documentation assistant.
 You MUST only recommend endpoints whose slug appears in the CONTEXT below.

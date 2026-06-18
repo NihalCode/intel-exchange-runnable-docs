@@ -93,6 +93,28 @@ vitest.config.ts                Vitest configuration
 
 ---
 
+## How the Documentation Agent Retrieves Docs (RAG)
+
+The `/agent` route plans CTIX workflows from a natural-language prompt. Retrieval is **RAG over the doc chunks**, designed to send only the relevant data to the LLM so the context window is not wasted.
+
+**Flow** (`src/lib/agent/orchestrate.ts` → `runAgent`):
+1. **Normalize** — `expandQueryForRetrieval` (`normalize-query.ts`) maps casual phrasing (e.g. "labels" → "tags", "bad IPs" → "indicator threat data") to canonical doc terms so non-technical prompts still retrieve correctly. Deterministic; no extra LLM call.
+2. **Embed** — the query is embedded with OpenAI `text-embedding-3-small` (512-dim) via `embedQuery`.
+3. **Retrieve** — `queryPinecone` (`pinecone.ts`) returns the top-K nearest chunk IDs from the Pinecone serverless index; `scoredChunksByIds` maps them back to local chunk text.
+4. **Fallback** — if `PINECONE_API_KEY` is unset or any Pinecone/embedding call fails, retrieval falls back to the **local BM25 hybrid index** (`retrieve.ts` + `agent-index.json`). This keeps tests, the SSG build, and offline dev working with zero network.
+5. **Trim** — `formatTrimmedContext` (`trim-context.ts`) sends each chunk's signature + one-line description + **required** params (plus params the query mentions), dropping long optional-param dumps. Typically 60–80% fewer context tokens.
+6. **Plan** — `planWithLlm` (`gpt-4o-mini`) produces the workflow from the trimmed context; rule-based enforcers (`enforceTagManagementPlan`, `enforceTagIndicatorPlan`) correct common endpoint mistakes.
+
+**Environment** (see `.env.example`): `OPENAI_API_KEY`, `PINECONE_API_KEY`, `PINECONE_INDEX`, `PINECONE_CLOUD`, `PINECONE_REGION`. In production, set these in Vercel → Project → Environment Variables. Pinecone is **server-side only**.
+
+**Populating Pinecone** (one-time + on content refresh):
+```bash
+npm run build:index          # rebuild local agent-index.json from src/content/pages
+npm run pinecone:upsert      # create the serverless index if missing, embed + upsert all chunks
+```
+
+---
+
 ## How Code Snippets Are Rendered
 
 **Central entry point:** `src/components/CodeBlock.tsx` → `src/components/runners.tsx`

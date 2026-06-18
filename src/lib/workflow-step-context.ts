@@ -186,12 +186,14 @@ export function setWorkflowTagName(workflowId: string, tagName: string) {
 
 export function extractTagNameFromQuery(query: string): string | undefined {
   const patterns = [
-    /\btag(?:s)?\s+["']([^"']+)["']/i,
-    /["']([^"']+)["']\s+tag/i,
-    /\bconfirm\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
-    /\bfind\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
-    /\bfind(?:\s+or\s+create)?\s+tag\s+["']?([A-Za-z0-9_-]+)/i,
+    /\b(?:tag|label)s?\s+["']([^"']+)["']/i,
+    /["']([^"']+)["']\s+(?:tag|label)/i,
+    /\bconfirm\s+(?:tag|label)\s+["']?([A-Za-z0-9_-]+)/i,
+    /\bfind\s+(?:tag|label)\s+["']?([A-Za-z0-9_-]+)/i,
+    /\bfind(?:\s+or\s+create)?\s+(?:tag|label)\s+["']?([A-Za-z0-9_-]+)/i,
     /\b(?:named|called)\s+["']?([A-Za-z0-9_-]+)/i,
+    // Bare capitalized identifier after "tag"/"label" (e.g. "tag SampleTag6").
+    /\b(?:tag|label)s?\s+([A-Z][A-Za-z0-9_-]{2,})/,
   ];
   for (const re of patterns) {
     const m = query.match(re);

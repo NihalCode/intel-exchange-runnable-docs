@@ -99,31 +99,39 @@ function matchWorkflowPattern(query: string): typeof WORKFLOW_PATTERNS[0] | null
   return bestHits >= 2 ? best : null;
 }
 
+const TAG_LIST_INTENT =
+  /\blist\b|\bget\b|\bretrieve\b|\bshow\b|\bconfirm\b|\bverify\b|\bcheck\b|\bexists?\b|\bfind\b|\bsearch\b|\bhave\b|\bgot\b|\btake its id\b/;
+const TAG_CREATE_INTENT = /\bcreate\b|\bnew tag\b|\bmake\b/;
+
 export function isTagListVerifyQuery(query: string): boolean {
   const q = query.toLowerCase();
   const tagIntent = /\btags?\b/.test(q);
-  const listIntent =
-    /\blist\b|\bget\b|\bretrieve\b|\bshow\b|\bconfirm\b|\bverify\b|\bcheck\b|\bexists?\b|\bfind\b|\bsearch\b|\btake its id\b/.test(
-      q
-    );
-  const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
-  return tagIntent && listIntent && !createIntent;
+  const createIntent = TAG_CREATE_INTENT.test(q);
+  return tagIntent && TAG_LIST_INTENT.test(q) && !createIntent;
 }
 
 export function isTagCreateQuery(query: string): boolean {
   const q = query.toLowerCase();
   const tagIntent = /\btags?\b/.test(q);
-  const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
-  return tagIntent && createIntent && !isTagCreateVerifyQuery(query);
+  return tagIntent && TAG_CREATE_INTENT.test(q) && !isTagCreateVerifyQuery(query);
 }
 
 export function isTagCreateVerifyQuery(query: string): boolean {
   const q = query.toLowerCase();
   const tagIntent = /\btags?\b/.test(q);
-  const createIntent = /\bcreate\b|\bnew tag\b/.test(q);
   const verifyIntent =
     /\blist\b|\bverify\b|\bconfirm\b|\bcheck\b|\bexists?\b|\bshow\b/.test(q);
-  return tagIntent && createIntent && verifyIntent;
+  return tagIntent && TAG_CREATE_INTENT.test(q) && verifyIntent;
+}
+
+/** Plain "show me the indicators / threat data" (no tag, no create). */
+export function isListIndicatorsQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  const target = /\bindicators?\b|threat\s*data/.test(q);
+  const list = /\blist\b|\bshow\b|\bget\b|\bsee\b|\bview\b|\bsearch\b|\bfind\b|\bdisplay\b/.test(q);
+  const tag = /\btags?\b/.test(q);
+  const create = /\bcreate\b|\badd\b|\bimport\b|\bmake\b/.test(q);
+  return target && list && !tag && !create;
 }
 
 function planStepsForSlugs(
@@ -145,7 +153,7 @@ export function isTagToIndicatorQuery(query: string): boolean {
   const q = query.toLowerCase();
   const hasTag = /\btags?\b/.test(q);
   const hasTarget = /\bindicators?\b|\biocs?\b|threat\s*data/.test(q);
-  const hasAction = /\badd\b|\battach\b|\bassign\b|\bbulk\b/.test(q);
+  const hasAction = /\badd\b|\battach\b|\bassign\b|\bbulk\b|\bput\b|\bplace\b|\bapply\b/.test(q);
   return hasTag && hasTarget && hasAction;
 }
 
@@ -208,6 +216,28 @@ export function enforceTagManagementPlan(
   }
 
   return plan;
+}
+
+const LIST_THREAT_DATA_SLUG = "threat-data/list-threat-data";
+
+/** Route plain "show me the indicators / threat data" to List Threat Data. */
+export function enforceListIndicatorsPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[]
+): AgentPlan {
+  if (!isListIndicatorsQuery(query)) return plan;
+  const intro =
+    "List threat data with **Get Threat Data List** (`POST ingestion/threat-data/list/`). " +
+    'Use a CQL query like `type = "indicator"` and set `page_size` to control how many you get back.';
+  const { steps, citations } = planStepsForSlugs([LIST_THREAT_DATA_SLUG], chunks, intro);
+  return {
+    ...plan,
+    confidence: Math.max(plan.confidence, 0.8),
+    workflow: intro,
+    steps,
+    citations,
+  };
 }
 
 function matchAppPattern(query: string): (typeof APP_PATTERNS)[0] | null {
@@ -383,6 +413,10 @@ export function enforceTagIndicatorPlan(
   };
 }
 
+/**
+ * @deprecated Retained for compatibility. The LLM prompt now uses
+ * `formatTrimmedContext` (see `trim-context.ts`) to send only relevant data.
+ */
 export function formatChunksForPrompt(chunks: ScoredChunk[]): string {
   return chunks
     .slice(0, 10)

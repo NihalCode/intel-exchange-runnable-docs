@@ -144,6 +144,21 @@ export function retrieveWithEmbedding(
   return mergeHybridScores(lexical, semantic.slice(0, limit * 2), limit);
 }
 
+/** Map external (e.g. Pinecone) match ids+scores back to local chunks. */
+export function scoredChunksByIds(
+  matches: { id: string; score: number }[],
+  index: AgentIndex
+): ScoredChunk[] {
+  const byId = chunkById(index);
+  const out: ScoredChunk[] = [];
+  for (const { id, score } of matches) {
+    const chunk = byId.get(id);
+    if (!chunk) continue;
+    out.push({ ...chunk, score, lexicalScore: 0, semanticScore: score });
+  }
+  return out;
+}
+
 export const CONFIDENCE_THRESHOLD = 0.12;
 
 export function confidenceFromScores(scored: ScoredChunk[]): number {
