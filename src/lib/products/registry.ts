@@ -118,7 +118,7 @@ export const PRODUCTS: ApiProduct[] = [
       "Cyware CFTR API — case management, incidents, playbooks, and security orchestration for CFTR tenants.",
     docsUrl: "https://cftrapi.cyware.com/",
     docsReferencePath: "/",
-    baseApiUrl: "https://cftrapi.cyware.com",
+    baseApiUrl: "https://YOUR_TENANT.cyware.com/cftrapi",
     authType: "orchestrate-open-api",
     auth: CFTR_AUTH,
     docsSourceType: "postman",
@@ -166,6 +166,28 @@ export function docsUrlForSlug(product: ApiProduct, slug: string): string {
     return `${product.docsOrigin}/`;
   }
   return `${product.docsOrigin}/${slug}.md`;
+}
+
+/** Human-readable guidance for the live Open API base URL field in API Settings. */
+export function apiBaseUrlHint(productId: string): string {
+  switch (productId) {
+    case "cftr":
+      return (
+        "Live CFTR API: https://YOUR_TENANT.cyware.com/cftrapi (from CFTR admin). " +
+        "cftrapi.cyware.com is the Postman docs host only — API calls there return 404."
+      );
+    case "csap":
+      return "https://csapapi.cyware.com or your tenant URL https://YOUR_TENANT.cyware.com/csap";
+    case "orchestrate":
+      return (
+        "https://orchestrateapi.cyware.com for API calls. " +
+        "The /cyware-orchestrate-api-reference-theneo path is docs browsing only."
+      );
+    case "ctix":
+      return "https://YOUR_TENANT.cyware.com/ctixapi (e.g. cs-testv2.cyware.com/ctixapi for Cyware demo tenant)";
+    default:
+      return getProductOrThrow(productId).baseApiUrl.replace("YOUR_TENANT", "your-tenant");
+  }
 }
 
 export function inferProductFromQuery(query: string): string | null {

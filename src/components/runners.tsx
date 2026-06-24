@@ -14,6 +14,8 @@ import {
   needsConfiguredBaseUrl,
   responseRunHint,
   templateTenantExplanation,
+  isCftrDocsHostBase,
+  cftrDocsHostExplanation,
 } from "@/lib/run-feedback";
 import { proxyHttpRequest } from "@/lib/http-run";
 import { runJsInSandbox } from "@/lib/js-sandbox";
@@ -519,6 +521,10 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
           {needsConfiguredBaseUrl(baseUrl) ? (
             <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
               <strong>Configure your tenant URL.</strong> {templateTenantExplanation()}
+            </div>
+          ) : isCftrDocsHostBase(baseUrl) ? (
+            <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+              {cftrDocsHostExplanation()}
             </div>
           ) : null}
         </>
