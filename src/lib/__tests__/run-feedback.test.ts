@@ -8,6 +8,7 @@ import {
 describe("run-feedback", () => {
   it("detects placeholder tenant base URLs", () => {
     expect(isTemplateTenantBase("https://tenantname.cyware.com/cftrapi")).toBe(true);
+    expect(isTemplateTenantBase("https://cftrapi.cyware.com")).toBe(false);
     expect(isTemplateTenantBase("https://mycompany.cyware.com/cftrapi")).toBe(false);
   });
 
@@ -21,7 +22,7 @@ describe("run-feedback", () => {
   it("prioritizes tenant URL hint over Cloudflare hint", () => {
     const body = "<title>Error &middot; Cloudflare Access</title>";
     expect(responseRunHint(403, body, "https://tenantname.cyware.com/cftrapi")).toMatch(
-      /tenantname/
+      /API Settings/
     );
   });
 });

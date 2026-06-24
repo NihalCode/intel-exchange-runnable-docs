@@ -17,7 +17,7 @@ const CONNECTIVITY: Record<
   ctix: { slug: "ping/ping", baseSuffix: "/ctixapi", wrongSuffix: "/cftrapi" },
   cftr: {
     slug: "cftr-api-reference/authentication/test-connectivity",
-    baseSuffix: "/cftrapi",
+    baseSuffix: "cftrapi.cyware.com",
     wrongSuffix: "/ctixapi",
   },
   orchestrate: {
@@ -82,10 +82,15 @@ describe("rewriteUrlWithRuntimeBase", () => {
 });
 
 describe("connectivity endpoints — all four products", () => {
+  function runtimeBaseFor(productId: string, cfg: (typeof CONNECTIVITY)[string]): string {
+    if (productId === "cftr") return "https://cftrapi.cyware.com";
+    return `${TENANT}${cfg.baseSuffix}`;
+  }
+
   for (const [productId, cfg] of Object.entries(CONNECTIVITY)) {
     it(`${productId} snippets use ${cfg.baseSuffix} base, not ${cfg.wrongSuffix}`, async () => {
       const page = await loadEndpoint(productId, cfg.slug);
-      const runtimeBase = `${TENANT}${cfg.baseSuffix}`;
+      const runtimeBase = runtimeBaseFor(productId, cfg);
       const snippets = buildEndpointSnippets(page, productId);
       const python = snippets.find((s) => s.label === "Python")!;
       expect(python.code).toContain(cfg.baseSuffix);
@@ -99,7 +104,7 @@ describe("connectivity endpoints — all four products", () => {
     it(`${productId} agent-style codeForRunnableRequest respects runtime base`, async () => {
       const page = await loadEndpoint(productId, cfg.slug);
       const req = buildRunnableRequest(page, productId);
-      const runtimeBase = `${TENANT}${cfg.baseSuffix}`;
+      const runtimeBase = runtimeBaseFor(productId, cfg);
       const code = codeForRunnableRequest(req, "python", runtimeBase);
       expect(code).toContain(runtimeBase);
       expect(code).not.toContain(cfg.wrongSuffix);

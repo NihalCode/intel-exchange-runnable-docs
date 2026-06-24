@@ -118,7 +118,7 @@ export const PRODUCTS: ApiProduct[] = [
       "Cyware CFTR API — case management, incidents, playbooks, and security orchestration for CFTR tenants.",
     docsUrl: "https://cftrapi.cyware.com/",
     docsReferencePath: "/",
-    baseApiUrl: "https://YOUR_TENANT.cyware.com/cftrapi",
+    baseApiUrl: "https://cftrapi.cyware.com",
     authType: "orchestrate-open-api",
     auth: CFTR_AUTH,
     docsSourceType: "postman",

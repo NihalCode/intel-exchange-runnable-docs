@@ -89,6 +89,11 @@ describe("product-specific snippets", () => {
     expect(req.query.some((q) => q.name === "Signature")).toBe(true);
   });
 
+  it("CFTR snippets use cftrapi.cyware.com base URL", () => {
+    const snippets = buildEndpointSnippets(sampleEndpoint, "cftr");
+    expect(snippets[0].code).toContain("https://cftrapi.cyware.com");
+  });
+
   it("CFTR test connectivity path is normalized", () => {
     const page: EndpointPage = {
       ...sampleEndpoint,

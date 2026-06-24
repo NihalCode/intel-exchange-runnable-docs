@@ -29,8 +29,8 @@ export function cloudflareAccessExplanation(): string {
 
 export function templateTenantExplanation(): string {
   return (
-    "Replace tenantname with your actual Cyware tenant slug in API Settings (key icon in the header), " +
-    "e.g. https://mycompany.cyware.com/cftrapi — not the placeholder tenantname.cyware.com."
+    "Set your Cyware API base URL in API Settings (key icon). " +
+    "CFTR: https://cftrapi.cyware.com — or your dedicated tenant URL like https://mycompany.cyware.com/cftrapi."
   );
 }
 

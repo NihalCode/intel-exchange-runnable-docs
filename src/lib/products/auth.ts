@@ -31,5 +31,7 @@ export function getAuthConfig(productId: string): AuthConfig {
 
 export function baseUrlForProduct(productId: string): string {
   if (productId === "ctix") return DISPLAY_BASE;
-  return getProductOrThrow(productId).baseApiUrl.replace("YOUR_TENANT", "tenantname");
+  const product = getProductOrThrow(productId);
+  if (!product.baseApiUrl.includes("YOUR_TENANT")) return product.baseApiUrl.replace(/\/+$/, "");
+  return product.baseApiUrl.replace("YOUR_TENANT", "tenantname").replace(/\/+$/, "");
 }
