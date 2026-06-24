@@ -1,0 +1,50 @@
+{
+  "slug": "cftr-api-reference/campaigns/create-campaign-using-field-values",
+  "title": "Create Campaign Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "campaigns",
+    "create-campaign-using-field-values"
+  ],
+  "description": "Create Campaign Using Field Values",
+  "method": "POST",
+  "path": "/v1/campaign/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "value": "Test Campaign",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "<p>Test Campaign</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Blue Label Campaign\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

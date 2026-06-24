@@ -1,0 +1,200 @@
+{
+  "slug": "member-portal/member-portal-alerts/get-member-locations",
+  "title": "Get Member Locations",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-alerts",
+    "get-member-locations"
+  ],
+  "description": "Returns locations configured in the CSAP Analyst Portal.",
+  "method": "GET",
+  "path": "csap/v1/get_location_list/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number for the response. Default value is 1, which retrieves the latest records.",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records in a page. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "search",
+        "description": "Pass the location name of the member location you want to search for. You can search for multiple locations by separating each location with a space. Example, *US India*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69787c8cc63cb994ffef8106"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the total number of locations.",
+          "isRequired": false,
+          "value": "2",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "data",
+          "description": "Returns the location details, such as location ID and name.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the member location details such as location ID and name.",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "location_id",
+                  "description": "Returns the 8-digit unique ID of the location.",
+                  "isRequired": false,
+                  "value": "f094a350",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "location_name",
+                  "description": "Returns the name of location.",
+                  "isRequired": false,
+                  "value": "United States-DC-Washington",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "location_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "31ed23e5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "location_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "United States-FL-Tampa",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,182 @@
+{
+  "slug": "persistent-list/get-persistent-storage-object-associated-playbooks",
+  "title": "Get Playbooks Associated with Persistent List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "persistent-list",
+    "get-persistent-storage-object-associated-playbooks"
+  ],
+  "description": "Returns the details of playbooks that contain the specified persistent list.",
+  "method": "GET",
+  "path": "v1/storage-manager/{persistent_storage_unique_id}/playbooks/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "persistent_storage_unique_id",
+        "description": "Pass the unique ID of the persistent list to retrieve the associated playbooks. You can retrieve the unique ID of a persistent list using the **Get Persistent Lists** endpoint.",
+        "isRequired": false,
+        "value": "{persistent_storage_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d949b1b66e3318bb1803b7"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "link",
+          "description": "Returns the link to the previous and next page.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "count",
+          "description": "Returns the total count of playbooks associated with the persistent list.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of playbooks associated with the specified persistent list. Each object displays the details of one playbook.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the playbook associated with the persistent list.",
+                  "isRequired": false,
+                  "value": "669bc716-9cc8-4a44-ab37-624844c25081",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the playbook associated with the persistent list.",
+                  "isRequired": false,
+                  "value": "PS TEST",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "readable_id",
+                  "description": "Returns the readable ID of the playbook associated with the persistent list.",
+                  "isRequired": false,
+                  "value": "PLB510",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the playbook associated with the persistent list.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "schedule_info",
+                  "description": "Returns the details of the playbook schedule associated with the persistent list.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

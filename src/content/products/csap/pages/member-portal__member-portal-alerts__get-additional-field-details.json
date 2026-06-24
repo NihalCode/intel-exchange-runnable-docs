@@ -1,0 +1,498 @@
+{
+  "slug": "member-portal/member-portal-alerts/get-additional-field-details",
+  "title": "Get Additional Field Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-alerts",
+    "get-additional-field-details"
+  ],
+  "description": "Returns the details of a specific field in Collaborate using the `field_id`. You can retrieve `field_id` using the **Get Additional Fields List** endpoint.",
+  "method": "GET",
+  "path": "csap/v1/list_additional_fields/",
+  "request": {
+    "query": [
+      {
+        "name": "field_id",
+        "description": "Pass the unique ID of the field. You can retrieve the `field_id` using the **Get Additional Fields List** endpoint.",
+        "isRequired": true,
+        "value": "f792fcc62d462",
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41fabb66e3318bb0d2523"
+  },
+  "responses": [
+    {
+      "statusCode": "System Field",
+      "description": "The following are the response parameters of a system field:",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns the details of the system field.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "field_name",
+                  "description": "Returns the name of the field.",
+                  "isRequired": false,
+                  "value": "vulnerability_source",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_custom",
+                  "description": "Returns true if the field is a custom field.",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the values (options) associated with the single-select or multi-select field. This includes the ID and the name of the option.\nNote: The ID is a mandatory key while creating or updating alerts using open API.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "vulnerability_source_id",
+                          "description": "Returns the unique ID of the single-select or multi-select option.",
+                          "isRequired": false,
+                          "value": "2a2583ad-ce2f-4972-a932-6c561e70e639",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "vulnerability_source_name",
+                          "description": "Returns the name of the single-select or multi-select option.",
+                          "isRequired": false,
+                          "value": "Media",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "vulnerability_source_id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "737968b5-8111-4248-a645-ecd6e5d65d42",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "vulnerability_source_name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Social Media",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "field_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "vulnerability_source",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_custom",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "false",
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "statusCode": "Custom Field",
+      "description": "The following are the response parameters of a custom field:",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns the details of the custom field.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "field_name",
+                  "description": "Returns the name of the field.",
+                  "isRequired": false,
+                  "value": "threat_category",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_custom",
+                  "description": "Returns true if the field is a custom field.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the details of the field.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "id",
+                      "description": "Returns the unique ID of the field.",
+                      "isRequired": false,
+                      "value": "a1b2c3d4e5f6g7",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "label",
+                      "description": "Returns the label of the field. This retrieves the same value as the `field_name` response parameter. ",
+                      "isRequired": false,
+                      "value": "Threat Category",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "description",
+                      "description": "Returns the description of the field.",
+                      "isRequired": false,
+                      "value": "Specifies the category of the identified threat.",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "type",
+                      "description": "Returns the field type. Example: multi-select, single-select, text.",
+                      "isRequired": false,
+                      "value": "text-field",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_active",
+                      "description": "Returns true if the field is active.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_alert_field",
+                      "description": "Returns true if the field is used for alert creation.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_intel_field",
+                      "description": "Returns true if the field is used during intel submission.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_rfi_field",
+                      "description": "Returns true if the field is used during RFI submission.",
+                      "isRequired": false,
+                      "value": true,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "is_member_profile_field",
+                      "description": "Returns true if the field is enabled for members in Profile Settings.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "allow_webapp_filter",
+                      "description": "Returns true if the field can be used as a filter.",
+                      "isRequired": false,
+                      "value": false,
+                      "valueType": "boolean",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "extra",
+                      "description": "Returns the extra details of the field.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "required_in_member_profile",
+                          "description": "Returns true if the field is required in Profile Settings.",
+                          "isRequired": false,
+                          "value": false,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

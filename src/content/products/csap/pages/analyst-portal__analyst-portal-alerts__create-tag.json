@@ -1,0 +1,111 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/create-tag",
+  "title": "Create Tag",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "create-tag"
+  ],
+  "description": "Create a tag in Collaborate's Tag Library. Analysts can use tags while creating alerts.",
+  "method": "POST",
+  "path": "csap/v1/tag/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "tag_name",
+        "description": "Pass the name of the tag. Tag names must be within 100 characters. Example: *Sample Tag*",
+        "isRequired": true,
+        "value": "Sample Tag",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d3d88bceb3f8dc913e3019"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "tag_name",
+          "description": "Returns the name of the tag you created. ",
+          "isRequired": false,
+          "value": "Sample Tag",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tag_id",
+          "description": "Returns the unique ID of the tag.",
+          "isRequired": false,
+          "value": "27b7b69e-2f43-4c1c-b969-3cc72463d3e3",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns if the tag is in active status.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tag_slug",
+          "description": "Returns the name slug associated with the tag.",
+          "isRequired": false,
+          "value": "sample-tag",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

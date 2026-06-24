@@ -1,0 +1,186 @@
+{
+  "slug": "analyst-portal/organization/activate-deactivate-organizations",
+  "title": "Activate/Deactivate Organizations",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "organization",
+    "activate-deactivate-organizations"
+  ],
+  "description": "Activate or deactivate a list of organizations. You can only deactivate organizations if all the members in the organizations have been deactivated.\n\n\n\n> [!NOTE]\n> You can update a maximum of 5 organizations at a time.",
+  "method": "PUT",
+  "path": "csap/v1/organization_activation/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "0",
+        "description": "",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "organization_id",
+            "description": "Pass the unique ID for the organization. You can retrieve the list of organizations and their IDs using the **Get Organizations** endpoint.",
+            "isRequired": false,
+            "value": "3cf257a6-e329-48b7-8c14-815d3c358bae",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "is_active",
+            "description": "Pass the active state of the organization. True for making the organization active, and False for deactivating it.",
+            "isRequired": false,
+            "value": false,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "1",
+        "description": "",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "organization_id",
+            "description": "",
+            "isRequired": false,
+            "value": "3d849dfa-0025-4e88-b344-6843111aad76",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "is_active",
+            "description": "",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "2",
+        "description": "",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "organization_id",
+            "description": "",
+            "isRequired": false,
+            "value": "5t849dfa-0025-4e88-b344-6843111aad98",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "is_active",
+            "description": "",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d42339b66e3318bb0d3bba"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns the status indicating whether the organization was updated successfully.",
+          "isRequired": false,
+          "value": "Success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

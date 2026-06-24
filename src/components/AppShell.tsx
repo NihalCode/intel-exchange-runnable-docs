@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { NavNode } from "@/lib/types";
-import { DISPLAY_BASE, DOCS_REFERENCE_URL } from "@/lib/constants";
+import { baseUrlForProduct } from "@/lib/products/auth";
 import { useRunSettings } from "./RunSettings";
+import { ProductSelector, useProduct } from "./ProductContext";
+import { ProductRunSettingsSync } from "./RunSettings";
 import { Sidebar } from "./Sidebar";
 
 function ThemeToggle() {
@@ -33,6 +35,8 @@ function ThemeToggle() {
 }
 
 function AuthPanel({ onClose }: { onClose: () => void }) {
+  const { product } = useProduct();
+  const productDefaultUrl = baseUrlForProduct(product.productId);
   const {
     baseUrl, setBaseUrl,
     accessId, setAccessId,
@@ -56,22 +60,23 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
 
       <p className="mb-3 rounded-md border border-sky-200 bg-sky-50 px-2.5 py-2 text-[11px] text-sky-800 dark:border-sky-800 dark:bg-sky-950/40 dark:text-sky-300">
         Official API reference:{" "}
-        <a href={DOCS_REFERENCE_URL} className="font-mono underline" target="_blank" rel="noreferrer">
-          ctixapiv3…/intel-exchange-api-reference
+        <a href={product.docsUrl} className="font-mono underline" target="_blank" rel="noreferrer">
+          {product.displayLabel} docs
         </a>
-        . <strong>Run</strong> calls the Open API base below (from your CTIX Integrators CSV), not the docs page URL.
+        . <strong>Run</strong> calls the Open API base below (your tenant URL), not the docs page URL.
       </p>
 
       {/* Base URL */}
       <label className="mb-3 flex flex-col gap-1 text-xs">
         <span className="font-semibold">Cyware tenant API base URL</span>
         <span className="text-zinc-500">
-          Intel Exchange Open API root, e.g. <code className="text-sky-600">{DISPLAY_BASE}</code>
+          {product.displayLabel} Open API root, e.g.{" "}
+          <code className="text-sky-600">{productDefaultUrl}</code>
         </span>
         <input
           value={baseUrl}
           onChange={(e) => setBaseUrl(e.target.value)}
-          placeholder={DISPLAY_BASE}
+          placeholder={productDefaultUrl}
           spellCheck={false}
           className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
         />
@@ -152,8 +157,9 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function HeaderBar() {
+function HeaderBar({ productLabel, productId }: { productLabel: string; productId: string }) {
   const { baseUrl, setBaseUrl, authStatus, credentialCount } = useRunSettings();
+  const productDefaultUrl = baseUrlForProduct(productId);
   const [panelOpen, setPanelOpen] = useState(false);
 
   const statusDot =
@@ -169,8 +175,8 @@ function HeaderBar() {
       <input
         value={baseUrl}
         onChange={(e) => setBaseUrl(e.target.value)}
-        placeholder={DISPLAY_BASE}
-        title="Cyware tenant API base URL"
+        placeholder={productDefaultUrl}
+        title={`${productLabel} API base URL`}
         spellCheck={false}
         className="hidden w-52 rounded-md border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 sm:block xl:w-72 dark:border-zinc-700 dark:bg-zinc-900"
       />
@@ -192,20 +198,43 @@ function HeaderBar() {
 }
 
 export function AppShell({
-  nav,
+  nav: initialNav,
   children,
 }: {
   nav: NavNode[];
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const currentSlug = pathname.startsWith("/docs/")
-    ? decodeURIComponent(pathname.slice("/docs/".length))
-    : "";
+  const { productId, product } = useProduct();
+  const [nav, setNav] = useState<NavNode[]>(initialNav);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadNav() {
+      try {
+        const res = await fetch(`/api/products/${productId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!cancelled && data.manifest?.nav) setNav(data.manifest.nav);
+        else if (!cancelled && productId === "ctix") setNav(initialNav);
+        else if (!cancelled) setNav([]);
+      } catch {
+        if (!cancelled && productId === "ctix") setNav(initialNav);
+      }
+    }
+    void loadNav();
+    return () => {
+      cancelled = true;
+    };
+  }, [productId, initialNav]);
+
+  const { currentSlug, activeProductId } = parseDocsPath(pathname);
+  const sidebarProductId = activeProductId ?? productId;
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
+      <ProductRunSettingsSync />
       <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-zinc-200 bg-white/90 px-3 py-2 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
         <button
           type="button"
@@ -217,11 +246,13 @@ export function AppShell({
         </button>
 
         <Link href="/" className="flex shrink-0 items-center gap-1.5">
-          <span className="hidden text-sm font-semibold sm:inline">Intel Exchange API</span>
+          <span className="hidden text-sm font-semibold sm:inline">Cyware API Docs</span>
           <span className="rounded bg-sky-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
             RUNNABLE
           </span>
         </Link>
+
+        <ProductSelector className="hidden md:flex" />
 
         <Link
           href="/agent"
@@ -234,14 +265,19 @@ export function AppShell({
           AI Agent
         </Link>
 
-        <HeaderBar />
+        <HeaderBar productLabel={product.displayLabel} productId={productId} />
         <ThemeToggle />
       </header>
 
       <div className="flex flex-1">
         <aside className="hidden w-72 shrink-0 border-r border-zinc-200 lg:block dark:border-zinc-800">
           <div className="sticky top-[49px] h-[calc(100vh-49px)]">
-            <Sidebar nav={nav} currentSlug={currentSlug} onNavigate={() => {}} />
+            <Sidebar
+              nav={nav}
+              currentSlug={currentSlug}
+              productId={sidebarProductId}
+              onNavigate={() => {}}
+            />
           </div>
         </aside>
 
@@ -249,7 +285,13 @@ export function AppShell({
           <div className="fixed inset-0 z-40 lg:hidden">
             <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
             <div className="absolute left-0 top-0 h-full w-80 max-w-[85%] border-r border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
-              <Sidebar nav={nav} currentSlug={currentSlug} onNavigate={() => setDrawerOpen(false)} />
+              <ProductSelector className="border-b border-zinc-200 p-3 dark:border-zinc-800" />
+              <Sidebar
+                nav={nav}
+                currentSlug={currentSlug}
+                productId={sidebarProductId}
+                onNavigate={() => setDrawerOpen(false)}
+              />
             </div>
           </div>
         ) : null}
@@ -258,6 +300,17 @@ export function AppShell({
       </div>
     </div>
   );
+}
+
+function parseDocsPath(pathname: string): { currentSlug: string; activeProductId: string | null } {
+  if (!pathname.startsWith("/docs/")) return { currentSlug: "", activeProductId: null };
+  const rest = decodeURIComponent(pathname.slice("/docs/".length));
+  const parts = rest.split("/");
+  const known = ["ctix", "csap", "orchestrate", "cftr"];
+  if (known.includes(parts[0])) {
+    return { activeProductId: parts[0], currentSlug: parts.slice(1).join("/") };
+  }
+  return { activeProductId: "ctix", currentSlug: rest };
 }
 
 /* Icons */

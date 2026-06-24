@@ -1,0 +1,377 @@
+{
+  "slug": "playbook/get-node-result-details",
+  "title": "Get Node Result Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "get-node-result-details"
+  ],
+  "description": "Returns the details of a specific node.",
+  "method": "GET",
+  "path": "v1/playbook/node-results/{node_unique_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "node_unique_id",
+        "description": "Pass the unique ID of the node. You can retrieve the unique ID of a node using the **Get Playbook Run Log Details** endpoint.",
+        "isRequired": false,
+        "value": "958fcb71-8bcd-41a5-9019-25e82ec96379",
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6909249b74cb99b4ca84e06b"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID of the node result.",
+          "isRequired": false,
+          "value": "958fcb71-8bcd-41a5-9019-25e82ec96379",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time when the node was created.",
+          "isRequired": false,
+          "value": "2025-02-11T09:40:42.254810Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date and time when the node was last modified.",
+          "isRequired": false,
+          "value": "2025-02-11T09:40:42.459133Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the node run.",
+          "isRequired": false,
+          "value": "SUCCESS",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "execution_time",
+          "description": "Returns the execution time of the node in seconds.",
+          "isRequired": false,
+          "value": 0.204323,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "node_data",
+          "description": "Returns the details of the node.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "type",
+              "description": "Returns the type of the node. For example, *START*.",
+              "isRequired": false,
+              "value": "START",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "internal_id",
+              "description": "Returns the internal ID of the node.",
+              "isRequired": false,
+              "value": "start",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "title",
+              "description": "Returns the title of the node.",
+              "isRequired": false,
+              "value": "Start",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the node.",
+              "isRequired": false,
+              "value": "692b1154-2f1b-4a07-b742-578b546ef8b8",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "is_removed",
+              "description": "Returns if the node is deleted or not.",
+              "isRequired": false,
+              "value": false,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "io_params_format",
+              "description": "Returns the input parameter template details of the input node.\n\n",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "sub_type",
+              "description": "Returns the subtype of the node. For example, PREDEFINED.",
+              "isRequired": false,
+              "value": "start",
+              "valueType": "string",
+              "options": {
+                "enumValue": [
+                  {
+                    "value": "PREDEFINED",
+                    "description": ""
+                  },
+                  {
+                    "value": "CUSTOM",
+                    "description": ""
+                  },
+                  {
+                    "value": "PLAYBOOK",
+                    "description": ""
+                  },
+                  {
+                    "value": "EXPRESSION_BASED",
+                    "description": ""
+                  },
+                  {
+                    "value": "STORAGE",
+                    "description": ""
+                  },
+                  {
+                    "value": "start",
+                    "description": ""
+                  }
+                ],
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "result",
+          "description": "Returns the link to the previous and next page.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "initial_params",
+          "description": "Returns the input values of a node as key-value pairs in JSON format.\n\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "error",
+          "description": "Returns the error that occurred during node execution.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "io_params",
+          "description": "Returns the input data passed to the node.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "io_approved_by",
+          "description": "Returns the unique ID of the user who entered input for the node.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "io_approved_by_data",
+          "description": "Returns the details of the user who provided the input. The details include `unique_id`, `first_name`, `last_name`, and `full_name`.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "splitted_columns",
+          "description": "Returns the following values from a playbook result and node result that exceed 4 MB\n- Input Values (`initial_params`)\n- Output Values (`result`)",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

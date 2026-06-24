@@ -1,0 +1,382 @@
+{
+  "slug": "member-portal/member-portal-request-for-information/share-rfi-response",
+  "title": "Share RFI Response",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-request-for-information",
+    "share-rfi-response"
+  ],
+  "description": "Add a response to the specified RFI alert. You can also attach files to your RFI response.\n\n\n\n> [!NOTE]\n> To attach a file, retrieve its media ID using the Upload Attachment endpoint. To attach the same file to different RFI alerts or the same alert again, generate a unique media ID for each submission.",
+  "method": "POST",
+  "path": "csap/v1/create/rfi_responses/{alert_id}/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "content",
+        "description": "Pass the response for the RFI. ",
+        "isRequired": true,
+        "value": "This is informative",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "attachments",
+        "description": "Pass the media ID to attach a file to the RFI response. You can retrieve the `media_id` using the **Upload Attachment** endpoint. You can add a maximum of 10 media IDs.\n",
+        "isRequired": false,
+        "valueType": "array",
+        "options": {
+          "maxItems": 10,
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the media ID of the file.",
+            "isRequired": false,
+            "value": "c3076f50-053d-4235-b4ad-f803e95acd48",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "alert_id",
+        "description": "Pass the 8-digit unique ID of the RFI alert to which you want to submit the response. You can retrieve this ID using the **Get Alerts** endpoint.",
+        "isRequired": true,
+        "value": "3d430a18",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d421a8b66e3318bb0d32e9"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "id",
+          "description": "Returns the unique ID of the RFI response.",
+          "isRequired": false,
+          "value": "a6840cb9-c657-48e4-8458-c1628b41e851",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "report_id",
+          "description": "Returns the unique ID of the RFI.",
+          "isRequired": false,
+          "value": "CY-7baf8079",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "content",
+          "description": "Returns the content of the RFI response.",
+          "isRequired": false,
+          "value": "This is informative",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "plain_text_content",
+          "description": "Returns the content of the RFI response without the HTML tags.",
+          "isRequired": false,
+          "value": "This is informative",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time the RFI response was submitted.",
+          "isRequired": false,
+          "value": "2024-06-26T05:52:56.666562Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "attachments",
+          "description": "Returns a list of files or media attached to the RFI response.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "media_file",
+                  "description": "Returns the URL of the attached media file.",
+                  "isRequired": false,
+                  "value": "https://3830.csap.spotio.cywaredev.com/api/file-server/download/Blocked-indicators-073b4a52.csv?file_key=18d413c4-782e-4a29-b5c9-fc53feea09bf&show_preview=False",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "media_path",
+                  "description": "Returns the path of the media file.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "media_content_type",
+                  "description": "Returns the MIME type of the media.",
+                  "isRequired": false,
+                  "value": "text/csv",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ext",
+                  "description": "Returns the file extension of the media.",
+                  "isRequired": false,
+                  "value": "csv",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "file_name",
+                  "description": "Returns the name of the media file.",
+                  "isRequired": false,
+                  "value": "Sample_file.csv",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "alert_id",
+          "description": "Returns the unique 8-digit ID of the RFI alert.",
+          "isRequired": false,
+          "value": "4a842d23",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "creator",
+          "description": "Returns the email address and name of the RFI response creator.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "first_name",
+              "description": "Returns the email address of the RFI response creator.",
+              "isRequired": false,
+              "value": "John Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "email",
+              "description": "Returns the name of the RFI response creator.",
+              "isRequired": false,
+              "value": "john.doe@org.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "submitter",
+          "description": "Returns the email address and name of the RFI response submitter.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "first_name",
+              "description": "Returns the email address of the RFI response submitter.",
+              "isRequired": false,
+              "value": "John Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "email",
+              "description": "Returns the name of the RFI response submitter.",
+              "isRequired": false,
+              "value": "john.doe@org.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

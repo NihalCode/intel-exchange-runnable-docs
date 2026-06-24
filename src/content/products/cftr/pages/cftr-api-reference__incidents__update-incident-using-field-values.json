@@ -1,0 +1,82 @@
+{
+  "slug": "cftr-api-reference/incidents/update-incident-using-field-values",
+  "title": "Update Incident Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "incidents",
+    "update-incident-using-field-values"
+  ],
+  "description": "Update Incident Using Field Values",
+  "method": "PUT",
+  "path": "/cftrapi/openapi/v1/incident/{incident_unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      },
+      {
+        "name": "Authorization",
+        "isRequired": true,
+        "value": "{{auth_key}}",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "sources",
+        "value": "Email",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_to",
+        "value": "pooja.gunali@cyware.com",
+        "valueType": "string"
+      },
+      {
+        "name": "comment_type",
+        "value": "handoff",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "Note for updating the incident",
+        "valueType": "string"
+      },
+      {
+        "name": "business_units_impacted",
+        "value": "[\"System\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "locations_impacted",
+        "value": "[\"Bengaluru\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Phishing\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "incident_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

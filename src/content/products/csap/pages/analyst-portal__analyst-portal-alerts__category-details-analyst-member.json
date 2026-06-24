@@ -1,0 +1,259 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/category-details-analyst-member",
+  "title": "Get Category Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "category-details-analyst-member"
+  ],
+  "description": "Returns details of an alert category using the unique category ID. You can retrieve the category ID using the **Get Category List** endpoint.\n\n### Changelog\n\n\nFor analysts, access to alert categories is determined by the categories assigned to your user role in the Analyst Portal. This update does not affect credentials generated before this version.",
+  "method": "GET",
+  "path": "csap/v1/list_category/{category_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "category_id",
+        "description": "Pass the unique ID for the category. You can retrieve `category_id` using the **Get Category List** endpoint.",
+        "isRequired": true,
+        "value": "1181ad0e",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d422abb66e3318bb0d3a22"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the number of categories.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the category ID, name, and associated fields.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "category_id",
+                  "description": "Returns the 8-digit unique ID of category.",
+                  "isRequired": false,
+                  "value": "1e0823ae",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "category_name",
+                  "description": "Returns the name of the category.",
+                  "isRequired": false,
+                  "value": "Providence Reports",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "additional_fields",
+                  "description": "Returns the fields associated with the category.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "field_id",
+                          "description": "Returns the unique ID of the field.",
+                          "isRequired": false,
+                          "value": "117a6f40-c3d6-4e4a-ba56-5b3b23f5b681",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_name",
+                          "description": "Returns the field name.",
+                          "isRequired": false,
+                          "value": "tactic_technique_pairs",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_label",
+                          "description": "Returns the field label.",
+                          "isRequired": false,
+                          "value": "Tactics-Techniques-Sub-techniques",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_type",
+                          "description": "Returns the type of the field.",
+                          "isRequired": false,
+                          "value": "pair",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_description",
+                          "description": "Returns the field description.",
+                          "isRequired": false,
+                          "value": "Tactic-Techniques",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "threat_indicator_fields",
+                  "description": "Returns the threat indicator fields associated with the category.\n",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "required_fields",
+                  "description": "Returns the required fields associated with the category.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

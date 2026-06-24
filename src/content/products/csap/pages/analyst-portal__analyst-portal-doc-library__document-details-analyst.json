@@ -1,0 +1,274 @@
+{
+  "slug": "analyst-portal/analyst-portal-doc-library/document-details-analyst",
+  "title": "Get Document Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-doc-library",
+    "document-details-analyst"
+  ],
+  "description": "Returns the details of a Doc Library file or folder using its document ID.",
+  "method": "GET",
+  "path": "csap/v1/upload_media/",
+  "request": {
+    "query": [
+      {
+        "name": "document_id",
+        "description": "Pass the unique ID for the file.  <br> Example: *44c09229-398b-4531-ac2c-bd215d264cd4*. You can retrieve the `document_id` while uploading the file.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41d24ceb3f8dc913fb3dd"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "document_id",
+          "description": "Returns the unique ID of the file or folder.",
+          "isRequired": false,
+          "value": "bc7527a4-a83e-4c02-ae6f-59f29cefdfbc",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "document_file",
+          "description": "Returns the link to view the file.",
+          "isRequired": false,
+          "value": "http://<image server >/<bucket>/DOCMedia/8bf2f511-test.txt?AWSAccessKeyId=x77pEn546GvM&Signature=8JK%2Bl%2F6vEIRHp776N%2B%2BLuejKLvA%3D&Expires=1671703384",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "content_type",
+          "description": "Returns the MIME type or media type of the file.",
+          "isRequired": false,
+          "value": "text/plain",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP associated with the file.",
+          "isRequired": false,
+          "value": "WHITE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "file_name",
+          "description": "Returns the name of the file.",
+          "isRequired": false,
+          "value": "8bf2f511-test.txt",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "file_format",
+          "description": "Returns the file extension.",
+          "isRequired": false,
+          "value": "txt",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "size",
+          "description": "Returns the file size of the document in bytes.",
+          "isRequired": false,
+          "value": "13",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "download_count",
+          "description": "Returns the number of times the file was downloaded by members.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "document_group",
+          "description": "Returns the recipient groups and individual recipients associated with the file.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "group_name",
+                  "description": "Returns the name of the recipient group or individual recipient.",
+                  "isRequired": false,
+                  "value": "CISO Directs",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "group_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "member1@cyware.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "2",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "group_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "member2@cyware.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

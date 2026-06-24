@@ -1,0 +1,2171 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/create-alert",
+  "title": "Create Alert",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "create-alert"
+  ],
+  "description": "Create an alert on the Collaborate Analyst Portal and publish it to the intended recipients. You can also add custom fields while creating an alert. The format to include custom fields is described in the custom field structures.\n\n### Changelog\n\n\nSupports scheduling alert expiry using scheduled_expiry_time parameter.\nAdded support for the share_with, reference_urls, and pirs body parameters.\nAccess to certain categories is based on your user role in the Analyst Portal. This update does not impact credentials generated prior to this version.\n\n\n### Alert Field Types\n\n\nAs an analyst, you can create alerts using custom fields tailored to your needs. Use fields like text boxes for detailed input, multi-select for tagging multiple values, single-select for predefined choices, and more to customize your alerts effectively. For details on retrieving additional field information, see the Retrieve Additional Fields section. Use the table below for custom field format:\nField Type\nDescription\nFormat\nBoolean\nBoolean fields allow you to select either true or false for specific options. While creating an alert, you can use these fields to indicate details such as whether the alert is Publicly Shareable or Requires Immediate Action.\nfield_id: value\nExample:\n\"f65b26a174658\": true\nText\nText boxes allow you to add information in text format. While creating an alert, you can use these fields to provide details such as Threat Description, Likely Motivation, and more.\nfield_id: Text\nExample:\n\"f533606babb44\": \"CVE-2014-12345\"\nSingle-select\nSingle-select fields allow you to choose one option from a predefined list. These fields are used to capture key details of an alert, such as Threat Level or Severity.\nfield_id: { field_id_id: selected value id}\nExample:\n\"ffa80c88f1d20\": { \"ffa80c88f1d20_id\": \"oaa822c36c133\" }\nMulti-select\nMulti-select fields allow you to associate multiple options with an alert from a predefined list. For example, you can use these fields to assign Affected Sectors or Indicators.\nfield_id: [{ field_id_id: selected value id}, { field_id_id: selected value id}]\nExample:\n\"f65b26a174658\": [ { \"f65b26a174658_id\": \"o15f317d51bec\" }, { \"f65b26a174658_id\": \"o43d57e02d92a\" } ]\nDate & Time\nDate and time fields let you capture time-sensitive details for an alert, such as Reported At or Action Deadline. The values are stored in Epoch (Unix timestamp) format.\nfield_id: Epoch value\nExample:\n\"f9c217dfe8824\": 1709725603\nAdditional fields are system or custom fields that you can use while creating alerts. To ensure accurate field mapping, you need to retrieve the field IDs and details before passing them as body parameters. To retrieve field details, follow these steps:\n1.  Use the **Get Additional Fields List** endpoint in the Alerts section to retrieve the list of all fields, including their field IDs.\n2.  Use the `field_id` in the **Get Additional Fields Details** endpoint to retrieve associated field details.",
+  "method": "POST",
+  "path": "csap/v1/create_card",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass the title of the alert. Example: *New Malware Variant Targeting Enterprise Networks*",
+        "isRequired": true,
+        "value": "New Malware Variant Targeting Enterprise Networks",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "content",
+        "description": "Pass the description of the alert.",
+        "isRequired": true,
+        "value": "A newly discovered malware strain is actively exploiting vulnerabilities in enterprise networks, enabling unauthorized access and data exfiltration. Organizations are advised to update security measures, monitor network traffic, and apply patches to mitigate the threat.",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_content_defanged",
+        "description": "Pass true to specify that the link is not clickable.",
+        "isRequired": false,
+        "value": false,
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "false",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "card_image",
+        "description": "Pass the URL for the alert image. Ensure that the value is a valid URL. Example: *https://cyware.com/cyware.jpg.* To pass this field, ensure the `type` field is also included.",
+        "isRequired": false,
+        "value": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "type",
+        "description": "Pass the type of the alert image. The current supported type is *URL*.",
+        "isRequired": false,
+        "value": "URL",
+        "valueType": "string",
+        "options": {
+          "enumValue": [],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "card_info",
+        "description": "Pass any additional details for the alert.\nNote: You can use HTML format for the additional information.<br> Example: <b>Adversary:</b>, <br> <b>Malware Families:</b> njRAT, AsyncRAT, Houdini RAT<br> <b>Attack IDs:</b> T1104, T1547\",",
+        "isRequired": false,
+        "value": "<b>Adversary:</b>, <br> <b>Malware Families:</b> njRAT, AsyncRAT, Houdini RAT<br> <b>Attack IDs:</b> T1104, T1547",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "card_category",
+        "description": "Pass the category for the alert. Example: { \"category_id\": \"154c4d4c\", \"category_name\": \"Malware Advisory\"} <br> Use the **Get Category List** endpoint to retrieve the list of alert categories. To assign a category to the alert, pass either the `card_category` or `card_category_name` parameter. `card_category` takes precedence if both are passed.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "defaultValue": "Partner Submission",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "category_id",
+            "description": "Pass the unique ID of the category. Example: *154c4d4c*",
+            "isRequired": true,
+            "value": "154c4d4c",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "category_name",
+            "description": "Pass the name of the category. Example: *Malware Advisory*",
+            "isRequired": false,
+            "value": "Malware Advisory",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "card_category_name",
+        "description": "Pass the alert category associated with your user role in the Analyst Portal. Example: *Malware*. <br> To assign a category, pass either the `card_category` or `card_category_name` parameters. <br> Note: `card_category` takes precedence if both are passed.",
+        "isRequired": false,
+        "value": "Malware",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "card_group",
+        "description": "Pass the list of recipient group IDs for the alert publication. You can retrieve the list of available recipient groups using the **Get Recipient Groups** endpoint. `group_id` is a required key for the recipient group. <br> Note: This is a required field if status is PUBLISHED.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "defaultValue": "All Users",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "group_id",
+                "description": "Pass the unique ID of the recipient group to share the alert with. Example: *02a97aaa*.",
+                "isRequired": true,
+                "value": "02a97aaa",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "group_name",
+                "description": "Pass the name of the recipient group. Example: *Level 1 Analyst*.",
+                "isRequired": false,
+                "value": "Level 1 Analyst",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "pirs",
+        "description": "Pass one or more comma-separated IDs of published Intelligence Requirements (IRs) to associate with the alert for enrichment. You can retrieve a list of IRs using the *Get IRs* endpoint.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the ID of the published IR.",
+            "isRequired": false,
+            "value": "01JSXR70YNT59JX7AE1MQEX50B",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "reference_urls",
+        "description": "Pass one or more comma-separated URLs to offer additional context or information related to the alert.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the reference URL to offer additional information.",
+            "isRequired": false,
+            "value": "https://blog.malwarebytes.com/",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "defang_ioc_in_ioc_attachments",
+        "description": "Pass true to defang the IOCs in the attachment.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "false",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "threat_indicators_obj",
+        "description": "Pass the threat indicators associated with the alert.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "enumValue": [
+            {
+              "value": "sha1",
+              "description": ""
+            },
+            {
+              "value": "sha224",
+              "description": ""
+            },
+            {
+              "value": "sha256",
+              "description": ""
+            },
+            {
+              "value": "sha384",
+              "description": ""
+            },
+            {
+              "value": "sha512",
+              "description": ""
+            },
+            {
+              "value": "md5",
+              "description": ""
+            },
+            {
+              "value": "ip",
+              "description": ""
+            },
+            {
+              "value": "ip6",
+              "description": ""
+            },
+            {
+              "value": "ipv4_cidr",
+              "description": ""
+            },
+            {
+              "value": "ssdeep",
+              "description": ""
+            },
+            {
+              "value": "filepaths",
+              "description": ""
+            },
+            {
+              "value": "windows_registry_key",
+              "description": ""
+            },
+            {
+              "value": "asn",
+              "description": ""
+            },
+            {
+              "value": "directory",
+              "description": ""
+            },
+            {
+              "value": "mac_addr",
+              "description": ""
+            },
+            {
+              "value": "domain",
+              "description": ""
+            },
+            {
+              "value": "url",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "sha256",
+            "description": "Pass one or more comma-separated SHA-256 values associated with the alert.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "domain",
+            "description": "Pass one or more comma-separated domains associated with the alert.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "Pass one or more comma-separated domains associated with the alert. ",
+                "isRequired": false,
+                "value": "firas.alifares.org",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "sha1",
+            "description": "Pass one or more comma-separated SHA-1 values associated with the alert.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "",
+                "isRequired": false,
+                "value": "2aae6c35c94fcfb200dbe95f408b9ce91ee846ed",
+                "valueType": "string",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "md5",
+            "description": "Pass one or more comma-separated MD5 values associated with the alert.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "Pass one or more comma-separated MD5 values associated with the alert. ",
+                "isRequired": false,
+                "value": "d41d8cd98f00b204e9800998ecf8427e",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "push_email_notification",
+        "description": "Pass true to send email notifications to the recipients.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "push_required",
+        "description": "Pass true to send mobile notifications to the recipients.",
+        "isRequired": false,
+        "value": false,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "card_organization",
+        "description": "Pass the list of organizations for the alert publication. You can retrieve the list of available organizations using the **Get Organizations** endpoint. `organization_id` is a required key for the organization.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "card_organization_types",
+        "description": "Pass a list of organization types associated with the organizations provided using the `card_organization` for alert publication. You can retrieve the available organization types using the **Get Organizations** endpoint. The `organization_type_id` is a required key for each organization type.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tags",
+        "description": "Pass the list of tags associated with the alert. Example: *[\"malware\", \"vulnerability\"]*.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the tag associated with the alert. Example: *malware*",
+            "isRequired": false,
+            "value": "malware",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "custom_fields",
+        "description": "Pass the custom fields linked to the alert. Custom fields may vary based on the selected alert category. ",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "f159dc38f3255",
+            "description": "Pass the unique identifier linked to a custom parameter. Example: *\"f159dc38f3255\": \"Major 2\"*",
+            "isRequired": false,
+            "value": "Major 2",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "status",
+        "description": "Pass the status of the alert. Example: *PUBLISHED* <br>Note: You can specify the status as PUBLISHED only if you have the permission to publish alerts in the Analyst Portal.",
+        "isRequired": true,
+        "value": "PUBLISHED",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "DRAFT"
+            },
+            {
+              "value": "PUBLISHED"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP level for the alert. Example: *WHITE*",
+        "isRequired": false,
+        "value": "WHITE",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "RED",
+              "description": ""
+            },
+            {
+              "value": "GREEN",
+              "description": ""
+            },
+            {
+              "value": "WHITE",
+              "description": ""
+            },
+            {
+              "value": "AMBER",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tracking_id",
+        "description": "Pass the tracking ID generated when third-party integrations publish alerts in Collaborate. Example: *1111*",
+        "isRequired": false,
+        "value": 1111,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "cyber_threat_method",
+        "description": "Pass the list of associated cyber threat methods for the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "cyberthreatmethod_id",
+                "description": "Pass the unique ID of the cyber threat method. Example: *de5871a7-4392-4eaa-abcd-8400ba3c6f4b*",
+                "isRequired": true,
+                "value": "de5871a7-4392-4eaa-abcd-8400ba3c6f4b",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "cyber_threat_method_name",
+                "description": "Pass the name of the cyber threat method. Example: *Defacement*",
+                "isRequired": false,
+                "value": "Asset Defacement",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "physical_threat_method",
+        "description": "Pass the list of associated physical threat methods for the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "physicalthreatmethod_id",
+                "description": "Pass the unique ID of the physical threat method. Example: *671d9692-5e87-489d-932b-17e850be42a5*",
+                "isRequired": true,
+                "value": "671d9692-5e87-489d-932b-17e850be42a5",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "physical_threat_method_name",
+                "description": "Pass the name of the physical threat method. Example: *Tailgating*",
+                "isRequired": false,
+                "value": "Tailgating",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "risk",
+        "description": "Pass the risk level associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "risk_id",
+            "description": "Pass the unique ID of the risk associated with the alert. Example: *2be4af1c-6817-443b-978b-1fcf9b407841*",
+            "isRequired": true,
+            "value": "2be4af1c-6817-443b-978b-1fcf9b407841",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "risk_name",
+            "description": "Pass the level of the risk associated with the alert. Example: *1*",
+            "isRequired": false,
+            "value": "1",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "urgency",
+        "description": "Pass the urgency details related to the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "urgency_id",
+            "description": "Pass the unique ID of the urgency associated with the alert. Example: *c27165be-1d39-479a-b5a1-ee7b97494fa3*",
+            "isRequired": true,
+            "value": "c27165be-1d39-479a-b5a1-ee7b97494fa3",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "urgency_name",
+            "description": "Pass the urgency name associated with the alert. Example: *Informational Only*",
+            "isRequired": false,
+            "value": "Informational Only",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "severity",
+        "description": "Pass severity details of the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "severity_id",
+            "description": "Pass the unique ID of the severity associated with the alert. Example: *b7a73f86-ae9c-45ef-94a0-e00d9ab35e2c*",
+            "isRequired": true,
+            "value": "b7a73f86-ae9c-45ef-94a0-e00d9ab35e2c",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "severity_name",
+            "description": "Pass the severity name associated with the alert. Example: *Informational (Normal)*",
+            "isRequired": false,
+            "value": "Informational (Normal)",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "credibility",
+        "description": "Pass the data credibility associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "credibility_id",
+            "description": "Pass the unique ID of the credibility associated with the alert. Example: *940a3fe0-66cc-4c29-9d42-c3da5201328a*",
+            "isRequired": true,
+            "value": "940a3fe0-66cc-4c29-9d42-c3da5201328a",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "credibility_name",
+            "description": "Pass the credibility name associated with the alert. Example: *Unknown*",
+            "isRequired": false,
+            "value": "Unknown",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "detectionmethod",
+        "description": "Pass the detection methods used in the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "detectionmethod_id",
+                "description": "Pass the unique ID of the detection method associated with the alert. Example: *8598be92-95b3-41c6-9017-0108a42ef203*",
+                "isRequired": true,
+                "value": "8598be92-95b3-41c6-9017-0108a42ef203",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "detectionmethod_name",
+                "description": "Pass the name of the detection method. Example: *Alert on Console*",
+                "isRequired": false,
+                "value": "Alert on Console",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "vendorsnproduct",
+        "description": "Pass the list of vendors associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "vendors_id",
+                "description": "Pass the unique ID of the vendor. Example: *3c98be67-3fab-481e-9b35-12ed7f6edd72*",
+                "isRequired": true,
+                "value": "3c98be67-3fab-481e-9b35-12ed7f6edd72",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "vendorsnproduct_name",
+                "description": "Pass the name of the vendor. Example: *Vendor Name 1*",
+                "isRequired": false,
+                "value": "Vendor Name 1",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "priority",
+        "description": "Pass the priority of details associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "priority_id",
+            "description": "Pass the unique ID of the priority associated with the alert. Example: *cdff50bf-ddcf-4523-a1da-560f3674e983*",
+            "isRequired": true,
+            "value": "cdff50bf-ddcf-4523-a1da-560f3674e983",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "priority_name",
+            "description": "Pass the name of the priority. Example: *3*",
+            "isRequired": false,
+            "value": "3",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "document_type",
+        "description": "Pass the list of document types associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "documenttype_id",
+                "description": "Pass the unique ID of the document type. Example: *3b13bb16-5098-492e-b694-cb8b9118afcd*",
+                "isRequired": true,
+                "value": "3b13bb16-5098-492e-b694-cb8b9118afcd",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "document_type_name",
+                "description": "Pass the name of the document type. Example: *Compliance and Regulations*",
+                "isRequired": false,
+                "value": "Compliance and Regulations",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "announcement_type",
+        "description": "Pass the announcement-type details associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "announcement_type_id",
+            "description": "Pass the unique ID of the announcement type. Example: *73df5e3b-294d-4764-bd8f-edd17c46f9c8*",
+            "isRequired": true,
+            "value": "73df5e3b-294d-4764-bd8f-edd17c46f9c8",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "announcement_type_name",
+            "description": "Pass the name of the announcement type. Example: *Internal*",
+            "isRequired": false,
+            "value": "Internal",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "info_source",
+        "description": "Pass the list of information or intel sources associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "source_id",
+                "description": "Pass the unique ID of the info source. Example: *bdc5c654*",
+                "isRequired": true,
+                "value": "bdc5c654",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "info_source_name",
+                "description": "Pass the name of the info source. Example: *Internal Sources*",
+                "isRequired": false,
+                "value": "Internal Sources",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "systemsaffected",
+        "description": "Pass the number associated with systems affected by the cyberthreat. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "systemsaffected_id",
+            "description": "Pass the unique ID of the systems affected. Example: *22763904-76d9-4f02-b8bd-7294ddd81df2*",
+            "isRequired": true,
+            "value": "22763904-76d9-4f02-b8bd-7294ddd81df2",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "systemsaffected_name",
+            "description": "Pass the name of the systems affected. Example: *1-10*",
+            "isRequired": false,
+            "value": "1-10",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "threat_actor",
+        "description": "Pass the threat actors associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "threatactor_id",
+                "description": "Pass the unique ID of the threat action. Example: *2ea27f3f-45c5-4239-803b-d96e86a5b346*",
+                "isRequired": true,
+                "value": "2ea27f3f-45c5-4239-803b-d96e86a5b346",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "threat_actor_name",
+                "description": "Pass the name of the threat actor. Example: *Cyber Criminal*",
+                "isRequired": false,
+                "value": "Cyber Criminal",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "threat_method",
+        "description": "Pass the threat methods associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "threatmethod_id",
+                "description": "Pass the unique ID of the threat method. Example: *54929952-6d99-499f-89a7-41fbe528695c*",
+                "isRequired": true,
+                "value": "54929952-6d99-499f-89a7-41fbe528695c",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "threat_method_name",
+                "description": "Pass the name of the threat method. Example: *APT*",
+                "isRequired": false,
+                "value": "APT",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "confidence",
+        "description": "Pass the confidence level details associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "confidence_id",
+            "description": "Pass the unique ID of the confidence level. Example: *c9d56bf4-c05a-4b67-8fae-4dd64b71e789*",
+            "isRequired": true,
+            "value": "c9d56bf4-c05a-4b67-8fae-4dd64b71e789",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "confidence_name",
+            "description": "Pass the name of the confidence level. Example: *High*",
+            "isRequired": false,
+            "value": "High",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "kill_chain_phase",
+        "description": "Pass the kill chain phase details associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "kill_chain_phase_id",
+            "description": "Pass the unique ID of the kill chain phase value. Example: *89a3d408-3e8a-4e7c-93f9-7a11673da2a5*",
+            "isRequired": true,
+            "value": "89a3d408-3e8a-4e7c-93f9-7a11673da2a5",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "kill_chain_phase_name",
+            "description": "Pass the name of the kill chain phase value. Example: *Actions on Objectives*",
+            "isRequired": false,
+            "value": "Actions on Objectives",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "root_cause",
+        "description": "Pass the list of root causes associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "root_cause_id",
+                "description": "Pass the unique ID of the root cause associated with the alert. Example: *2ca6cce5-644d-4fff-9e0d-d2dc76707164*",
+                "isRequired": true,
+                "value": "2ca6cce5-644d-4fff-9e0d-d2dc76707164",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "root_cause_name",
+                "description": "Pass the name of the root cause. Example: *Design Error*",
+                "isRequired": false,
+                "value": "Design Error",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "reportsource",
+        "description": "Pass the list of report sources associated with the alert. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "reportsource_id",
+                "description": "Pass the unique ID of the report source associated with the alert. Example: *bda9c668-217b-42ae-be44-eacd9955b31d*",
+                "isRequired": true,
+                "value": "bda9c668-217b-42ae-be44-eacd9955b31d",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "reportsource_name",
+                "description": "Pass the name of the report source. Example: *Government Agency*",
+                "isRequired": false,
+                "value": "Government Agency",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "vulnerability_type",
+        "description": "Pass the list of types of vulnerabilities. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "vulnerability_type_id",
+                "description": "Pass the unique ID of the vulnerability type. Example: *4690252c-1c76-4621-bc51-314677280672*",
+                "isRequired": true,
+                "value": "4690252c-1c76-4621-bc51-314677280672",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "vulnerability_type_name",
+                "description": "Pass the name of the vulnerability type. Example: *Vulnerability 1*",
+                "isRequired": false,
+                "value": "Vulnerability 1",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "vulnerability_source",
+        "description": "Pass the list of sources of vulnerabilities. For details on retrieving the `field_id` and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "vulnerability_source_id",
+                "description": "Pass the unique ID of the vulnerability source. Example: *2a2583ad-ce2f-4972-a932-6c561e70e639*",
+                "isRequired": true,
+                "value": "2a2583ad-ce2f-4972-a932-6c561e70e639",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "vulnerability_source_name",
+                "description": "Pass the name of the vulnerability source. Example: *Media*",
+                "isRequired": false,
+                "value": "Media",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "scheduled_expiry_time",
+        "description": "Pass the expiry date and time in epoch format. The system automatically expires the alert at this exact time.",
+        "isRequired": false,
+        "value": 1775001600,
+        "valueType": "integer",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "attachments",
+        "description": "Attach relevant media to the alert. If you are passing an array of JSON objects, firstly, use the Upload File endpoint to upload the required files. The `document_id` is a required key for this field. If you are passing an array of strings, secondly, enter links to the attachments as strings.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "document_id",
+                "description": "Pass the document ID of the associated media. Example: *0af6b6f8-9709-4b39-91df-f8b616b70123*",
+                "isRequired": true,
+                "value": "0af6b6f8-9709-4b39-91df-f8b616b70123",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "linked_alerts",
+        "description": "Pass the list of alert IDs (short_id) for the alerts you want to link to this alert. Use the **Get Alerts** endpoint to retrieve the `short_id`.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Specify the list of alert IDs (short_id) for the alerts you want to link to this alert.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "short_id",
+                "description": "Pass the unique ID of the alert to link to this alert. Example: *10ac09de*",
+                "isRequired": true,
+                "value": "10ac09de",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "share_with",
+        "description": "Pass the details of the external applications to share the alert with.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "applications",
+            "description": "Pass the external applications to share the alert with. Allowed keys are threat_stream, ctix, misp, threat_connect, and ms_teams.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "enumValue": [
+                {
+                  "value": "threat_stream",
+                  "description": ""
+                },
+                {
+                  "value": "ctix",
+                  "description": ""
+                },
+                {
+                  "value": "misp",
+                  "description": ""
+                },
+                {
+                  "value": "threat_connect",
+                  "description": ""
+                },
+                {
+                  "value": "ms_teams",
+                  "description": ""
+                }
+              ],
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "threat_stream",
+                "description": "Pass true to share the alert with ThreatStream.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "ctix",
+                "description": "Pass true to share the alert with Cyware Intel Exchange.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "misp",
+                "description": "Pass true to share the alert with MISP.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "threat_connect",
+                "description": "Pass true to share the alert with ThreatConnect.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": null,
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "ms_teams",
+                "description": "Pass a list of Microsoft Teams channel names to share the alert with.",
+                "isRequired": false,
+                "value": "",
+                "valueType": "array",
+                "options": null,
+                "complexItems": [],
+                "items": [
+                  {
+                    "name": "0",
+                    "description": "Pass the name of the Microsoft Teams channel.",
+                    "isRequired": false,
+                    "value": "Test Alert",
+                    "valueType": "string",
+                    "options": null,
+                    "complexItems": [],
+                    "items": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69fae53c8a5acd18d2204a49"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Returns the following response paramaters upon successful alert creation.",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "short_id",
+          "description": "Returns the 8-digit unique alert ID. Example: *685ca5d7*",
+          "isRequired": false,
+          "value": "685ca5d7",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the alert. Example: *New Malware Variant Targeting Enterprise Networks*",
+          "isRequired": false,
+          "value": "New Malware Variant Targeting Enterprise Networks",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "content",
+          "description": "Returns the description of the alert.",
+          "isRequired": false,
+          "value": "A newly discovered malware strain is actively exploiting vulnerabilities in enterprise networks, enabling unauthorized access and data exfiltration. Organizations are advised to update security measures, monitor network traffic, and apply patches to mitigate the threat.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the current status of the alert. Example: *PUBLISHED*",
+          "isRequired": false,
+          "value": "PUBLISHED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP associated with the alert. Example: *WHITE*",
+          "isRequired": false,
+          "value": "WHITE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "optional_fields",
+          "description": "Returns all the optional fields associated with the alert.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "threat_indicators",
+              "description": "Returns the indicator details attached to the alert. ",
+              "isRequired": false,
+              "value": "5181018a9ad6d851adce6768cd01a5d10c2bd0b0180c75e92a3ce00827624bae, firas.alifares.org, 2b55066bdf25650a500895681d0c89e3dc3fcb36, d41d8cd98f00b204e9800998ecf8427e",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

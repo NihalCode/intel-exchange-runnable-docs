@@ -1,0 +1,259 @@
+{
+  "slug": "integrations/test-app-instance-connectivity",
+  "title": "Test App Instance Connectivity",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "integrations",
+    "test-app-instance-connectivity"
+  ],
+  "description": "Verify the connectivity of an app instance.",
+  "method": "GET",
+  "path": "v1/integrations/apps-instances/test-connectivity/{instance_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "instance_id",
+        "description": "Enter the unique ID of the instance to test the connectivity. \nExample: *d6a03423-52fd-479b-a79d-85102e53861f*.\nYou can retrieve the instance ID using the **Get App Instances** endpoint.",
+        "isRequired": true,
+        "value": "dcc1b286-b34f-4f87-a662-3ef45d4aefa9",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d95925b66e3318bb18ddde"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "connectivity_message",
+          "description": "Returns the message conveying the connectivity status.",
+          "isRequired": false,
+          "value": "Authentication successful",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connectivity_status",
+          "description": "Returns the connectivity status,  indicating either SUCCESS or FAIL.",
+          "isRequired": false,
+          "value": "SUCCESS",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connectivity_detail",
+          "description": "Returns the details related to the connectivity.",
+          "isRequired": false,
+          "value": "null",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tested_by",
+          "description": "Returns the unique ID of the user who tested the app instance.",
+          "isRequired": false,
+          "value": "bf62bdbe-c280-4882-b947-c750b31062fb",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tested_date",
+          "description": "Returns the date and time of when the instance was tested.",
+          "isRequired": false,
+          "value": "2022-07-26T13:31:11.811507596Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the app instance.",
+          "isRequired": false,
+          "value": "Instance",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status_code",
+          "description": "Returns the status code based on the status of the instance.",
+          "isRequired": false,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_lite",
+          "description": "Indicates if the app instance is agent compatible or not.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID of the app instance.\n",
+          "isRequired": false,
+          "value": "instance-unique-id",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tested_by_data",
+          "description": "Returns the details of the user who tested the instance.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns unique ID of the user who tested the instance.",
+              "isRequired": false,
+              "value": "bf62bdbe-c280-4882-b947-c750b31062fb",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns first name of the user who tested the instance.",
+              "isRequired": false,
+              "value": "Jon",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns last name of the user who tested the instance.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns full name of the user who tested the instance.",
+              "isRequired": false,
+              "value": "Jon Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,214 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/list-alerts-by-tracking-id-analyst-member",
+  "title": "Get Alerts by Tracking ID",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "list-alerts-by-tracking-id-analyst-member"
+  ],
+  "description": "Returns alerts using the tracking ID. A tracking ID is generated when third-party integrations publish alerts in Collaborate.\n\n### Changelog\n\n\n*   Added support for the `status` query parameter to filter alerts by status (draft, submitted, published, expired, and scheduled)\n*   The API response now includes the alert `status` field.\nFor analysts, alert access is based on the categories linked to their user role in the Analyst Portal. However, if your role includes the View All Alerts permission, you can access all alerts as preferred. This update does not affect credentials generated before this version.",
+  "method": "GET",
+  "path": "csap/v1/get_tracking_id_details/",
+  "request": {
+    "query": [
+      {
+        "name": "tracking_id",
+        "description": "Pass the tracking ID for the alert. You can retrieve the tracking ID using the **Get Alert Details** endpoint. Example: *237d56d5-b0e7-4ba1-a068-b7ac802b1c63*",
+        "isRequired": true,
+        "value": "237d56d5-b0e7-4ba1-a068-b7ac802b1c63",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "counts",
+        "description": "Pass the number of alerts you want to retrieve using the tracking ID. Example: *3*",
+        "isRequired": false,
+        "value": "3",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "5",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "status",
+        "description": "Pass the alert status to filter the response. You can specify multiple statuses, separated by commas. By default, alerts from all statuses are retrieved. Example: *published*",
+        "isRequired": false,
+        "value": "published",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "draft"
+            },
+            {
+              "value": "submitted"
+            },
+            {
+              "value": "published"
+            },
+            {
+              "value": "expired"
+            },
+            {
+              "value": "scheduled"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d42289b66e3318bb0d390d"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the number of alerts associated with the tracking ID.",
+          "isRequired": false,
+          "value": 3,
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "data",
+          "description": "Returns the alert ID and the status of the alert.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "alert_id",
+                  "description": "Returns the unique ID of the alert.",
+                  "isRequired": false,
+                  "value": "9cb784e2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the status of the alert.",
+                  "isRequired": false,
+                  "value": "PUBLISHED",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "alert_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "653330e4",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "PUBLISHED",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "2",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "alert_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "31c298bf",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "PUBLISHED",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

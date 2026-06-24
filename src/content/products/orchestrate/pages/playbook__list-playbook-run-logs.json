@@ -1,0 +1,919 @@
+{
+  "slug": "playbook/list-playbook-run-logs",
+  "title": "Get Playbook Run Logs",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "list-playbook-run-logs"
+  ],
+  "description": "Retrieves the list of playbook run logs along with the associated playbook data.",
+  "method": "GET",
+  "path": "v1/playbook/playbook-result/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the playbook run logs",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of items to retrieve per page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "playbook_status",
+        "description": "Pass the status of the playbook to retrieve the run logs.",
+        "isRequired": false,
+        "value": "active",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "active"
+            },
+            {
+              "value": "inactive"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "status",
+        "description": "Pass the playbook run status to filter playbooks.",
+        "isRequired": false,
+        "value": "SUCCESS",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "SUCCESS"
+            },
+            {
+              "value": "PARTIAL_SUCCESS"
+            },
+            {
+              "value": "IN_PROGRESS"
+            },
+            {
+              "value": "ERROR"
+            },
+            {
+              "value": "SYSTEM_ERROR"
+            },
+            {
+              "value": "ON_HOLD"
+            },
+            {
+              "value": "IN_QUEUE"
+            },
+            {
+              "value": "WAITING"
+            },
+            {
+              "value": "TERMINATED"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "source_playbook_result__is_null",
+        "description": "Pass true or false to filter playbooks based on the master playbook.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "enumValue": [
+            {
+              "value": "true"
+            },
+            {
+              "value": "false"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "apps_list",
+        "description": "Pass the unique ID of the app. You can retrieve the unique ID of an app using the **Get Apps** endpoint.",
+        "isRequired": false,
+        "value": "{app_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "playbook",
+        "description": "Pass the unique ID of the playbook. You can retrieve the unique ID of a playbook using the **Get Playbooks** endpoint.",
+        "isRequired": false,
+        "value": "{playbook_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "actions_list",
+        "description": "Pass the unique ID of the app action. You can retrieve the unique ID of an action using the **Get App Actions** endpoint.",
+        "isRequired": false,
+        "value": "{app_action_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ran_by",
+        "description": "Pass the unique ID of the user who initiated the playbook run.",
+        "isRequired": false,
+        "value": "{user_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "scheduled",
+        "description": "Pass true to retrieve scheduled playbooks run logs, else false.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "enumValue": [
+            {
+              "value": "true"
+            },
+            {
+              "value": "false"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "run_at",
+        "description": "Pass the date to retrieve playbooks based on the playbook last run.",
+        "isRequired": false,
+        "value": "last_month",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "last_month"
+            },
+            {
+              "value": "last_year"
+            },
+            {
+              "value": "last_week"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "run_at__lte",
+        "description": "Pass the end time in Unix time format to retrieve the playbook run logs.",
+        "isRequired": false,
+        "value": "1642530599",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "run_at__gte",
+        "description": "Pass the start time in Unix time format to retrieve the playbook run logs.",
+        "isRequired": false,
+        "value": "1641234600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "ordering",
+        "description": "Pass the ordering values, such as `modified`, `execution_time`, and `created` to filter playbooks.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "modified",
+              "description": "Returns results based on last modified"
+            },
+            {
+              "value": "execution_time",
+              "description": "Returns results based on execution time"
+            },
+            {
+              "value": "created",
+              "description": "Returns results based on last run"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4e949bd08c35d39c7d537"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "link",
+          "description": "Returns the link to the previous and next page.\n\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "count",
+          "description": "Provides the total count of playbook run logs.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of playbook run logs.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "readable_id",
+                  "description": "Returns the readable ID of the run log.",
+                  "isRequired": false,
+                  "value": "RLe322985a-5",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the run log, which is generated dynamically on playbook execution.",
+                  "isRequired": false,
+                  "value": "e322985a-59a0-404c-adae-a4ba28d64f22",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the date and time when the playbook was created.",
+                  "isRequired": false,
+                  "value": "2023-02-03T01:32:35.983824Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the date and time when the playbook was last modified.",
+                  "isRequired": false,
+                  "value": "2023-02-03T01:32:38.403350Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the playbook run status.",
+                  "isRequired": false,
+                  "value": "SUCCESS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "source",
+                  "description": "Returns the source that initiated the playbook run.",
+                  "isRequired": false,
+                  "value": "User",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "User",
+                        "description": ""
+                      },
+                      {
+                        "value": "Playbook",
+                        "description": ""
+                      },
+                      {
+                        "value": "Scheduler",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "run_details",
+                  "description": "Returns the details of the user who executed the playbook.",
+                  "isRequired": false,
+                  "value": "System Default",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "cron_expression",
+                  "description": "Returns the cron string used for scheduling the playbook.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "schedule_info",
+                  "description": "Returns the details of the playbook schedule.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "playbook_data",
+                  "description": "Returns the details of the playbook.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "title",
+                      "description": "Returns the title of the playbook.",
+                      "isRequired": false,
+                      "value": "Playbook- Incident reporting",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "readable_id",
+                      "description": "Returns the playbook readable ID.",
+                      "isRequired": false,
+                      "value": "PLB3707",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "status",
+                      "description": "Returns the status of the Playbook.",
+                      "isRequired": false,
+                      "valueType": "string",
+                      "options": {
+                        "enumValue": [
+                          {
+                            "value": "active",
+                            "description": ""
+                          },
+                          {
+                            "value": "inactive",
+                            "description": ""
+                          }
+                        ],
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "unique_id",
+                      "description": "Returns the unique ID of the playbook, which is generated dynamically on playbook creation.",
+                      "isRequired": false,
+                      "value": "df3b2cf0-d095-4161-859c-9fcab84ea0a4",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "playbook_last_run",
+                      "description": "Returns the playbook last run time.",
+                      "isRequired": false,
+                      "value": "2023-02-03T01:32:36.145798Z",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sub_playbook",
+                      "description": "Returns the total number sub-playbooks.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "apps_count",
+                      "description": "Returns the number of apps used in the playbook.",
+                      "isRequired": false,
+                      "value": "0",
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "app_action",
+                      "description": "Returns a JSON object where each key is an app name, and its corresponding value is a list of actions along with the logos.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "description",
+                      "description": "Returns the description of the playbook.\n",
+                      "isRequired": false,
+                      "value": "test",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "categories",
+                      "description": "Returns the list of categories associated with the playbook.\n",
+                      "isRequired": false,
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tags",
+                      "description": "Returns the tags associated with the playbook.",
+                      "isRequired": false,
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "tags_data",
+                      "description": "Returns the details of tags added to the playbook.",
+                      "isRequired": false,
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "labels",
+                      "description": "Returns the list of labels added to the playbook.\n",
+                      "isRequired": false,
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "output_params",
+                      "description": "Returns the output parameters as a JSON array of key-value pairs.\n\n",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "schedule_info",
+                      "description": "Returns the details of the playbook schedule.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "event_data",
+                  "description": "Returns the details of the event that triggered the playbook execution.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "ran_by_data",
+                  "description": "Returns the details of the user who initiated the playbook run.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the user who initiated the playbook run.\n",
+                      "isRequired": false,
+                      "value": "John",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the user who initiated the playbook run.\n",
+                      "isRequired": false,
+                      "value": "Doe",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "full_name",
+                      "description": "Returns the full name of the user who initiated the playbook run.\n",
+                      "isRequired": false,
+                      "value": "John Doe",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "source_playbook_result_data",
+                  "description": "Returns the master playbook result data.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "playbook_summary",
+                  "description": "Returns the list of JSON containing the app name and its actions.\n",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "execution_time",
+                  "description": "Returns the execution time of the playbook in seconds.",
+                  "isRequired": false,
+                  "value": "0.24",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "playbook_title",
+                  "description": "Returns the title of the playbook.",
+                  "isRequired": false,
+                  "value": "Playbook report incident",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sub_playbooks",
+                  "description": "Returns the number of sub-playbooks added to the playbook.",
+                  "isRequired": false,
+                  "value": "0",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -131,9 +131,10 @@ function goSnippet(req: RunnableRequest, baseUrl: string): string {
 
 export function buildStepRequest(
   page: EndpointPage,
-  overrides: StepParamOverrides | undefined
+  overrides: StepParamOverrides | undefined,
+  productId = "ctix"
 ): RunnableRequest {
-  const base = buildRunnableRequest(page);
+  const base = buildRunnableRequest(page, productId);
   return applyParamOverrides(base, overrides);
 }
 
@@ -141,9 +142,10 @@ export function generateStepCode(
   page: EndpointPage,
   overrides: StepParamOverrides | undefined,
   language: AgentLanguage,
-  baseUrl: string
+  baseUrl: string,
+  productId = "ctix"
 ): { code: string; request: RunnableRequest } {
-  const request = buildStepRequest(page, overrides);
+  const request = buildStepRequest(page, overrides, productId);
   let code: string;
   if (language === "java") {
     code = javaSnippet(request, baseUrl);

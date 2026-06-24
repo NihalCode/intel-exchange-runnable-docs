@@ -1,0 +1,228 @@
+{
+  "slug": "webhooks/create-event-v2",
+  "title": "Create Event (v2)",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "webhooks",
+    "create-event-v2"
+  ],
+  "description": "Creates an event by passing the app identifier and action identifier through the URL and data through the payload. This API provides a concise response with key parameters.\n\n\n\n> [!NOTE]\n> Note: This API is available in Orchestrate v3.5.9 onwards.\n> To retrieve a detailed response, remove the /v2 from the webhook URL. The following is the example webhook URL that retrieves the detailed response: https://soarapi/webhooks_auth/events/?token=1df121212-121x-1212-3434-a67823232356.",
+  "method": "POST",
+  "path": "{webhook_url}/{app-identifier}/{action-identifier}/",
+  "request": {
+    "query": [
+      {
+        "name": "token",
+        "description": "Pass the webhook authentication token generated in Orchestrate.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass a title for the event.",
+        "isRequired": true,
+        "value": "testing",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "data",
+        "description": "Pass the data to include with the event in JSON format.",
+        "isRequired": false,
+        "value": "event data",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "webhook_url",
+        "description": "Pass the webhook URL retrieved from Orchestrate.",
+        "isRequired": true,
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "app-identifier",
+        "description": "Pass the source app to create an event.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action-identifier",
+        "description": "Pass the event type to create an event.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693a888fb1b9d3ee27525160"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "title",
+          "description": "Returns the title of the event.",
+          "isRequired": false,
+          "value": "intel_enrichment",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "readable_id",
+          "description": "Returns the readable ID of the event.",
+          "isRequired": false,
+          "value": "TEfbb104ed-6",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the dynamically generated unique ID of the event.",
+          "isRequired": false,
+          "value": "fbb104ed-6704-4127-8898-f2f6aefe9fc1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time of when the event was created.",
+          "isRequired": false,
+          "value": "2024-12-11T06:50:59.946589Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Returns the source of the event through which it is triggered. ",
+          "isRequired": false,
+          "value": "Webhooks",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "app_identifier",
+          "description": "Returns the source app associated with the event.",
+          "isRequired": false,
+          "value": "CTIX",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "action_identifier",
+          "description": "Returns the event type associated with the event.",
+          "isRequired": false,
+          "value": "CTIX_submission",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

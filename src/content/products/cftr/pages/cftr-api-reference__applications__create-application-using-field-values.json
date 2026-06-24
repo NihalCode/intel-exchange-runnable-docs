@@ -1,0 +1,70 @@
+{
+  "slug": "cftr-api-reference/applications/create-application-using-field-values",
+  "title": "Create Application Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "applications",
+    "create-application-using-field-values"
+  ],
+  "description": "Create Application Using Field Values",
+  "method": "POST",
+  "path": "/{{base_url}v1/application/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "value": "test application from openapi 1",
+        "valueType": "string"
+      },
+      {
+        "name": "application_url",
+        "value": "https://test.saasd.com/aswd",
+        "valueType": "string"
+      },
+      {
+        "name": "locations",
+        "value": "[\"Lo 1\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "business_units",
+        "value": "[\"Bu 1\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "application_status",
+        "value": "Decommissioned",
+        "valueType": "string"
+      },
+      {
+        "name": "status",
+        "value": "inactive",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Blue Label Application\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

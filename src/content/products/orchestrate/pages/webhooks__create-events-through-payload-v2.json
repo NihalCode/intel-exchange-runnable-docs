@@ -1,0 +1,230 @@
+{
+  "slug": "webhooks/create-events-through-payload-v2",
+  "title": "Create Events through Payload (v2)",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "webhooks",
+    "create-events-through-payload-v2"
+  ],
+  "description": "Creates an event by passing the app identifier, action identifier, and data through the payload. This API endpoint provides a concise response with key parameters.\n\n\n\n> [!NOTE]\n> Note: This API is available in Orchestrate v3.5.9 onwards.\n> To retrieve a detailed response, remove the /v2 from the webhook URL. The following is the example webhook URL that retrieves the detailed response: https://soarapi/webhooks_auth/events/?token=1df121212-121x-1212-3434-a67823232356.",
+  "method": "POST",
+  "path": "{webhook_url}/",
+  "request": {
+    "query": [
+      {
+        "name": "token",
+        "description": "Pass the webhooks authentication token generated in Cyware Orchestrate.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass a title for the event.",
+        "isRequired": false,
+        "value": "intel_submission",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "app_identifier",
+        "description": "Pass the source app to create an event.",
+        "isRequired": true,
+        "value": "{{app-identifier}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "data",
+        "description": "Pass the data to include with the event in JSON format.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_identifier",
+        "description": "Pass the event type to create an event.",
+        "isRequired": true,
+        "value": "{{action-identifier}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [
+      {
+        "name": "webhook_url",
+        "description": "Pass the webhook URL generated in Cyware Orchestrate. ",
+        "isRequired": false,
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693a7cb9b1b9d3ee275231c0"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "title",
+          "description": "Returns the title of the event.",
+          "isRequired": false,
+          "value": "intel enrichment",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "readable_id",
+          "description": "Returns the readable ID generated for the event.",
+          "isRequired": false,
+          "value": "TE5d8bba33-d",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the dynamically generated unique ID of the event.",
+          "isRequired": false,
+          "value": "5d8bba33-dec1-41cb-b230-f94ade63ad62",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time of when the event was created.",
+          "isRequired": false,
+          "value": "2024-12-11T07:05:42.095277Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Returns the source of the event through which it is triggered. For example, *open API*.",
+          "isRequired": false,
+          "value": "Webhooks",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "app_identifier",
+          "description": "Returns the source app associated with the event.",
+          "isRequired": false,
+          "value": "CTIX",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "action_identifier",
+          "description": "Returns the event type associated with the event.",
+          "isRequired": false,
+          "value": "CTIX_submission",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,703 @@
+{
+  "slug": "integrations/create-app-instance",
+  "title": "Create App Instance",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "integrations",
+    "create-app-instance"
+  ],
+  "description": "Create an instance in a specific app.",
+  "method": "POST",
+  "path": "v1/integrations/app-instances/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "is_default",
+        "description": "Pass true to set the instance as default.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "title",
+        "description": "Paas a title for the app instance.",
+        "isRequired": true,
+        "value": "Final Test",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass a description for the app instance.",
+        "isRequired": false,
+        "value": "Slack test instance",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "app_unique_id",
+        "description": "Pass the unique ID of the app to create an instance. You can retrieve the unique IDs of apps using the **Get Apps** endpoint.",
+        "isRequired": true,
+        "value": "a1027657-4e63-49d2-b3c9-e29949d02359",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "configuration",
+        "description": "Pass the necessary configurations to create an instance. The required parameters vary depending on the app.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "version_slug",
+        "description": "Pass the version of the app to create an instance. For example, *1.0.0*.\nYou can retrieve the supported version using the **Get Apps** endpoint.",
+        "isRequired": false,
+        "value": "1.0.0",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "expiry_date",
+        "description": "Pass the expiry date of the app instance in ISO format.",
+        "isRequired": false,
+        "value": "2025-01-01T00:00:00Z",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d95905b66e3318bb18dbd5"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "app_unique_id",
+          "description": "Returns the unique ID of the app.",
+          "isRequired": false,
+          "value": "a1027657-4e63-49d2-b3c9-e29949d02359",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the Unique ID of the instance.",
+          "isRequired": false,
+          "value": "dcc1b286-b34f-4f87-a662-3ef45d4aefa9",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_at",
+          "description": "Returns the date and time when the instance was created.",
+          "isRequired": false,
+          "value": "2022-07-27T11:02:22.496Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_at",
+          "description": "Returns the date and time when the instance was last modified.",
+          "isRequired": false,
+          "value": "2022-07-27T11:02:22.496Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the instance.\n",
+          "isRequired": false,
+          "value": "Final Test",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "slug",
+          "description": "Returns the resource identifier of the instance.",
+          "isRequired": false,
+          "value": "final_test",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user ID of the user who created the instance.",
+          "isRequired": false,
+          "value": "bf62bdbe-c280-4882-b947-c750b31062fb",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the user ID of the user who last modified the instance.",
+          "isRequired": false,
+          "value": "bf62bdbe-c280-4882-b947-c750b31062fb",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_default",
+          "description": "Returns if the instance is a default instance or not.",
+          "isRequired": false,
+          "value": "true",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "expiry_date",
+          "description": "Returns the expiry date of the instance.",
+          "isRequired": false,
+          "value": "2025-01-01T00:00:00Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the instance.",
+          "isRequired": false,
+          "value": "instance description",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connectivity_status",
+          "description": "Returns the connectivity status, indicating either SUCCESS or FAIL.",
+          "isRequired": false,
+          "value": "UNTESTED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connector_version",
+          "description": "Returns the version of the app.\n",
+          "isRequired": false,
+          "value": "2.2.2",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "configuration",
+          "description": "Returns the configuration details of the instance.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "token",
+              "description": "Retrieves the instance's configuration parameters along with their corresponding values.",
+              "isRequired": false,
+              "value": "*******",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "app_title",
+          "description": "Returns the title of the app instance.",
+          "isRequired": false,
+          "value": "App",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_removed",
+          "description": "Indicates if the instance is deleted or not.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "on_lite",
+          "description": "Indicates if the app instance is Cyware Agent compatible or not.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "csol_lite_id",
+          "description": "Returns the Cyware Agent ID.",
+          "isRequired": false,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tested_by",
+          "description": "Returns the unique ID of the user who tested the instance.",
+          "isRequired": false,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connectivity_message",
+          "description": "Returns the message elaborating the connectivity status of the instance. For example, *Authentication successful*.",
+          "isRequired": false,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connectivity_detail",
+          "description": "Returns the details related to the connectivity of the instance. ",
+          "isRequired": false,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status_code",
+          "description": "Returns the status code based on the status of the instance.",
+          "isRequired": false,
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "uploaded_file_data",
+          "description": "Returns the uploaded file data if a file is uploaded to create an instance.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "expiry_mail_sent",
+          "description": "Returns if the instance expiry email is sent to the users or not.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tested_by_data",
+          "description": "Returns the details of the user who tested the instance.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who tested the instance.",
+              "isRequired": false,
+              "value": "John ",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who tested the instance.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "created_by_data",
+          "description": "Returns the details of the user who created the instance.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the user who created the instance.",
+              "isRequired": false,
+              "value": "bf62bdbe-c280-4882-b947-c750b31062fb",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the instance.",
+              "isRequired": false,
+              "value": "Jon",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the instance.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who created the instance.",
+              "isRequired": false,
+              "value": "Jon Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "modified_by_data",
+          "description": "Returns the details of the user who last modified the instance.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the user who last modified the instance.",
+              "isRequired": false,
+              "value": "bf62bdbe-c280-4882-b947-c750b31062fb",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who last modified the instance.",
+              "isRequired": false,
+              "value": "Jon",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who last modified the instance.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who last modified the instance.",
+              "isRequired": false,
+              "value": "Jon Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

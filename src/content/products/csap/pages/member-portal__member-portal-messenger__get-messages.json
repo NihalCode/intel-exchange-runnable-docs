@@ -1,0 +1,247 @@
+{
+  "slug": "member-portal/member-portal-messenger/get-messages",
+  "title": "Get Messages",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-messenger",
+    "get-messages"
+  ],
+  "description": "Returns messages from the topic-based discussion in the Messenger.",
+  "method": "GET",
+  "path": "csap/v1/get_topic_messages/",
+  "request": {
+    "query": [
+      {
+        "name": "topic_id",
+        "description": "Pass the unique topic ID to retrieve the messages for the topic. You can retrieve the `topic_id` using the **Get Topics** API. Example, \n*altjZn0c7KZIhw*.",
+        "isRequired": false,
+        "value": "grp7WDklY1e23s",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "from_time",
+        "description": "Pass the start time for the query in EPOCH format. This represents the earliest timestamp for any messages contained in the query.",
+        "isRequired": false,
+        "value": "160000000",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "to_time",
+        "description": "Pass the end time of the query in EPOCH format. This represents the latest timestamp for any messages contained in the query.",
+        "isRequired": false,
+        "value": "1710147669",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "limit",
+        "description": "Pass the limit for the number of messages. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "maxLength": 500,
+          "defaultValue": "50",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d42169b66e3318bb0d2f4c"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "messages",
+          "description": "Returns the message details.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "created",
+                  "description": "Returns the creation date of the message.",
+                  "isRequired": false,
+                  "value": "2024-01-19T11:14:02Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "seqId",
+                  "description": "Returns the order of messages for a particular topic.",
+                  "isRequired": false,
+                  "value": "4",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "content",
+                  "description": "Returns the message content.",
+                  "isRequired": false,
+                  "value": "Message content",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "userId",
+                  "description": "Returns the user ID.",
+                  "isRequired": false,
+                  "value": "usrYV8OhfHD0HA",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "csapUserId",
+                  "description": "Returns the unique ID of the Collaborate member user.",
+                  "isRequired": false,
+                  "value": "e64e36d1-2c29-4dee-b6a9-b2e745ee4b77",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "userName",
+                  "description": "Returns the name of the Collaborate member user.",
+                  "isRequired": false,
+                  "value": "John Doe",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "userEmail",
+                  "description": "Returns the email address of the Collaborate member user.",
+                  "isRequired": false,
+                  "value": "john_doe@exampledomain.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tenantCode",
+                  "description": "Returns the unique code for the tenant.",
+                  "isRequired": false,
+                  "value": "exampledomain",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

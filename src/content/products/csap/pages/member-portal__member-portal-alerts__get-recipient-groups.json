@@ -1,0 +1,518 @@
+{
+  "slug": "member-portal/member-portal-alerts/get-recipient-groups",
+  "title": "Get Recipient Groups",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-alerts",
+    "get-recipient-groups"
+  ],
+  "description": "Returns a list of recipient groups that the member is part of.",
+  "method": "GET",
+  "path": "csap/v1/list_recipient_group/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number for the response. Default value is 1, which retrieves the latest records.",
+        "isRequired": false,
+        "value": "2",
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records in a page. ",
+        "isRequired": false,
+        "value": "5",
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "q",
+        "description": "Pass a keyword to search for recipient groups. Example, *manager*.",
+        "isRequired": false,
+        "value": "manager",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "all_data",
+        "description": "Pass true to retrieve details of all the recipient groups. Pass false to retrieve data based on the page and `page_size`.",
+        "isRequired": false,
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "false",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69f999e04214612d1aae0fae"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "group_id",
+              "description": "Returns the 8-digit unique ID of the recipient group.",
+              "isRequired": false,
+              "value": "412ce6e2",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_name",
+              "description": "Returns the name of recipient group.",
+              "isRequired": false,
+              "value": "All Users",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_tlp",
+              "description": "Returns the TLP associated with recipient group.",
+              "isRequired": false,
+              "value": "GREEN",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_type",
+              "description": "Returns the recipient group type (system or custom).",
+              "isRequired": false,
+              "value": "ALL",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_intel_submission",
+              "description": "Returns true if members of the recipient group have permission to share intel with other members of the recipient group.",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_rfi_submission",
+              "description": "Returns true if members of the recipient group have permission to share RFI with other members of the recipient group.",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "1",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "group_id",
+              "description": "",
+              "isRequired": false,
+              "value": "96925849",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_name",
+              "description": "",
+              "isRequired": false,
+              "value": "Dashboard Users",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_tlp",
+              "description": "",
+              "isRequired": false,
+              "value": "GREEN",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_type",
+              "description": "",
+              "isRequired": false,
+              "value": "CUSTOM",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_intel_submission",
+              "description": "",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_rfi_submission",
+              "description": "",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "2",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "group_id",
+              "description": "",
+              "isRequired": false,
+              "value": "0afc8972",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_name",
+              "description": "",
+              "isRequired": false,
+              "value": "General User",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_tlp",
+              "description": "",
+              "isRequired": false,
+              "value": "GREEN",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_type",
+              "description": "",
+              "isRequired": false,
+              "value": "CUSTOM",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_intel_submission",
+              "description": "",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_rfi_submission",
+              "description": "",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "3",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "group_id",
+              "description": "",
+              "isRequired": false,
+              "value": "1aec09c5",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_name",
+              "description": "",
+              "isRequired": false,
+              "value": "IT Professional",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_tlp",
+              "description": "",
+              "isRequired": false,
+              "value": "GREEN",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "group_type",
+              "description": "",
+              "isRequired": false,
+              "value": "CUSTOM",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_intel_submission",
+              "description": "",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "allowed_for_rfi_submission",
+              "description": "",
+              "isRequired": false,
+              "value": true,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

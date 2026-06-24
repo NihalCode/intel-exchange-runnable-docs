@@ -1,0 +1,97 @@
+{
+  "slug": "analyst-portal/member/activate-deactivate-member-account",
+  "title": "Activate/Deactivate Member Account",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "member",
+    "activate-deactivate-member-account"
+  ],
+  "description": "Activates or deactivates the status of member accounts.\n\n### **Changelog**\n\n\nThis endpoint is available starting from the 3.8.8.0 version.",
+  "method": "POST",
+  "path": "csap/v1/end-users-status/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "member_ids",
+        "description": "Pass one or more unique IDs of the members whose account status you want to update. You can retrieve the member IDs using the *Get Member List API*.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the unique ID of the member whose account status you want to update. ",
+            "isRequired": true,
+            "value": "288c5ed1-d323-495f-8029-70c645876fc7",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to activate the member account. Pass false to deactivate the member account.",
+        "isRequired": true,
+        "value": false,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69787d7cc63cb994ffef8793"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns the status of the update.",
+          "isRequired": false,
+          "value": "Users' status updated",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

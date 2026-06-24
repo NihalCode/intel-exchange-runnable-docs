@@ -1,0 +1,140 @@
+{
+  "slug": "analytics/incoming-source-events",
+  "title": "Get Incoming Source Events",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analytics",
+    "incoming-source-events"
+  ],
+  "description": "Returns the count of incoming source events from the configured event source app for non-purged data.",
+  "method": "GET",
+  "path": "v1/analytics/data-source/",
+  "request": {
+    "query": [
+      {
+        "name": "categorize_by",
+        "description": "Pass `categorize_by=incoming_source_of_events` to retrieve incoming source event values.",
+        "isRequired": true,
+        "value": "incoming_source_of_events",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__gte",
+        "description": "Pass the start time in Unix time format to retrieve incoming source events.",
+        "isRequired": false,
+        "value": "1630131200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__lte",
+        "description": "Pass the end time in Unix time format to retrieve incoming source events.",
+        "isRequired": false,
+        "value": "1643723199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d947feb66e3318bb17f7f3"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "data",
+          "description": "Returns the analytics data on the incoming source events within the specified date range.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the title of the event source app and the count of source events.",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "label",
+                  "description": "Returns the title of the event source app.",
+                  "isRequired": false,
+                  "value": "ctix",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the count of incoming events from the app's configured source.",
+                  "isRequired": false,
+                  "value": "4570",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

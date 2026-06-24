@@ -1,0 +1,557 @@
+{
+  "slug": "analyst-portal/member/member-details-analyst",
+  "title": "Get Member Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "member",
+    "member-details-analyst"
+  ],
+  "description": "As an analyst, you can get details of a member, such as the organization they belong to, email, recipient groups they belong to, and more. You can retrieve this data using the user ID of the member.\n\n### Changelog\n\n\nReturns the features response parameter.\nReturns the registration_date, last_active, and user_location response parameters.",
+  "method": "GET",
+  "path": "csap/v1/member/{user_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "user_id",
+        "description": "Pass the user ID of the member. You can retrieve the `user_id` using the **Get Members** endpoint.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "686776384a67cc97f612cb65"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "user_id",
+          "description": "Returns the unique ID of the member.",
+          "isRequired": false,
+          "value": "833ee8db-f3eb-447c-b0fc-aa6c1f906c36",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email",
+          "description": "Returns the email address of the member.",
+          "isRequired": false,
+          "value": "john.doe@exampleorg.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "org",
+          "description": " Returns the organization the member belongs to.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "org_id",
+              "description": "Returns the unique ID of the organization the member belongs to.",
+              "isRequired": false,
+              "value": "ca48ea16-98f4-4af3-9534-db54e2613269",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "org_name",
+              "description": "Returns the name of the organization the member belongs to.",
+              "isRequired": false,
+              "value": "Example Org",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "org_type",
+          "description": "Returns the organization type the member belongs to.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "org_type_id",
+              "description": "Returns the unique ID of the organization type of the organization.",
+              "isRequired": false,
+              "value": "12351855-7b74-407b-be59-fdf00c33bf21",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "org_type_name",
+              "description": "Returns the name of the organization type.",
+              "isRequired": false,
+              "value": "Bank",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "first_name",
+          "description": "Returns the first name of the member.",
+          "isRequired": false,
+          "value": "John",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "custom_fields",
+          "description": "Returns the custom fields or attributes that are associated with the member's profile. These custom fields are created and mapped in the Analyst Portal. You can view the field name, field ID, type, and the value of the field.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "f1cc6c2bd4305",
+              "description": "Returns the ID of the field.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "field_name",
+                  "description": "Returns the name of the field.",
+                  "isRequired": false,
+                  "value": "Industry",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "type",
+                  "description": "Returns the field type.",
+                  "isRequired": false,
+                  "value": "text-field",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the field value.",
+                  "isRequired": false,
+                  "value": "Finance (Loans)",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "user_groups",
+          "description": "Returns the recipient groups (group name and group ID) that the member belongs to.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "group_id",
+                  "description": "Returns the group ID of the recipient group.",
+                  "isRequired": false,
+                  "value": "97e121e0",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "group_name",
+                  "description": "Returns the name of the recipient group.",
+                  "isRequired": false,
+                  "value": "General User",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "group_id",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "fd90c374",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "group_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "Senior Officer",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "is_active",
+          "description": "Returns the status (active or inactive) of the member.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "registration_date",
+          "description": "Returns the member's registration date in the Collaborate Member Portal in epoch format.",
+          "isRequired": false,
+          "value": 1727272188,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "last_active",
+          "description": "Returns the time when the member was last active in the Collaborate Member Portal in epoch format.",
+          "isRequired": false,
+          "value": 1727766501,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "user_location",
+          "description": "Returns the location of the member.",
+          "isRequired": false,
+          "value": "United States-DC-Washington",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "features",
+          "description": "Returns the status of selected features, such as Intel Lake, for the member.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "intel_lake",
+              "description": "Returns the values of the Intel Lake feature configurations.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "status",
+                  "description": "Returns the current access state of Intel Lake.",
+                  "isRequired": false,
+                  "value": "On",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "On",
+                        "description": ""
+                      },
+                      {
+                        "value": "Off",
+                        "description": ""
+                      },
+                      {
+                        "value": "In Progress",
+                        "description": ""
+                      },
+                      {
+                        "value": "Error",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "allow_actioning",
+                  "description": "Returns true if actioning on intel is allowed for the member.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "display_module",
+                  "description": "Returns true if the member can access the Intel Lake feature in the Member Portal.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "display_in_alert_indicators",
+                  "description": "Returns true if the member can view Intel Lake data when they click indicators that are included in alerts.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "generate_openapi_credentials",
+                  "description": "Returns true if the member can generate Intel Lake OpenAPI credentials.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "message",
+                  "description": "Returns a status message that provides additional context, such as progress updates or error details.",
+                  "isRequired": false,
+                  "value": "Intel Lake enabled successfully.",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,45 @@
+{
+  "slug": "cftr-api-reference/campaigns/add-comment-to-campaign",
+  "title": "Add Comment to Campaign",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "campaigns",
+    "add-comment-to-campaign"
+  ],
+  "description": "Add Comment to Campaign",
+  "method": "POST",
+  "path": "/v1/comments/campaign/{campaign_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "<p>Note For Campaign</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "mentioned_users_usernames",
+        "value": "[]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "campaign_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

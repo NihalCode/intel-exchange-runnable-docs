@@ -1,17 +1,15 @@
 #!/usr/bin/env node
 /**
- * Build lexical (+ optional embedding) search index for the docs agent.
- * Usage: node scripts/build-agent-index.mjs [--embed]
+ * Build lexical search index for all products (or one with --product=).
+ * Usage: node scripts/build-agent-index.mjs [--embed] [--product=ctix|csap|...]
  */
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, access } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PRODUCTS, contentDirForProduct } from "./products-config.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
-const PAGES_DIR = path.join(ROOT, "src", "content", "pages");
-const MANIFEST_PATH = path.join(ROOT, "src", "content", "manifest.json");
-const OUT_PATH = path.join(ROOT, "src", "content", "agent-index.json");
 
 const STOP = new Set([
   "a", "an", "the", "and", "or", "to", "of", "in", "for", "on", "with", "is", "are",
@@ -29,9 +27,7 @@ function tokenize(text) {
 
 function termFrequencies(tokens) {
   const terms = {};
-  for (const t of tokens) {
-    terms[t] = (terms[t] ?? 0) + 1;
-  }
+  for (const t of tokens) terms[t] = (terms[t] ?? 0) + 1;
   return terms;
 }
 
@@ -47,25 +43,12 @@ function describeParams(fields, label) {
   return `${label}:\n${lines.join("\n")}`;
 }
 
-/** Extra retrieval text for endpoints whose titles are too generic on their own. */
-const DISAMBIGUATION_HINTS = {
-  "threat-mailbox/search-url":
-    "Disambiguation: Threat Mailbox — search for a URL or link inside email feed messages " +
-    "(GET conversion/feed-sources/email/deep-search/). NOT third-party indicator repository search. " +
-    "Use when the user wants to find URLs or IOCs extracted from threat mailbox emails.",
-  "reports/download-file":
-    "Disambiguation: Reports module — download a CTIX report or external intel file by file_id and authorization token " +
-    "(GET ingestion/external_download/{file_id}/). NOT threat mailbox email inbox attachments, NOT email message downloads. " +
-    "Use when the user wants to download a shared CTIX report file using a file_id and token.",
-};
-
-function chunkEndpoint(page) {
+function chunkEndpoint(page, productId) {
   const parts = [
     page.title,
     page.breadcrumb.join(" > "),
     `${page.method} ${page.path}`,
     page.description?.trim() || "",
-    DISAMBIGUATION_HINTS[page.slug],
     describeParams(page.request?.path, "Path parameters"),
     describeParams(page.request?.query, "Query parameters"),
     describeParams(page.request?.header, "Headers"),
@@ -74,25 +57,29 @@ function chunkEndpoint(page) {
 
   return {
     id: `${page.slug}::endpoint`,
+    productId,
     slug: page.slug,
     title: page.title,
     kind: "endpoint",
     method: page.method,
     path: page.path,
     breadcrumb: page.breadcrumb,
+    contentType: "endpoint",
     text: parts.join("\n\n"),
   };
 }
 
-function chunkSection(page) {
+function chunkSection(page, productId) {
   const md = page.markdown?.trim() || "";
   const excerpt = md.length > 1200 ? `${md.slice(0, 1200)}…` : md;
   return {
     id: `${page.slug}::section`,
+    productId,
     slug: page.slug,
     title: page.title,
     kind: "section",
     breadcrumb: page.breadcrumb,
+    contentType: "overview",
     text: [page.title, page.breadcrumb.join(" > "), excerpt].filter(Boolean).join("\n\n"),
   };
 }
@@ -101,8 +88,8 @@ function fileNameForSlug(slug) {
   return slug.replace(/\//g, "__") + ".json";
 }
 
-async function loadPage(slug) {
-  const file = path.join(PAGES_DIR, fileNameForSlug(slug));
+async function loadPage(pagesDir, slug) {
+  const file = path.join(pagesDir, fileNameForSlug(slug));
   const raw = await readFile(file, "utf8");
   return JSON.parse(raw);
 }
@@ -110,21 +97,79 @@ async function loadPage(slug) {
 async function embedBatch(texts, apiKey) {
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "text-embedding-3-small",
-      input: texts,
-      dimensions: 512,
-    }),
+    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ model: "text-embedding-3-small", input: texts, dimensions: 512 }),
   });
-  if (!res.ok) {
-    throw new Error(`Embedding API ${res.status}: ${(await res.text()).slice(0, 200)}`);
-  }
+  if (!res.ok) throw new Error(`Embedding API ${res.status}: ${(await res.text()).slice(0, 200)}`);
   const data = await res.json();
   return data.data.map((d) => d.embedding);
+}
+
+async function buildIndexForProduct(product, embed, apiKey) {
+  const dirs = contentDirForProduct(ROOT, product);
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(dirs.manifestPath, "utf8"));
+  } catch {
+    console.warn(`Skipping ${product.productId}: no manifest at ${dirs.manifestPath}`);
+    return null;
+  }
+
+  const chunks = [];
+  for (const meta of manifest.pages) {
+    let page;
+    try {
+      page = await loadPage(dirs.pagesDir, meta.slug);
+    } catch {
+      continue;
+    }
+    if (page.kind === "endpoint") chunks.push(chunkEndpoint(page, product.productId));
+    else if (page.kind === "section" && page.markdown?.trim()) {
+      chunks.push(chunkSection(page, product.productId));
+    }
+  }
+
+  const docs = [];
+  const df = {};
+  let totalLen = 0;
+  for (const chunk of chunks) {
+    const tokens = tokenize(chunk.text);
+    const terms = termFrequencies(tokens);
+    const length = tokens.length;
+    totalLen += length;
+    docs.push({ chunkId: chunk.id, length, terms });
+    for (const term of Object.keys(terms)) df[term] = (df[term] ?? 0) + 1;
+  }
+
+  if (embed && apiKey) {
+    console.log(`[${product.productId}] Embedding ${chunks.length} chunks…`);
+    const batchSize = 64;
+    for (let i = 0; i < chunks.length; i += batchSize) {
+      const batch = chunks.slice(i, i + batchSize);
+      const texts = batch.map((c) => c.text.slice(0, 8000));
+      const vectors = await embedBatch(texts, apiKey);
+      for (let j = 0; j < batch.length; j++) batch[j].embedding = vectors[j];
+    }
+  }
+
+  const index = {
+    version: 1,
+    productId: product.productId,
+    generatedAt: new Date().toISOString(),
+    chunkCount: chunks.length,
+    hasEmbeddings: embed && !!apiKey,
+    chunks,
+    lexical: { docCount: docs.length, avgDocLen: docs.length ? totalLen / docs.length : 1, df, docs },
+  };
+
+  const outPath =
+    product.productId === "ctix"
+      ? path.join(ROOT, "src", "content", "agent-index.json")
+      : path.join(dirs.contentDir, "agent-index.json");
+
+  await writeFile(outPath, JSON.stringify(index));
+  console.log(`[${product.productId}] Wrote ${outPath} — ${chunks.length} chunks`);
+  return index;
 }
 
 async function main() {
@@ -135,70 +180,18 @@ async function main() {
     process.exit(1);
   }
 
-  const manifest = JSON.parse(await readFile(MANIFEST_PATH, "utf8"));
-  const chunks = [];
-
-  for (const meta of manifest.pages) {
-    let page;
-    try {
-      page = await loadPage(meta.slug);
-    } catch {
-      continue;
-    }
-    if (page.kind === "endpoint") {
-      chunks.push(chunkEndpoint(page));
-    } else if (page.kind === "section" && page.markdown?.trim()) {
-      chunks.push(chunkSection(page));
-    }
+  let productFilter = null;
+  for (const arg of process.argv.slice(2)) {
+    if (arg.startsWith("--product=")) productFilter = arg.slice("--product=".length);
   }
 
-  const docs = [];
-  const df = {};
-  let totalLen = 0;
+  const targets = productFilter
+    ? PRODUCTS.filter((p) => p.productId === productFilter)
+    : PRODUCTS;
 
-  for (const chunk of chunks) {
-    const tokens = tokenize(chunk.text);
-    const terms = termFrequencies(tokens);
-    const length = tokens.length;
-    totalLen += length;
-    docs.push({ chunkId: chunk.id, length, terms });
-    for (const term of Object.keys(terms)) {
-      df[term] = (df[term] ?? 0) + 1;
-    }
+  for (const product of targets) {
+    await buildIndexForProduct(product, embed, apiKey);
   }
-
-  if (embed && apiKey) {
-    console.log(`Embedding ${chunks.length} chunks…`);
-    const batchSize = 64;
-    for (let i = 0; i < chunks.length; i += batchSize) {
-      const batch = chunks.slice(i, i + batchSize);
-      const texts = batch.map((c) => c.text.slice(0, 8000));
-      const vectors = await embedBatch(texts, apiKey);
-      for (let j = 0; j < batch.length; j++) {
-        batch[j].embedding = vectors[j];
-      }
-      process.stdout.write(`  ${Math.min(i + batchSize, chunks.length)}/${chunks.length}\r`);
-    }
-    console.log("");
-  }
-
-  const index = {
-    version: 1,
-    generatedAt: new Date().toISOString(),
-    chunkCount: chunks.length,
-    hasEmbeddings: embed && !!apiKey,
-    chunks,
-    lexical: {
-      docCount: docs.length,
-      avgDocLen: docs.length ? totalLen / docs.length : 1,
-      df,
-      docs,
-    },
-  };
-
-  await writeFile(OUT_PATH, JSON.stringify(index));
-  const sizeMb = (Buffer.byteLength(JSON.stringify(index)) / (1024 * 1024)).toFixed(2);
-  console.log(`Wrote ${OUT_PATH} — ${chunks.length} chunks, ${sizeMb} MB`);
 }
 
 main().catch((err) => {

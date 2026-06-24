@@ -1,0 +1,45 @@
+{
+  "slug": "cftr-api-reference/applications/add-comment-to-application",
+  "title": "Add Comment to Application",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "applications",
+    "add-comment-to-application"
+  ],
+  "description": "Add Comment to Application",
+  "method": "POST",
+  "path": "/v1/comments/application/{application_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "<p>Note For Application</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "mentioned_users_usernames",
+        "value": "[]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "application_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

@@ -1,0 +1,291 @@
+{
+  "slug": "integrations/execute-action",
+  "title": "Execute Action",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "integrations",
+    "execute-action"
+  ],
+  "description": "Execute an app action by passing the required parameters in the payload.",
+  "method": "POST",
+  "path": "v1/integrations/actions/execute/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "app_identifier",
+        "description": "Pass the identifier of the app. For example, *abuse_ipdb*. You can use the **Get Apps** endpoint to retrieve the identifier of an app.",
+        "isRequired": true,
+        "value": "abuse_ipdb",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_identifier",
+        "description": "Pass the unique identifier of the action. For example, *check_ip_address*. You can use the **Get App Actions** endpoint to retrieve the identifier of an action.",
+        "isRequired": true,
+        "value": "check_ip_address",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_params",
+        "description": "Pass the parameters required to execute the action. You can retrieve the details of the required parameters of the action using the **Get Action Details** endpoint.",
+        "isRequired": true,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "ip_address",
+            "description": "Pass the required request parameters to execute the action.",
+            "isRequired": false,
+            "value": "8.8.8.8",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "app_instance_slug",
+        "description": "Pass the resource identifier of the app instance to execute an action. You can retrieve the identifier of an instance using the **Get App Instances** endpoint.",
+        "isRequired": true,
+        "value": "uat_instance",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d9596eb66e3318bb18e543"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the results of the executed action, with response details varying based on the specific action performed.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "result",
+              "description": "Returns the details of the action executed.",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "filescan_id",
+                  "description": "Returns the response parameters and the values after the action execution.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "permalink",
+                  "description": "URL link to the source execution.",
+                  "isRequired": false,
+                  "value": "https://www.virustotal.com/gui/url/cf4b367e49bf0b22041c6f065f4aa19f3cfe39c8d5abc0617343d1a66c6a26f5/detection/u-cf4b367e49bf0b22041c6f065f4aa19f3cfe39c8d5abc0617343d1a66c6a26f5-1642656275",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "resource",
+                  "description": "Resource passed to the action.",
+                  "isRequired": false,
+                  "value": "google.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "response_code",
+                  "description": "Response code of the action after execution.",
+                  "isRequired": false,
+                  "value": 1,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "scans",
+                  "description": "Returns the details of all the scans performed with their result.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "total",
+                  "description": "Total number of scans.",
+                  "isRequired": false,
+                  "value": 93,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "url",
+                  "description": "Returns the URL passed.",
+                  "isRequired": false,
+                  "value": "http://google.com/",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "status_code",
+              "description": "Returns the status code of the action execution.",
+              "isRequired": false,
+              "value": 200,
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "execution_status",
+          "description": "Returns the status of the action execution. ",
+          "isRequired": false,
+          "value": "SUCCESS",
+          "valueType": "string",
+          "options": {
+            "enumValue": [
+              {
+                "value": "SUCCESS",
+                "description": ""
+              },
+              {
+                "value": "ERROR",
+                "description": ""
+              },
+              {
+                "value": "WAITING",
+                "description": ""
+              },
+              {
+                "value": "UNTESTED",
+                "description": ""
+              }
+            ],
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

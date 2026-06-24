@@ -1,0 +1,1099 @@
+{
+  "slug": "member-portal/member-portal-intel/create-intel",
+  "title": "Create Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-intel",
+    "create-intel"
+  ],
+  "description": "As a member, you can submit threat intel to analysts.\n\n\nThe required fields while submitting intel is based on the configuration for the intel category in the Analyst Portal. To get the required fields for the category, follow these steps:\n1.  Use the **Get Intel Categories **API in the Intel section to retrieve the list of all categories. You can use the `category_id` of the category to retrieve all associated fields.\n2.  Use this `category_id` in the **Get** **Intel** **Category Details** API to fetch all the fields associated with the category. All fields marked as required true are mandatory while submitting the RFI.\nWhile passing body parameters, the field ID is mandatory. To retrieve field details, follow these steps:\n1.  Use the **Get Additional Fields** API in the Alerts section to retrieve the list of all fields. You can use the `field_id` to retrieve all associated details.\n2.  Use this field_id in **Get Additional Field Details** to fetch all the field details. The ID of the field is a required key while submitting RFIs. For example, for the Priority field, the `priority_id` is a required key.\nAs a member, you can submit intel using custom fields tailored to your needs. Use fields like text boxes for detailed input, multi-select for tagging multiple values, single-select for predefined choices, and more to customize your intel effectively.\nField Type\nDescription\nFormat\nBoolean\nBoolean fields allow you to select either true or false for specific options.\nfield_id: value Example: \"f65b26a174658\": true\nText\nText boxes allow you to add information in text format.\nfield_id: Text Example: \"f533606babb44\": \"CVE-2014-12345\"\nSingle-select\nSingle-select fields allow you to choose one option from a predefined list.\nfield_id: { field_id_id: selected value id} Example: \"ffa80c88f1d20\": { \"ffa80c88f1d20_id\": \"oaa822c36c133\" }\nMulti-select\nMulti-select fields allow you to associate multiple options from a predefined list.\nfield_id: [{ field_id_id: selected value id}, { field_id_id: selected value id}] Example: \"f65b26a174658\": [ { \"f65b26a174658_id\": \"o15f317d51bec\" }, { \"f65b26a174658_id\": \"o43d57e02d92a\" } ]",
+  "method": "POST",
+  "path": "csap/v1/report_intel/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "category",
+        "description": "Pass the category of intel. You can use the **Get Intel Categories** endpoint to fetch the `category_id`. You can then use this ID to get the required fields associated with the category using the **Get Intel Category Details** endpoint. Note: `category_id` is a required key for this field.",
+        "isRequired": true,
+        "value": "07b74568",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "title",
+        "description": "Pass the title of the intel.",
+        "isRequired": true,
+        "value": "Trends in Ransomware",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description for the intel.",
+        "isRequired": true,
+        "value": "The recent ransomware attacks have been drastically increasing and affecting a number of sectors.",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP associated with the intel. ",
+        "isRequired": true,
+        "value": "WHITE",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "RED",
+              "description": ""
+            },
+            {
+              "value": "GREEN",
+              "description": ""
+            },
+            {
+              "value": "WHITE/CLEAR",
+              "description": ""
+            },
+            {
+              "value": "AMBER",
+              "description": ""
+            },
+            {
+              "value": "AMBER+STRICT",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "priority",
+        "description": "Pass the priority of details associated with the intel. Use the **Get Additional Fields** endpoint to fetch the `field_id`. You can use the `field_id` to fetch details for this field using the **Get Additional Fields Details** endpoint. ",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "priority_id",
+            "description": "Pass the unique ID of the priority associated with the intel.",
+            "isRequired": true,
+            "value": "1eab9f72-0b6a-430c-9317-2d709b67672e",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "priority_name",
+            "description": "Pass the priority name.",
+            "isRequired": false,
+            "value": "6",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "is_active",
+            "description": "Pass true if the field is active.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "index",
+            "description": "Pass the index of the priority.",
+            "isRequired": false,
+            "value": 6,
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "optional_fields",
+        "description": "Pass the optional fields associated with the RFI.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "additional_info",
+            "description": "Pass the additional information.",
+            "isRequired": false,
+            "value": "To combat rising cybersecurity threats, implement multi-factor authentication, regular software updates, and advanced threat detection. Enhance security further with employee training, robust backups, network segmentation, and endpoint protection.",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "user_group",
+        "description": "Pass the details of one or more user groups to which you want to submit the intel. This field is required only if direct submission is enabled for you. Depending on the settings in the Analyst Portal, you can either pass `user_groups` or organizations.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "user_group_id",
+                "description": "Pass the unique ID of the recipient group.",
+                "isRequired": false,
+                "value": "db93e8dc",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_name",
+                "description": "Pass the name of the recipient group.",
+                "isRequired": false,
+                "value": "General User [G]",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_tlp",
+                "description": "Pass the TLP of the recipient group.",
+                "isRequired": false,
+                "value": "GREEN",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "user_group_id",
+                "description": "",
+                "isRequired": false,
+                "value": "7f416845",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_name",
+                "description": "",
+                "isRequired": false,
+                "value": "IT Professional [G]",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_tlp",
+                "description": "",
+                "isRequired": false,
+                "value": "GREEN",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "2",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "user_group_id",
+                "description": "",
+                "isRequired": false,
+                "value": "4bb3815f",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_name",
+                "description": "",
+                "isRequired": false,
+                "value": "Dashboard Users [G]",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_tlp",
+                "description": "",
+                "isRequired": false,
+                "value": "GREEN",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69787be3c63cb994ffef7ba3"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "incident_id",
+          "description": "Returns the unique ID of intel.",
+          "isRequired": false,
+          "value": "CY-ae23ba48",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the intel.",
+          "isRequired": false,
+          "value": "Rising cybersecurity threats",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the destruction for the intel.",
+          "isRequired": false,
+          "value": "Rising cybersecurity threats are becoming more advanced and widespread, targeting individuals, businesses, and governments. These include ransomware attacks, phishing scams, and exploits of unknown software vulnerabilities. With more IoT devices, cloud services, and remote work, there are more opportunities for cybercriminals to exploit, making strong cybersecurity protections crucial to protect sensitive information and ensure smooth operations.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "intel_media",
+          "description": "Returns the media related to the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "confidence_level",
+          "description": "Returns the confidence level associated with the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "direct_impact",
+          "description": "Returns true if there is direct impact of the intel.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "report_sources",
+          "description": "Returns the list of report sources associated with the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "threat_methods",
+          "description": "Returns the list of threat methods associated with the intel.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "threat_actors",
+          "description": "Returns the list of threat actors associated with the intel.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP associated with the intel.",
+          "isRequired": false,
+          "value": "WHITE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "incident_date",
+          "description": "Returns the incident date.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "indicators",
+          "description": "Returns the indicators linked to the intel.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "action_taken",
+          "description": "Returns the details of the action taken on the incident.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "incident_results",
+          "description": "Returns the results of the incident.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "comments",
+          "description": "Returns any comments associated with the intel.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "severity",
+          "description": "Returns the severity of the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "incident_type",
+          "description": "Returns the list of incident types.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "detection_method",
+          "description": "Returns the list of detection methods associated with the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "system_function",
+          "description": "Returns the system functionalities.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "systems_affected",
+          "description": "Returns the affected number of systems by the reported intel.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "recommendation",
+          "description": "Returns recommendations related to the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "optional_fields",
+          "description": "Returns other optional fields associated with the intel.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "additional_info",
+              "description": "Returns additional information of the intel.",
+              "isRequired": false,
+              "value": "To combat rising cybersecurity threats, implement multi-factor authentication, regular software updates, and advanced threat detection. Enhance security further with employee training, robust backups, network segmentation, and endpoint protection.",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "vulnerability_type",
+          "description": "Returns the list of vulnerability types.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "vulnerability_source",
+          "description": "Returns the list of vulnerability sources.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "targeted_sector",
+          "description": "Returns the list of sectors that are targeted.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "exploited_wild",
+          "description": "Returns if the reported vulnerability is already being exploited by attackers in the cyber landscape.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "exploit_likelihood",
+          "description": "Returns the likelihood of an exploit.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "kill_chain_phase",
+          "description": "Returns the kill chain phase details.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "risk",
+          "description": "Returns the risk associated with the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "root_cause",
+          "description": "Returns the list of root causes.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "physical_threat_method",
+          "description": "Returns the list of physical threat methods associated with the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cyber_threat_method",
+          "description": "Returns the list of cyber threat methods associated with the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "category",
+          "description": "Returns the category details associated with the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "category_id",
+              "description": "Returns the unique ID of the category.",
+              "isRequired": false,
+              "value": "07b74568",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "category_name",
+              "description": "Returns the name of the category.",
+              "isRequired": false,
+              "value": "Announcement",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "status",
+          "description": "Returns the status of the intel.",
+          "isRequired": false,
+          "value": "ACCEPTED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "analyst_status",
+          "description": "Returns the status of the intel set by analyst.",
+          "isRequired": false,
+          "value": "ACCEPTED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "document_type",
+          "description": "Returns the document type associated with the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "priority",
+          "description": "Returns the ID of the priority.",
+          "isRequired": false,
+          "value": "1eab9f72-0b6a-430c-9317-2d709b67672e",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "vendorsnproduct",
+          "description": "Returns the list of vendors associated with the intel.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "announcement_type",
+          "description": "Returns the announcement type details of the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "reported_on",
+          "description": "Returns the EPOCH timestamp of when the intel was reported.",
+          "isRequired": false,
+          "value": "1719572956000",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "reported_by",
+          "description": "Returns the details of the intel reporter.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email address of the intel reporter.",
+              "isRequired": false,
+              "value": "johndoe@exampleorg.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the intel reporter.",
+              "isRequired": false,
+              "value": "John Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "alert_id",
+          "description": "Returns the unique ID of the alert if an alert was created from the intel.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

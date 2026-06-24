@@ -1,0 +1,501 @@
+{
+  "slug": "playbook/open-playbook",
+  "title": "Get Playbooks",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "open-playbook"
+  ],
+  "description": "Returns a list of active playbooks in Orchestrate.",
+  "method": "GET",
+  "path": "v1/playbook/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the playbook list.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of items to retrieve per page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "scheduled",
+        "description": "Pass true or false to filter playbooks based on their scheduled status.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "labels",
+        "description": "Pass label names to filter playbooks.",
+        "isRequired": false,
+        "value": "priority",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tags",
+        "description": "Pass the tags to filter the playbooks.",
+        "isRequired": false,
+        "value": "1d691a62-9ffb-4ea5-8122-e5e953758b6d",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "apps",
+        "description": "Pass the `app_identifier` of the app. You can retrieve the `app_identifier` of apps using the **Get Apps** endpoint.",
+        "isRequired": false,
+        "value": "virus_total",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "actions",
+        "description": "Pass the `action_identifier` identifier of the app action. You can retrieve the `action_identifier` of actions using the **Get App Actions** endpoint.",
+        "isRequired": false,
+        "value": "epo_help",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true for active playbooks and false for inactive playbooks.",
+        "isRequired": false,
+        "value": "false",
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "modified",
+        "description": "Pass the last modified value to filter playbooks based on their last modified time.",
+        "isRequired": false,
+        "value": "last_week",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "last_week"
+            },
+            {
+              "value": "last_month"
+            },
+            {
+              "value": "last_year"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "690c38bc563cc15bed8450bf"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "link",
+          "description": "Returns the link to the previous and next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "next",
+              "description": "Returns the API endpoint to the next page.\n",
+              "isRequired": false,
+              "value": "openapi/v1/playbook/?page=2&page_size=1&AccessID={{open_api_access_id}}&Signature={{signature}}&Expires={{signature}}",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "count",
+          "description": "Returns the total number of playbooks created by Orchestrate users.",
+          "isRequired": false,
+          "value": 2791,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the list of playbooks as JSON objects.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of the Playbook.",
+                  "isRequired": false,
+                  "value": "BlueCoat :: Enrich IOCs",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "readable_id",
+                  "description": "Returns the readable ID of the playbook.",
+                  "isRequired": false,
+                  "value": "PLB3387",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the status of the playbook.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "active",
+                        "description": ""
+                      },
+                      {
+                        "value": "inactive",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID that is generated dynamically on playbook creation.",
+                  "isRequired": false,
+                  "value": "3a036038-27d2-4ce0-bd9d-9fb8daf27111",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "playbook_last_run",
+                  "description": "Returns date and time when the playbook was last run.",
+                  "isRequired": false,
+                  "value": "2022-01-18T08:13:20.325033Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sub_playbook",
+                  "description": "Returns the number of sub-playbooks.",
+                  "isRequired": false,
+                  "value": 0,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "apps_count",
+                  "description": "Returns the number of apps used in the playbook.",
+                  "isRequired": false,
+                  "value": 0,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_action",
+                  "description": "Returns the app name as the key in the JSON, containing a list of actions.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the playbook.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "categories",
+                  "description": "Returns the list of categories associated with the playbook in Orchestrate > Manage Playbooks > Playbook Store.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tags",
+                  "description": "Returns the list of tags added to the playbook.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tags_data",
+                  "description": "Returns the list of JSON containing the details of tags.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "labels",
+                  "description": "Returns the list of labels added to the playbook.\n",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "output_params",
+                  "description": "Returns the output parameters as a JSON array of key-value pairs.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "schedule_info",
+                  "description": "Returns the details of the playbook schedule.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "priority",
+                  "description": "Returns the priority assigned to the playbook.",
+                  "isRequired": false,
+                  "value": "2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

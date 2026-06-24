@@ -1,0 +1,169 @@
+{
+  "slug": "member-portal/member-portal-messenger/get-topics",
+  "title": "Get Topics",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-messenger",
+    "get-topics"
+  ],
+  "description": "Returns the list of topic-based discussions from the Messenger.",
+  "method": "GET",
+  "path": "csap/v1/get_alert_topics/",
+  "request": {
+    "query": [
+      {
+        "name": "alert_id",
+        "description": "Pass the unique ID of the alert to retrieve associated discussion topics. You can retrieve this using the **Get Alerts** endpoint. Example, *765f89c5*.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "group_id",
+        "description": "Pass the unique ID of the recipient group to retrieve associated discussion topics. Example, *16179745*. You can retrieve the list of recipient groups using the **Get Recipient Groups** endpoint. If you do not pass the group ID, all messages for the alert are retrieved.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d42172b66e3318bb0d2f86"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "topics",
+          "description": "Returns the topic details.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "alertId",
+                  "description": "Returns the alert ID associated with the topic.",
+                  "isRequired": false,
+                  "value": "1d82d614",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "groupId",
+                  "description": "Returns the group ID of the recipient groups associated with the topic.",
+                  "isRequired": false,
+                  "value": "f0fd39b9",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "topicId",
+                  "description": "Returns the unique ID of the topic.",
+                  "isRequired": false,
+                  "value": "altFJS7tcesE3I",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "topicName",
+                  "description": "Returns the name of the topic.",
+                  "isRequired": false,
+                  "value": "Critical Remote Hacking Flaws Disclosed in Linphone and MicroSIP Softphones",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "topicType",
+                  "description": "Returns the topic type. This endpoint is used to retrieve topic-based discussions for alerts, so the value is 6.",
+                  "isRequired": false,
+                  "value": "6",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

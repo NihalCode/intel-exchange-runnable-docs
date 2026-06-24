@@ -1,0 +1,246 @@
+{
+  "slug": "analyst-portal/organization/create-organization",
+  "title": "Create Organization",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "organization",
+    "create-organization"
+  ],
+  "description": "As an analyst, you can create an organization in Collaborate.",
+  "method": "POST",
+  "path": "csap/v1/create_organization/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "organization_name",
+        "description": "Pass the name of the organization that you want to create.",
+        "isRequired": true,
+        "value": "Example Org",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "organization_types",
+        "description": "Pass the organization type that the organization must be part of.\nUse the **Get Organization Types** endpoint to fetch the different organization types and the associated IDs. <br>\nExample: *\"organization_type\": [{\"organization_type_id\": \"d8eb96f6-7377-42bc-af0c-1ef215a32fc3\"}]*",
+        "isRequired": true,
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "organization_type_id",
+                "description": "Pass the unique ID of the organization type.",
+                "isRequired": true,
+                "value": "3d849dfa-0025-4e88-b344-6843111aad63",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "org_type_name",
+                "description": "Pass the name of the organization type.",
+                "isRequired": false,
+                "value": "Media and Communications",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "is_active",
+                "description": "Pass true to activate the organization.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "member_email_whitelisted_domains",
+        "description": "Pass the list of allowed email domains in comma-separated format. Member email accounts should be part of this specified list of domains. <br> Example: *\"member_email_whitelisted_domains\": \"exampleorg.com\"*",
+        "isRequired": false,
+        "value": "exampleorg.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d3d91fceb3f8dc913e3af5"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "organization_id",
+          "description": "Returns the unique ID of the organization.",
+          "isRequired": false,
+          "value": "9f86bf11-0bdc-4dce-be35-fe47f24e0279",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "organization_name",
+          "description": "Returns the name of the organization.",
+          "isRequired": false,
+          "value": "Example Organization",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "organization_types",
+          "description": "Returns the details of the organization type.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "organization_type_id",
+                  "description": "Returns the unique ID of the organization type.",
+                  "isRequired": false,
+                  "value": "99611276-53d4-4d1f-9cbc-c756c2bc4d8d",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "organization_type_name",
+                  "description": "Returns the name of the organization type.",
+                  "isRequired": false,
+                  "value": "Media and Communications",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "member_email_whitelisted_domains",
+          "description": "Returns the allowed member email domains for member users who are part of this organization.",
+          "isRequired": false,
+          "value": "exampleorg.com, exampleorg.net",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

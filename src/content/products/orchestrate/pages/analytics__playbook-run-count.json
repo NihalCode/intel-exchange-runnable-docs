@@ -1,0 +1,140 @@
+{
+  "slug": "analytics/playbook-run-count",
+  "title": "Get Playbook Run Count",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analytics",
+    "playbook-run-count"
+  ],
+  "description": "Returns the number of times playbooks were executed for the non-purged data within the specified date range.",
+  "method": "GET",
+  "path": "v1/analytics/data-source/",
+  "request": {
+    "query": [
+      {
+        "name": "categorize_by",
+        "description": "Pass`categorize_by=playbook_run_count` to retrieve playbook run count.",
+        "isRequired": true,
+        "value": "playbook_run_count",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__gte",
+        "description": "Pass the start time in the Unix time format to retrieve the playbook run count for a specified duration.",
+        "isRequired": false,
+        "value": "1640131200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__lte",
+        "description": "Pass the end time in Unix time format to retrieve the playbook run count for a specified duration.",
+        "isRequired": false,
+        "value": "1640723199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d94774b66e3318bb17f185"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "data",
+          "description": "Returns the analytics data on the number of times playbooks were executed in the specified time range.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "label",
+                  "description": "Returns the date in Month DD, YYYY format.",
+                  "isRequired": false,
+                  "value": "Dec 22, 2021",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the number of playbooks executed on this date.",
+                  "isRequired": false,
+                  "value": "77",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

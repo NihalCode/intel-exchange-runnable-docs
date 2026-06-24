@@ -1,0 +1,1130 @@
+{
+  "slug": "playbook/export-playbook",
+  "title": "Export Playbook",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "export-playbook"
+  ],
+  "description": "Returns the export of a playbook in JSON format.",
+  "method": "GET",
+  "path": "v1/playbook/export/{playbook_unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "AccessID",
+        "description": "The Access ID is used to authenticate the Cyware Orchestrate API endpoint.",
+        "isRequired": false,
+        "value": "57d008c4-xxxx-4880-xxxx-1feb943d06ac,",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "Expires",
+        "description": "This parameter is used to define an expiry time for the API call.",
+        "isRequired": false,
+        "value": "72a48f16-xxxx-4023-xxxx-40f8e58d1f41",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "Signature",
+        "description": "The Signature is used to authenticate the Cyware Orchestrate API endpoint.",
+        "isRequired": false,
+        "value": "ohaUEcyA8hH3WPUo7Y/QOf+zWY0=",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "playbook_unique_id",
+        "description": "Pass the unique ID of the playbook to export. You can retrieve the unique ID of a playbook using the **Get Playbooks** endpoint.",
+        "isRequired": true,
+        "value": "{playbook_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4f052bd08c35d39c821e6"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "title",
+          "description": "Returns the title of the playbook.",
+          "isRequired": false,
+          "value": "Playbook- IP Malicious",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "start_node",
+          "description": "Returns the label of the playbook's start node.",
+          "isRequired": false,
+          "value": "start",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "nodes",
+          "description": "Returns node details as key-value pairs, where each key represents a unique node identifier, for example, 1, and the corresponding value contains the node's attributes. ",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "type",
+                  "description": "Returns the type of the node.",
+                  "isRequired": false,
+                  "value": "REGULAR",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "internal_id",
+                  "description": "Returns the node number in the playbook.",
+                  "isRequired": false,
+                  "value": "1",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the node.",
+                  "isRequired": false,
+                  "value": "AbuseIPDB - Get IP Address Reputation Details - Version 1.0.0",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the node.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "actions",
+                  "description": "Returns details of the action such as action name, input data, action type, and more.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "action",
+                          "description": "Returns the name of the action node.",
+                          "isRequired": false,
+                          "value": "check_ip_address",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "parameter_data_source",
+                          "description": "Returns the input data passed for the action node.\n",
+                          "isRequired": false,
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "loop_keys",
+                              "description": "Returns true if the input value is set to iterate the node execution over a list of input values.",
+                              "isRequired": false,
+                              "valueType": "array",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "ip_address",
+                              "description": "Input value passed to the node.",
+                              "isRequired": false,
+                              "value": "1.1.1.1",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "action_type",
+                          "description": "Returns the type of the action node. Example: *PREDEFINED*.",
+                          "isRequired": false,
+                          "value": "PREDEFINED",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "app_instances",
+                          "description": "Returns the list of selected instances for the app to run the playbook.\n\n\n\n\n\n\n\n",
+                          "isRequired": false,
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "0",
+                              "description": "Name of the instance used to execute the playbook.",
+                              "isRequired": false,
+                              "value": "test_instance",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "action_data",
+                          "description": "Returns action details, such as the app name, version, selected action, and more.\n\n\n\n\n\n\n\n",
+                          "isRequired": false,
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "action_identifier",
+                              "description": "Returns the unique identifier of the action.",
+                              "isRequired": false,
+                              "value": "check_ip_address",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "app",
+                              "description": "Returns the app name associated with the action.",
+                              "isRequired": false,
+                              "value": "abuse_ipdb",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "app_slug",
+                              "description": "Returns the resource identifier of the app.",
+                              "isRequired": false,
+                              "value": "abuse_ipdb_1_0_0",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "app_version",
+                              "description": "Returns the version of the app used in the playbook.",
+                              "isRequired": false,
+                              "value": "1.0.0",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "app_title",
+                              "description": "Returns the title of the app associated with the action.",
+                              "isRequired": false,
+                              "value": "AbuseIPDB",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "action_title",
+                              "description": "Returns the title of the action.",
+                              "isRequired": false,
+                              "value": "Get IP Address Reputation Details",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "is_system",
+                              "description": "Indicates if the app is a system app or custom app.",
+                              "isRequired": false,
+                              "value": true,
+                              "valueType": "boolean",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            }
+                          ]
+                        },
+                        {
+                          "name": "output_params",
+                          "description": "Returns the node's output parameters if the save node output option is enabled.\n\n\n\n\n\n\n",
+                          "isRequired": false,
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "save_customized_result",
+                          "description": "Returns true to save the customized result of the node, else returns false.",
+                          "isRequired": false,
+                          "value": false,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "run_async",
+                          "description": "Returns true to run the node synchronously, else returns false.",
+                          "isRequired": false,
+                          "value": false,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "action_run_attempt",
+                          "description": "Returns the number of times the action was rerun by the Cyware agent.",
+                          "isRequired": false,
+                          "value": 1,
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "action_run_buffer_time",
+                          "description": "Returns buffer time set for the Cyware agent to rerun the action.",
+                          "isRequired": false,
+                          "value": 1,
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "save_result",
+                          "description": "Returns true to save the output of the node, else returns false.",
+                          "isRequired": false,
+                          "value": true,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "conditions",
+                  "description": "Returns the conditions configured to execute the playbook.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "extra_params",
+                  "description": "Returns the details of the node position and validation.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "position",
+                      "description": "Returns the details of the x and y axis of a node in the playbook canvas.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "x",
+                          "description": "Returns the position of the x axis on the canvas.",
+                          "isRequired": false,
+                          "value": 280,
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "y",
+                          "description": "Returns the position of the y axis on the canvas.",
+                          "isRequired": false,
+                          "value": 260,
+                          "valueType": "number",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "validations",
+                      "description": "Returns whether the playbook execution was successful or if any validation errors were encountered during execution.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "is_not_valid",
+                          "description": "Returns whether the playbook execution was successful or not.",
+                          "isRequired": false,
+                          "value": false,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "io_params_format",
+                  "description": "Returns a dictionary containing information about the input details of a node.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "stop_on_error",
+                  "description": "Returns true if the abort playbook if the node fails is enabled; otherwise, returns false.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "memory_params",
+                  "description": "Returns the configurations of the memory node.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sub_type",
+                  "description": "Returns the sub-type of the node. ",
+                  "isRequired": false,
+                  "value": "PREDEFINED",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "PREDEFINED",
+                        "description": ""
+                      },
+                      {
+                        "value": "CUSTOM",
+                        "description": ""
+                      },
+                      {
+                        "value": "PLAYBOOK",
+                        "description": ""
+                      },
+                      {
+                        "value": "EXPRESSION_BASED",
+                        "description": ""
+                      },
+                      {
+                        "value": "STORAGE",
+                        "description": ""
+                      },
+                      {
+                        "value": "START",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "condition_type",
+                  "description": "Returns the condition type of the node.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "io_params_email_details",
+                  "description": "Returns the information related to the email such as the body of the email and subject.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "enable_io_param_email_details",
+                  "description": "Returns whether email notifications are enabled and if the details are configured or not.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "enable_app_notification",
+                  "description": "Returns if the email notifications through the platform and mobile app are enabled or not.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "edges",
+          "description": "Returns the details of the node connection.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "source_node",
+                  "description": "Returns the name of the source node.",
+                  "isRequired": false,
+                  "value": "start",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "destination_node",
+                  "description": "Returns the node number of the destination.",
+                  "isRequired": false,
+                  "value": "3",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "label",
+                  "description": "Returns labels associated with conditions and their connections.",
+                  "isRequired": false,
+                  "value": "DEFAULT_LABEL",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "labels",
+          "description": "Returns the list of labels added to the playbook.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tags",
+          "description": "Returns the list of tags added to the playbook.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "status",
+          "description": "Returns the playbook run status.",
+          "isRequired": false,
+          "value": "ACTIVE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cron_expression",
+          "description": "Returns the cron string used for scheduling the playbook.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "output_params",
+          "description": "Returns the output parameters as a JSON list of key-value pairs.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_runnable",
+          "description": "Returns true if it is a Cyware playbook, and returns false if it is a custom playbook.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the playbook.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "auto_terminate",
+          "description": "Returns true if the auto-termination of the playbook is enabled, else false.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "auto_terminate_interval",
+          "description": "Returns the time interval to auto-terminate the playbook if it's UNFINISHED.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "categories",
+          "description": "Returns the category of the playbook in Orchestrate > Manage Playbooks > Playbook Store. These categories are assigned to the default playbooks provided by Orchestrate.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "schedule_info",
+          "description": "Returns the details of the playbook schedule.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "details",
+              "description": "Returns schedule details such as end time, mode, and more in key-value pairs.",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "ends",
+                  "description": "Returns the end time for the playbook's schedule.",
+                  "isRequired": false,
+                  "value": "never",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "mode",
+                  "description": "Returns the frequency set for the playbook execution.",
+                  "isRequired": false,
+                  "value": "once",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "end_value",
+                  "description": "Returns if the end value was configured or not.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "repeat_on",
+                  "description": "Returns the scheduled days specified for the playbook's execution.\n\n\n\n\n\n",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "run_count",
+                  "description": "Returns the number of times the playbook has been executed.",
+                  "isRequired": false,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "start_time",
+                  "description": "Returns the date and time when the playbook execution was initiated.",
+                  "isRequired": false,
+                  "value": "2022-04-14T06:51:02.891Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "is_scheduled",
+              "description": "Returns if the playbook execution is scheduled or not.",
+              "isRequired": false,
+              "value": false,
+              "valueType": "boolean",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,45 @@
+{
+  "slug": "cftr-api-reference/threat-intel/update-threat-intel",
+  "title": "Update Threat Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "threat-intel",
+    "update-threat-intel"
+  ],
+  "description": "Update Threat Intel",
+  "method": "PUT",
+  "path": "/v1/ioc-module/ioc/{ioc_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "status",
+        "value": "whitelisted",
+        "valueType": "string"
+      },
+      {
+        "name": "tlp",
+        "value": "GREEN",
+        "valueType": "string"
+      }
+    ],
+    "path": [
+      {
+        "name": "ioc_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

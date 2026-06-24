@@ -1,0 +1,81 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/alert-history-analyst",
+  "title": "Get Alert History",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "alert-history-analyst"
+  ],
+  "description": "When you update an alert, the parent alert moves to an expired state and the new (child) alert is published to the recipients. You can use this endpoint retrieve the parent alerts linked to an updated alert.\n\n### Changelog\n\n\nFor analysts, alert access is based on the categories linked to their user role in the Analyst Portal. However, if your role includes the View All Alerts permission, you can access all alerts as preferred. This update does not affect credentials generated before this version.",
+  "method": "GET",
+  "path": "csap/v1/get_alert_history/{short_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "short_id",
+        "description": "Pass the 8-digit unique ID of the alert. Example: *22db9ecd*",
+        "isRequired": false,
+        "value": "22db9ecd",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d3d7d7ceb3f8dc913e27f7"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "previous_alerts",
+          "description": "Returns the alert ID of the parent alerts.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the unique ID of the parent alert.",
+              "isRequired": false,
+              "value": "fc8203be",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

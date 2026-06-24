@@ -1,0 +1,263 @@
+{
+  "slug": "analyst-portal/organization/update-organization",
+  "title": "Update Organization",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "organization",
+    "update-organization"
+  ],
+  "description": "Update details of an organization.",
+  "method": "PUT",
+  "path": "csap/v1/organization_details_update/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "org_id",
+        "description": "Pass the ID of the organization that you want to update. You can retrieve the ID of the organization using the **Get Organizations** endpoint.",
+        "isRequired": true,
+        "value": "eb67cf30-cb61-4ae8-9c47-ccc29343fbf1",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "org_name",
+        "description": "Pass the name of the organization.",
+        "isRequired": false,
+        "value": "Example Organization",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "organization_level",
+        "description": "Pass the organization-level ID. <br> Example, *\"organization_level\": {\n\"id\": \"11380463-6066-4345-ae73-b02f25c90629\"}* <br>\nYou can retrieve this ID using the **Get Organization Levels** endpoint.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "id",
+            "description": "Pass the unique the ID of the organization level.",
+            "isRequired": false,
+            "value": "11380463-6066-4345-ae73-b02f25c90629",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "organization_types",
+        "description": "Pass the organization type details. `org_type_id` is a required key for this parameter. <br> Example, *\"organization_types\": [{\"org_type_id\": \"3d849dfa-0025-4e88-b344-6843111aad63\"}]* <br>\nYou can retrieve this ID using the **Get Organization Types** endpoint.",
+        "isRequired": true,
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "org_type_id",
+                "description": "Pass the unique ID of the organization type.",
+                "isRequired": true,
+                "value": "3d849dfa-0025-4e88-b344-6843111aad63",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "description",
+        "description": "Pass a description of the organization.",
+        "isRequired": false,
+        "value": "Organization description",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "organization_hq",
+        "description": "Pass the headquarters of the organization.",
+        "isRequired": false,
+        "value": "org hq",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "organization_url",
+        "description": "Pass the URL of the organization.",
+        "isRequired": false,
+        "value": "https://www.exampleorg.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "member_admin_count",
+        "description": "Pass the number of member admins allowed for the organization.",
+        "isRequired": false,
+        "value": 15,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "intel_approval_count",
+        "description": "Pass the number of intel approvers allowed for the organization.",
+        "isRequired": false,
+        "value": 10,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "webapp_access",
+        "description": "Pass true if members of this organization have access to the Member Portal. ",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "True",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "mobile_access",
+        "description": "Pass true if members of this organization have access to the Cyware Enterprise mobile app.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "True",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d3d9eaceb3f8dc913e4554"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns the status indicating whether the organization was updated successfully.",
+          "isRequired": false,
+          "value": "Success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { AgentChatSession } from "@/components/AgentChatSession";
+import { ProductProvider } from "@/components/ProductContext";
 import { RunSettingsProvider } from "@/components/RunSettings";
 import { getManifest } from "@/lib/content";
 
@@ -10,9 +11,9 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Intel Exchange API — Runnable Reference",
+  title: "Cyware API Docs — Runnable Reference",
   description:
-    "An unofficial, runnable mirror of the Intel Exchange (Cyware) API reference. Every code snippet can be executed in the browser.",
+    "Runnable API documentation for Cyware CTIX, CSAP, Orchestrate, and CFTR. Every code snippet can be executed in the browser.",
 };
 
 // Avoid theme flash by applying the saved/preferred theme before paint.
@@ -33,9 +34,11 @@ export default function RootLayout({
       </head>
       <body className="min-h-full">
         <RunSettingsProvider defaultBaseUrl={manifest.defaultBaseUrl}>
-          <AgentChatSession>
-            <AppShell nav={manifest.nav}>{children}</AppShell>
-          </AgentChatSession>
+          <ProductProvider>
+            <AgentChatSession>
+              <AppShell nav={manifest.nav}>{children}</AppShell>
+            </AgentChatSession>
+          </ProductProvider>
         </RunSettingsProvider>
       </body>
     </html>

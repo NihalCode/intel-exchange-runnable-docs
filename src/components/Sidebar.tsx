@@ -26,11 +26,13 @@ function NavItem({
   currentSlug,
   depth,
   onNavigate,
+  productId,
 }: {
   node: NavNode;
   currentSlug: string;
   depth: number;
   onNavigate: () => void;
+  productId: string;
 }) {
   const hasChildren = node.children && node.children.length > 0;
   const isActive = node.slug === currentSlug;
@@ -65,7 +67,7 @@ function NavItem({
           <span className="w-5 shrink-0" />
         )}
         <Link
-          href={`/docs/${node.slug}`}
+          href={`/docs/${productId}/${node.slug}`}
           onClick={onNavigate}
           className={`flex-1 truncate py-1 text-[13px] ${
             isActive ? "font-semibold text-sky-700 dark:text-sky-300" : "text-zinc-700 dark:text-zinc-300"
@@ -85,6 +87,7 @@ function NavItem({
               currentSlug={currentSlug}
               depth={depth + 1}
               onNavigate={onNavigate}
+              productId={productId}
             />
           ))}
         </div>
@@ -105,10 +108,12 @@ export function Sidebar({
   nav,
   currentSlug,
   onNavigate,
+  productId = "ctix",
 }: {
   nav: NavNode[];
   currentSlug: string;
   onNavigate: () => void;
+  productId?: string;
 }) {
   const [filter, setFilter] = useState("");
   const flat = useMemo(() => flatten(nav), [nav]);
@@ -136,7 +141,7 @@ export function Sidebar({
             matches.map((n) => (
               <Link
                 key={n.slug}
-                href={`/docs/${n.slug}`}
+                href={`/docs/${productId}/${n.slug}`}
                 onClick={onNavigate}
                 className={`block truncate rounded px-2 py-1 text-[13px] hover:bg-zinc-100 dark:hover:bg-zinc-800/60 ${
                   n.slug === currentSlug ? "bg-sky-100 font-semibold dark:bg-sky-950/40" : ""
@@ -156,6 +161,7 @@ export function Sidebar({
               currentSlug={currentSlug}
               depth={0}
               onNavigate={onNavigate}
+              productId={productId}
             />
           ))
         )}

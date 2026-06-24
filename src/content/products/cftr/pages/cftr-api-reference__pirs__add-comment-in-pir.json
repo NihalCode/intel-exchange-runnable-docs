@@ -1,0 +1,45 @@
+{
+  "slug": "cftr-api-reference/pirs/add-comment-in-pir",
+  "title": "Add Comment in PIR",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "pirs",
+    "add-comment-in-pir"
+  ],
+  "description": "Add Comment in PIR",
+  "method": "POST",
+  "path": "/v1/comments/pir/{pir_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "<p>Please reopen this PIR</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "mentioned_users_usernames",
+        "value": "[]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "pir_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

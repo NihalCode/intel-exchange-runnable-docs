@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
 import type { AgentLanguage, AgentMode, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
 import {
@@ -124,6 +125,7 @@ export type AgentChatState = {
 const AgentChatContext = createContext<AgentChatState | null>(null);
 
 export function AgentChatProvider({ children }: { children: ReactNode }) {
+  const { productId, searchScope } = useProduct();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [mode, setMode] = useState<AgentMode>("workflow");
@@ -232,6 +234,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
             query: q,
             mode,
             language,
+            productId: searchScope === "all" ? "all" : productId,
             llmApiKey: llmKey.trim() || undefined,
             history: historyForApi(priorMessages),
             existingApp,

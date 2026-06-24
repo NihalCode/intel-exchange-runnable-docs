@@ -1,0 +1,490 @@
+{
+  "slug": "events/create-event",
+  "title": "Create Event",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "events",
+    "create-event"
+  ],
+  "description": "Create an event by passing the app identifier, action identifier, and data through the payload.",
+  "method": "POST",
+  "path": "v1/events/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass the title of the event.",
+        "isRequired": true,
+        "value": "SourceEvent20/01/2022 01:30:14",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "app_identifier",
+        "description": "Pass the source app for the event. ",
+        "isRequired": true,
+        "value": "Test App Identifier",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_identifier",
+        "description": "Pass the event type for the event. ",
+        "isRequired": true,
+        "value": "Test Action Identifier",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "extra_data",
+        "description": "Pass any extra data to be passed with the event.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "data",
+            "description": "Pass the data to be passed with the event.",
+            "isRequired": false,
+            "value": "123",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "description": "Pass the data in key-value pairs to be passed with the event.\n\n\n\n\n\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "data",
+            "description": "Pass the data to be passed with the event.",
+            "isRequired": false,
+            "value": "1234",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693a884cb1b9d3ee2752503b"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "app_identifier",
+          "description": "Returns the source app associated with the event.",
+          "isRequired": false,
+          "value": "CTIX",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "action_identifier",
+          "description": "Returns the event type associated with the event.",
+          "isRequired": false,
+          "value": "CTIX_submission",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "data",
+          "description": "",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "data",
+              "description": "Returns the data passed to the event.\n",
+              "isRequired": false,
+              "value": "1234",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "extra_data",
+          "description": "Returns the extra data passed to the event.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "data",
+              "description": "Returns the values passed as data to the events.",
+              "isRequired": false,
+              "value": "123",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID generated dynamically for the event.",
+          "isRequired": false,
+          "value": "2c7a4166-2fa1-4619-a5fe-41bb3de2e969",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time when the event was created.",
+          "isRequired": false,
+          "value": "2022-01-20T10:06:26.171520Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date and time when the event was last modified.",
+          "isRequired": false,
+          "value": "2022-01-20T10:06:26.171520Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the event.",
+          "isRequired": false,
+          "value": "SourceEvent20/01/2022 01:30:14",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "labels",
+          "description": "Returns the list of labels associated with the event.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "labels_data",
+          "description": "Returns the details of the label associated with the event.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the unique ID of the user who created the tag.",
+          "isRequired": false,
+          "value": "0b5c15ff-8577-435c-9ce0-f3fb1b91b7ab",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by_data",
+          "description": "Returns the details of the user who created the event.\n\n\n\n\n\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the user who created the event.",
+              "isRequired": false,
+              "value": "094b1d3e-b7b3-4542-afd0-7612de3a320f",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the event.",
+              "isRequired": false,
+              "value": "John",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the event.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who created the event.",
+              "isRequired": false,
+              "value": "John Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "processed",
+          "description": "Returns if the event is processed or not.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "execution_error",
+          "description": "Indicates if the event execution error occurred or not.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Returns the source through which the event was triggered.",
+          "isRequired": false,
+          "value": "Openapi",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "readable_id",
+          "description": "Returns the readable ID of the trigger event.",
+          "isRequired": false,
+          "value": "TE8b96aae1-4",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "splitted_columns",
+          "description": "Returns the list of fields that consist of large data. You can use the **Download Event Data** endpoint to download the large data files.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

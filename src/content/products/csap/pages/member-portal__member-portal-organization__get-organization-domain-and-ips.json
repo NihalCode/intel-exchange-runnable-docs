@@ -1,0 +1,140 @@
+{
+  "slug": "member-portal/member-portal-organization/get-organization-domain-and-ips",
+  "title": "Get Organization Domain and IPs",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-organization",
+    "get-organization-domain-and-ips"
+  ],
+  "description": "Returns the domains and IP addresses associated with an organization using its organization ID.",
+  "method": "GET",
+  "path": "csap/v1/organization/{organization_id}/ip_domains/",
+  "request": {
+    "query": [
+      {
+        "name": "type",
+        "description": "Pass the type of organization data you want to retrieve. ",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "ips"
+            },
+            {
+              "value": "domain"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "organization_id",
+        "description": "Pass the unique ID of the organization to retrieve associated domains and IP addresses. You can retrieve this ID using the **Get Organizations** endpoint.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d42116b66e3318bb0d2b75"
+  },
+  "responses": [
+    {
+      "statusCode": "Domains",
+      "description": "The following are the response parameters when the type query parameter is set to domain.",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "values",
+          "description": "Returns the domains associated with the organization.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the domain associated with the organization.",
+              "isRequired": false,
+              "value": "www.cyware.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "statusCode": "IPs",
+      "description": "The following are the response parameters when the type query parameter is set to ips.",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "values",
+          "description": "Returns the IPs associated with the organization.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the IP associated with the organization.",
+              "isRequired": false,
+              "value": "192.158.1.38",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

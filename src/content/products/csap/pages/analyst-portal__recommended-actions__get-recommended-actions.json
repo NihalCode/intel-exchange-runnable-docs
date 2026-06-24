@@ -1,0 +1,279 @@
+{
+  "slug": "analyst-portal/recommended-actions/get-recommended-actions",
+  "title": "Get Recommended Actions",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "recommended-actions",
+    "get-recommended-actions"
+  ],
+  "description": "Returns the recommended actions and their details for a specific alert using its alert ID.",
+  "method": "GET",
+  "path": "csap/v1/recommended_action/",
+  "request": {
+    "query": [
+      {
+        "name": "is_recommended_action",
+        "description": "Pass true to retrieve only recommended actions associated with the alert.",
+        "isRequired": false,
+        "value": "true",
+        "valueType": "boolean",
+        "options": {
+          "defaultValue": "true",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "alert_id",
+        "description": "Pass the alert ID to retrieve associated recommended actions.",
+        "isRequired": true,
+        "value": "5b8d53c7",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number for the response. Default value is 1, which retrieves the latest records.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records in a page. ",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "682c3da93eeb412f4c7ce8a1"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the count of recommended actions available for the alert.",
+          "isRequired": false,
+          "value": 2,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "recommended_actions",
+          "description": "Returns an array of recommended actions and their associated details.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "id",
+                  "description": "Returns the unique identifier for the recommended action.",
+                  "isRequired": false,
+                  "value": "53273d83-498c-4695-b086-72e665fbecc7",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the recommended action.",
+                  "isRequired": false,
+                  "value": "Verify Suspicious Email for Phishing Indicators",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the brief description of the action to be performed.",
+                  "isRequired": false,
+                  "value": "Analyze the reported phishing email, check for suspicious links, and report any potential threats.",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "assigned_groups",
+                  "description": "Returns the list of recipient group IDs to whom the action is assigned.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "Returns the unique ID of the recipient group to whom the action is assigned.",
+                      "isRequired": false,
+                      "value": "cb096b79",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "readable_id",
+                  "description": "Returns the readable identifier of the action.",
+                  "isRequired": false,
+                  "value": "ACT256",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "recipient_type",
+                  "description": "Returns the recipient type for the recommended action, determining the default group of users who will receive it.",
+                  "isRequired": false,
+                  "value": "BY_RECIPIENT_GROUP",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_recommended_action",
+                  "description": "Returns true if this is a recommended action.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "object_id",
+                  "description": "Returns the unique ID of the alert associated with the recommended action.",
+                  "isRequired": false,
+                  "value": "5b8d53c7",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

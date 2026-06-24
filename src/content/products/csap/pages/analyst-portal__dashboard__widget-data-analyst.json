@@ -1,0 +1,222 @@
+{
+  "slug": "analyst-portal/dashboard/widget-data-analyst",
+  "title": "Get Widget Data",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "dashboard",
+    "widget-data-analyst"
+  ],
+  "description": "Returns data corresponding to a widget using its `widget_id`.",
+  "method": "GET",
+  "path": "csap/v1/widget_library/data/",
+  "request": {
+    "query": [
+      {
+        "name": "widget_id",
+        "description": "Pass the unique ID of the widget. You can retrieve the `widget_id` using the **Get Widgets** endpoint. <br> Example, *1a9ea92b-39bc-49de-a33d-caf06e2c6709*.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67c5840aa00ea28362e60da1"
+  },
+  "responses": [
+    {
+      "statusCode": "Hero Type",
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "value",
+          "description": "Returns the aggregated value of the widget.",
+          "isRequired": false,
+          "value": "31",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "value_changed",
+          "description": "Returns the percentage difference in value with last cycle.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "indicator",
+          "description": "Returns if the value has increased(+) or decreased(-) in comparison to last cycle widget data.",
+          "isRequired": false,
+          "value": "+",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "start",
+          "description": "Returns the epoch start time for last cycle.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "end",
+          "description": "Returns the epoch end time for last cycle.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "statusCode": "Chart Type",
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Returns the x-axis details of the widget.",
+              "isRequired": false,
+              "value": "Sample Label 1",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Returns the y-axis details of the widget.",
+              "isRequired": false,
+              "value": "6",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "1",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "",
+              "isRequired": false,
+              "value": "Sample Label 2",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

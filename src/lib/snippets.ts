@@ -1,4 +1,6 @@
 import { DISPLAY_BASE } from "./constants";
+import { authKeyValues, baseUrlForProduct } from "./products/auth";
+import { isPostmanTemplatePath, normalizePostmanEndpointPath } from "./postman-path";
 import { applyPathParams } from "./resolve-request";
 import {
   endpointUsesMultipart,
@@ -11,13 +13,6 @@ import type {
   ParamField,
   RunnableRequest,
 } from "./types";
-
-// Auth query params required by every Intel Exchange Open API request.
-const AUTH_QUERY: KeyValue[] = [
-  { name: "AccessID", value: "<your access id>" },
-  { name: "Signature", value: "<generated signature>" },
-  { name: "Expires", value: "<unix expiry>" },
-];
 
 function kvString(value: unknown): string {
   if (value === undefined || value === null) return "";
@@ -116,18 +111,43 @@ function fieldsToKeyValues(fields: ParamField[] | undefined): KeyValue[] {
     .map((f) => ({ name: f.name, value: kvString(f.value) }));
 }
 
-export function buildRunnableRequest(page: EndpointPage): RunnableRequest {
-  const query = [...fieldsToKeyValues(page.request?.query), ...AUTH_QUERY];
-  const headers = fieldsToKeyValues(page.request?.header);
+export function buildRunnableRequest(page: EndpointPage, productId = "ctix"): RunnableRequest {
+  const { query: authQuery, headers: authHeaders } = authKeyValues(productId);
+
+  let path = page.path;
+  let extraQuery: KeyValue[] = [];
+  let extraPathParams: KeyValue[] = [];
+
+  if (isPostmanTemplatePath(path)) {
+    const normalized = normalizePostmanEndpointPath(path);
+    path = normalized.path;
+    extraQuery = normalized.embeddedQuery;
+    extraPathParams = normalized.pathParamNames.map((name) => ({
+      name,
+      value: "",
+    }));
+  }
+
+  const query = [
+    ...fieldsToKeyValues(page.request?.query),
+    ...extraQuery.filter((q) => !authQuery.some((a) => a.name === q.name)),
+    ...authQuery,
+  ];
+  const headers = [...fieldsToKeyValues(page.request?.header), ...authHeaders];
   const contentType = page.request?.contentType || page.contentType || "application/json";
   const multipart = endpointUsesMultipart(page);
-  const pathParams = fieldsToKeyValues(page.request?.path);
+  const pathParams = [
+    ...fieldsToKeyValues(page.request?.path),
+    ...extraPathParams.filter(
+      (p) => !fieldsToKeyValues(page.request?.path).some((x) => x.name === p.name)
+    ),
+  ];
 
   if (multipart) {
     const formFields = formFieldsFromBody(page.request?.body);
     return {
       method: page.method,
-      path: normalizePath(page.path),
+      path: normalizePath(path),
       pathParams: pathParams.length > 0 ? pathParams : undefined,
       query,
       headers: headers.filter((h) => h.name.toLowerCase() !== "content-type"),
@@ -146,7 +166,7 @@ export function buildRunnableRequest(page: EndpointPage): RunnableRequest {
 
   return {
     method: page.method,
-    path: normalizePath(page.path),
+    path: normalizePath(path),
     pathParams: pathParams.length > 0 ? pathParams : undefined,
     query,
     headers,
@@ -300,14 +320,15 @@ function responseExample(page: EndpointPage): string | null {
 }
 
 /** Build the full set of code snippets shown for an endpoint page. */
-export function buildEndpointSnippets(page: EndpointPage): CodeSnippet[] {
-  const req = buildRunnableRequest(page);
+export function buildEndpointSnippets(page: EndpointPage, productId = "ctix"): CodeSnippet[] {
+  const baseUrl = baseUrlForProduct(productId);
+  const req = buildRunnableRequest(page, productId);
   const snippets: CodeSnippet[] = [];
 
   snippets.push({
     lang: "bash",
     label: "cURL",
-    code: curlSnippet(req),
+    code: curlSnippet(req, baseUrl),
     runKind: "http",
     request: req,
   });
@@ -315,14 +336,14 @@ export function buildEndpointSnippets(page: EndpointPage): CodeSnippet[] {
   snippets.push({
     lang: "javascript",
     label: "JavaScript",
-    code: jsSnippet(req),
+    code: jsSnippet(req, baseUrl),
     runKind: "javascript",
   });
 
   snippets.push({
     lang: "python",
     label: "Python",
-    code: pySnippet(req),
+    code: pySnippet(req, baseUrl),
     runKind: "python",
   });
 

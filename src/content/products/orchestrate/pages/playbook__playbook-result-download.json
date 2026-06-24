@@ -1,0 +1,75 @@
+{
+  "slug": "playbook/playbook-result-download",
+  "title": "Download Playbook Result",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "playbook-result-download"
+  ],
+  "description": "Download the input data of the playbook. This endpoint is used to download large files.",
+  "method": "GET",
+  "path": "v1/playbook/playbook-result/export/{playbook_result_unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "field",
+        "description": "Pass the column name for which the file will be generated. You can retrieve the column name in the `splitted_columns` field of the **Get Playbook Result** endpoint.",
+        "isRequired": true,
+        "value": "initial_params",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "playbook_result_unique_id",
+        "description": "Pass the unique ID of the `playbook_result` to download the result. You can retrieve the unique ID of a `playbook_result` using the **Get Playbook Run Logs** endpoint.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6995e0fc736f1b59e5eaba13"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "file_url",
+          "description": "Returns the URL to download the file.",
+          "isRequired": false,
+          "value": "https://server.com/csolbucket/qa/playbookresult/run_log-input_values-f593abcd.json?response-content-disposition=attachment",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

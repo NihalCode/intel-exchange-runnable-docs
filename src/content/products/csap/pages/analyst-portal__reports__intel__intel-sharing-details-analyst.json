@@ -1,0 +1,545 @@
+{
+  "slug": "analyst-portal/reports/intel/intel-sharing-details-analyst",
+  "title": "Get Intel Sharing Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "reports",
+    "intel",
+    "intel-sharing-details-analyst"
+  ],
+  "description": "Returns details of intel that have been published as alerts and the external parties associated with it.",
+  "method": "GET",
+  "path": "csap/v1/intel_sharing_report/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the number of pages for the response. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records in a page. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "start",
+        "description": "Pass the start time for when the intel was reported by the member in epoch format. For example, *1648461756000*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "end",
+        "description": "Pass the end time for when the intel was reported by the member in epoch format. For example, *1648461756876*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41cd8ceb3f8dc913fb1c4"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the total number of intel.",
+          "isRequired": false,
+          "value": "2",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the details of the intel published as an alert.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of intel.",
+                  "isRequired": false,
+                  "value": "Sample Intel Title",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "attributes",
+                  "description": "Returns the details of external parties the intel alert is associated with.\n",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "main_label",
+                          "description": "Returns the name of the external party.",
+                          "isRequired": false,
+                          "value": "Sample attribute",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "Returns the unique ID associated with the external party.",
+                          "isRequired": false,
+                          "value": "6ff20832-f10a-4162-815b-c06de40f0925",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "options",
+                          "description": "Returns the details of the entities that are part of the external party.\n",
+                          "isRequired": false,
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "0",
+                              "description": "",
+                              "isRequired": false,
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "option_label",
+                                  "description": "Returns the name of the entity associated with the external party.",
+                                  "isRequired": false,
+                                  "value": "Sample attribute option",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "id",
+                                  "description": "Returns the ID of the entity.",
+                                  "isRequired": false,
+                                  "value": "04cfe693-ea99-41ec-8d89-cad977f23038",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "1",
+                              "description": "",
+                              "isRequired": false,
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "option_label",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "Sample attribute option",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "id",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "ad9c0aa8-c98b-4d4a-9a09-5b46581fe47e",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "reported_on",
+                  "description": "Returns the epoch timestamp of when the intel was submitted by the member.",
+                  "isRequired": false,
+                  "value": "1669112000000",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "Sample Intel Title",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "attributes",
+                  "description": "",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "main_label",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Sample attribute",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "id",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "6ff20832-f10a-4162-815b-c06de40f0925",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "options",
+                          "description": "",
+                          "isRequired": false,
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "0",
+                              "description": "",
+                              "isRequired": false,
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "option_label",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "Sample attribute option",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "id",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "04cfe693-ea99-41ec-8d89-cad977f23038",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            },
+                            {
+                              "name": "1",
+                              "description": "",
+                              "isRequired": false,
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "option_label",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "Sample attribute option",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "id",
+                                  "description": "",
+                                  "isRequired": false,
+                                  "value": "1e29f37b-219a-4298-b353-d134c5740211",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "reported_on",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "1669112725000",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

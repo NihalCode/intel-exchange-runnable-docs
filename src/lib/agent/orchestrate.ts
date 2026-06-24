@@ -1,14 +1,16 @@
 import "server-only";
 
-import { getManifest, getPage } from "../content";
+import { getManifest, getPage, getProductManifest } from "../content";
 import { DISPLAY_BASE } from "../constants";
+import { DEFAULT_PRODUCT_ID, getProductOrThrow, inferProductFromQuery } from "../products/registry";
+import { loadCombinedAgentIndex } from "../products/search";
+import { loadAgentIndex } from "./load-index";
 import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
 import { diffAppFiles, slugifyProjectName } from "./app-diff";
 import { applyRuleBasedEdits } from "./app-edit-rules";
 import { attachDiff, editAppWithLlm } from "./edit-app";
 import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
-import { loadAgentIndex } from "./load-index";
 import { embedQuery, planWithLlm } from "./llm";
 import { detectAgentMode, resolveAgentRun } from "./mode";
 import {
@@ -17,7 +19,7 @@ import {
   enforceTagIndicatorPlan,
   enforceTagManagementPlan,
   enforceListIndicatorsPlan,
-  enforcePingPlan,
+  enforceConnectivityPlan,
   enforceReportDownloadPlan,
   isReportDownloadQuery,
   isPingQuery,
@@ -40,27 +42,46 @@ import type {
   AgentResponse,
   AgentStepResult,
   ExistingAppContext,
+  ScoredChunk,
 } from "./types";
 import type { EndpointPage } from "../types";
 import { validatePlan } from "./validate";
 
-function endpointSlugSet(): Set<string> {
-  return new Set(
-    getManifest().pages.filter((p) => p.kind === "endpoint").map((p) => p.slug)
-  );
+async function endpointSlugSetForProduct(productId: string): Promise<Set<string>> {
+  const manifest = (await getProductManifest(productId)) ?? getManifest();
+  return new Set(manifest.pages.filter((p) => p.kind === "endpoint").map((p) => p.slug));
+}
+
+function filterByProduct(scored: ScoredChunk[], productId: string): ScoredChunk[] {
+  if (productId === "all") return scored;
+  return scored.filter((c) => (c.productId ?? "ctix") === productId);
+}
+
+function resolveProductScope(req: AgentRequest, query: string): string {
+  if (req.productId && req.productId !== "all") return req.productId;
+  const inferred = inferProductFromQuery(query);
+  if (inferred && inferred !== "all") return inferred;
+  return req.productId === "all" ? "all" : DEFAULT_PRODUCT_ID;
 }
 
 async function buildStepResults(
   validated: ReturnType<typeof validatePlan>["steps"],
   pages: Map<string, EndpointPage>,
   language: AgentRequest["language"],
-  baseUrl: string
+  baseUrl: string,
+  productId: string
 ): Promise<AgentStepResult[]> {
   const stepResults: AgentStepResult[] = [];
   for (const step of validated) {
     const page = pages.get(step.slug);
     if (!page) continue;
-    const { code, request } = generateStepCode(page, step.params, language ?? "python", baseUrl);
+    const { code, request } = generateStepCode(
+      page,
+      step.params,
+      language ?? "python",
+      baseUrl,
+      productId
+    );
     stepResults.push({
       ...step,
       code,
@@ -200,9 +221,44 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     }
   }
 
-  const index = await loadAgentIndex();
+  const productScope = resolveProductScope(req, query);
+  const activeProductId = productScope === "all" ? DEFAULT_PRODUCT_ID : productScope;
+
+  if (
+    productScope === "all" &&
+    !req.productId &&
+    !inferProductFromQuery(query) &&
+    /\b(create|update|delete|get|list|how do i)\b/i.test(query)
+  ) {
+    return {
+      mode,
+      workflow: "Which Cyware product is this for?",
+      confidence: 0,
+      fallback: true,
+      citations: [],
+      steps: [],
+      questions: [
+        "CTIX / Intel Exchange — threat intelligence and STIX",
+        "CSAP — situational awareness and collaboration",
+        "Cyware Orchestrate — playbooks and integrations",
+        "CFTR — case management and incidents",
+        'Or say "search all Cyware APIs" for cross-product search.',
+      ],
+    };
+  }
+
+  let index;
+  try {
+    index = await loadCombinedAgentIndex();
+    if (index.chunkCount === 0) index = await loadAgentIndex();
+  } catch {
+    index = await loadAgentIndex();
+  }
+
   const language = req.language ?? "python";
-  const baseUrl = getManifest().defaultBaseUrl || DISPLAY_BASE;
+  const productManifest = (await getProductManifest(activeProductId)) ?? getManifest();
+  const baseUrl = productManifest.defaultBaseUrl || DISPLAY_BASE;
+  const productLabel = getProductOrThrow(activeProductId).displayLabel;
 
   // Combine recent user turns so follow-ups like "add pagination" still retrieve relevant docs
   const baseRetrievalQuery = req.history?.length
@@ -216,7 +272,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const retrievalQuery = expandQueryForRetrieval(baseRetrievalQuery);
 
   const topK = mode === "app" ? 20 : 14;
-  let scored = retrieveLexical(retrievalQuery, index, topK);
+  let scored = filterByProduct(retrieveLexical(retrievalQuery, index, topK * 2), productScope).slice(
+    0,
+    topK
+  );
 
   // Preferred path: embed query, then retrieve from Pinecone. Falls back to the
   // local hybrid/lexical index whenever creds are missing or any call fails, so
@@ -228,14 +287,20 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       let usedPinecone = false;
       if (pineconeCfg) {
         const matches = await queryPinecone(embedding, topK, pineconeCfg);
-        const fromPinecone = scoredChunksByIds(matches, index);
+        const fromPinecone = filterByProduct(
+          scoredChunksByIds(matches, index),
+          productScope
+        ).slice(0, topK);
         if (fromPinecone.length > 0) {
           scored = fromPinecone;
           usedPinecone = true;
         }
       }
       if (!usedPinecone && index.hasEmbeddings) {
-        scored = retrieveWithEmbedding(retrievalQuery, index, embedding, topK);
+        scored = filterByProduct(
+          retrieveWithEmbedding(retrievalQuery, index, embedding, topK * 2),
+          productScope
+        ).slice(0, topK);
       }
     } catch {
       /* lexical only */
@@ -259,47 +324,47 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   if (mode === "workflow") {
-    // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
-    // rule-based enforcers fire for non-technical phrasing.
-    const intentQuery = canonicalizeIntent(query);
-    // Connectivity questions are unambiguous — route to Ping first, ignoring
-    // chat-history contamination that can otherwise mislead the LLM planner.
-    plan = enforcePingPlan(plan, query, scored);
-    if (!isPingQuery(query)) {
+    // Connectivity questions are unambiguous — route to the product test endpoint first.
+    plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
+
+    if (activeProductId === "ctix" && !isPingQuery(query)) {
+      // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
+      // rule-based enforcers fire for non-technical phrasing.
+      const intentQuery = canonicalizeIntent(query);
       plan = enforceReportDownloadPlan(plan, intentQuery, scored);
       if (!isReportDownloadQuery(intentQuery)) {
         plan = enforceTagManagementPlan(plan, intentQuery, scored);
         plan = enforceTagIndicatorPlan(plan, intentQuery, scored);
         plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
       }
-    }
 
-    // Non-technical nudge: if the prompt is too vague to act on, ask a simple
-    // question in plain English instead of guessing at an endpoint.
-    if (isVagueQuery(query) && plan.steps.length === 0) {
-      plan = {
-        ...plan,
-        questions: plan.questions ?? [
-          "What would you like to do — view, create, update, or delete something?",
-          "Which item is this about (for example: tags, indicators, threat data, or feeds)?",
-        ],
-      };
+      // Non-technical nudge: if the prompt is too vague to act on, ask a simple
+      // question in plain English instead of guessing at an endpoint.
+      if (isVagueQuery(query) && plan.steps.length === 0) {
+        plan = {
+          ...plan,
+          questions: plan.questions ?? [
+            "What would you like to do — view, create, update, or delete something?",
+            "Which item is this about (for example: tags, indicators, threat data, or feeds)?",
+          ],
+        };
+      }
     }
   }
 
-  const endpointSlugs = endpointSlugSet();
+  const endpointSlugs = await endpointSlugSetForProduct(activeProductId);
   const pages = new Map<string, EndpointPage>();
 
   for (const step of plan.steps) {
     if (pages.has(step.slug)) continue;
-    const page = await getPage(step.slug);
+    const page = await getPage(activeProductId, step.slug);
     if (page?.kind === "endpoint") {
       pages.set(step.slug, page);
     }
   }
 
   const { steps: validated, dropped } = validatePlan(plan, pages, endpointSlugs);
-  let stepResults = await buildStepResults(validated, pages, language, baseUrl);
+  let stepResults = await buildStepResults(validated, pages, language, baseUrl, activeProductId);
   if (mode === "workflow" && stepResults.length > 0) {
     stepResults = applyScriptPlanToSteps(stepResults, query);
   }
@@ -309,13 +374,16 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     stepResults.length === 0 ||
     (dropped.length > 0 && stepResults.length < plan.steps.length);
 
-  const titleBySlug = new Map(getManifest().pages.map((p) => [p.slug, p.title]));
+  const titleBySlug = new Map(productManifest.pages.map((p) => [p.slug, p.title]));
 
-  const tagName = extractTagNameFromQuery(canonicalizeIntent(query));
+  const tagName = activeProductId === "ctix" ? extractTagNameFromQuery(canonicalizeIntent(query)) : undefined;
+
+  const workflowPrefix =
+    productScope === "all" ? "[All products] " : `[${productLabel}] `;
 
   const response: AgentResponse = {
     mode,
-    workflow: plan.workflow,
+    workflow: plan.workflow.startsWith("[") ? plan.workflow : `${workflowPrefix}${plan.workflow}`,
     confidence: plan.confidence ?? confidence,
     fallback,
     citations: plan.citations.map((c) => ({
@@ -327,7 +395,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     questions: plan.questions,
     retrieval: scored.slice(0, 5).map((c) => ({
       slug: c.slug,
-      title: c.title,
+      title: `[${c.productId ?? activeProductId}] ${c.title}`,
       score: Number(c.score.toFixed(3)),
     })),
   };
@@ -341,7 +409,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     response.scripts = buildWorkflowScripts(
       stepResults,
       baseUrl,
-      plan.appTitle ?? appTitleFromQuery(query)
+      plan.appTitle ?? appTitleFromQuery(query),
+      ["python", "javascript"],
+      activeProductId
     );
   }
 

@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "build:index": "node scripts/build-agent-index.mjs",
     "pinecone:upsert": "node scripts/pinecone-upsert.mjs",
-    "ingest": "node scripts/ingest.mjs"
+    "ingest": "node scripts/ingest.mjs",
+    "ingest:all": "node scripts/ingest.mjs --product=ctix && node scripts/ingest.mjs --product=csap && node scripts/ingest.mjs --product=orchestrate && node scripts/ingest.mjs --product=cftr"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",

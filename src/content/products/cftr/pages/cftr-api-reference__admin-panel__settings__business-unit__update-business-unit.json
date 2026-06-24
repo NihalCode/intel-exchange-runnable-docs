@@ -1,0 +1,53 @@
+{
+  "slug": "cftr-api-reference/admin-panel/settings/business-unit/update-business-unit",
+  "title": "Update Business Unit",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "admin-panel",
+    "settings",
+    "business-unit",
+    "update-business-unit"
+  ],
+  "description": "Update Business Unit",
+  "method": "PUT",
+  "path": "/v1/utils/business-unit/{business}-unit_unique_id/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      },
+      {
+        "name": "Authorization",
+        "isRequired": true,
+        "value": "{{auth_key}}",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "Updated Description",
+        "valueType": "string"
+      },
+      {
+        "name": "title",
+        "value": "Updated Business Unit",
+        "valueType": "string"
+      }
+    ],
+    "path": [
+      {
+        "name": "business",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

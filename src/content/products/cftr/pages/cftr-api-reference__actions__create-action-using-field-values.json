@@ -1,0 +1,100 @@
+{
+  "slug": "cftr-api-reference/actions/create-action-using-field-values",
+  "title": "Create Action Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "actions",
+    "create-action-using-field-values"
+  ],
+  "description": "Create Action Using Field Values",
+  "method": "POST",
+  "path": "/v1/action/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "case_description",
+        "value": "IP to be blocked",
+        "valueType": "string"
+      },
+      {
+        "name": "exception_details",
+        "value": "Internal IP and subnet to be excluded",
+        "valueType": "string"
+      },
+      {
+        "name": "itsm_req_ticket_no",
+        "value": "ITS638",
+        "valueType": "string"
+      },
+      {
+        "name": "servicenow_request_ticket_id",
+        "value": "SNOW8989",
+        "valueType": "string"
+      },
+      {
+        "name": "return_to_soc_reason",
+        "value": "More IPs to be included",
+        "valueType": "string"
+      },
+      {
+        "name": "title",
+        "value": "Block IPs on Firewall",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "Malicious IPs from Logs needs to be blocked on firewall",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_to",
+        "value": "pooja.gunali@cyware.com",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_group",
+        "value": "Admin",
+        "valueType": "string"
+      },
+      {
+        "name": "status",
+        "value": "open",
+        "valueType": "string"
+      },
+      {
+        "name": "priority",
+        "value": "High",
+        "valueType": "string"
+      },
+      {
+        "name": "type",
+        "value": "Mitigation",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Auto\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

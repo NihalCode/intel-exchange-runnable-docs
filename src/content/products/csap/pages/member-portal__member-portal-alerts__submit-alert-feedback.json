@@ -1,0 +1,160 @@
+{
+  "slug": "member-portal/member-portal-alerts/submit-alert-feedback",
+  "title": "Submit Alert Feedback",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-alerts",
+    "submit-alert-feedback"
+  ],
+  "description": "Submit feedback for an alert by indicating like or dislike, rating the content and relevancy, as well as adding a comment.\n\n\n\n> [!NOTE]\n> For a successful submission:\n> *   `alert_ID` and `like` parameters are mandatory.\n> *   If you include `relevancy_rating`, you must also include `content_rating`, and vice versa.",
+  "method": "POST",
+  "path": "csap/v1/alert_feedback/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "like",
+        "description": "Pass the value denoting your preference for the alert. Pass 0 for clearing previous feedback, 1 for like, and 2 for dislike.",
+        "isRequired": true,
+        "value": "1",
+        "valueType": "number",
+        "options": {
+          "enumValue": [
+            {
+              "value": "0",
+              "description": ""
+            },
+            {
+              "value": "1",
+              "description": ""
+            },
+            {
+              "value": "2",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "alert_id",
+        "description": "Pass the 8-digit unique alert ID for which you want to submit feedback. You can retrieve this using the **Get Alerts** endpoint.",
+        "isRequired": true,
+        "value": "9bd49110",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "comment",
+        "description": "Pass the comment for the alert.",
+        "isRequired": false,
+        "value": "This is informative!",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "relevancy_rating",
+        "description": "Pass your rating for the alert's relevancy using any value from 1 to 5, where 1 is the least relevant and 5 is the most relevant. If you pass this parameter, you must also pass `content_rating` in the request.",
+        "isRequired": false,
+        "value": "4",
+        "valueType": "integer",
+        "options": {
+          "minLength": 1,
+          "maxLength": 5,
+          "pattern": "",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "content_rating",
+        "description": "Pass your rating for the alert's content using any value from 1 to 5. If you pass this parameter, you must also pass `relevancy_rating` in the request.",
+        "isRequired": false,
+        "value": "5",
+        "valueType": "integer",
+        "options": {
+          "minLength": 1,
+          "maxLength": 5,
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "6964cc980366503887f17b48"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns the status indicating whether the feedback was submitted successfully.",
+          "isRequired": false,
+          "value": "success",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "card_updated",
+          "description": "Returns the 8-digit unique alert ID for which feedback is submitted.",
+          "isRequired": false,
+          "value": "9bd49110",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

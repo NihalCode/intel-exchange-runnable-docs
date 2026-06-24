@@ -1,0 +1,739 @@
+{
+  "slug": "integrations/get-app-actions",
+  "title": "Get App Actions",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "integrations",
+    "get-app-actions"
+  ],
+  "description": "Returns a list of all available actions from all apps. To retrieve actions of a specific app, pass the Unique ID of the app.",
+  "method": "GET",
+  "path": "v1/integrations/app-actions/",
+  "request": {
+    "query": [
+      {
+        "name": "app_unique_id",
+        "description": "Pass the unique ID of the app to retrieve the list of actions. Example: *f8f6af0e-35c8-48e3-8cda-d0fe61476441*. You can retrieve the unique ID of an app using the **Get Apps** endpoint. ",
+        "isRequired": false,
+        "value": "{app_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the app actions list.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of items to view per page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "string",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d95932b66e3318bb18df19"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "results",
+          "description": "Returns details of app actions. Each object provides the details of one app action.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of the app action.",
+                  "isRequired": false,
+                  "value": " Get Bucket Lifecycle",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the action.",
+                  "isRequired": false,
+                  "value": "This action retrieves the lifecycle configuration information of a bucket.",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "action_identifier",
+                  "description": "Returns the unique identifier of the action.",
+                  "isRequired": false,
+                  "value": "aws_s3_get_bucket_lifecycle",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_identifier",
+                  "description": "Returns the unique identifier of the app to which the action belongs.",
+                  "isRequired": false,
+                  "value": "aws_s3",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "return_values",
+                  "description": "Returns the details of the response parameters after executing the action.\n",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "Returns the response parameters of the action you will receive after action execution.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "title",
+                          "description": "Returns the title of the response parameter.",
+                          "isRequired": false,
+                          "value": "Rules",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "Returns the description of the response parameter.",
+                          "isRequired": false,
+                          "value": "This path is used to retrieve Rules from the action response.",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "data_source",
+                          "description": "Returns the source of the response parameter.",
+                          "isRequired": false,
+                          "value": "Rules",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "accepted_params",
+                  "description": "Returns the details of the request parameters\n",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "title",
+                          "description": "Returns the title of the request parameter required to perform the action.",
+                          "isRequired": false,
+                          "value": "Bucket Name",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_key",
+                          "description": "Returns the field key of the request parameter to perform the action.",
+                          "isRequired": false,
+                          "value": "bucket_name",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_type",
+                          "description": "Returns the field type of the request parameter to perform the action.",
+                          "isRequired": false,
+                          "value": "text",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "Returns the description of the request parameter to perform the action.",
+                          "isRequired": false,
+                          "value": "Enter name of bucket.(E.g.\"testingbucket\")",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_required",
+                          "description": "Returns if the request parameter is mandatory to perform the action.",
+                          "isRequired": false,
+                          "value": true,
+                          "valueType": "boolean",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "options",
+                          "description": "Returns the default values configured for the parameter.\n\n",
+                          "isRequired": false,
+                          "valueType": "array",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "option_type",
+                          "description": "Returns the type of the default value configured.",
+                          "isRequired": false,
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the action.",
+                  "isRequired": false,
+                  "value": "ecd9c2d4-2443-44d0-ba9c-6f927e02fdcc",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_unique_id",
+                  "description": "Returns the unique ID of the app associated with the action.",
+                  "isRequired": false,
+                  "value": "f8f6af0e-35c8-48e3-8cda-d0fe61476441",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the unique ID of the user who created the action.",
+                  "isRequired": false,
+                  "value": "49c5781f-ed52-4e13-ad25-9deffdfba7a8",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_by",
+                  "description": "Returns the unique ID of the user who last modified the action.",
+                  "isRequired": false,
+                  "value": "49c5781f-ed52-4e13-ad25-9deffdfba7a8",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_at",
+                  "description": "Returns the date and time when the action was created.",
+                  "isRequired": false,
+                  "value": "2022-01-18T11:32:10.091Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_at",
+                  "description": "Returns the date and time when the action was last modified.",
+                  "isRequired": false,
+                  "value": "2022-01-18T11:32:10.091Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_slug",
+                  "description": "Returns the resource identifier of the associated app.",
+                  "isRequired": false,
+                  "value": "aws_s3_1_1_0",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "connector_version",
+                  "description": "Returns the app version.",
+                  "isRequired": false,
+                  "value": "1.1.0",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_title",
+                  "description": "Returns the title of the app.",
+                  "isRequired": false,
+                  "value": "AWS S3",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "system_app",
+                  "description": "Returns true if the app is a Cyware app or false if the app is a custom app.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by_data",
+                  "description": "Details of the user who created the action.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "unique_id",
+                      "description": "Returns the unique ID of the user who created the action.",
+                      "isRequired": false,
+                      "value": "f7caf369-bf63-44a9-a8f9-b9f7605f4916",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the user who created the action.",
+                      "isRequired": false,
+                      "value": "Bob",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the user who created the action.",
+                      "isRequired": false,
+                      "value": "David",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "full_name",
+                      "description": "Returns the full name of the user who created the action.",
+                      "isRequired": false,
+                      "value": "Bob David",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "modified_by_data",
+                  "description": "Returns the details of the user who modified the action.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "unique_id",
+                      "description": "Returns the unique ID of the user who modified the action.",
+                      "isRequired": false,
+                      "value": "f7caf369-bf63-44a9-a8f9-b9f7605f4916",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the user who modified the action.",
+                      "isRequired": false,
+                      "value": "Bob",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "last_name",
+                      "description": "Returns the last name of the user who modified the action.",
+                      "isRequired": false,
+                      "value": "David",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "full_name",
+                      "description": "Returns the full name of the user who modified the action.",
+                      "isRequired": false,
+                      "value": "Bob David",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "count",
+          "description": "Returns the number of actions in the app.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "link",
+          "description": "Returns the link to the previous and next page",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "next",
+              "description": "Returns the API endpoint to the previous page.",
+              "isRequired": false,
+              "value": "/integrations/app-action/?page=2&page_size=10&AccessID=75c235d2-c096-43ff-817b-2e137e2cdd4c&Signature=bhCSACuhvtudS55QJCULNuJFkJA=&Expires=1642567435",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "previous",
+              "description": "Returns the API endpoint to the next page.",
+              "isRequired": false,
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

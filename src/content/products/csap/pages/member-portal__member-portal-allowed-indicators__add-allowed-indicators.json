@@ -1,0 +1,223 @@
+{
+  "slug": "member-portal/member-portal-allowed-indicators/add-allowed-indicators",
+  "title": "Add Allowed Indicators",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-allowed-indicators",
+    "add-allowed-indicators"
+  ],
+  "description": "Add indicators to the list of allowed indicators for your organization.\n\n\n\n> [!NOTE]\n> The RESPONSE PARAMETERS returns indicators organized by category.\n> *   If an indicator is already in the allowed list, it appears under `duplicate_indicators`.\n> *   If an indicator was previously added to the allowed list but later marked as inactive, it will be retrieved under `blocked_indicators`.",
+  "method": "POST",
+  "path": "csap/v1/allowed_indicators/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "threat_indicators",
+        "description": "Pass the indicators to be added to the allowed list. You can enter multiple indicators as comma separated values. Example: *exampledomain.com, 1.1.1.1*",
+        "isRequired": false,
+        "value": "exampledomain.com, 1.1.1.1",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d42160b66e3318bb0d2f16"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "sha256",
+          "description": "Returns the SHA-256 value added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "domain",
+          "description": "Returns the domain added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the domain value added to the allow list.",
+              "isRequired": false,
+              "value": "exampledomain.com",
+              "valueType": "String",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "sha1",
+          "description": "Returns the SHA-1 value added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "url",
+          "description": "Returns the URL added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ip",
+          "description": "Returns the IP address added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the IP address value added to the allow list.",
+              "isRequired": false,
+              "value": "1.1.1.1",
+              "valueType": "String",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "cve",
+          "description": "Returns the CVE added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "md5",
+          "description": "Returns the MD5 value added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ipv4_cidr",
+          "description": "Returns the IPv4 address added to the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "blocked_indicators",
+          "description": "Returns the indicator that was previously added to the allowed list and then marked as inactive by analysts.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "duplicate_indicators",
+          "description": "Returns the indicator that is already present in the allow list.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

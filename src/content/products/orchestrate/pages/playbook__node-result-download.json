@@ -1,0 +1,76 @@
+{
+  "slug": "playbook/node-result-download",
+  "title": "Download Node Result",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "node-result-download"
+  ],
+  "description": "Download the input data or output data of a playbook node. This endpoint is used to download large files.",
+  "method": "GET",
+  "path": "v1/playbook/node-results/export/{node_result_unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "field",
+        "description": "Pass the column name for which the file will be generated. The column name can be found in the `splitted_columns` field of the **Get Node Result Details** endpoint.",
+        "isRequired": false,
+        "value": "57d008c4-xxxx-4880-xxxx-1feb943d06ac,",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "node_result_unique_id",
+        "description": "Pass the unique ID of the node to download the result. You can retrieve the unique ID of a node using the **Get Playbook Run Log Details** endpoint.",
+        "isRequired": false,
+        "value": "{node_result_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4f3cebd08c35d39c879db"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "json",
+      "body": [
+        {
+          "name": "file_url",
+          "description": "Generates a pre-signed URL for downloading the file.",
+          "isRequired": false,
+          "value": "https://server.com/csolbucket/qa/noderesult/58e19205-cd54-abcd-85d4-a28c4489b109/f593a083-01b5-40d3-b2ff-317830358055__start_node_result-input_values-58e1abcd.json?response-content-disposition=attachment",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

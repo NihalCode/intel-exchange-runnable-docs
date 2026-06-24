@@ -1,0 +1,276 @@
+{
+  "slug": "member-portal/member-portal-alerts/get-alerts",
+  "title": "Get Alerts",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-alerts",
+    "get-alerts"
+  ],
+  "description": "Returns a list of alerts from Collaborate.\n\n### Changelog\n\n\nAdded support for the channel_ids query parameter.",
+  "method": "GET",
+  "path": "csap/v1/list_alert/",
+  "request": {
+    "query": [
+      {
+        "name": "status",
+        "description": "Pass the status of the alerts to be retrieved. Published alerts are retrieved based on the published time in epoch format. ",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "PUBLISHED",
+          "enumValue": [
+            {
+              "value": "PUBLSIHED"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "start_time",
+        "description": "Pass the start date of the query in epoch format. This represents the earliest timestamp for any alert in the query.",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "end_time",
+        "description": "Pass the end date of the query in epoch format. This represents the latest timestamp for any alert in the query. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records in a page.",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number for the response. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "category_id",
+        "description": "Pass the category ID to filter alerts. Enter multiple category IDs separated by a comma. You can retrieve `category_id` using the **Get Category List** endpoint. Example, *4bfd32c0,c7012fcc*",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP to filter alerts. Enter multiple TLPs separated by a comma. Example, *GREEN*, *WHITE*.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "title",
+        "description": "Pass the title to filter alerts.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "channel_ids",
+        "description": "Pass the channel IDs to filter alerts. You can enter multiple channel IDs separated by a comma.",
+        "isRequired": false,
+        "value": "85396c98-e5c4-45a7-b831-9675f42b9e11",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69f992484214612d1aadfd62"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the total number of alerts in the Analyst Portal.",
+          "isRequired": false,
+          "value": 67,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "data",
+          "description": "Returns the ID, title, status, and published time of the alert.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "short_id",
+                  "description": "Returns the unique ID of the alert.",
+                  "isRequired": false,
+                  "value": "cf946a91",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the alert title.",
+                  "isRequired": false,
+                  "value": "Ransomware Attacks are on the Rise",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the status of the alert.",
+                  "isRequired": false,
+                  "value": "PUBLISHED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published_time",
+                  "description": "Returns the epoch timestamp of when the alert was published. For alerts in draft status, the value is null.",
+                  "isRequired": false,
+                  "value": 1700848985,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

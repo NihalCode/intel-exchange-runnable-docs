@@ -1,0 +1,80 @@
+{
+  "slug": "persistent-list/get-persistent-storage-object-associated-playbooks-count",
+  "title": "Get Playbooks Count Associated with Persistent List",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "persistent-list",
+    "get-persistent-storage-object-associated-playbooks-count"
+  ],
+  "description": "Returns the playbook count containing the specified persistent list.",
+  "method": "GET",
+  "path": "v1/storage-manager/{persistent_storage_unique_id}/playbook-count/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "persistent_storage_unique_id",
+        "description": "Pass the unique ID of the persistent list. You can retrieve the unique ID of a persistent list using the **Get Persistent Lists** endpoint.",
+        "isRequired": false,
+        "value": "{persistent_storage_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d949f3b66e3318bb18047e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the count of playbooks that include the specified persistent list.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "count",
+              "description": "Returns the total number of playbooks that include the specified persistent list.",
+              "isRequired": false,
+              "value": "1",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

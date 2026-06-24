@@ -1,0 +1,140 @@
+{
+  "slug": "analytics/playbook-avg-execution-time",
+  "title": "Get Playbook Average Execution Time",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analytics",
+    "playbook-avg-execution-time"
+  ],
+  "description": "Returns the average execution time of playbooks for the non-purged data.",
+  "method": "GET",
+  "path": "v1/analytics/data-source/",
+  "request": {
+    "query": [
+      {
+        "name": "categorize_by",
+        "description": "Pass `categorize_by=playbook_avg_execution_time` to retrieve the average playbook execution time.",
+        "isRequired": true,
+        "value": "playbook_avg_execution_time",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__gte",
+        "description": "Pass the start time in Unix time format to retrieve the average execution time of a playbook run.",
+        "isRequired": false,
+        "value": "1640131200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__lte",
+        "description": "Pass the end time in Unix time format to retrieve the average execution time of a playbook run.",
+        "isRequired": false,
+        "value": "1640723199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d9479db66e3318bb17f34e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "data",
+          "description": "Retrieves analytics data on the average playbook execution time for the specified time range.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "label",
+                  "description": "Returns the title of the playbook.",
+                  "isRequired": false,
+                  "value": "Enrich Indicator",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the average execution time of the playbook in seconds.",
+                  "isRequired": false,
+                  "value": "116.68",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

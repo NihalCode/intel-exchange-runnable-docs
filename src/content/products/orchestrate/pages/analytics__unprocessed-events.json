@@ -1,0 +1,140 @@
+{
+  "slug": "analytics/unprocessed-events",
+  "title": "Get Unprocessed Events",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analytics",
+    "unprocessed-events"
+  ],
+  "description": "Returns the number of unprocessed events for the non-purged data.",
+  "method": "GET",
+  "path": "v1/analytics/data-source/",
+  "request": {
+    "query": [
+      {
+        "name": "categorize_by",
+        "description": "Pass `categorize_by=unprocessed_events` to retrieve unprocessed events.",
+        "isRequired": true,
+        "value": "unprocessed_events",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__gte",
+        "description": "Pass the start time in Unix time format to retrieve the unprocessed events for a specified duration.",
+        "isRequired": false,
+        "value": "1630131200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__lte",
+        "description": "Pass the end time in Unix time format to retrieve the unprocessed events for a specified duration.",
+        "isRequired": false,
+        "value": "1643723199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d94807b66e3318bb17f850"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "data",
+          "description": "Returns analytics data on the unprocessed events within the specified time range.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "label",
+              "description": "Returns the graph label **Percentage of Unprocessed Events**.",
+              "isRequired": false,
+              "value": "Percentage of Unprocessed Events",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "total_value",
+              "description": "Returns the total number of events.",
+              "isRequired": false,
+              "value": "4744",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "value",
+              "description": "Returns the number of unprocessed events.",
+              "isRequired": false,
+              "value": "415",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

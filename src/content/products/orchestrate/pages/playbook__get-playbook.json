@@ -1,0 +1,485 @@
+{
+  "slug": "playbook/get-playbook",
+  "title": "Get Playbook Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "get-playbook"
+  ],
+  "description": "Returns playbook details based on the playbook ID passed. If no ID is passed, it returns the complete list of both user-created and system playbooks.",
+  "method": "GET",
+  "path": "v1/playbook/filter/",
+  "request": {
+    "query": [
+      {
+        "name": "page",
+        "description": "Pass the page number to retrieve the list of playbooks.",
+        "isRequired": false,
+        "value": "1",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of items to retrieve per page.",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "integer",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "scheduled",
+        "description": "Pass true to retrieve playbooks that are scheduled.",
+        "isRequired": false,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tags",
+        "description": "Pass the unique ID of the tags to retrieve playbooks.",
+        "isRequired": false,
+        "value": "229db55c-4dd8-4ee0-b6ec-9bd2509a107f",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "labels",
+        "description": "Pass the label name to retrieve playbooks.",
+        "isRequired": false,
+        "value": "priority",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "apps",
+        "description": "Pass the app identifier. You can retrieve the app identifier using the **Get Apps** endpoint.",
+        "isRequired": false,
+        "value": "abuse_ipdp",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "actions",
+        "description": "Pass the action identifier of an action. You can retrieve the action identifier using the **Get App Actions** endpoint.",
+        "isRequired": false,
+        "value": "sample_help",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to filter active playbooks, else false.",
+        "isRequired": false,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "modified",
+        "description": "Pass the last modified value to filter playbooks based on their last modified time.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "last_week"
+            },
+            {
+              "value": "last_month"
+            },
+            {
+              "value": "last_year"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [
+      {
+        "name": "unique_id",
+        "description": "Pass the unique ID of a playbook to retrieve details of a specific playbook. You can retrieve unique IDs of playbook using the **Get Playbooks** endpoint.",
+        "isRequired": false,
+        "value": "f2bc6cca-f964-4043-aae4-4fb41e56fd47",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "690c38ac563cc15bed845058"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "link",
+          "description": "Returns the link to the previous and next page.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "count",
+          "description": "Returns the number of playbooks.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the details of the playbooks. Each object provides details of one playbook.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of the playbook.",
+                  "isRequired": false,
+                  "value": "BlueCoat :: Enrich IOCs",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "readable_id",
+                  "description": "Returns the readable ID of the playbook.",
+                  "isRequired": false,
+                  "value": "PLB3391",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the status of the playbook.",
+                  "isRequired": false,
+                  "value": "ACTIVE",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the playbook.",
+                  "isRequired": false,
+                  "value": "f2bc6cca-f964-4043-aae4-4fb41e56fd47",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "playbook_last_run",
+                  "description": "Returns the date and time of when the playbook was last executed.",
+                  "isRequired": false,
+                  "value": "2022-01-19T14:27:50.306268Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "sub_playbook",
+                  "description": "Returns the number of sub-playbooks added to the playbook.",
+                  "isRequired": false,
+                  "value": 1,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "apps_count",
+                  "description": "Returns the number of apps in the playbook.",
+                  "isRequired": false,
+                  "value": 1,
+                  "valueType": "number",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_action",
+                  "description": "Returns the details of the app actions added to the playbook.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "Cyware Utility App",
+                      "description": "Returns the app name associated with the action added to the playbook.",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "array",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "Returns the action name added to the playbook.",
+                          "isRequired": false,
+                          "value": "Defang Indicator",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the playbook.",
+                  "isRequired": false,
+                  "value": "All about the playbook",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "categories",
+                  "description": "Returns the categories associated with the playbooks in Orchestrate > Manage Playbooks > App Store.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tags",
+                  "description": "Returns the unique IDs of the tags added to the playbook.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "Returns the unique ID of the tag.",
+                      "isRequired": false,
+                      "value": "77f1a7ac-885b-486e-b5eb-229f65ce0aad",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "tags_data",
+                  "description": "Returns the details of the tags added to the playbook.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "",
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "unique_id",
+                          "description": "Returns the unique ID of the tag.",
+                          "isRequired": false,
+                          "value": "77f1a7ac-885b-486e-b5eb-229f65ce0aad",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "title",
+                          "description": "Returns the title of the tag added to the playbook.",
+                          "isRequired": false,
+                          "value": "Malware Analysis",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "Returns the description of the tag added to the playbook.",
+                          "isRequired": false,
+                          "value": null,
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "color",
+                          "description": "Returns the color associated with the tag added to the playbook.",
+                          "isRequired": false,
+                          "value": "#024833",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "labels",
+                  "description": "Returns the labels added to the playbook.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "Returns the label name.",
+                      "isRequired": false,
+                      "value": "Active   LBL",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "output_params",
+                  "description": "Returns the output parameters of the playbook execution.",
+                  "isRequired": false,
+                  "value": "",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "Key X1",
+                      "description": "Returns the key-value pairs of the playbook output parameters.",
+                      "isRequired": false,
+                      "value": "Value A2",
+                      "valueType": "string",
+                      "options": null,
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

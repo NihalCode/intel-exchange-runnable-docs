@@ -1,0 +1,152 @@
+{
+  "slug": "analyst-portal/recommended-actions/create-recommended-action",
+  "title": "Create Recommended Action",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "recommended-actions",
+    "create-recommended-action"
+  ],
+  "description": "As an analyst, you can recommend actions to members for published alerts. Recommended actions help guide members on necessary steps based on insights from the alert or as part of standard security measures.",
+  "method": "POST",
+  "path": "csap/v1/recommended_action/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass the title of the recommended action in 150 characters.",
+        "isRequired": true,
+        "value": "Verify Suspicious Email for Phishing Indicators",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the recommended action in HTML format.",
+        "isRequired": true,
+        "value": "<p>Analyze the reported phishing email, check for suspicious links, and report any potential threats.</p>",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "recipient_type",
+        "description": "Pass the recipient type for the recommended action. This determines the default group of users who will receive the action.  ",
+        "isRequired": true,
+        "value": "BY_ORGANIZATION",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "BY_ORGANIZATION",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "assigned_to",
+        "description": "Pass a comma-separated list of one or more email IDs of the users to whom the recommended action is assigned. You can only assign users who are recipients of the associated alert. Use the **Get Alert Details** endpoint to retrieve the list of individual recipient email IDs.",
+        "isRequired": false,
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the email ID of the user.",
+            "isRequired": false,
+            "value": "john.doe@orgname.com",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "assigned_groups",
+        "description": "Pass a comma-separated list of one or more IDs of recipient groups to whom the recommended action is assigned. You can only assign groups that are recipients of the associated alert. To retrieve the list of recipient groups for the alert, use the **Get Alert Details** endpoint.",
+        "isRequired": false,
+        "valueType": "array",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Pass the unique ID of the recipient group.",
+            "isRequired": false,
+            "value": "532bfbef",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "due_date",
+        "description": "Pass the due date for the recommended action in epoch format.",
+        "isRequired": false,
+        "value": "1739212990",
+        "valueType": "integer",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "alert_id",
+        "description": "Pass the ID of the alert associated with the recommended action. To retrieve the alert ID, use the **Get Alerts** endpoint.",
+        "isRequired": true,
+        "value": "5b8d53c7",
+        "valueType": "string",
+        "options": null,
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4ef8fbd08c35d39c815a4"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Returns a confirmation message indicating that the recommended action was successfully created.",
+          "isRequired": false,
+          "value": "Recommended Action created successfully",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

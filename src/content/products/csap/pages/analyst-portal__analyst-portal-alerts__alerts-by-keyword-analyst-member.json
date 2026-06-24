@@ -1,0 +1,125 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/alerts-by-keyword-analyst-member",
+  "title": "Get Alerts by Keyword",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "alerts-by-keyword-analyst-member"
+  ],
+  "description": "Returns latest published alerts based on a specific keyword.\n\n### Changelog\n\n\nFor analysts, access to alerts are based on the categories associated with your user role in the Analyst Portal. This update does not impact credentials generated priori to this version.",
+  "method": "GET",
+  "path": "csap/v1/get_news/",
+  "request": {
+    "query": [
+      {
+        "name": "keyword",
+        "description": "Pass the keyword with alert title and summary. This is applicable for published alerts only.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69f04cceb40d0555dbaa4e0c"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "0",
+          "description": "",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "title",
+              "description": "Returns the title of the alert.",
+              "isRequired": false,
+              "value": "IC3 Issues Alert on Ransomware",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "published_date",
+              "description": "Returns the date when the alert was published.",
+              "isRequired": false,
+              "value": "2019-10-05",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "card_category",
+              "description": "Returns the category of alert.",
+              "isRequired": false,
+              "value": "Alert",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "content",
+              "description": "Returns the description of alert.",
+              "isRequired": false,
+              "value": "Released October 4, 2019 by IC3: Alert on ransomware threats",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

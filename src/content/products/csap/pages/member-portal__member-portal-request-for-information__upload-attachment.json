@@ -1,0 +1,65 @@
+{
+  "slug": "member-portal/member-portal-request-for-information/upload-attachment",
+  "title": "Upload Attachment",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-request-for-information",
+    "upload-attachment"
+  ],
+  "description": "Upload a file to obtain the `media_id` and use it when submitting RFI responses.\n\n\n\n> [!NOTE]\n> To attach the same file to different RFI alerts, you must generate a unique media_id for each submission.",
+  "method": "POST",
+  "path": "csap/v1/upload_attachment/rfi_responses/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "file",
+        "description": "Select the file from your local system to upload an attachment.",
+        "isRequired": true,
+        "valueType": "file",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/multipart/form-data",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f76f68bd08c35d39d793f8"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "media_id",
+          "description": "Returns a unique ID for the uploaded file.",
+          "isRequired": false,
+          "value": "79437785-4194-49c2-ad7a-1fa590761528",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/multipart/form-data"
+}

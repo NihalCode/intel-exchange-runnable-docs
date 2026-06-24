@@ -1,0 +1,247 @@
+{
+  "slug": "events/create-event-v2",
+  "title": "Create Event (v2)",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "events",
+    "create-event-v2"
+  ],
+  "description": "Create an event by passing the app identifier, action identifier, and data through the payload. This endpoint provides a concise response with key parameters.\n\n\n\n> [!NOTE]\n> This API is available in Orchestrate v3.5.9 onwards.",
+  "method": "POST",
+  "path": "v2/events/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass the title of the event.",
+        "isRequired": true,
+        "value": "SourceEvent20/01/2022 01:30:14",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "app_identifier",
+        "description": "Pass a source app for the event.",
+        "isRequired": true,
+        "value": "Test App Identifier",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "action_identifier",
+        "description": "Pass the event type.",
+        "isRequired": true,
+        "value": "Test Action Identifier",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "extra_data",
+        "description": "Pass any extra data as key-value pairs with the event.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "data",
+            "description": "Pass any extra data to be passed with the event.",
+            "isRequired": false,
+            "value": "123",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "data",
+        "description": "Pass data as key-value pairs to include with the event.\n\n",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "data",
+            "description": "Pass data to include with the event.",
+            "isRequired": false,
+            "value": "1234",
+            "valueType": "number",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693a884fb1b9d3ee27525085"
+  },
+  "responses": [
+    {
+      "statusCode": 201,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "title",
+          "description": "Returns the title of the event.\n\n",
+          "isRequired": false,
+          "value": "intel_enrichment",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "readable_id",
+          "description": "Returns the readable ID of the trigger event.\n\n",
+          "isRequired": false,
+          "value": "TEfbb104ed-6",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID generated dynamically for the event.\n\n",
+          "isRequired": false,
+          "value": "fbb104ed-6704-4127-8898-f2f6aefe9fc1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time when the event was created.\n\n",
+          "isRequired": false,
+          "value": "2024-12-11T06:50:59.946589Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Returns the source through which the event is triggered.\n",
+          "isRequired": false,
+          "value": "Openapi",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "app_identifier",
+          "description": "Returns the source app associated with the event.",
+          "isRequired": false,
+          "value": "CTIX",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "action_identifier",
+          "description": "Returns the event type associated with the event.",
+          "isRequired": false,
+          "value": "CTIX_submission",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

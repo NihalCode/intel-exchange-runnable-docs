@@ -1,0 +1,79 @@
+{
+  "slug": "webhooks/test-connectivity",
+  "title": "Test connectivity",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "webhooks",
+    "test-connectivity"
+  ],
+  "description": "Use this API to test the connectivity.",
+  "method": "GET",
+  "path": "{webhook_url}/test_connectivity/",
+  "request": {
+    "query": [
+      {
+        "name": "token",
+        "description": "Pass the webhooks authentication token generated in Cyware Orchestrate. For example, ab1929a2-7d56-4511-b130-a5c3b6592702. ",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "webhook_url",
+        "description": "Pass the webhook URL retrieved from Orchestrate application.",
+        "isRequired": true,
+        "valueType": "String",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4cd6fbd08c35d39c6041f"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Indicates the status of the connection. \nExample: *ok*",
+          "isRequired": false,
+          "value": "ok",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,919 @@
+{
+  "slug": "playbook/get-playbook-detail-run-log",
+  "title": "Get Playbook Run Log Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "get-playbook-detail-run-log"
+  ],
+  "description": "Returns run logs of a specific playbook.",
+  "method": "GET",
+  "path": "v1/playbook/playbook-result/{playbook_result_unique_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "playbook_result_unique_id",
+        "description": "Pass the unique ID generated during the playbook run. You can retrieve the unique ID of a run log using the **Get Playbook Run Logs** endpoint.",
+        "isRequired": true,
+        "value": "e322985a-59a0-404c-adae-a4ba28d64f22",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4ef7cbd08c35d39c81504"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "status",
+          "description": "Returns the playbook run status.",
+          "isRequired": false,
+          "value": "SUCCESS",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID that is generated dynamically on playbook execution.",
+          "isRequired": false,
+          "value": "e322985a-59a0-404c-adae-a4ba28d64f22",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time of when playbook was created.",
+          "isRequired": false,
+          "value": "2023-02-03T01:32:35.983824Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified",
+          "description": "Returns the date and time of when the playbook was last modified.",
+          "isRequired": false,
+          "value": "2023-02-03T01:32:38.789930Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "playbook_data",
+          "description": "Returns the details of the playbook.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "title",
+              "description": "Returns the title of the playbook.",
+              "isRequired": false,
+              "value": "Playbook- Report Incident",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "status",
+              "description": "Returns the status of the playbook.",
+              "isRequired": false,
+              "valueType": "string",
+              "options": {
+                "enumValue": [
+                  {
+                    "value": "active",
+                    "description": ""
+                  },
+                  {
+                    "value": "inactive",
+                    "description": ""
+                  }
+                ],
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID generated dynamically on playbook creation.",
+              "isRequired": false,
+              "value": "df3b2cf0-d095-4161-859c-9fcab84ea0a4",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "playbook_last_run",
+              "description": "Returns the last run time of the playbook.",
+              "isRequired": false,
+              "value": "2023-02-03T01:32:36.145798Z",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "sub_playbook",
+              "description": "Returns the count of sub-playbooks.",
+              "isRequired": false,
+              "value": "0",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "apps_count",
+              "description": "Returns the count of apps used in the playbook.",
+              "isRequired": false,
+              "value": "0",
+              "valueType": "number",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "app_action",
+              "description": "Returns the app name as the key in the JSON, containing a list of actions.",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "description",
+              "description": "Returns the description of the playbook.",
+              "isRequired": false,
+              "value": "test",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "categories",
+              "description": "Returns the list of categories associated with the playbook in Orchestrate > Manage Playbook > Playbook Store.\n",
+              "isRequired": false,
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "tags",
+              "description": "Returns the tags added to the playbook.",
+              "isRequired": false,
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "tags_data",
+              "description": "Returns the details of the tags added to the playbook.",
+              "isRequired": false,
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "labels",
+              "description": "Returns the list of labels added to the playbook.\n",
+              "isRequired": false,
+              "valueType": "array",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "output_params",
+              "description": "Returns the JSON key-value pairs of the playbook output parameters.\n\n\n\n\n\n\n",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "schedule_info",
+              "description": "Returns the schedule details of the playbook.",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "nodes_results",
+          "description": "Returns the list of nodes as per the execution order of each node.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the node.",
+                  "isRequired": false,
+                  "value": "20cf5e27-49c1-4a3d-b756-84eb53aaa6a7",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created",
+                  "description": "Returns the date and time of when the node was created.",
+                  "isRequired": false,
+                  "value": "2023-02-03T01:32:38.362913Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified",
+                  "description": "Returns the date and time of when the node was last modified.",
+                  "isRequired": false,
+                  "value": "2023-02-03T01:32:38.383501Z",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the status of the node execution.",
+                  "isRequired": false,
+                  "value": "SUCCESS",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "execution_time",
+                  "description": "Returns the total time taken to execute the node.",
+                  "isRequired": false,
+                  "value": "0.020588",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "node_data",
+                  "description": "Returns the details of the node.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "type",
+                      "description": "Returns the type of the node.",
+                      "isRequired": false,
+                      "value": "START",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "internal_id",
+                      "description": "Returns the node number.",
+                      "isRequired": false,
+                      "value": "start",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "title",
+                      "description": "Returns the title of the node.",
+                      "isRequired": false,
+                      "value": "Start",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "unique_id",
+                      "description": "Returns the unique ID of the node.",
+                      "isRequired": false,
+                      "value": "3fb6ca80-8cc1-4022-abba-30ede800968d",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "io_params_format",
+                      "description": "Returns the input parameter template details of the input node.",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "sub_type",
+                      "description": "Returns the subtype of the node. For example, *start*.",
+                      "isRequired": false,
+                      "value": "start",
+                      "valueType": "string",
+                      "options": {
+                        "enumValue": [
+                          {
+                            "value": "PREDEFINED",
+                            "description": ""
+                          },
+                          {
+                            "value": "CUSTOM",
+                            "description": ""
+                          },
+                          {
+                            "value": "PLAYBOOK",
+                            "description": ""
+                          },
+                          {
+                            "value": "EXPRESSION_BASED",
+                            "description": ""
+                          },
+                          {
+                            "value": "STORAGE",
+                            "description": ""
+                          },
+                          {
+                            "value": "start",
+                            "description": ""
+                          }
+                        ],
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "result",
+                  "description": "Returns the link to the previous and next page.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "initial_params",
+                  "description": "Returns the input values of a node as key-value pairs in JSON format. ",
+                  "isRequired": false,
+                  "value": "{}",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "error",
+                  "description": "Returns the error that occurred during node execution.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "io_params",
+                  "description": "Returns the input data passed to the node.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "io_approved_by",
+                  "description": "Returns the user who provided the input.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "io_approved_by_data",
+                  "description": "Returns the user details of the person who provided the input.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "splitted_columns",
+                  "description": "Returns the following values from a playbook result and node result that exceed 4 MB- \n- Input Values (`initial_params`)\n- Output Values (`result`)",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "event_data",
+          "description": "Returns the details of the event that triggered the playbook run.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "error",
+          "description": "Returns the error results that occurred during playbook execution.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "ran_by_data",
+          "description": "Returns the details of the user who executed the playbook\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who executed the playbook.",
+              "isRequired": false,
+              "value": "John",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who executed the playbook.",
+              "isRequired": false,
+              "value": "Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who executed the playbook.",
+              "isRequired": false,
+              "value": "John Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "source_playbook_result_data",
+          "description": "Returns the master playbook result data.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "run_details",
+          "description": "Returns details such as the full name of the user who ran the playbook.",
+          "isRequired": false,
+          "value": "System Default",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "source",
+          "description": "Returns the source that initiated the playbook run.\nExample: *User*, *Playbook*.",
+          "isRequired": false,
+          "value": "User",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "schedule_info",
+          "description": "Returns the details of the playbook schedule.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cron_expression",
+          "description": "Returns the cron string used for playbook scheduling.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "sub_playbooks",
+          "description": "Returns the count of sub-playbooks added to the playbook.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "auto_terminate_time",
+          "description": "Returns the timestamp of when the playbook run was auto-terminated. \n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "initial_params",
+          "description": "Returns the request parameters of the node in JSON format as a list of key-value pairs.",
+          "isRequired": false,
+          "value": "{}",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "execution_time",
+          "description": "Returns the total time taken to execute the playbook.",
+          "isRequired": false,
+          "value": "0.62",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "splitted_columns",
+          "description": "Returns the following values from a playbook result and node result that exceed 4 MB:\n- Input Values (`initial_params`)\n- Output Values (`result`)\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "readable_id",
+          "description": "Returns the readable ID of the playbook.",
+          "isRequired": false,
+          "value": "RLe322985a-5",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

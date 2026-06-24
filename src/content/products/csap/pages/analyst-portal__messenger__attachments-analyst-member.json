@@ -1,0 +1,170 @@
+{
+  "slug": "analyst-portal/messenger/attachments-analyst-member",
+  "title": "Get Attachments",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "messenger",
+    "attachments-analyst-member"
+  ],
+  "description": "Returns attachments associated with a message using the `topic_id` and `seq_id`.",
+  "method": "GET",
+  "path": "csap/v1/get_messages_attachments/",
+  "request": {
+    "query": [
+      {
+        "name": "seq_id",
+        "description": "Pass the sequence ID to get the attachments from a message.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "topic_id",
+        "description": "Pass a topic ID to get the attachments from a topic.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "expiration_time",
+        "description": "Pass the expiration time for attachment URL in seconds. ",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "maxLength": 604800,
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41820ceb3f8dc913fa8dd"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "attachments",
+          "description": "Returns the attachment details.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "mimeType",
+                  "description": "Returns the file type of attachment.",
+                  "isRequired": false,
+                  "value": "image/png",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "size",
+                  "description": "Returns the size of the attachment in bytes.",
+                  "isRequired": false,
+                  "value": "2927968",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the attachment.",
+                  "isRequired": false,
+                  "value": "SampleImage.png",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "url",
+                  "description": "Returns the URL for the attachment. This URL is active based on value passed for the `expiration_time` query parameter.",
+                  "isRequired": false,
+                  "value": "https://example-domain.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

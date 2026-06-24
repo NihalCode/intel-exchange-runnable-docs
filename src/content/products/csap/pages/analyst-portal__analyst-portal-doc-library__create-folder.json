@@ -1,0 +1,311 @@
+{
+  "slug": "analyst-portal/analyst-portal-doc-library/create-folder",
+  "title": "Create Folder",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-doc-library",
+    "create-folder"
+  ],
+  "description": "Creates a new folder in the Doc Library within the specified parent folder. If you do not specify any parent folder, the new folder is created in the root directory.\n\n### Changelog\n\n\nThis endpoint is available starting from the 3.8.5.0 version.",
+  "method": "POST",
+  "path": "csap/v1/folder-details/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "folder_name",
+        "description": "Pass the name of the folder in 100 characters.",
+        "isRequired": true,
+        "value": "Sample Folder Name",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass a brief description of the folder in 500 characters.",
+        "isRequired": false,
+        "value": "This is a sample description",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "recipient_groups",
+        "description": "Pass the recipient groups who can access this folder. <br>\nIf you pass the `parent_folder_id`, ensure to include the recipient groups that have permission to access the parent folder while creating this folder. If the parent folder does not include any recipient groups, you can assign any recipient groups to the child folder. To retrieve the list of recipient groups for the parent folder, use the **Get Folder Details** endpoint.",
+        "isRequired": false,
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "group_id",
+                "description": "Pass the unique ID of the recipient group.",
+                "isRequired": true,
+                "value": "611e7a57",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "edit_access",
+                "description": "Pass true to allow the recipient group members to edit the folder.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "group_id",
+                "description": "",
+                "isRequired": false,
+                "value": "591s7b01",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "edit_access",
+                "description": "",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "individual_recipients",
+        "description": "Pass the individual recipients who can access this folder. <br>\nIf you pass the `parent_folder_id`, ensure to include the individual recipients that are part of the parent folder while creating this folder. To retrieve the list of individual recipients for the parent folder, use the **Get Folder Details** endpoint",
+        "isRequired": false,
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "email",
+                "description": "Pass the email of the individual recipient.",
+                "isRequired": true,
+                "value": "johndoe@orgname.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "edit_access",
+                "description": "Pass true to allow the individual recipient to edit the folder.",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "1",
+            "description": "",
+            "isRequired": false,
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "email",
+                "description": "",
+                "isRequired": false,
+                "value": "janedoe@orgname.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "edit_access",
+                "description": "",
+                "isRequired": false,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "parent_folder_id",
+        "description": "Pass the ID of the parent folder to create this folder in it. By default, the folder is created in the root directory. You can retrieve the `parent_folder_id` using the **Get Folder Details** endpoint.",
+        "isRequired": false,
+        "value": "99e20306-cf52-425f-9e9d-fb7b3e38bd85",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "682ae95daa47ca6e74659aa5"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "folder_id",
+          "description": "Returns the unique ID of the newly created folder.",
+          "isRequired": false,
+          "value": "45d413c7-464c-40c3-95ee-9f34e4de375a",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "folder_name",
+          "description": "Returns the name of the newly created folder.",
+          "isRequired": false,
+          "value": "Sample Folder Name",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

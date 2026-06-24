@@ -1,0 +1,140 @@
+{
+  "slug": "analytics/most-used-instance",
+  "title": "Get Most Used Instance",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analytics",
+    "most-used-instance"
+  ],
+  "description": "Returns the most used instances in playbooks for the non-purged data.",
+  "method": "GET",
+  "path": "v1/analytics/data-source/",
+  "request": {
+    "query": [
+      {
+        "name": "categorize_by",
+        "description": "Pass `categorize_by=most_used_instances` to get the most used instances.",
+        "isRequired": true,
+        "value": "most_used_instances",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__gte",
+        "description": "Pass the start time in Unix time format to retrieve the most used instances.",
+        "isRequired": false,
+        "value": "1640131200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__lte",
+        "description": "Pass the end time in Unix time format to retrieve the most used instances.",
+        "isRequired": false,
+        "value": "1640723199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d947aab66e3318bb17f3bd"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "data",
+          "description": "Returns analytics data on the most frequently used instances within the specified time range.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "label",
+                  "description": "Returns the title of the instance.",
+                  "isRequired": false,
+                  "value": "Default Instance",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the number of times the instance was used in playbooks.",
+                  "isRequired": false,
+                  "value": "6",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

@@ -1,0 +1,292 @@
+{
+  "slug": "analyst-portal/analyst-portal-doc-library/upload-file",
+  "title": "Upload File",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-doc-library",
+    "upload-file"
+  ],
+  "description": "Upload a file to the Doc Library and share it with recipient groups and individual recipients.\n\n### Changelog\n\n\n*   Added support for the `parent_folder_id` body parameter\n*   The API response now includes the `parent_folder_id` field",
+  "method": "POST",
+  "path": "csap/v1/upload_media/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "user_groups",
+        "description": "Pass the group IDs of the recipient groups you want to share this file with. Enter multiple recipient groups using comma as a separator. Get a list of all recipient groups using the **Get Recipient Groups** endpoint.",
+        "isRequired": true,
+        "value": "b2aa0998",
+        "valueType": "text",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP associated with the media.",
+        "isRequired": false,
+        "value": "WHITE",
+        "valueType": "text",
+        "options": {
+          "defaultValue": "WHITE",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "file",
+        "description": "Specify the file path or select the file from your local system to upload to the Doc Library. <br>\nIf the parameter `file_name` is not passed, then the default file name is `uuid-uploaded_file_name.file_format`. Here, `uploaded_file_name` refers to the name of the file saved on your local system. <br> Example: *694892c5-Sample_file.png*",
+        "isRequired": true,
+        "value": "694892c5-Sample_file.png",
+        "valueType": "file",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "individual_recipients",
+        "description": "Pass the email IDs of the individual recipients that you want to share this file with. Enter multiple email addresses using comma as a separator. \nExample: *john.doe@example.com*.\n\nNote: You can pass either `user_groups` or `individual_recipients` while uploading media.",
+        "isRequired": true,
+        "value": "john.doe@example.com",
+        "valueType": "text",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "file_name",
+        "description": "Pass the name of the file with which the file is saved in Doc Library. <br> Example: Test Image Default format is `uuid-uploaded_file_name.file_format`",
+        "isRequired": false,
+        "value": "Test Image",
+        "valueType": "text",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "parent_folder_id",
+        "description": "Pass the ID of the parent folder where you want to upload the file. If you do not pass this ID, the file will be uploaded to the root directory. To retrieve the parent ID, use the **Get Folder Details** endpoint.",
+        "isRequired": false,
+        "value": "0888cb50-f234-422b-8765-65bdc62fa819",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41d19ceb3f8dc913fb387"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "document_id",
+          "description": "Returns the document ID of the file.",
+          "isRequired": false,
+          "value": "589003d5-2fa8-4130-bda6-3b03c68a7388",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "document_file",
+          "description": "Returns the URL of the uploaded file.",
+          "isRequired": false,
+          "value": "https://example.com/media/sample-image.png?X-Amz-Expires=3600&X-Amz-Signature=signature",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "content_type",
+          "description": "Returns the file format and type.",
+          "isRequired": false,
+          "value": "image/png",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP associated with the file.",
+          "isRequired": false,
+          "value": "WHITE",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "file_name",
+          "description": "Returns the name of the file.",
+          "isRequired": false,
+          "value": "Test Image",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "file_format",
+          "description": "Returns the file format.",
+          "isRequired": false,
+          "value": "png",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "size",
+          "description": "Returns the file size in bytes.",
+          "isRequired": false,
+          "value": 156010,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "download_count",
+          "description": "Returns the number of times members have downloaded this file in the Member Portal.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "document_group",
+          "description": "Returns the name of the recipient group and individual recipients of the file.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "group_name",
+                  "description": "Returns the name of the recipient group and individual recipients of the file.",
+                  "isRequired": false,
+                  "value": "john.doe@example.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

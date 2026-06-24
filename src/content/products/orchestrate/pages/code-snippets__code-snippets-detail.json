@@ -1,0 +1,215 @@
+{
+  "slug": "code-snippets/code-snippets-detail",
+  "title": "Get Code Snippet Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "code-snippets",
+    "code-snippets-detail"
+  ],
+  "description": "Returns details of a specific code snippet.",
+  "method": "GET",
+  "path": "v1/code-snippets/{unique_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "unique_id",
+        "description": "Pass the unique ID of the code snippet to retrieve the details. You can use the **Get Code Snippet List** endpoint to retrieve the unique ID of a code snippet.",
+        "isRequired": true,
+        "value": "{code_snippet_unique_id}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d9408cb66e3318bb179a72"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID of the code snippet.",
+          "isRequired": false,
+          "value": "6bd5a80a-722c-45d0-a24d-8a0ab72ae12a",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the code snippet.",
+          "isRequired": false,
+          "value": "Default Script Template",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the code snippet.",
+          "isRequired": false,
+          "value": "This will be the Code Template",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "code",
+          "description": "Returns the python code added to the code snippet in string format.",
+          "isRequired": false,
+          "value": "def script_function():\n\treturn 0",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_removed",
+          "description": "Returns if the code snippet is deleted or not.",
+          "isRequired": false,
+          "value": "false",
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created",
+          "description": "Returns the date and time when the code snippet was created.",
+          "isRequired": false,
+          "value": "2023-06-07T08:34:05.361364Z",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by_data",
+          "description": "Returns the details of the user who created the code snippet. ",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the user who created the code snippet.",
+              "isRequired": false,
+              "value": "0832ea94-0252-49b2-80c1-9823b44a3f46",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the code snippet.",
+              "isRequired": false,
+              "value": "john",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the code snippet.",
+              "isRequired": false,
+              "value": "doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who created the code snippet.",
+              "isRequired": false,
+              "value": "john doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

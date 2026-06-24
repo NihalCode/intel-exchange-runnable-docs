@@ -12,12 +12,17 @@ import {
 import { generateAuthParams, type AuthParams } from "@/lib/auth-gen";
 import { isOpenApiAuthFresh } from "@/lib/credential-placeholders";
 import { isDemoModeEnabled } from "@/lib/demo";
+import { baseUrlForProduct } from "@/lib/products/auth";
+import { DEFAULT_PRODUCT_ID } from "@/lib/products/registry";
+import { useProduct } from "./ProductContext";
 
 interface RunSettings {
   /** Docs clone: simulate API responses without a Cyware tenant. */
   demoMode: boolean;
   baseUrl: string;
   setBaseUrl: (v: string) => void;
+  /** Switch displayed base URL when the active product changes. */
+  syncWithProduct: (productId: string) => void;
   /** Returns any credential value by name (case-insensitive) */
   getCredential: (name: string) => string;
   setCredential: (name: string, value: string) => void;
@@ -39,9 +44,33 @@ interface RunSettings {
 
 const Ctx = createContext<RunSettings | null>(null);
 
-const BASE_URL_KEY = "iedocs.baseUrl";
+const BASE_URLS_KEY = "iedocs.baseUrls";
+const LEGACY_BASE_URL_KEY = "iedocs.baseUrl";
 const ACCESS_ID_KEY = "iedocs.accessId";
 const SECRET_KEY_SESSION = "iedocs.secretKey";
+
+function readStoredBaseUrls(defaultBaseUrl: string): Record<string, string> {
+  try {
+    const raw = window.localStorage.getItem(BASE_URLS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, string>;
+      if (parsed && typeof parsed === "object") return parsed;
+    }
+    const legacy = window.localStorage.getItem(LEGACY_BASE_URL_KEY);
+    if (legacy) return { ctix: legacy };
+  } catch {
+    /* ignore */
+  }
+  return { ctix: defaultBaseUrl };
+}
+
+function writeStoredBaseUrls(urls: Record<string, string>) {
+  try {
+    window.localStorage.setItem(BASE_URLS_KEY, JSON.stringify(urls));
+  } catch {
+    /* ignore */
+  }
+}
 
 export function RunSettingsProvider({
   defaultBaseUrl,
@@ -58,15 +87,24 @@ export function RunSettingsProvider({
   const [secretKey, setSecretKeyState] = useState("");
   const [authStatus, setAuthStatus] = useState<"idle" | "generating" | "ok" | "error">("idle");
   const [authError, setAuthError] = useState("");
+  const baseUrlsRef = useRef<Record<string, string>>({ ctix: defaultBaseUrl });
+  const activeProductRef = useRef(DEFAULT_PRODUCT_ID);
+  const baseUrlRef = useRef(defaultBaseUrl);
 
   useEffect(() => {
     credsRef.current = creds;
   }, [creds]);
 
   useEffect(() => {
+    baseUrlRef.current = baseUrl;
+  }, [baseUrl]);
+
+  useEffect(() => {
     try {
-      const savedUrl = window.localStorage.getItem(BASE_URL_KEY);
-      if (savedUrl) setBaseUrlState(savedUrl);
+      const urls = readStoredBaseUrls(defaultBaseUrl);
+      baseUrlsRef.current = urls;
+      const initial = urls[DEFAULT_PRODUCT_ID] ?? defaultBaseUrl;
+      setBaseUrlState(initial);
       const savedId = window.localStorage.getItem(ACCESS_ID_KEY);
       if (savedId) {
         setAccessIdState(savedId);
@@ -80,15 +118,26 @@ export function RunSettingsProvider({
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [defaultBaseUrl]);
 
   const setBaseUrl = useCallback((v: string) => {
     setBaseUrlState(v);
-    try {
-      window.localStorage.setItem(BASE_URL_KEY, v);
-    } catch {
-      /* ignore */
+    const pid = activeProductRef.current;
+    baseUrlsRef.current = { ...baseUrlsRef.current, [pid]: v };
+    writeStoredBaseUrls(baseUrlsRef.current);
+  }, []);
+
+  const syncWithProduct = useCallback((productId: string) => {
+    const prev = activeProductRef.current;
+    if (prev !== productId) {
+      baseUrlsRef.current = { ...baseUrlsRef.current, [prev]: baseUrlRef.current };
     }
+    activeProductRef.current = productId;
+    const next =
+      baseUrlsRef.current[productId] ?? baseUrlForProduct(productId);
+    setBaseUrlState(next);
+    baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: next };
+    writeStoredBaseUrls(baseUrlsRef.current);
   }, []);
 
   const setAccessId = useCallback((v: string) => {
@@ -191,6 +240,7 @@ export function RunSettingsProvider({
       demoMode: isDemoModeEnabled(),
       baseUrl,
       setBaseUrl,
+      syncWithProduct,
       getCredential,
       setCredential,
       clearCredentials,
@@ -209,6 +259,7 @@ export function RunSettingsProvider({
     [
       baseUrl,
       setBaseUrl,
+      syncWithProduct,
       getCredential,
       setCredential,
       clearCredentials,
@@ -232,6 +283,18 @@ export function useRunSettings(): RunSettings {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error("useRunSettings must be used within RunSettingsProvider");
   return ctx;
+}
+
+/** Keeps API base URL in sync with the selected product. */
+export function ProductRunSettingsSync() {
+  const { productId } = useProduct();
+  const { syncWithProduct } = useRunSettings();
+
+  useEffect(() => {
+    syncWithProduct(productId);
+  }, [productId, syncWithProduct]);
+
+  return null;
 }
 
 /** Shown on endpoint pages — auth is auto-generated on Run, not typed per snippet. */

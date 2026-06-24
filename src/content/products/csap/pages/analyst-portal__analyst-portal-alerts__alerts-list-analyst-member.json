@@ -1,0 +1,289 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/alerts-list-analyst-member",
+  "title": "Get Alerts",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "alerts-list-analyst-member"
+  ],
+  "description": "Returns a list of alerts from Collaborate.\n\n### Changelog\n\n\nAdded support for the channel_ids query parameter.\nFor analysts, access to alerts is determined by the categories associated with your user role in the Analyst Portal. However, if your user role has View All Alerts permission, you can access all alerts based on your preference. This update does not impact credentials generated prior to this version.",
+  "method": "GET",
+  "path": "csap/v1/list_alert/",
+  "request": {
+    "query": [
+      {
+        "name": "status",
+        "description": "Pass the status of the alerts to be retrieved. Published alerts are retrieved based on the published time in epoch format. Expired and drafted alerts are retrieved based on the modified time for the alert.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "defaultValue": "PUBLISHED",
+          "enumValue": [
+            {
+              "value": "PUBLISHED"
+            },
+            {
+              "value": "DRAFT"
+            },
+            {
+              "value": "EXPIRED"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "start_time",
+        "description": "Pass the start date of the query in epoch format. This represents the earliest timestamp for any alert in the query. Example: *1737405600*",
+        "isRequired": false,
+        "value": "1737405600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "end_time",
+        "description": "Pass the end date of the query in epoch format. This represents the latest timestamp for any alert in the query. Example: *1737441600*",
+        "isRequired": false,
+        "value": "1737441600",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records on a page. Example: *10*",
+        "isRequired": false,
+        "value": "10",
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the page number for the response. Example: *2*",
+        "isRequired": false,
+        "value": "2",
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "category_id",
+        "description": "Pass the category ID to filter alerts. Enter multiple category IDs separated by a comma. You can retrieve `category_id` using the **Get Category List** endpoint. Example: *4bfd32c0,c7012fcc*",
+        "isRequired": false,
+        "value": "4bfd32c0,c7012fcc",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP to filter alerts. Enter multiple TLPs separated by a comma. Example: *GREEN*",
+        "isRequired": false,
+        "value": "GREEN",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "title",
+        "description": "Pass the title to filter alerts. Example: *Ransomware Attacks are on the Rise*",
+        "isRequired": false,
+        "value": "Ransomware Attacks are on the Rise",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "channel_ids",
+        "description": "Pass the channel IDs to filter alerts. You can enter multiple channel IDs separated by a comma.",
+        "isRequired": false,
+        "value": "85396c98-e5c4-45a7-b831-9675f42b9e11",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69fae4648a5acd18d2203a03"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the total number of alerts in the Analyst Portal. Example: *67*",
+          "isRequired": false,
+          "value": 67,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "data",
+          "description": "Returns the ID, title, status, and published time of the alert.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "short_id",
+                  "description": "Returns the unique ID of the alert. Example: *cf946a91*",
+                  "isRequired": false,
+                  "value": "cf946a91",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the alert title. Example: *Ransomware Attacks are on the Rise*",
+                  "isRequired": false,
+                  "value": "Ransomware Attacks are on the Rise",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status",
+                  "description": "Returns the status of the alert. Example: *PUBLISHED*",
+                  "isRequired": false,
+                  "value": "PUBLISHED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published_time",
+                  "description": "Returns the epoch timestamp of when the alert was published. For alerts in draft status, the value is null. Example: *1737403200*",
+                  "isRequired": false,
+                  "value": "1737403200",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

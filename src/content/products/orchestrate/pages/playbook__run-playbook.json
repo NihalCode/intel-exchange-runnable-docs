@@ -1,0 +1,184 @@
+{
+  "slug": "playbook/run-playbook",
+  "title": "Run Playbook",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "run-playbook"
+  ],
+  "description": "Run a playbook by passing the playbook unique ID through the payload.",
+  "method": "POST",
+  "path": "v1/playbook/run/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "playbook_unique_id",
+        "description": "Pass the unique ID of the playbook. You can retrieve the unique ID of a playbook using the **Get Playbooks** endpoint.",
+        "isRequired": true,
+        "value": "{{playbook_unique_id}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "data",
+        "description": "Pass the data or inputs as key-value pairs to run the playbook.\n",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "event",
+        "description": "Pass the unique ID of the event to fetch the event data for playbook execution. You can retrieve the unique IDs of events using the **Get Source Events** endpoint.",
+        "isRequired": false,
+        "value": "{{event_unique_id}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "runLog",
+        "description": "Pass the unique ID of the run log to fetch the run log data of playbook execution. You can retrieve the playbook result's unique ID using the **Get Playbook Run Logs** endpoint.",
+        "isRequired": false,
+        "value": "{{playbook_result_unique_id}}",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "email_notification_details",
+        "description": "Pass the email addresses to receive notifications when input is required to proceed with the playbook run. Provide a JSON containing `from_email`, `user_emails`, and `redirect_url` to notify external users.",
+        "isRequired": false,
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "user_emails",
+            "description": "Pass a list of email addresses to notify external users when the playbook requires inputs to proceed with the playbook run. ",
+            "isRequired": false,
+            "valueType": "array",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "0",
+                "description": "Pass the email IDs of the users to receive the notifications.",
+                "isRequired": false,
+                "value": "john@cyware.com",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          },
+          {
+            "name": "from_email",
+            "description": "Pass the email address that will be used to send the email notifications. By default, the system retrieves the `from_email` from the SMTP configuration in Orchestrate.",
+            "isRequired": false,
+            "value": "jane@sample.com",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "redirect_url",
+            "description": "Pass the redirect URL for the response button in the email. Add the URL of the Orchestrate page where users will be directed after clicking the button.",
+            "isRequired": false,
+            "value": "{url}",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4f00abd08c35d39c82054"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "playbook_result_unique_id",
+          "description": "Returns the unique ID assigned to the playbook result. You can retrieve the detailed playbook run details using the **Get Playbook Run Log Details** endpoint.",
+          "isRequired": false,
+          "value": "0b534b3f-7482-4964-9530-a9d7b322e42c",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

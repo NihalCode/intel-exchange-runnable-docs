@@ -1,0 +1,45 @@
+{
+  "slug": "cftr-api-reference/enhancements/add-comment-in-enhancement",
+  "title": "Add Comment in Enhancement",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "enhancements",
+    "add-comment-in-enhancement"
+  ],
+  "description": "Add Comment in Enhancement",
+  "method": "POST",
+  "path": "/v1/comments/enhancement/{enhancement_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "<p>Note For Enhancement</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "mentioned_users_usernames",
+        "value": "[]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "enhancement_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

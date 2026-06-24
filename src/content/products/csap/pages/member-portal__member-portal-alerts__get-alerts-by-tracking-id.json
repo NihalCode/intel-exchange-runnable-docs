@@ -1,0 +1,111 @@
+{
+  "slug": "member-portal/member-portal-alerts/get-alerts-by-tracking-id",
+  "title": "Get Alerts by Tracking ID",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-alerts",
+    "get-alerts-by-tracking-id"
+  ],
+  "description": "Returns alerts using the tracking ID. A tracking ID is generated when third-party integrations publish alerts in Collaborate.",
+  "method": "GET",
+  "path": "v1/get_tracking_id_details/",
+  "request": {
+    "query": [
+      {
+        "name": "tracking_id",
+        "description": "Pass the tracking ID for the alert. You can retrieve the tracking ID using the **Get Alert Details** endpoint.",
+        "isRequired": true,
+        "value": "237d56d5-b0e7-4ba1-a068-b7ac802b1c63",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "counts",
+        "description": "Pass the number of alerts you want to retrieve using the tracking ID. ",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "5",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67cdd210ac5a22aee1b2ebf8"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the number of alerts associated with the tracking ID.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "integer",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "alert_id",
+          "description": "Returns the array of unique IDs of the alert.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the unique ID of the alert.\n",
+              "isRequired": false,
+              "value": "10031fdb",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

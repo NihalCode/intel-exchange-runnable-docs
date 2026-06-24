@@ -1,0 +1,70 @@
+{
+  "slug": "cftr-api-reference/enhancements/create-enhancement-using-field-values",
+  "title": "Create Enhancement Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "enhancements",
+    "create-enhancement-using-field-values"
+  ],
+  "description": "Create Enhancement Using Field Values",
+  "method": "POST",
+  "path": "/v1/enhancement/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "value": "Newly Created Enhancement",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "<p>Enhancement Description</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_group",
+        "value": "CFTR Admin",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_to",
+        "value": "peter.smith@example.com",
+        "valueType": "string"
+      },
+      {
+        "name": "due_date",
+        "value": "2023-06-25T11:16:17Z",
+        "valueType": "string"
+      },
+      {
+        "name": "priority",
+        "value": "Very High",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Blue Label Enhancement\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

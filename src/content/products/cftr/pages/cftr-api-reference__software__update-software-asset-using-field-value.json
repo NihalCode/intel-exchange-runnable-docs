@@ -1,0 +1,51 @@
+{
+  "slug": "cftr-api-reference/software/update-software-asset-using-field-value",
+  "title": "Update Software Asset Using Field Value",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "software",
+    "update-software-asset-using-field-value"
+  ],
+  "description": "Update Software Asset Using Field Value",
+  "method": "PUT",
+  "path": "/v1/asset-software/{sofware_unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "software_publisher",
+        "value": "Acer",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Blue Label Software\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "sofware_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

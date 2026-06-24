@@ -220,6 +220,43 @@ export function enforceTagManagementPlan(
 
 const PING_SLUG = "ping/ping";
 
+const CONNECTIVITY_BY_PRODUCT: Record<
+  string,
+  { slug: string; title: string; intro: string }
+> = {
+  ctix: {
+    slug: PING_SLUG,
+    title: "Ping",
+    intro:
+      "Check connectivity with **Ping** (`GET ping/`). A 200 response means the API and your credentials are working.",
+  },
+  cftr: {
+    slug: "cftr-api-reference/authentication/test-connectivity",
+    title: "Test connectivity",
+    intro:
+      "Verify your CFTR credentials with **Test connectivity** (`GET /test-connectivity/`). " +
+      "A 200 response confirms the API connection and Open API auth are working.",
+  },
+  orchestrate: {
+    slug: "authentication/test-connectivity",
+    title: "Test connectivity",
+    intro:
+      "Verify your Orchestrate credentials with **Test connectivity** (`GET authentication/test-connectivity`). " +
+      "A 200 response confirms the API connection and Open API auth are working.",
+  },
+  csap: {
+    slug: "analyst-portal/authentication/test-connectivity",
+    title: "Test connectivity",
+    intro:
+      "Verify your CSAP credentials with **Test connectivity** (`GET analyst-portal/authentication/test-connectivity`). " +
+      "A 200 response confirms the API connection and Open API auth are working.",
+  },
+};
+
+function docsUrlForProduct(productId: string, slug: string): string {
+  return productId === "ctix" ? `/docs/${slug}` : `/docs/${productId}/${slug}`;
+}
+
 const REPORT_TOKEN_SLUG = "reports/token-to-download-file";
 const REPORT_DOWNLOAD_SLUG = "reports/download-file";
 
@@ -273,24 +310,43 @@ export function isPingQuery(query: string): boolean {
   );
 }
 
+/** Route "test connection / credentials working" prompts to the product connectivity endpoint. */
+export function enforceConnectivityPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[],
+  productId: string
+): AgentPlan {
+  if (!isPingQuery(query)) return plan;
+  const cfg = CONNECTIVITY_BY_PRODUCT[productId];
+  if (!cfg) return plan;
+
+  const chunk = chunks.find((c) => c.slug === cfg.slug);
+  const step: AgentPlanStep = {
+    slug: cfg.slug,
+    order: 1,
+    explanation: cfg.intro,
+  };
+  const citation: AgentCitation = chunk
+    ? { slug: chunk.slug, title: chunk.title, url: docsUrlForProduct(productId, cfg.slug) }
+    : { slug: cfg.slug, title: cfg.title, url: docsUrlForProduct(productId, cfg.slug) };
+
+  return {
+    ...plan,
+    confidence: Math.max(plan.confidence, 0.9),
+    workflow: cfg.intro,
+    steps: [step],
+    citations: [citation],
+    questions: undefined,
+  };
+}
+
 export function enforcePingPlan(
   plan: AgentPlan,
   query: string,
   chunks: ScoredChunk[]
 ): AgentPlan {
-  if (!isPingQuery(query)) return plan;
-  const intro =
-    "Check connectivity with **Ping** (`GET ping/`). A 200 response means the API and your credentials are working.";
-  const { steps, citations } = planStepsForSlugs([PING_SLUG], chunks, intro);
-  if (steps.length === 0) return plan; // ping chunk not retrieved; leave as-is
-  return {
-    ...plan,
-    confidence: Math.max(plan.confidence, 0.9),
-    workflow: intro,
-    steps,
-    citations,
-    questions: undefined,
-  };
+  return enforceConnectivityPlan(plan, query, chunks, "ctix");
 }
 
 const LIST_THREAT_DATA_SLUG = "threat-data/list-threat-data";

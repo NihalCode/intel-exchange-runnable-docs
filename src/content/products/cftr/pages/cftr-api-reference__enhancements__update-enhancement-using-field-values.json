@@ -1,0 +1,66 @@
+{
+  "slug": "cftr-api-reference/enhancements/update-enhancement-using-field-values",
+  "title": "Update Enhancement Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "enhancements",
+    "update-enhancement-using-field-values"
+  ],
+  "description": "Update Enhancement Using Field Values",
+  "method": "PUT",
+  "path": "/v1/enhancement/{enhancement_unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "assigned_to",
+        "value": "peter.smith@example.com",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "<p>handing off</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "comment_type",
+        "value": "handoff",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_group",
+        "value": "CFTR Admin",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Red Label Enhancement\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "enhancement_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

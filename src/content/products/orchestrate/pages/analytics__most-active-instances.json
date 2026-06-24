@@ -1,0 +1,185 @@
+{
+  "slug": "analytics/most-active-instances",
+  "title": "Get Most Active Instances",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analytics",
+    "most-active-instances"
+  ],
+  "description": "Returns the most frequently used instances in playbook executions for the non-purged data.",
+  "method": "GET",
+  "path": "v1/analytics/data-source/",
+  "request": {
+    "query": [
+      {
+        "name": "AccessID",
+        "description": "The Access ID is used to authenticate the Cyware Orchestrate API endpoint.",
+        "isRequired": false,
+        "value": "57d008c4-xxxx-4880-xxxx-1feb943d06ac,",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "Signature",
+        "description": "The Signature is used to authenticate the Cyware Orchestrate API endpoint.",
+        "isRequired": false,
+        "value": "ohaUEcyA8hH3WPUo7Y/QOf+zWY0=",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "Expires",
+        "description": "This parameter is used to define an expiry time for the API call.",
+        "isRequired": false,
+        "value": "72a48f16-xxxx-4023-xxxx-40f8e58d1f41",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "categorize_by",
+        "description": "Pass`categorize_by=most_active_instances` to retrieve the most active instances.",
+        "isRequired": true,
+        "value": "most_active_instances",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__gte",
+        "description": "Pass the start time in unix time format to retrieve the most active instances.",
+        "isRequired": false,
+        "value": "1640131200",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "created__lte",
+        "description": "Pass the end time in unix time format to retrieve the most active instances.",
+        "isRequired": false,
+        "value": "1640723199",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d4001dceb3f8dc913f5a61"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "data",
+          "description": "Returns the analytics data on the most active instance for the specified time range.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "label",
+                  "description": "Returns the title of the instance.",
+                  "isRequired": false,
+                  "value": "Test Instance",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the number of times an instance is utilized in playbooks execution.",
+                  "isRequired": false,
+                  "value": "8",
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

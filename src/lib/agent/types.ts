@@ -8,6 +8,8 @@ export type AgentChunkKind = "endpoint" | "section";
 
 export interface AgentChunk {
   id: string;
+  /** Product this chunk belongs to (ctix, csap, orchestrate, cftr). */
+  productId?: string;
   slug: string;
   title: string;
   kind: AgentChunkKind;
@@ -226,6 +228,8 @@ export interface AgentRequest {
   query: string;
   mode?: AgentMode;
   language?: AgentLanguage;
+  /** Scope retrieval to one product, or "all" for cross-product search. */
+  productId?: string;
   history?: { role: "user" | "assistant"; content: string }[];
   llmApiKey?: string;
   existingApp?: ExistingAppContext;

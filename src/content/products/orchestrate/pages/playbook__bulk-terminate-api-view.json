@@ -1,0 +1,74 @@
+{
+  "slug": "playbook/bulk-terminate-api-view",
+  "title": "Bulk Terminate Playbook Runs",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "playbook",
+    "bulk-terminate-api-view"
+  ],
+  "description": "Terminate playbook runs in bulk. You can terminate a maximum of 100 playbook runs at a time with the run status in progress, in-queue, waiting, or on hold.",
+  "method": "POST",
+  "path": "v1/playbook/playbook-result/bulk-terminate/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "playbook_result_unique_ids",
+        "description": "Pass the unique IDs of the playbook runs in a list. You can retrieve the unique IDs of playbook results using the **Get Playbook Run Logs** endpoint.\n\n\n\n\n\n\n\n",
+        "isRequired": true,
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "Unique ID of the playbook run log 1.",
+            "isRequired": false,
+            "value": "74a0249e-d460-4b72-93c3-be8452f1c85e",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "1",
+            "description": "Unique ID of the playbook run log 2.",
+            "isRequired": false,
+            "value": "86a0249w-d490-4c32-90c0-be8452f1c88t",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d948d1b66e3318bb17fb84"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "There are no response parameters. A successful task execution returns a response with a status code of 200 OK.",
+      "contentType": "application/json",
+      "body": []
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

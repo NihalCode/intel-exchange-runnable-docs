@@ -1,0 +1,275 @@
+{
+  "slug": "analyst-portal/reports/member/member-stats-analyst",
+  "title": "Get Member Stats",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "reports",
+    "member",
+    "member-stats-analyst"
+  ],
+  "description": "Returns user stats based on stats type received.",
+  "method": "GET",
+  "path": "csap/v1/user_stats/",
+  "request": {
+    "query": [
+      {
+        "name": "stats_type",
+        "description": "Specify the type of member stats you want to retrieve.",
+        "isRequired": false,
+        "value": "members_with_crisis_setup",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "alert_readers",
+              "description": "Return details of members who have read an alert"
+            },
+            {
+              "value": "member_directory_opt_out",
+              "description": "Return details of members who opted out of the Member Directory"
+            },
+            {
+              "value": "members_with_crisis_setup",
+              "description": "Return the count of members with active crisis profiles"
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "alert_id",
+        "description": "Pass the unique 8-digit alert  ID (`short_id`) of the alert. You can retrieve the `short_id` using the **Get Alerts** endpoint.",
+        "isRequired": false,
+        "value": "57cb26db",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41d01ceb3f8dc913fb2ed"
+  },
+  "responses": [
+    {
+      "statusCode": "Alert Readers",
+      "description": "The following are the response parameters when the stats_type query parameter is set to alert_readers.",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "Users who have read the alert",
+          "description": "Returns the details of the reader.",
+          "isRequired": false,
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "readers",
+              "description": "Returns the details of the number of readers and related details.\n",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "count",
+                  "description": "Returns the total count of members who have opened the alert in the Member Portal.",
+                  "isRequired": false,
+                  "value": 6,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "reader_details",
+                  "description": "Returns the details (email and full name) of all readers of the alert.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "email",
+                          "description": "Returns the email of the reader.",
+                          "isRequired": false,
+                          "value": "john.doe@sampleorg.com",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "full_name",
+                          "description": "Returns the full name of the reader.",
+                          "isRequired": false,
+                          "value": "Naren",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "1",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "email",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "jane.doe@sampleorg.com",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "full_name",
+                          "description": "",
+                          "isRequired": false,
+                          "value": "Ankita",
+                          "valueType": "string",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "statusCode": "Member Directory Opt Out",
+      "description": "The following is the response parameter when the `stats_type` query parameter is set to `member_directory_opt_out`.",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "Number of users who have opted out of member directory",
+          "description": "Returns the number of members who have opted to not display their profile in the Member Directory.",
+          "isRequired": false,
+          "value": "2",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "statusCode": "Member Crisis Profile Details",
+      "description": "The following is the response parameter when the stats_type query parameter is set to members_with_crisis_setup.",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "Number of members who have crisis profile setup",
+          "description": "Returns the number of members who have their complete Crisis Profiles set up in the Member Portal.",
+          "isRequired": false,
+          "value": "30",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

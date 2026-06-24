@@ -73,6 +73,9 @@ export interface PageMeta {
 }
 
 export interface Manifest {
+  /** Product identifier (ctix, csap, orchestrate, cftr). */
+  productId?: string;
+  productName?: string;
   project: string;
   origin: string;
   generatedAt: string;
@@ -80,6 +83,8 @@ export interface Manifest {
   defaultBaseUrl: string;
   pages: PageMeta[];
   nav: NavNode[];
+  /** True when docs have been successfully ingested. */
+  indexed?: boolean;
 }
 
 export interface KeyValue {

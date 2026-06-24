@@ -1,0 +1,38 @@
+{
+  "slug": "cftr-api-reference/connect-the-dots/connected-components-and-threat-intel",
+  "title": "Connected Components and Threat Intel",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "connect-the-dots",
+    "connected-components-and-threat-intel"
+  ],
+  "description": "Connected Components and Threat Intel",
+  "method": "GET",
+  "path": "/v1/{component_identifier}/{component_unique_id}/connect-the-dots/",
+  "request": {
+    "query": [],
+    "header": [],
+    "body": [
+      {
+        "name": "body",
+        "value": "from common.config import get_cfg\nfrom connectors.csap.connector import CsapConnector    \ncsap_client = CsapConnector(\n    access_id=\"2439cd9f-43ed-42cb-93b3-f458893b7f9e\",\n    secret_key=\"cbb358dd-1b7e-4637-a5be-cc8a8d27bb08\",\n    base_url=\"https://cybank.cyware.com/api/tenant/\",\n    email=\"devansh.handa@cyware.com\",\n)\n_payload = {\n    \"card_type_name\": \"Malware Advisories\",\n    \"category_name\": \"Malware and Vulnerabilities\",\n    \"lead_url\": \"https://securityboulevard.com/2026/03/sonatype-discovers-two-malicious-npm-packages/\",\n    \"cyware_tags\": [\n        \"Vulnerability\",\n        \"Breach/Incident\"\n    ],\n    \"card_tag\": [\n        \"Sonatype\",\n        \"npm\",\n        \"sbx-mask\",\n        \"touch-adv\",\n        \"Sonatype Security Research\"\n    ],\n    \"target_geog_names\": [\n        \"Global\"\n    ],\n    \"target_sector_names\": [\n        \"Information Technology\"\n    ],\n    \"consumer_push\": False,\n    \"enterprise_push\": True,\n    \"title\": \"Sonatype Identifies Malicious npm Packages \\\"sbx-mask\\\" and \\\"touch-adv\\\" Exfiltrating Secrets\",\n    \"card_more_info\": None,\n    \"consumer_source_name\": \"threatpost\",\n    \"content\": \"<b> Key Highlights </b><br>\\nSonatype Security Research has identified a compromise involving two malicious npm packages, \\\"sbx-mask\\\" and \\\"touch-adv,\\\" which are designed to exfiltrate sensitive information from victims' computers. These packages were published through a compromised trusted npm maintainer account, posing a significant threat to developers and organizations relying on npm for package management.<br><br>\\n\\n<b> Recent Activity </b><br>\\n• The malicious packages were recently discovered and are believed to have been distributed through npm, a widely used package manager for JavaScript.<br>\\n• The compromise of the maintainer account suggests a targeted attack aimed at injecting malicious code into the npm ecosystem.<br><br>\\n\\n<b> Spread and Exploitation </b><br>\\n• The packages \\\"sbx-mask\\\" and \\\"touch-adv\\\" are designed to exfiltrate secrets from infected systems.<br>\\n• They exploit the trust in npm packages to infiltrate systems and extract sensitive data, potentially leading to unauthorized access and data breaches.<br><br>\\n\\n<b> Malware Behavior </b><br>\\n• Once installed, these malicious packages can access and exfiltrate sensitive information from the victim's computer.<br>\\n• The exact methods of exfiltration and the types of data targeted are not detailed, but the potential for significant data loss and unauthorized access is high.<br><br>\\n\\n<b> Recommended Actions </b><br>\\n<ul>\\n<li>Immediately audit npm packages for the presence of \\\"sbx-mask\\\" and \\\"touch-adv\\\" and remove them if found.</li>\\n<li>Monitor systems for unusual activity that may indicate data exfiltration.</li>\\n<li>Implement strict access controls and regularly review npm package dependencies for unauthorized changes.</li>\\n<li>Educate developers on the risks of using third-party packages and encourage the use of verified sources.</li>\\n<li>Consider using tools that can detect and block malicious npm packages before they are installed.</li>\\n</ul><br><br>\",\n    \"short_description\": \"Sonatype Security Research has identified two malicious npm packages, 'sbx-mask' and 'touch-adv', published by a potentially compromised npm maintainer account. These packages are designed to exfiltrate secrets from victims' computers, highlighting the risks of supply chain attacks in the software development ecosystem.\",\n    \"tenant_push\": False,\n    \"consumer_title\": \"Sonatype Discovers Two Malicious npm Packages\",\n    \"summary\": \"<b> Key Highlights </b><br>\\nSonatype Security Research has identified a compromise involving two malicious npm packages, \\\"sbx-mask\\\" and \\\"touch-adv,\\\" which are designed to exfiltrate sensitive information from victims' computers. These packages were published through a compromised trusted npm maintainer account, posing a significant threat to developers and organizations relying on npm for package management.<br><br>\\n\\n<b> Recent Activity </b><br>\\n• The malicious packages were recently discovered and are believed to have been distributed through npm, a widely used package manager for JavaScript.<br>\\n• The compromise of the maintainer account suggests a targeted attack aimed at injecting malicious code into the npm ecosystem.<br><br>\\n\\n<b> Spread and Exploitation </b><br>\\n• The packages \\\"sbx-mask\\\" and \\\"touch-adv\\\" are designed to exfiltrate secrets from infected systems.<br>\\n• They exploit the trust in npm packages to infiltrate systems and extract sensitive data, potentially leading to unauthorized access and data breaches.<br><br>\\n\\n<b> Malware Behavior </b><br>\\n• Once installed, these malicious packages can access and exfiltrate sensitive information from the victim's computer.<br>\\n• The exact methods of exfiltration and the types of data targeted are not detailed, but the potential for significant data loss and unauthorized access is high.<br><br>\\n\\n<b> Recommended Actions </b><br>\\n<ul>\\n<li>Immediately audit npm packages for the presence of \\\"sbx-mask\\\" and \\\"touch-adv\\\" and remove them if found.</li>\\n<li>Monitor systems for unusual activity that may indicate data exfiltration.</li>\\n<li>Implement strict access controls and regularly review npm package dependencies for unauthorized changes.</li>\\n<li>Educate developers on the risks of using third-party packages and encourage the use of verified sources.</li>\\n<li>Consider using tools that can detect and block malicious npm packages before they are installed.</li>\\n</ul><br><br>\",\n    \"desc1\": \"Sonatype Security Research has identified two malicious npm packages, 'sbx-mask' and 'touch-adv', published by a potentially compromised npm maintainer account. These packages are designed to exfiltrate secrets from victims' computers, highlighting the risks of supply chain attacks in the software development ecosystem.\",\n    \"status\": \"PUBLISHED\",\n    \"consumer_status\": \"DRAFT\",\n    \"indicators\": \"\",\n    \"recommended_actions\": [],\n    \"card_score\": 1,\n    \"auto_publish\": True,\n    \"published_time\": 1773964948,\n    \"sources_details\": [\n        {\n            \"url\": \"https://www.sonatype.com/blog/sonatype-discovers-two-malicious-npm-packages\"\n        },\n        {\n            \"url\": \"https://securityboulevard.com/2026/03/sonatype-discovers-two-malicious-npm-packages/\"\n        }\n    ],\n    \"email\": \"integrations-dev@cyware.com\",\n    \"card_image\": None\n}\ncsap_client.action_create_alert(payload=_payload)",
+        "valueType": "string"
+      }
+    ],
+    "path": [
+      {
+        "name": "component_identifier",
+        "value": "",
+        "valueType": "string"
+      },
+      {
+        "name": "component_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

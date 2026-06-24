@@ -1,0 +1,715 @@
+{
+  "slug": "analyst-portal/member/create-recipient-group",
+  "title": "Create Recipient Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "member",
+    "create-recipient-group"
+  ],
+  "description": "Creates a recipient group to group members for targeted sharing of information.\n\n### **Changelog**\n\n\nThis endpoint is available starting from the 3.8.8.0 version.",
+  "method": "POST",
+  "path": "csap/v1/recipient-group/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "group_name",
+        "description": "Pass the name of the recipient group.",
+        "isRequired": true,
+        "value": "Sample Group Name",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "group_desc",
+        "description": "Pass the description of the recipient group.",
+        "isRequired": true,
+        "value": "This is a sample group description",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "group_tlp",
+        "description": "Pass the Traffic Light Protocol (TLP) associated with the recipient group.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "RED",
+              "description": ""
+            },
+            {
+              "value": "GREEN",
+              "description": ""
+            },
+            {
+              "value": "WHITE",
+              "description": ""
+            },
+            {
+              "value": "AMBER",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "group_type",
+        "description": "Pass the type of the group.",
+        "isRequired": true,
+        "value": "public",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "public",
+              "description": ""
+            },
+            {
+              "value": "invite_only",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "request_to_join_group",
+        "description": "Pass true if members can request to join the group. This is a required field if group_type is invite_only.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "features",
+        "description": "Pass the features that members of the recipient group should have access to within the group.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "knowledge_base",
+            "description": "Pass true to grant members of the recipient group access to the Knowledge Base.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "survey",
+            "description": "Pass true to grant members of the recipient group access to the Survey module.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "threat_defender_display",
+            "description": "Pass true to allow members of the recipient group to view content from the Threat Defender Library.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "threat_defender_create",
+            "description": "Pass true to allow members of the recipient group to create content in the Threat Defender Library.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "member_directory_display",
+            "description": "Pass true to allow members of the recipient group to view the Member Directory.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "intel_report",
+            "description": "Pass true to allow members of the recipient group to access intel report.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "doc_library",
+            "description": "Pass true to allow members of the recipient group to access the Doc Library.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "request_for_information",
+            "description": "Pass true to allow members of the recipient group to access the Request for Information (RFI) module.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "messenger",
+            "description": "Pass true to allow members of the recipient group to access Messenger.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "doc_library_upload",
+            "description": "Pass true to allow members of the recipient group to upload documents to the Doc Library.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "organization_directory_display",
+            "description": "Pass true to allow members of the recipient group to view the Organization Directory.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "allowed_for_intel_submission",
+        "description": "Pass true to allow members of the recipient group to submit intel.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "allowed_for_rfi_submission",
+        "description": "Pass true to allow members of the recipient group to submit Request for Information (RFI).",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "is_active",
+        "description": "Pass true to indicate that the recipient group is active.",
+        "isRequired": false,
+        "value": true,
+        "valueType": "boolean",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69787d6dc63cb994ffef86d1"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "group_id",
+          "description": "Returns the ID of the created recipient group.",
+          "isRequired": false,
+          "value": "6a7dd81d",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "group_tlp",
+          "description": "Returns the Traffic Light Protocol (TLP) associated with the group.",
+          "isRequired": false,
+          "value": "CLEAR",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "executive_protection",
+          "description": "Returns true if executive protection is enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "group_name",
+          "description": "Returns the name of the group.",
+          "isRequired": false,
+          "value": "Sample Group Name",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "group_image",
+          "description": "Returns the image associated with the group.",
+          "isRequired": false,
+          "value": null,
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "group_desc",
+          "description": "Returns the description of the group.",
+          "isRequired": false,
+          "value": "This is a sample group description",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "group_type",
+          "description": "Returns the type of the group.",
+          "isRequired": false,
+          "value": "CUSTOM",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "auto_receive",
+          "description": "Returns true if auto-receive is enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "notification",
+          "description": "Returns the notification settings for the group.",
+          "isRequired": false,
+          "value": "SELECTED",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "push_notification",
+          "description": "Returns true if push notifications are enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "push_email_notification",
+          "description": "Returns true if push email notifications are enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "user_visibility",
+          "description": "Returns true if user visibility is enabled for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_active",
+          "description": "Returns true if the group is active.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_editable",
+          "description": "Returns true if the group is editable.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email_alert",
+          "description": "Returns true if email alerts are enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "incident_report",
+          "description": "Returns true if incident reports are enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "handbooks",
+          "description": "Returns true if handbooks are enabled for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "intel_report",
+          "description": "Returns true if intel reports are enabled for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "messenger",
+          "description": "Returns true if Messenger is enabled for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_poll",
+          "description": "Returns true if poll is visible to members for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_drive",
+          "description": "Returns true if drive is visible to members for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "auto_info_sharing",
+          "description": "Returns true if automatic information sharing is enabled for the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allow_share_alert",
+          "description": "Returns true if members are allowed to share alert.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_member_directory",
+          "description": "Returns true if Member Directory is visible to the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_organization_directory",
+          "description": "Returns true if Organization Directory is visible to the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "request_for_information",
+          "description": "Returns true if Request for Information (RFI) is enabled for the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "end_user_drive_upload",
+          "description": "Returns true if end users can upload files.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_action",
+          "description": "Returns true if the Actions module is visible to the group.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allowed_edit",
+          "description": "Returns true if members of the group have edit access.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "request_to_join_group",
+          "description": "Returns true if members can request to join the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_threat_defender",
+          "description": "Returns true if Threat Defender Library content is visible to the group.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "create_threat_defender",
+          "description": "Returns true if members can create content in Threat Defender Library.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allow_in_collaboration",
+          "description": "Returns true if members can access the Collaborate feature.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allowed_for_intel_submission",
+          "description": "Returns true if members of the group can submit intel.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "allowed_for_rfi_submission",
+          "description": "Returns true if members of the group can submit an RFI.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

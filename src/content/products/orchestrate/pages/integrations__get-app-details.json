@@ -1,0 +1,1220 @@
+{
+  "slug": "integrations/get-app-details",
+  "title": "Get App Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "integrations",
+    "get-app-details"
+  ],
+  "description": "Returns the details of a specific app.",
+  "method": "GET",
+  "path": "v1/integrations/apps/{app_unique_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "app_unique_id",
+        "description": "Enter the unique ID of the app to retrieve its details.\nYou can retrieve the unique IDs of apps using the **Get Apps** endpoint.",
+        "isRequired": true,
+        "value": "6d9c0ec4-bdf4-4334-99a0-83fffb7c3af9*",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67f4f4f8bd08c35d39c8a29f"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "unique_id",
+          "description": "Returns the unique ID that is generated dynamically on creating the app.",
+          "isRequired": false,
+          "value": "6d9c0ec4-bdf4-4334-99a0-83fffb7c3af9",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the app.",
+          "isRequired": false,
+          "value": "AbuseIPDB",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns a brief description of the app.",
+          "isRequired": false,
+          "value": "This app provides integration with AbuseIPDB, a project dedicated to helping combat the spread of hackers, spammers, and abusive activity on the internet.",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "app_identifier",
+          "description": "Returns a human-readable identifier of the app. For example: `abuse_ipdb`.",
+          "isRequired": false,
+          "value": "abuse_ipdb",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "published_by",
+          "description": "Returns the name of the user who published the app.",
+          "isRequired": false,
+          "value": "Cyware",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "published_date",
+          "description": "Returns the date and time when the app was published.",
+          "isRequired": false,
+          "value": "2021-10-20T08:38:03Z",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_system",
+          "description": "Indicates if the app is a system app or a custom app.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connector_version",
+          "description": "Returns the version of the app.",
+          "isRequired": false,
+          "value": "1.0.0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "actions_count",
+          "description": "Returns the number of actions supported in the app.",
+          "isRequired": false,
+          "value": 3,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "instances_count",
+          "description": "Returns the number of instances configured for the app.",
+          "isRequired": false,
+          "value": 1,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "supported_versions",
+          "description": "Returns the supported app's API version.",
+          "isRequired": false,
+          "value": "1.0.0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "config_template",
+          "description": "Returns the configuration parameters to create an instance in the app.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of the configuration parameter.",
+                  "isRequired": false,
+                  "value": "API Token",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "field_key",
+                  "description": "Returns the field key of the configuration parameter.",
+                  "isRequired": false,
+                  "value": "api_token",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "field_type",
+                  "description": "Returns the field type of the configuration parameter.",
+                  "isRequired": false,
+                  "value": "text",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the configuration parameter.",
+                  "isRequired": false,
+                  "value": "Input the API token for authentication.",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_required",
+                  "description": "Indicates whether the field is required or optional.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "valid_file_type",
+                  "description": "Returns the file type supported for the configuration parameter.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "app_slug",
+          "description": "Returns the resource identifier of the application.",
+          "isRequired": false,
+          "value": "abuse_ipdb_1_0_0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "logo",
+          "description": "Returns the URL link for the app's logo.",
+          "isRequired": false,
+          "value": "https://production.domain.com/enterprise/img/appname_logo_composite_colored.683b73e.svg",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "is_installed",
+          "description": "Indicates if the app is installed or not.",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "major_version",
+          "description": "Returns the major version of the app.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "categories",
+          "description": "Returns the list of categories associated with the app.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of the category.",
+                  "isRequired": false,
+                  "value": "Data Enrichment & Threat Intelligence",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the category.",
+                  "isRequired": false,
+                  "value": "Data Enrichment & Threat Intelligence",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the category.",
+                  "isRequired": false,
+                  "value": "b429e1ed-1f78-483c-af29-e70c2381bbf2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "latest_installed_version",
+          "description": "Returns the latest installed version of the app.",
+          "isRequired": false,
+          "value": "1.0.1",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "all_installed_versions",
+          "description": "Returns all the installed versions of the app.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "connector_version",
+                  "description": "Returns the app versions installed.",
+                  "isRequired": false,
+                  "value": "1.0.1",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_unique_id",
+                  "description": "Returns the unique ID of the app installed.",
+                  "isRequired": false,
+                  "value": "04373357-8f9f-4a5e-b4e7-19d9afca60ff",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_at",
+                  "description": "Returns the date and time when the app was created.",
+                  "isRequired": false,
+                  "value": "2021-12-01T11:06:52.916Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_at",
+                  "description": "Returns the date and time when the app was last modified.",
+                  "isRequired": false,
+                  "value": "2021-12-21T17:00:49.941Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_identifier",
+                  "description": "Returns a human readable app identifier consisting of the app title and API version.\n\n",
+                  "isRequired": false,
+                  "value": "abuse_ipdb",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "total_instance_count",
+          "description": "Returns the count of instances in the app.",
+          "isRequired": false,
+          "value": 6,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by",
+          "description": "Returns the user ID of the user who created the app.\n",
+          "isRequired": false,
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_by",
+          "description": "Returns the user ID of the user who modified the app.",
+          "isRequired": false,
+          "value": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "app_type",
+          "description": "Returns the app type to indicate if the app is installed, active, or inactive.",
+          "isRequired": false,
+          "value": "INSTALLED",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "connector_code",
+          "description": "Returns the code of the app.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_at",
+          "description": "Returns the date and time when the app was created.",
+          "isRequired": false,
+          "value": "2021-12-01T11:06:52.916Z",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "modified_at",
+          "description": "Returns the date and time the app was last modified.",
+          "isRequired": false,
+          "value": "2021-12-21T17:00:49.941Z",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "package_hash",
+          "description": "Returns the hash of the app package.",
+          "isRequired": false,
+          "value": "0d8361da9dda1b7018d8123b3d3150aa",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "publisher_logo_url",
+          "description": "Returns the URL for the logo of the app publisher.",
+          "isRequired": false,
+          "value": "https://production.app.com/enterprise/img/demo_logo_composite_colored.683b73e.svg",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "python_class_name",
+          "description": "Returns the python class name of the app.",
+          "isRequired": false,
+          "value": "AbuseIpdbConnector",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "logo_url",
+          "description": "Returns the URL of the app logo.",
+          "isRequired": false,
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "download_counter",
+          "description": "Returns the number of times the app is downloaded.",
+          "isRequired": false,
+          "valueType": "number",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "lite_enabled",
+          "description": "Indicates whether the app is compatible with the Cyware Agent or not.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "documentation_url",
+          "description": "Returns the URL of the app's documentation.",
+          "isRequired": false,
+          "value": "https://techdocs.cyware.com/en/index-en.html?contextId=app_name",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "major_agent_version",
+          "description": "Returns the major version of the Cyware agent, if supported.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "minor_agent_version",
+          "description": "Returns the minor version of the Cyware agent, if supported.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "patch_agent_version",
+          "description": "Returns the current patch version of Cyware agent, if supported.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "minor_version",
+          "description": "Returns the minor version of the app.",
+          "isRequired": false,
+          "value": "1",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "patch_version",
+          "description": "Returns the current patch version of the app.",
+          "isRequired": false,
+          "value": "0",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "created_by_data",
+          "description": "Returns the details of the user who created the app.\n",
+          "isRequired": false,
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the user who created the app.",
+              "isRequired": false,
+              "value": "xxxxxxxxxxxxxxxxxxxxxxxx",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who created the app.",
+              "isRequired": false,
+              "value": "Bob",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who created the app.",
+              "isRequired": false,
+              "value": "David",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who created the app.",
+              "isRequired": false,
+              "value": "Bob David",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "modified_by_data",
+          "description": "Returns the details of the user who last modified the app. ",
+          "isRequired": false,
+          "valueType": "object",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "unique_id",
+              "description": "Returns the unique ID of the user who last modified the app.",
+              "isRequired": false,
+              "value": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "first_name",
+              "description": "Returns the first name of the user who last modified the app.",
+              "isRequired": false,
+              "value": "Bob",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "last_name",
+              "description": "Returns the last name of the user who last modified the app.",
+              "isRequired": false,
+              "value": "David",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the full name of the user who last modified the app.",
+              "isRequired": false,
+              "value": "Bob David",
+              "valueType": "string",
+              "options": null,
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "actions_data",
+          "description": "Returns the details of the app's action.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "title",
+                  "description": "Returns the title of the action.",
+                  "isRequired": false,
+                  "value": "Check Subnet Reputation",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the action.",
+                  "isRequired": false,
+                  "value": "This action can be used to get the reputation of a subnet from Abuse IPDB.",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "action_identifier",
+                  "description": "Returns the human-readable identifier of the action.",
+                  "isRequired": false,
+                  "value": "check_cidr",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_identifier",
+                  "description": "Returns a human readable app identifier consisting of app title and version.",
+                  "isRequired": false,
+                  "value": "cftr_v2",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "accepted_params",
+                  "description": "Returns the details of the input parameters required to run the action.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "title",
+                          "description": "Returns the title of the input parameter.",
+                          "isRequired": false,
+                          "value": "IP Address Subnet",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_key",
+                          "description": "Returns the field key of the input parameter.",
+                          "isRequired": false,
+                          "value": "network_subnet",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "field_type",
+                          "description": "Returns the field type of the input parameter.",
+                          "isRequired": false,
+                          "value": "text",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "description",
+                          "description": "Returns the description of the input parameter.",
+                          "isRequired": false,
+                          "value": "Input the IP address Subnet (CIDR)\n- 127.0.0.1/26",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_required",
+                          "description": "Returns if the input parameter is required or optional to execute the action.",
+                          "isRequired": false,
+                          "value": true,
+                          "valueType": "boolean",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "options",
+                          "description": "Returns the default values configured for the parameter.",
+                          "isRequired": false,
+                          "valueType": "array",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "option_type",
+                          "description": "Returns the type of the default value configured.",
+                          "isRequired": false,
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the action.",
+                  "isRequired": false,
+                  "value": "52091b28-5daa-42f3-9eb9-926994a91ca5",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_unique_id",
+                  "description": "Returns the unique ID of the app.",
+                  "isRequired": false,
+                  "value": "6d9c0ec4-bdf4-4334-99a0-83fffb7c3af9",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the unique ID of the user who created the app.",
+                  "isRequired": false,
+                  "value": "xxxxxxxxxxxxxxxxxxxxxxxx",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_by",
+                  "description": "Returns the unique ID of the user who last modified the app.",
+                  "isRequired": false,
+                  "value": "xxxxxxxxxxxxxxxxxxxxxxxx",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_at",
+                  "description": "Returns the date and time when the app was created.",
+                  "isRequired": false,
+                  "value": "2021-12-01T11:06:52.943Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_at",
+                  "description": "Returns the date and time when the app was last modified.",
+                  "isRequired": false,
+                  "value": "2021-12-01T11:06:52.943Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_slug",
+                  "description": "Returns the resource identifier of the app.",
+                  "isRequired": false,
+                  "value": "abuse_ipdb_1_0_0",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "connector_version",
+                  "description": "Returns the app version.",
+                  "isRequired": false,
+                  "value": "1.0.0",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_title",
+                  "description": "Returns the title of the app.",
+                  "isRequired": false,
+                  "value": "Abuse IPDB",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "system_app",
+                  "description": "Indicates if the app is a system app or a custom app.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "return_values",
+                  "description": "Returns the response values you will receive after the action is executed.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "appinstance_set_data",
+          "description": "Returns the details of all the instances configured for the app.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": null,
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": null,
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "app_unique_id",
+                  "description": "Returns the unique ID of the app.",
+                  "isRequired": false,
+                  "value": "6d9c0ec4-bdf4-4334-99a0-83fffb7c3af9",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "unique_id",
+                  "description": "Returns the unique ID of the instance.",
+                  "isRequired": false,
+                  "value": "23b5d0d0-4cd0-42b6-9979-aa47d98d0790",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_at",
+                  "description": "Returns the date and time of when the instance was created.",
+                  "isRequired": false,
+                  "value": "2021-12-21T17:00:49.934Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_at",
+                  "description": "Returns the date and time of when the instance was last modified.",
+                  "isRequired": false,
+                  "value": "2022-01-05T08:44:22.924Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the title of the app instance.",
+                  "isRequired": false,
+                  "value": "instance name",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "slug",
+                  "description": "Returns the resource identifier of the app instance.",
+                  "isRequired": false,
+                  "value": "instance name",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "created_by",
+                  "description": "Returns the name of the user who created the instance.",
+                  "isRequired": false,
+                  "value": "xxxxxxxxxxxxxxxxxxxxxxxx",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "modified_by",
+                  "description": "Returns the name of the user who last modified the instance.",
+                  "isRequired": false,
+                  "value": "xxxxxxxxxxxxxxxxxxxxxxxx",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_default",
+                  "description": "Indicates if the instance is set as default or not.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "description",
+                  "description": "Returns the description of the app instance.",
+                  "isRequired": false,
+                  "value": "This istance is used to test the action",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tested_by",
+                  "description": "Returns the user ID of the user who tested the app instance.",
+                  "isRequired": false,
+                  "value": "xxxxxxxxxxxxxxxxxxxxxxxx",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "tested_date",
+                  "description": "Returns the date and time when the app instance was tested.",
+                  "isRequired": false,
+                  "value": "2022-01-05T08:44:22.922Z",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "connectivity_status",
+                  "description": "Returns the connectivity status, that is SUCCESS or FAIL.",
+                  "isRequired": false,
+                  "value": "SUCCESS",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "connectivity_message",
+                  "description": "Returns the message elaborating the connectivity status. For example, *Authentication successful*.",
+                  "isRequired": false,
+                  "value": "Connection test successful!",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "connector_version",
+                  "description": "Returns the app version.",
+                  "isRequired": false,
+                  "value": "1.0.0",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "configuration",
+                  "description": "Returns the details of the app instance configurations.\n",
+                  "isRequired": false,
+                  "value": "{}",
+                  "valueType": "object",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "lite_model",
+                  "description": "Returns the model of the agent.",
+                  "isRequired": false,
+                  "value": "PULL",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "app_title",
+                  "description": "Returns the title of the app.",
+                  "isRequired": false,
+                  "value": "Abuse IPDB",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_removed",
+                  "description": "Indicates if the instance is deleted or not.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "on_lite",
+                  "description": "Indicates if the instance of the app is supported on the Agent.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "csol_lite_id",
+                  "description": "Returns the Cyware agent ID.",
+                  "isRequired": false,
+                  "value": "e0011ab0-af8b-44c4-b3f1-ede9143b0507",
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "connectivity_detail",
+                  "description": "Returns the details of the test connectivity.",
+                  "isRequired": false,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "status_code",
+                  "description": "Returns the status code based on the status of the instance.",
+                  "isRequired": false,
+                  "valueType": "string",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "uploaded_file_data",
+                  "description": "Returns the details of the uploaded file.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "expiry_mail_sent",
+                  "description": "Indicates if the email is sent on instance expiration.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": null,
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

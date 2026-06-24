@@ -1,0 +1,46 @@
+{
+  "slug": "cftr-api-reference/incidents/update-incident-using-field-uuid",
+  "title": "Update Incident Using Field UUID",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "incidents",
+    "update-incident-using-field-uuid"
+  ],
+  "description": "Update Incident Using Field UUID",
+  "method": "PUT",
+  "path": "/v1/incident/{incident_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      },
+      {
+        "name": "Authorization",
+        "isRequired": true,
+        "value": "{{auth_key}}",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "value": "Phishing incident",
+        "valueType": "string"
+      }
+    ],
+    "path": [
+      {
+        "name": "incident_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

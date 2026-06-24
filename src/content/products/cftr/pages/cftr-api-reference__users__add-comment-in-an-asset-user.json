@@ -1,0 +1,45 @@
+{
+  "slug": "cftr-api-reference/users/add-comment-in-an-asset-user",
+  "title": "Add Comment in an Asset User",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "users",
+    "add-comment-in-an-asset-user"
+  ],
+  "description": "Add Comment in an Asset User",
+  "method": "POST",
+  "path": "/v1/comments/general-user/{user_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "<p>Note For User</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "mentioned_users_usernames",
+        "value": "[]",
+        "valueType": "array"
+      }
+    ],
+    "path": [
+      {
+        "name": "user_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

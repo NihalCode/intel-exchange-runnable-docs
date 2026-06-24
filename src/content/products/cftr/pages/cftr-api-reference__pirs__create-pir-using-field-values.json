@@ -1,0 +1,70 @@
+{
+  "slug": "cftr-api-reference/pirs/create-pir-using-field-values",
+  "title": "Create PIR Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "pirs",
+    "create-pir-using-field-values"
+  ],
+  "description": "Create PIR Using Field Values",
+  "method": "POST",
+  "path": "/v1/pir/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "value": "Test PIR for OpenAPI",
+        "valueType": "string"
+      },
+      {
+        "name": "priority",
+        "value": "Very High",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_group",
+        "value": "CFTR Admin",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "<p>Test PIR description</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "status",
+        "value": "open",
+        "valueType": "string"
+      },
+      {
+        "name": "assigned_to",
+        "value": "[\"peter.smith@example.com\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Red Label PIR\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

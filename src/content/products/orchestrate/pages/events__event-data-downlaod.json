@@ -1,0 +1,79 @@
+{
+  "slug": "events/event-data-downlaod",
+  "title": "Download Event Data",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "events",
+    "event-data-downlaod"
+  ],
+  "description": "Download large files from event data.",
+  "method": "GET",
+  "path": "v1/events/export/{unique_id}/",
+  "request": {
+    "query": [
+      {
+        "name": "field",
+        "description": "Pass the column name for which file will be generated. You can retrieve the column name in the `splitted_columns` field of the **Get Source Event Details** endpoint.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "unique_id",
+        "description": "Pass the unique ID of the event to download. You can retrieve the unique ID of the event using the **Get Source Events** endpoint.",
+        "isRequired": true,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/xml",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "693a73aeb1b9d3ee275214fd"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "file_url",
+          "description": "Returns the URL of the file to download.",
+          "isRequired": false,
+          "value": "https://server.com/csolbucket/qa/playbookresult/event-data-f593a083.json?response-content-disposition=attachment",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/xml"
+}

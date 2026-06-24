@@ -1,0 +1,1016 @@
+{
+  "slug": "analyst-portal/member/update-member",
+  "title": "Update Member",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "member",
+    "update-member"
+  ],
+  "description": "Update a member's profile details in Collaborate's Member Portal.\n\n\n\n> [!NOTE]\n> *   Member details cannot be updated using this endpoint if mandatory custom fields are enabled.\n> *   To enable Intel Lake for a member through the features body parameter, ensure that you have a valid license. For more information, see [Collaborate documentation](https://techdocs.cyware.com/en/299669-308321-add-members.html#299669-308321-add-members).\n\n\n\n### Changelog\n\n\nAdded support for the features body parameter",
+  "method": "PUT",
+  "path": "csap/v1/update_member/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "id",
+        "description": "Pass the member ID. You can retrieve this ID using the **Get Members** endpoint. <br> Example, *\"id\": \"642080b6-35d9-4362-afe3-6f06c2d8eb41\"*",
+        "isRequired": true,
+        "value": "642080b6-35d9-4362-afe3-6f06c2d8eb41",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "email",
+        "description": "Pass the email address of the member. <br> Example: *\"email\": \"member@orgname.com\"*.",
+        "isRequired": true,
+        "value": "member@orgname.com",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "first_name",
+        "description": "Pass the full name of the member.",
+        "isRequired": true,
+        "value": "member",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "title",
+        "description": "Pass the title of the member.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "user_group",
+        "description": "Pass the group ID of the recipient group the member is part of. You can retrieve the list of recipient groups using the **Get Recipient Groups** endpoint. <br>\nExample: *\"user_group\": [{\"group_id\": \"97537bba\"}]* <br>\nNote: You can only add System and Invite-only recipient groups while adding a member.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "group_id",
+                "description": "Pass the unique ID of the recipient group. ",
+                "isRequired": false,
+                "value": "044da1b9",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "organization_type",
+        "description": "Pass the organization type. You can retrieve the list of organization types using the **Get Organizations** endpoint. <br>\nExample:\n*\"organization_type\": {\"org_type_id\": \"d8eb96f6-7377-42bc-af0c-1ef215a32fc3\"}* <br>\n`org_type_id` is a required key for this parameter.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "org_type_id",
+            "description": "Pass the unique ID of the organization type. ",
+            "isRequired": true,
+            "value": "3edce7ce-3257-48c1-be7c-d7bf501c6afd",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "org_type_name",
+            "description": "Pass the name of the organization type.",
+            "isRequired": false,
+            "value": "Media & Communications",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "is_active",
+            "description": "Pass true if the status is active.",
+            "isRequired": false,
+            "value": true,
+            "valueType": "boolean",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "organization_detail",
+        "description": "Pass the organization details that the member belongs to. You can retrieve the list of organizations using the **Get Organizations** endpoint. <br>\nExample, *\"organization\": { \"organization_id\": \"3cf257a6-e329-48b7-8c14-815d3c358bae\", \"organization_name\": \"Example Org\"}*.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "org_id",
+            "description": "Pass the unique ID of the organization. ",
+            "isRequired": false,
+            "value": "7a321712-d125-43c3-8816-7a3f9601ed07",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "org_name",
+            "description": "Pass the name of the organization.",
+            "isRequired": false,
+            "value": "Example Organization A",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "country_code",
+        "description": "Pass the country code.",
+        "isRequired": false,
+        "value": "+1",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "phone_number",
+        "description": "Pass the phone number.",
+        "isRequired": false,
+        "value": "212-555-1234",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "business_unit",
+        "description": "Pass the business unit details.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "user_location",
+        "description": "Pass the member's location. You can retrieve the list of locations using the **Get Member Locations** endpoint. <br>\nExample:\n*\"user_location\": {\"location_id\": \"13a3f2b9\"}*",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "location_id",
+            "description": "Pass the unique ID of the location. ",
+            "isRequired": false,
+            "value": "81dd8946",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "location_name",
+            "description": "Pass the name of the location.",
+            "isRequired": false,
+            "value": "US-New York-New York-NA",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "mailing_address",
+        "description": "Pass the mailing address of the member.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "street",
+            "description": "Pass the street address of the member.",
+            "isRequired": false,
+            "value": "123 Main Street, Apartment 4B",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "city",
+            "description": "Pass the city where the member resides.",
+            "isRequired": false,
+            "value": "New York",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "state",
+            "description": "Pass the state or province where the member resides.",
+            "isRequired": false,
+            "value": "New York",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "postal_code",
+            "description": "Pass the postal or ZIP code corresponding to the member's address.",
+            "isRequired": false,
+            "value": "10001",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "country",
+            "description": "Pass the country where the member resides.",
+            "isRequired": false,
+            "value": "United States",
+            "valueType": "string",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      },
+      {
+        "name": "features",
+        "description": "Pass the features to enable or disable access to specific Collaborate features for a member.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "intel_lake",
+            "description": "Pass the configuration values to enable or disable access to the Intel Lake feature for the member. If all child parameters are set to false, Intel Lake will be disabled automatically. Note: This feature requires a valid license.",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "allow_actioning",
+                "description": "Choose true to allow members to take actions on intel. To set this to true, at least one of `display_module` or `display_in_alert_indicators` must be true. ",
+                "isRequired": true,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "defaultValue": "false",
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "display_module",
+                "description": "Choose true to allow the member to view the Intel Lake feature.",
+                "isRequired": true,
+                "value": false,
+                "valueType": "boolean",
+                "options": {
+                  "defaultValue": "false",
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "display_in_alert_indicators",
+                "description": "Choose true to allow the member to view Intel Lake data when they click indicators that are included in alerts.",
+                "isRequired": true,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "defaultValue": "false",
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "generate_openapi_credentials",
+                "description": "Choose true to allow the member to generate Intel Lake open API credentials.",
+                "isRequired": true,
+                "value": true,
+                "valueType": "boolean",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "686775c24a67cc97f612c019"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "tenant_user_id",
+          "description": "Returns the unique ID of the user in the tenant.",
+          "isRequired": false,
+          "value": "c8bdd3f1-9c39-4e80-90b4-a80f39ea1b77",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "email",
+          "description": "Returns the email address of the member.",
+          "isRequired": false,
+          "value": "member@cyware.com",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "full_name",
+          "description": "Returns the full name of the member.",
+          "isRequired": false,
+          "value": "member",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the member, if available.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "user_group",
+          "description": "Returns the recipient groups (group name and group ID) that the member belongs to.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "organization",
+          "description": "Returns the details of the organization the member is associated with.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "organization_id",
+              "description": "Returns the unique organization ID to which the member belongs to.",
+              "isRequired": false,
+              "value": "3f1ed4db-0244-456b-a1f7-cbc404563deb",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "organization_name",
+              "description": "Returns the name of the organization to which the member belongs to.",
+              "isRequired": false,
+              "value": "Company BAC",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "country_code",
+          "description": "Returns the country code associated with the member's phone number.",
+          "isRequired": false,
+          "value": "+1",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "phone_number",
+          "description": "Returns the phone number of the member.",
+          "isRequired": false,
+          "value": "212-555-1234",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "business_unit",
+          "description": "Returns the business unit details.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "user_location",
+          "description": "Returns the location of the member.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "location_id",
+              "description": "Returns the ID of the location.",
+              "isRequired": false,
+              "value": "13a3f2b9",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "location_name",
+              "description": "Returns the name of the location.",
+              "isRequired": false,
+              "value": "US-New York-New York-NA",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "mailing_address",
+          "description": "Returns the mailing address of the member.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "street",
+              "description": "Returns the street address of the member.",
+              "isRequired": false,
+              "value": "123 Main Street, Apartment 4B",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "city",
+              "description": "Returns the city of the member’s mailing address.",
+              "isRequired": false,
+              "value": "New York",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "state",
+              "description": "Returns the state or province of the member’s mailing address.",
+              "isRequired": false,
+              "value": "New York",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "postal_code",
+              "description": "Returns the postal or ZIP code of the member’s mailing address.",
+              "isRequired": false,
+              "value": "10001",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "country",
+              "description": "Returns the country of the member’s mailing address.",
+              "isRequired": false,
+              "value": "United States",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "organization_type",
+          "description": "Returns the organization type the member belongs to.\n",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "organization_type_id",
+              "description": "Returns the unique ID of the organization type of the organization.",
+              "isRequired": false,
+              "value": "d8eb96f6-7377-42bc-af0c-1ef215a32fc3",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "organization_type_name",
+              "description": "Returns the name of the organization type.",
+              "isRequired": false,
+              "value": "Sample Org Type Name",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "features",
+          "description": "Returns the status of selected features, such as Intel Lake, for the member.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "intel_lake",
+              "description": "Returns the values of the Intel Lake feature configurations.",
+              "isRequired": false,
+              "value": "",
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "status",
+                  "description": "Returns the current access state of Intel Lake. ",
+                  "isRequired": false,
+                  "value": "In Progress",
+                  "valueType": "string",
+                  "options": {
+                    "enumValue": [
+                      {
+                        "value": "On",
+                        "description": ""
+                      },
+                      {
+                        "value": "Off",
+                        "description": ""
+                      },
+                      {
+                        "value": "In Progress",
+                        "description": ""
+                      },
+                      {
+                        "value": "Error",
+                        "description": ""
+                      }
+                    ],
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "allow_actioning",
+                  "description": "Returns true if actioning on intel is allowed for the member.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "display_module",
+                  "description": "Returns true if the member can access the Intel Lake feature in the Member Portal.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "display_in_alert_indicators",
+                  "description": "Returns true if the member can view Intel Lake data when they click indicators that are included in alerts.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "generate_openapi_credentials",
+                  "description": "Returns true if the member can generate Intel Lake OpenAPI credentials.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "message",
+                  "description": "Returns a status message that provides additional context, such as progress updates or error details.",
+                  "isRequired": false,
+                  "value": "Feature enablement in progress. Try again later.",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

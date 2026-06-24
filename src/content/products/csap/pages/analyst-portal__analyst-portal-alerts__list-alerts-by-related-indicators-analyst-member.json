@@ -1,0 +1,127 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/list-alerts-by-related-indicators-analyst-member",
+  "title": "Get Alerts by Related Indicators",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "list-alerts-by-related-indicators-analyst-member"
+  ],
+  "description": "Returns published alerts by indicators mentioned in the alerts.\n\n### Changelog\n\n\nFor analysts, access to alerts are based on the categories associated with your user role in the Analyst Portal. This update does not impact credentials generated prior to this version.",
+  "method": "POST",
+  "path": "csap/v1/get_related_alerts/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "indicator_type",
+        "description": "Pass the indicator type to retrieve associated alerts. Example: *MD5*",
+        "isRequired": true,
+        "value": "MD5",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "indicator_value",
+        "description": "Pass the indicator value. Example: *5622f67a4f071c421d37f40457a5e360* ",
+        "isRequired": true,
+        "value": "5622f67a4f071c421d37f40457a5e360",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "counts",
+        "description": "Pass the number of records you want to retrieve. Example: *1*",
+        "isRequired": false,
+        "value": 1,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "5",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d3d908ceb3f8dc913e38ed"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the count of alerts.",
+          "isRequired": false,
+          "value": "10",
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "alert_id",
+          "description": "Returns the unique alert ID of the alerts which consist of the specified indicators.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "Returns the unique ID of the alert.",
+              "isRequired": false,
+              "value": "66865e0f",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

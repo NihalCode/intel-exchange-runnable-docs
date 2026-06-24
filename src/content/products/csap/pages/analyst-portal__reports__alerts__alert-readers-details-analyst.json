@@ -1,0 +1,513 @@
+{
+  "slug": "analyst-portal/reports/alerts/alert-readers-details-analyst",
+  "title": "Get Alert Readers Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "reports",
+    "alerts",
+    "alert-readers-details-analyst"
+  ],
+  "description": "Returns the details of members who have read published alerts in the Member Portal.",
+  "method": "GET",
+  "path": "csap/v1/alert_read_status/",
+  "request": {
+    "query": [
+      {
+        "name": "start",
+        "description": "To filter alerts by published time, pass the start time for the query in epoch format. Example, *1705729361*. If you apply this filter, ensure that you also pass the \"end\" query parameter.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "end",
+        "description": "To filter alerts by published time, pass the end time in epoch format. Example, *1706161450*. If you apply this filter, ensure that you also pass the \"start\" query parameter.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page",
+        "description": "Pass the number of pages for the response.",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "1",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "page_size",
+        "description": "Pass the number of records in a page. If you don't pass \"page\" query parameter along with this, all report sources will be retrieved.",
+        "isRequired": false,
+        "valueType": "number",
+        "options": {
+          "defaultValue": "10",
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "body": [],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41932ceb3f8dc913fac31"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "count",
+          "description": "Returns the total number of alerts published to the Member Portal.",
+          "isRequired": false,
+          "value": 50917,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "results",
+          "description": "Returns the details of the published alerts.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "publisher",
+                  "description": "Returns the publisher details (name and email) of the alert.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "first_name",
+                      "description": "Returns the first name of the publisher.",
+                      "isRequired": false,
+                      "value": "John",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "email",
+                      "description": "Returns the email address of the publisher.",
+                      "isRequired": false,
+                      "value": "john.doe@example.com",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "name": "readers",
+                  "description": "Returns the count of readers and their details for an alert.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "count",
+                      "description": "Returns the total number of alerts published to the Member Portal.",
+                      "isRequired": false,
+                      "value": 1,
+                      "valueType": "number",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "reader_details",
+                      "description": "Returns the details of the alert reader such as email, full name, organization details and allowed member email domains.",
+                      "isRequired": false,
+                      "valueType": "array",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "0",
+                          "description": "",
+                          "isRequired": false,
+                          "valueType": "object",
+                          "options": {
+                            "xml": {
+                              "prefix": null
+                            },
+                            "schemaNames": []
+                          },
+                          "complexItems": [],
+                          "items": [
+                            {
+                              "name": "email",
+                              "description": "Returns the email address of the reader.",
+                              "isRequired": false,
+                              "value": "janesmith@example.com",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "full_name",
+                              "description": "Returns the full name of the reader.",
+                              "isRequired": false,
+                              "value": "Jane Smith",
+                              "valueType": "string",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": []
+                            },
+                            {
+                              "name": "organization",
+                              "description": "Returns information about the reader’s organization.",
+                              "isRequired": false,
+                              "valueType": "object",
+                              "options": {
+                                "xml": {
+                                  "prefix": null
+                                },
+                                "schemaNames": []
+                              },
+                              "complexItems": [],
+                              "items": [
+                                {
+                                  "name": "organization_id",
+                                  "description": "Returns the unique ID of the organization.",
+                                  "isRequired": false,
+                                  "value": "ac85eca8-be5f-47a0-a4ea-38e0b44d3e84",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "organization_name",
+                                  "description": "Returns the name of the organization.",
+                                  "isRequired": false,
+                                  "value": "BLR",
+                                  "valueType": "string",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                },
+                                {
+                                  "name": "organization_types",
+                                  "description": "Returns details of the organization type the reader belongs to.",
+                                  "isRequired": false,
+                                  "valueType": "array",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": [
+                                    {
+                                      "name": "0",
+                                      "description": "",
+                                      "isRequired": false,
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": [
+                                        {
+                                          "name": "organization_type_id",
+                                          "description": "Returns the unique ID for each organization type.",
+                                          "isRequired": false,
+                                          "value": "b560a5e1-3f2a-4fdc-b997-da873676092e",
+                                          "valueType": "string",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": []
+                                        },
+                                        {
+                                          "name": "organization_type_name",
+                                          "description": "Returns the name of the organization type.",
+                                          "isRequired": false,
+                                          "value": "Org 1",
+                                          "valueType": "string",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": []
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "name": "1",
+                                      "description": "",
+                                      "isRequired": false,
+                                      "valueType": "object",
+                                      "options": {
+                                        "xml": {
+                                          "prefix": null
+                                        },
+                                        "schemaNames": []
+                                      },
+                                      "complexItems": [],
+                                      "items": [
+                                        {
+                                          "name": "organization_type_id",
+                                          "description": "",
+                                          "isRequired": false,
+                                          "value": "d9b387a7-a63b-4a26-b4bd-1ba41bdfb1a1",
+                                          "valueType": "string",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": []
+                                        },
+                                        {
+                                          "name": "organization_type_name",
+                                          "description": "",
+                                          "isRequired": false,
+                                          "value": "Org 2",
+                                          "valueType": "string",
+                                          "options": {
+                                            "xml": {
+                                              "prefix": null
+                                            },
+                                            "schemaNames": []
+                                          },
+                                          "complexItems": [],
+                                          "items": []
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "name": "member_email_whitelisted_domains",
+                                  "description": "Returns the allowed email domains associated with the organization, which are permitted for the member.",
+                                  "isRequired": false,
+                                  "valueType": "object",
+                                  "options": {
+                                    "xml": {
+                                      "prefix": null
+                                    },
+                                    "schemaNames": []
+                                  },
+                                  "complexItems": [],
+                                  "items": []
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "tlp",
+                  "description": "Returns the TLP assigned to the alert.",
+                  "isRequired": false,
+                  "value": "RED",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "title",
+                  "description": "Returns the alert title.",
+                  "isRequired": false,
+                  "value": "Securing Your Move to the Hybrid Cloud",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "short_id",
+                  "description": "Returrns the 8 digit unique ID of the alert.",
+                  "isRequired": false,
+                  "value": "deecf6fd",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "publisher_enduser",
+                  "description": "Returns the details of the member submitter in case of intel and RFI alerts.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "published_time",
+                  "description": "Returns the epoch timestamp at which the alert is published.",
+                  "isRequired": false,
+                  "value": 1705991525,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

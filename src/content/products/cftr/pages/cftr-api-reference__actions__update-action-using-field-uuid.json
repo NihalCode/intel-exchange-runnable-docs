@@ -1,0 +1,51 @@
+{
+  "slug": "cftr-api-reference/actions/update-action-using-field-uuid",
+  "title": "Update Action Using Field UUID",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "actions",
+    "update-action-using-field-uuid"
+  ],
+  "description": "Update Action Using Field UUID",
+  "method": "PUT",
+  "path": "/v1/action/{action_unique_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      },
+      {
+        "name": "Authorization",
+        "isRequired": true,
+        "value": "{{auth_key}}",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "description",
+        "value": "IPs to be blocked on firewall, excluding all the internal matching subnet IPs",
+        "valueType": "string"
+      },
+      {
+        "name": "priority",
+        "value": "Medium",
+        "valueType": "string"
+      }
+    ],
+    "path": [
+      {
+        "name": "action_unique_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

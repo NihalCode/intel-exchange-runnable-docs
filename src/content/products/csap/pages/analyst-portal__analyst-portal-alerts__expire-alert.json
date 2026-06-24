@@ -1,0 +1,154 @@
+{
+  "slug": "analyst-portal/analyst-portal-alerts/expire-alert",
+  "title": "Expire Alert",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "analyst-portal-alerts",
+    "expire-alert"
+  ],
+  "description": "Expire alerts individually or in bulk by providing their unique alert IDs. A successful request requires at least one valid ID, with a maximum limit of 100 IDs per bulk operation.\n\n### Changelog\n\n\nAdded a new endpoint to expire alerts.",
+  "method": "POST",
+  "path": "csap/v1/expire-alerts/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "alert_ids",
+        "description": "Expire up to 100 alerts by providing their unique IDs. At least one valid ID is required. Use the Get Alerts List endpoint to retrieve valid IDs.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69faec348a5acd18d22082a2"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "Success response (alerts expired)",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Includes a human-readable message describing the result of the request.",
+          "isRequired": false,
+          "value": "2 alerts expired successfully. To review details, check the Audit Logs in the Collaborate Analyst Portal.",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "statusCode": 200,
+      "description": "No alerts expired response",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Includes a human-readable message describing the result of the request.",
+          "isRequired": false,
+          "value": "No alerts expired. Review the alert IDs and try again.",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "statusCode": "400",
+      "description": "Missing required alert IDs",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Includes a human-readable message describing the result of the request.",
+          "isRequired": false,
+          "value": "alert_ids are required. Review and try again.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "statusCode": "400",
+      "description": "Invalid JSON format",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Includes a human-readable message describing the result of the request.",
+          "isRequired": false,
+          "value": "JSON parse error - Expecting value: line 3 column 1 (char 19)",
+          "valueType": "string",
+          "options": null,
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    },
+    {
+      "statusCode": "404",
+      "description": "Invalid request",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "detail",
+          "description": "Includes a human-readable message describing the result of the request.",
+          "isRequired": false,
+          "value": "Not a valid Request",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "transaction_id",
+          "description": "Returns a unique identifier for the API request to trace and debug the request across systems and logs.",
+          "isRequired": false,
+          "value": "0fbe34bb-ce15-4ef1-8d55-c227edcb829f",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

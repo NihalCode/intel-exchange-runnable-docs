@@ -1,0 +1,216 @@
+{
+  "slug": "analyst-portal/intelligence-requirements-irs/ir-followers-analyst",
+  "title": "Get IR Followers",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "analyst-portal",
+    "intelligence-requirements-irs",
+    "ir-followers-analyst"
+  ],
+  "description": "Returns the list followers of a published Intelligence Requirement (IR).",
+  "method": "GET",
+  "path": "csap/v1/ir_followers/{ir_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "ir_id",
+        "description": "Specify the unique ID for the IR. You can retrieve the IR ID using the **Get IRs** endpoint.",
+        "isRequired": true,
+        "value": "01J0QKZ8S8NQFCMP2ZPZN8PFJY",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d41e81b66e3318bb0d1b5e"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "result",
+          "description": "Returns the list of IR followers.",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "email",
+                  "description": "Returns the email address of the IR follower.",
+                  "isRequired": false,
+                  "value": "johndoe@exampleorg1.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "org",
+                  "description": "Returns the ID and name of the organization the member (follower) belongs to.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "org_id",
+                      "description": "Returns the unique organization ID.",
+                      "isRequired": false,
+                      "value": "d3c7caec-0444-402c-b36d-71cc826e67c1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "org_name",
+                      "description": "Returns the name of the organization.",
+                      "isRequired": false,
+                      "value": "Example Org1",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "email",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "ethan@exampleorg3.com",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "org",
+                  "description": "",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "org_id",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "d3c7caec-0444-402c-b36d-71cc826e67c3",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    },
+                    {
+                      "name": "org_name",
+                      "description": "",
+                      "isRequired": false,
+                      "value": "Example Org3",
+                      "valueType": "string",
+                      "options": {
+                        "xml": {
+                          "prefix": null
+                        },
+                        "schemaNames": []
+                      },
+                      "complexItems": [],
+                      "items": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

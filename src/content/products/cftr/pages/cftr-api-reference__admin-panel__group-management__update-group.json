@@ -1,0 +1,51 @@
+{
+  "slug": "cftr-api-reference/admin-panel/group-management/update-group",
+  "title": "Update Group",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "admin-panel",
+    "group-management",
+    "update-group"
+  ],
+  "description": "Update Group",
+  "method": "PUT",
+  "path": "/v1/rest-auth/permission/group/{group_comm_id}/",
+  "request": {
+    "query": [],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "permissions",
+        "value": "[{\"permission_comm_id\":\"075179a0-a55e-40e7-a235-d73710cf29cb\",\"code_name\":\"view_networkutility\"},{\"permission_comm_id\":\"ae3d5a3b-8e0c-48ac-b85b-21a729264d4d\",\"code_name\":\"view_fangdefang\"}]",
+        "valueType": "array"
+      },
+      {
+        "name": "group_name",
+        "value": "Updated Group",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "Updated Group Description",
+        "valueType": "string"
+      }
+    ],
+    "path": [
+      {
+        "name": "group_comm_id",
+        "value": "",
+        "valueType": "string"
+      }
+    ],
+    "contentType": "application/json"
+  },
+  "responses": []
+}

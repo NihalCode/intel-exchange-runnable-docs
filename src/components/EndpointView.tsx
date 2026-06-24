@@ -2,8 +2,10 @@
 
 import { useMemo } from "react";
 import type { CodeSnippet, EndpointPage, ParamField } from "@/lib/types";
-import { DISPLAY_BASE } from "@/lib/constants";
+import { useRunSettings } from "./RunSettings";
+import { ProductBadge } from "./ProductContext";
 import { buildRunnableRequest } from "@/lib/snippets";
+import { getProduct } from "@/lib/products/registry";
 import { CodeBlock } from "./CodeBlock";
 import { Markdown } from "./Markdown";
 import { RequestPlaygroundPanel, RequestPlaygroundProvider } from "./RequestPlayground";
@@ -79,22 +81,35 @@ function ParamTable({ title, fields }: { title: string; fields?: ParamField[] })
 export function EndpointView({
   page,
   snippets,
+  productId = "ctix",
+  docsUrl,
 }: {
   page: EndpointPage;
   snippets: CodeSnippet[];
+  productId?: string;
+  docsUrl?: string;
 }) {
-  const runnableRequest = useMemo(() => buildRunnableRequest(page), [page]);
+  const { baseUrl } = useRunSettings();
+  const product = getProduct(productId);
+  const displayBase = baseUrl || product?.baseApiUrl || "";
+  const runnableRequest = useMemo(() => buildRunnableRequest(page, productId), [page, productId]);
 
   return (
     <article className="mx-auto max-w-4xl">
       <div className="mb-3 flex flex-wrap items-center gap-3">
+        <ProductBadge productId={productId} />
         <MethodBadge method={page.method} />
         <h1 className="text-2xl font-bold tracking-tight">{page.title}</h1>
+        {docsUrl ? (
+          <a href={docsUrl} className="text-xs text-sky-600 underline" target="_blank" rel="noreferrer">
+            Source docs
+          </a>
+        ) : null}
       </div>
 
       <div className="mb-5 flex items-center gap-2 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-sm dark:border-zinc-800 dark:bg-zinc-900">
         <MethodBadge method={page.method} />
-        <span className="whitespace-nowrap text-zinc-500">{DISPLAY_BASE}</span>
+        <span className="whitespace-nowrap text-zinc-500">{displayBase}</span>
         <span className="whitespace-nowrap font-semibold">
           {page.path.startsWith("/") ? page.path : `/${page.path}`}
         </span>
@@ -116,7 +131,7 @@ export function EndpointView({
         <p className="mb-3 text-sm text-zinc-500">
           Use the <strong>Request parameters</strong> panel to enter path IDs, query values, JSON
           body, and credentials. Then run any snippet below — all languages use the same values.
-          Base URL: <code className="font-mono text-xs">{DISPLAY_BASE}</code> (change in API Settings).
+          Base URL: <code className="font-mono text-xs">{displayBase}</code> (change in API Settings).
         </p>
         <RequestPlaygroundProvider
           request={runnableRequest}

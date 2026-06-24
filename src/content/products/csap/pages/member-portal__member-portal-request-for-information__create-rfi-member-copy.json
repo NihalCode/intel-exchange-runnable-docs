@@ -1,0 +1,843 @@
+{
+  "slug": "member-portal/member-portal-request-for-information/create-rfi-member-copy",
+  "title": "Submit RFI",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-request-for-information",
+    "create-rfi-member-copy"
+  ],
+  "description": "You can submit a request for information (RFI) to analysts.\n\n\nThe required fields while submitting an RFI are based on the configuration for the Request for Information category in the Analyst Portal. To get the required fields for submitting the RFI, follow these steps:\n1.  Use the **Get Category List** API in the Alerts section to retrieve the list of all categories. You can use the `category_id` for Request for Information category to retrieve all associated fields.\n2.  Use this `category_id` in the **Category Details** API to fetch all the fields associated with the RFI category. All fields marked as required true are mandatory while submitting the RFI.\nWhile passing body parameters, the field ID is mandatory. To retrieve field details, follow these steps:\n1.  Use the **Additional Fields** API in the Alerts section to retrieve the list of all fields. You can use the `field_id` to retrieve all associated details.\n2.  Use this `field_id` in **Additional Field Details** to fetch all the field details. The ID of the field is a required key while submitting RFIs. For example, for the Priority field, the `priority_id` is a required key.\nAs a member, you can submit an RFI using custom fields tailored to your needs. Use fields like text boxes for detailed input, multi-select for tagging multiple values, single-select for predefined choices, and more to customize your RFI effectively.\nField Type\nDescription\nFormat\nBoolean\nBoolean fields allow you to select either true or false for specific options.\nfield_id: value\nExample: \"f65b26a174658\": true\nText\nText boxes allow you to add information in text format.\nfield_id: Text\nExample: \"f533606babb44\": \"CVE-2014-12345\"\nSingle-select\nSingle-select fields allow you to choose one option from a predefined list.\nfield_id: { field_id_id: selected value ID}\nExample: \"ffa80c88f1d20\": { \"ffa80c88f1d20_id\": \"oaa822c36c133\" }\nMulti-select\nMulti-select fields allow you to associate multiple options from a predefined list.\nfield_id: [{ field_id_id: selected value ID}, { field_id_id: selected value ID}]\nExample: \"f65b26a174658\": [ { \"f65b26a174658_id\": \"o15f317d51bec\" }, { \"f65b26a174658_id\": \"o43d57e02d92a\" } ]\nAs a member, you can submit an RFI using system fields tailored to your needs. Use fields like text boxes for detailed input, multi-select for tagging multiple values, single-select for predefined choices, and more to customize your RFI effectively.\nField Type\nDescription\nFormat\nBoolean\nBoolean fields allow you to select either true or false for specific options.\nfield_name: { field_id: value}\nExample: \"Notable\": {\"f68663be84ae5\": true}\nText\nText boxes allow you to add information in text format.\nfield_name: value\nExample: \"available_patch\": \"Restart device\"\nSingle-select\nSingle-select fields allow you to choose one option from a predefined list.\nfield_name: { id: selected value ID, name: selected value name}\nExample: \"priority\": { \"priority_id\": \"cdff50bf-ddcf-4523-a1da-560f3674e983\", \"priority_name\": \"3\" }\nMulti-select\nMulti-select fields allow you to associate multiple options from a predefined list.\nfield_name: [{ id: selected value ID, name: selected value name}]\nExample: \"info_source\": [ { \"source_id\": \"6653f073\", \"info_source_name\": \"Internal\" }, { \"source_id\": \"115020b5\", \"info_source_name\": \"Intel Team\" }]",
+  "method": "POST",
+  "path": "csap/v1/rfi/",
+  "request": {
+    "query": [],
+    "body": [
+      {
+        "name": "title",
+        "description": "Pass the title of the RFI.",
+        "isRequired": true,
+        "value": "RFI Title",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "description",
+        "description": "Pass the description of the RFI.",
+        "isRequired": true,
+        "value": "Description of the RFI",
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "tlp",
+        "description": "Pass the TLP associated with the RFI.",
+        "isRequired": true,
+        "value": "GREEN",
+        "valueType": "string",
+        "options": {
+          "enumValue": [
+            {
+              "value": "RED",
+              "description": ""
+            },
+            {
+              "value": "GREEN",
+              "description": ""
+            },
+            {
+              "value": "WHITE/CLEAR",
+              "description": ""
+            },
+            {
+              "value": "AMBER",
+              "description": ""
+            },
+            {
+              "value": "AMBER+STRICT",
+              "description": ""
+            }
+          ],
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      },
+      {
+        "name": "user_group",
+        "description": "Pass the details of one or more user groups to which you want to submit the RFI. This field is only required if direct submission is enabled for you.",
+        "isRequired": true,
+        "value": "",
+        "valueType": "array",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": [
+          {
+            "name": "0",
+            "description": "",
+            "isRequired": false,
+            "value": "",
+            "valueType": "object",
+            "options": {
+              "xml": {
+                "prefix": null
+              },
+              "schemaNames": []
+            },
+            "complexItems": [],
+            "items": [
+              {
+                "name": "user_group_id",
+                "description": "Pass the unique ID for the recipient group.",
+                "isRequired": false,
+                "value": "0afc8972",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_name",
+                "description": "Pass the name of the recipient group.",
+                "isRequired": false,
+                "value": "General User",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              },
+              {
+                "name": "user_group_tlp",
+                "description": "Pass the TLP level associated with the recipient group.",
+                "isRequired": false,
+                "value": "GREEN",
+                "valueType": "string",
+                "options": {
+                  "xml": {
+                    "prefix": null
+                  },
+                  "schemaNames": []
+                },
+                "complexItems": [],
+                "items": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "priority",
+        "description": "Pass the priority of details associated with the RFI. For details on retrieving the ID and associated information, see the API endpoint description.",
+        "isRequired": false,
+        "value": "",
+        "valueType": "object",
+        "options": null,
+        "complexItems": [],
+        "items": [
+          {
+            "name": "priority_id",
+            "description": "Pass the unique ID of the priority associated with the RFI. Example: cdff50bf-ddcf-4523-a1da-560f3674e983",
+            "isRequired": false,
+            "value": "cdff50bf-ddcf-4523-a1da-560f3674e983",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          },
+          {
+            "name": "priority_name",
+            "description": "Pass the name of the priority. Example: 3",
+            "isRequired": false,
+            "value": "3",
+            "valueType": "string",
+            "options": null,
+            "complexItems": [],
+            "items": []
+          }
+        ]
+      }
+    ],
+    "header": [],
+    "path": [],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "69787eadc63cb994ffef9013"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "incident_id",
+          "description": "Returns the unique identifier for the RFI incident.",
+          "isRequired": false,
+          "value": "CY-4b2a825a",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "title",
+          "description": "Returns the title of the RFI.",
+          "isRequired": false,
+          "value": "RFI Title",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "description",
+          "description": "Returns the description of the RFI.",
+          "isRequired": false,
+          "value": "Description of the RFI",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "intel_media",
+          "description": "Returns the associated media with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "confidence_level",
+          "description": "Returns the confidence level of the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "direct_impact",
+          "description": "Returns true if the RFI has direct impact.",
+          "isRequired": false,
+          "value": false,
+          "valueType": "boolean",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "report_sources",
+          "description": "Returns the sources from which the RFI was reported.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "threat_methods",
+          "description": "Returns the threat methods associated with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "threat_actors",
+          "description": "Returns the threat actors linked to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "tlp",
+          "description": "Returns the TLP level of the RFI.",
+          "isRequired": false,
+          "value": "GREEN",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "incident_date",
+          "description": "Returns the date of the RFI incident.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "indicators",
+          "description": "Returns indicators related to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "action_taken",
+          "description": "Returns actions taken regarding the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "comments",
+          "description": "Returns any comments added to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "severity",
+          "description": "Returns the severity level of the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "detection_method",
+          "description": "Returns the detection method used for the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "system_function",
+          "description": "Returns the system function associated with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "recommendation",
+          "description": "Returns any recommendations for the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "optional_fields",
+          "description": "Returns any optional fields included in the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "vulnerability_type",
+          "description": "Returns the types of vulnerabilities associated with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "vulnerability_source",
+          "description": "Returns the sources of the vulnerabilities linked to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "targeted_sector",
+          "description": "Returns the targeted sectors related to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "kill_chain_phase",
+          "description": "Returns the kill chain phase associated with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "risk",
+          "description": "Returns the risk level of the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "root_cause",
+          "description": " Returns the root cause information for the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "physical_threat_method",
+          "description": "Returns physical threat methods associated with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "cyber_threat_method",
+          "description": "Returns cyber threat methods linked to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "attributes",
+          "description": "Returns the attributes related to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "category",
+          "description": "Returns the category of the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "category_id",
+              "description": "Returns the unique ID of the category.",
+              "isRequired": false,
+              "value": "4bc50866",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "category_name",
+              "description": "Returns the name of the category.",
+              "isRequired": false,
+              "value": "Request For Information",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "status",
+          "description": "Returns the current status of the RFI.",
+          "isRequired": false,
+          "value": "OPEN",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "analyst_status",
+          "description": "Returns the analyst's status regarding the RFI.",
+          "isRequired": false,
+          "value": "SUBMITTED",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "document_type",
+          "description": "Returns the document type associated with the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "priority",
+          "description": "Returns the priority of the RFI.",
+          "isRequired": false,
+          "value": "3cfe2abe-c627-4c72-b444-404133cb3c2a",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "vendorsnproduct",
+          "description": "Returns the vendor or product information related to the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "announcement_type",
+          "description": "Returns the announcement type for the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "reported_on",
+          "description": "Returns the epoch time of when the RFI was reported.",
+          "isRequired": false,
+          "value": 1718088259000,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "reported_by",
+          "description": "Returns the details of the member who reported the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "email",
+              "description": "Returns the email of the reporter.",
+              "isRequired": false,
+              "value": "john.doe@example.com",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            },
+            {
+              "name": "full_name",
+              "description": "Returns the name of the reporter.",
+              "isRequired": false,
+              "value": "John Doe",
+              "valueType": "string",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": []
+            }
+          ]
+        },
+        {
+          "name": "alert_id",
+          "description": "Returns the unique ID of the alert if an alert was created from the RFI.",
+          "isRequired": false,
+          "value": "",
+          "valueType": "object",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

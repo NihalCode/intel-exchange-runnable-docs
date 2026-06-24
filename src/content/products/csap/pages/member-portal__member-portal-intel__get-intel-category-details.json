@@ -1,0 +1,542 @@
+{
+  "slug": "member-portal/member-portal-intel/get-intel-category-details",
+  "title": "Get Intel Category Details",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "member-portal",
+    "member-portal-intel",
+    "get-intel-category-details"
+  ],
+  "description": "Returns the list of fields and details associated with a category.",
+  "method": "GET",
+  "path": "csap/v1/reports/form_details/{category_id}/",
+  "request": {
+    "query": [],
+    "body": [],
+    "header": [],
+    "path": [
+      {
+        "name": "category_id",
+        "description": "Pass the unique ID for the category. You can retrieve the category ID using the **Get Intel Categories** endpoint.",
+        "isRequired": false,
+        "valueType": "string",
+        "options": {
+          "xml": {
+            "prefix": null
+          },
+          "schemaNames": []
+        },
+        "complexItems": [],
+        "items": []
+      }
+    ],
+    "contentType": "application/json",
+    "graphqlQuery": "",
+    "codeExamples": [],
+    "_id": "67d4214cb66e3318bb0d2e45"
+  },
+  "responses": [
+    {
+      "statusCode": 200,
+      "description": "",
+      "contentType": "application/json",
+      "body": [
+        {
+          "name": "form_name",
+          "description": "Returns the threat intel submission form name.",
+          "isRequired": false,
+          "value": "Threat Intelligence",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "display_disclaimer",
+          "description": "Returns if the disclaimer text must be displayed or not. ",
+          "isRequired": false,
+          "value": true,
+          "valueType": "boolean",
+          "options": {
+            "defaultValue": "True",
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "disclaimer_text",
+          "description": "Returns the disclaimer text which is part of the threat intel submission form.",
+          "isRequired": false,
+          "value": "Please do not submit any personally identifiable information, including credit card or bank account information; social security, passport, or driver’s license number; date of birth; account PINs, passwords or any other sensitive information in the incident report.",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "media_type",
+          "description": "Returns the attachment type for the intel.",
+          "isRequired": false,
+          "value": "intel",
+          "valueType": "string",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "form_fields",
+          "description": "Returns all the field details associated with the category.\n",
+          "isRequired": false,
+          "valueType": "array",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": [
+            {
+              "name": "0",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "field_name",
+                  "description": "Returns the name of the field which is associated with the category.",
+                  "isRequired": false,
+                  "value": "title",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "field_label",
+                  "description": "Returns the display name or label for the field.",
+                  "isRequired": false,
+                  "value": "Title",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "field_type",
+                  "description": "Returns the field type of the field. For example, *text*, *multi-select*, *single-select*.",
+                  "isRequired": false,
+                  "value": "text",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "required",
+                  "description": "Returns if the field is a mandatory field while submitting intel.",
+                  "isRequired": false,
+                  "value": true,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "order",
+                  "description": "Returns the order in which the field appears in the form.",
+                  "isRequired": false,
+                  "value": null,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "char_limit",
+                  "description": "Returns the character limit of the field.",
+                  "isRequired": false,
+                  "value": 150,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "selection_title",
+                  "description": "Returns the field label for single and multi-select fields.\n",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "selection_desc",
+                  "description": "Returns the field description for single and multi-select fields.",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_custom",
+                  "description": "Returns true if it is a custom field.",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                }
+              ]
+            },
+            {
+              "name": "1",
+              "description": "",
+              "isRequired": false,
+              "valueType": "object",
+              "options": {
+                "xml": {
+                  "prefix": null
+                },
+                "schemaNames": []
+              },
+              "complexItems": [],
+              "items": [
+                {
+                  "name": "field_name",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "vendorsnproduct",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "field_label",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "Vendors",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "field_type",
+                  "description": "",
+                  "isRequired": false,
+                  "value": "multi-select",
+                  "valueType": "string",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "required",
+                  "description": "",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "selection_title",
+                  "description": "",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "selection_desc",
+                  "description": "",
+                  "isRequired": false,
+                  "valueType": "object",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "char_limit",
+                  "description": "",
+                  "isRequired": false,
+                  "value": 1000,
+                  "valueType": "number",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "is_custom",
+                  "description": "",
+                  "isRequired": false,
+                  "value": false,
+                  "valueType": "boolean",
+                  "options": {
+                    "xml": {
+                      "prefix": null
+                    },
+                    "schemaNames": []
+                  },
+                  "complexItems": [],
+                  "items": []
+                },
+                {
+                  "name": "value",
+                  "description": "Returns the option details if the field type is single-select or multi-select.",
+                  "isRequired": false,
+                  "valueType": "array",
+                  "options": null,
+                  "complexItems": [],
+                  "items": [
+                    {
+                      "name": "0",
+                      "description": "",
+                      "isRequired": false,
+                      "valueType": "object",
+                      "options": null,
+                      "complexItems": [],
+                      "items": [
+                        {
+                          "name": "vendorsnproduct_id",
+                          "description": "Returns the unique ID of the option within a single-select or multi-select field.",
+                          "isRequired": false,
+                          "value": "f5ca4f49-bed9-4c8d-986a-d608cbfab31c",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "vendorsnproduct_name",
+                          "description": "Returns the name of the option within a single-select or multi-select field.",
+                          "isRequired": false,
+                          "value": "Vendor One",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "intel_count",
+                          "description": "Returns the number of the intels associated with the option.",
+                          "isRequired": false,
+                          "value": 29,
+                          "valueType": "number",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "vendors_name",
+                          "description": "Returns the name of the vendor.",
+                          "isRequired": false,
+                          "value": "Vendor One",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "is_active",
+                          "description": "Returns true if the status is active.",
+                          "isRequired": false,
+                          "value": true,
+                          "valueType": "boolean",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "index",
+                          "description": "Returns the index number of the option.",
+                          "isRequired": false,
+                          "value": null,
+                          "valueType": "number",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        },
+                        {
+                          "name": "vendors_id",
+                          "description": "Returns the ID of the vendor.",
+                          "isRequired": false,
+                          "value": "f5ca4f49-bed9-4c8d-986a-d608cbfab31c",
+                          "valueType": "string",
+                          "options": null,
+                          "complexItems": [],
+                          "items": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "max_file_size",
+          "description": "Returns the maximum size (in MB) allowed for file attachments in the form. ",
+          "isRequired": false,
+          "value": 50,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "max_allowed_attachments",
+          "description": "Returns the maximum number of files that can be attached to the form. ",
+          "isRequired": false,
+          "value": 5,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        },
+        {
+          "name": "backend_version",
+          "description": "Returns the backend version required to support this form. ",
+          "isRequired": false,
+          "value": 2030000,
+          "valueType": "number",
+          "options": {
+            "xml": {
+              "prefix": null
+            },
+            "schemaNames": []
+          },
+          "complexItems": [],
+          "items": []
+        }
+      ]
+    }
+  ],
+  "dataExample": [],
+  "endpointSummary": [],
+  "contentType": "application/json"
+}

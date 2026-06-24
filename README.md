@@ -1,47 +1,76 @@
-# Intel Exchange API — Runnable Reference
+# Cyware API Docs — Runnable Reference
 
-An unofficial, **runnable** mirror of the [Cyware Intel Exchange API reference](https://ctixapiv3.cyware.com/intel-exchange-api-reference/intel-exchange-api-reference).
-Every code block keeps its original highlighted source **and** gets a control to
-run it directly in the browser — no copy/paste required.
+An unofficial, **runnable** documentation platform for Cyware product APIs. Browse docs, search with natural language, generate runnable code snippets, and test API calls in the browser.
+
+## Supported products
+
+| Product | Docs source | Route prefix |
+|---------|-------------|--------------|
+| **CTIX / Intel Exchange** | [Theneo](https://ctixapiv3.cyware.com/intel-exchange-api-reference/intel-exchange-api-reference) | `/docs/ctix/…` (legacy `/docs/…` also works) |
+| **CSAP (Collaborate)** | [Theneo](https://csapapi.cyware.com/) | `/docs/csap/…` |
+| **Cyware Orchestrate** | [Theneo](https://orchestrateapi.cyware.com/cyware-orchestrate-api-reference-theneo) | `/docs/orchestrate/…` |
+| **CFTR** | [Postman](https://cftrapi.cyware.com/) | `/docs/cftr/…` |
+
+Use the **Product** selector in the header to switch APIs. Set **Search** to *All products* for cross-product doc search in the AI agent.
 
 ## Features
 
-- **Central code renderer** — every snippet (Markdown fences + generated endpoint
-  examples) flows through one `CodeBlock` component (`src/components/CodeBlock.tsx`),
-  so runnable behavior is implemented globally, not per page.
-- **Syntax highlighting + copy button** on every block (highlight.js, GitHub Dark).
-- **Run controls by snippet type:**
-  - **cURL / HTTP / API requests** → parsed (method, URL, headers, body) and executed
-    through a secure server-side proxy (`/api/run`). Direct browser `fetch` is also
-    possible for CORS-enabled hosts.
-  - **JSON** → **Validate / Format** instead of Run.
-  - **JavaScript** → executed in a sandboxed `<iframe>` (`allow-scripts`, no
-    same-origin, no `eval` in the app context).
-  - **Python** → shows _"Python snippets are not runnable in this browser
-    environment yet."_
-  - **Non-curl shell** → shows a note (browsers can't run shell).
-- **Security**
-  - Mutating methods (POST/PUT/PATCH/DELETE) require an explicit **confirmation**.
-  - API keys / bearer tokens / `Authorization` / placeholder credentials get
-    **password inputs**; secrets live in memory only (**never** localStorage).
-  - Secrets are **masked** in request previews, output, and logs.
-  - Output is rendered as **text only** (no `dangerouslySetInnerHTML`) → XSS-safe.
-  - The proxy enforces an **SSRF allowlist** (blocks localhost/private/link-local IPs),
-    a 20s timeout, and a 2 MB response cap.
-- **Loading / output / error** states render directly beneath each snippet.
+- **Multi-product** — one app for CTIX, CSAP, Orchestrate, and CFTR with product-specific auth and base URLs.
+- **Central code renderer** — every snippet flows through `CodeBlock` (`src/components/CodeBlock.tsx`).
+- **Run controls** — cURL/HTTP via `/api/run` proxy; JavaScript in sandboxed iframe; Python via Pyodide.
+- **AI agent** (`/agent`) — RAG over all indexed docs; infers product from your question or asks when ambiguous.
+- **Security** — mutating methods require confirmation; secrets masked; SSRF protection on the proxy.
+
+## Environment variables
+
+Copy `.env.example` → `.env.local`:
+
+| Variable | Purpose |
+|----------|---------|
+| `OPENAI_API_KEY` | Embeddings + LLM agent planning |
+| `PINECONE_API_KEY` | Optional vector retrieval (falls back to local BM25) |
+| `PINECONE_INDEX` | Pinecone index name (default: `cyware-api-docs`) |
+| `DEFAULT_PRODUCT_ID` | Default product in UI (default: `ctix`) |
+| `ENABLE_API_EXECUTION` | Enable live API execution (optional) |
+| `MAX_CRAWL_PAGES` | Limit pages during ingest (optional) |
+
+No real API credentials are required for browsing, search, or snippet generation.
 
 ## Content pipeline
 
-The docs content is vendored from the source site's published `.md` export
-(`/<project>/llms.txt` → 527 per-page `.md` files):
+Docs are vendored locally as JSON under `src/content/`:
 
 ```bash
-npm run ingest   # fetch + normalize -> src/content/pages/*.json + manifest.json
+# Ingest one product
+npm run ingest -- --product=csap
+npm run ingest -- --product=orchestrate
+npm run ingest -- --product=cftr
+npm run ingest -- --product=ctix   # default
+
+# Ingest all products
+npm run ingest:all
+
+# Build local search indexes (BM25)
+npm run build:index
+
+# Optional: upsert to Pinecone
+npm run pinecone:upsert
 ```
 
-The ingested JSON is committed, so the site builds fully offline. Re-run `ingest`
-to refresh from upstream (a local-only re-clean is available via
-`node scripts/clean-local.mjs`).
+**Re-index via API** (dev/admin):
+
+```bash
+curl -X POST http://localhost:3000/api/products/csap/ingest
+```
+
+Theneo exports require a browser-like `Referer` header (handled automatically by the ingest script).
+
+### Adding a new Cyware API product
+
+1. Add an entry to `scripts/products-config.mjs` and `src/lib/products/registry.ts`.
+2. Run `npm run ingest -- --product=<id>`.
+3. Run `npm run build:index -- --product=<id>`.
+4. The product appears in the header selector automatically.
 
 ## Develop
 
@@ -50,24 +79,32 @@ npm install
 npm run dev      # http://localhost:3000
 ```
 
-## Build
+## Test & build
 
 ```bash
+npm test
+npx tsc --noEmit
 npm run build
 npm run start
 ```
 
+## Example agent queries
+
+- *How do I create an incident in CSAP?*
+- *For Orchestrate, generate the API call for creating a playbook.*
+- *Which CFTR endpoint retrieves reports?*
+- *Search all Cyware APIs for endpoints related to indicators.*
+- *Give me Python code for this Orchestrate API call.*
+
+## Troubleshooting ingestion
+
+| Issue | Fix |
+|-------|-----|
+| `403 Forbidden` on `llms.txt` | Re-run ingest; script sends `Referer` header. Some networks may block automated fetch. |
+| Empty product nav | Run ingest for that product; check `src/content/products/<id>/manifest.json`. |
+| Agent returns wrong product | Name the product in your question, or use the Product selector + *This product* search scope. |
+| CTIX broken after upgrade | Legacy routes `/docs/<slug>` still map to CTIX; use `/docs/ctix/<slug>` for explicit product paths. |
+
 ## Deploy (Vercel)
 
-This is a standard Next.js app and deploys to Vercel with zero config:
-
-```bash
-# one-off CLI deploy
-npx vercel --prod
-
-# or with a token (non-interactive / CI)
-npx vercel --prod --yes --token "$VERCEL_TOKEN"
-```
-
-The only server component is the `/api/run` proxy (Node.js runtime); all 531 doc
-pages are statically generated.
+Standard Next.js deploy; set env vars in Vercel project settings. Doc pages are statically generated per product.

@@ -1,0 +1,70 @@
+{
+  "slug": "cftr-api-reference/threat-briefings/create-threat-briefing-using-field-values",
+  "title": "Create Threat Briefing Using Field Values",
+  "kind": "endpoint",
+  "breadcrumb": [
+    "cftr-api-reference",
+    "threat-briefings",
+    "create-threat-briefing-using-field-values"
+  ],
+  "description": "Create Threat Briefing Using Field Values",
+  "method": "POST",
+  "path": "/v1/threat-briefing/",
+  "request": {
+    "query": [
+      {
+        "name": "values",
+        "value": "readable_type",
+        "valueType": "string"
+      }
+    ],
+    "header": [
+      {
+        "name": "Content-Type",
+        "isRequired": true,
+        "value": "application/json",
+        "valueType": "string"
+      }
+    ],
+    "body": [
+      {
+        "name": "title",
+        "value": "Threat Briefing 1.0.0",
+        "valueType": "string"
+      },
+      {
+        "name": "business_units",
+        "value": "[\"Bu 1\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "locations",
+        "value": "[\"Lo 1\"]",
+        "valueType": "array"
+      },
+      {
+        "name": "briefing_frequency",
+        "value": "Daily",
+        "valueType": "string"
+      },
+      {
+        "name": "description",
+        "value": "<p>Threat Briefing 7.0.0</p>",
+        "valueType": "string"
+      },
+      {
+        "name": "status",
+        "value": "ACTIVE",
+        "valueType": "string"
+      },
+      {
+        "name": "labels",
+        "value": "[\"Blue Label Threat Briefing\"]",
+        "valueType": "array"
+      }
+    ],
+    "path": [],
+    "contentType": "application/json"
+  },
+  "responses": []
+}
