@@ -12,7 +12,7 @@ import { applyRuntimeBaseUrl, rewriteUrlWithRuntimeBase } from "@/lib/snippet-ba
 import { isPlaceholderBase } from "@/lib/demo";
 import { proxyHttpRequest } from "@/lib/http-run";
 import { runJsInSandbox } from "@/lib/js-sandbox";
-import { parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
+import { isPostmanPreRequestScript, parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
 import {
   applyPathParams,
   credFieldsForExec,
@@ -822,6 +822,18 @@ function ShellNote() {
   );
 }
 
+function PostmanScriptNote() {
+  return (
+    <div className="mt-2 rounded-md border border-sky-400/40 bg-sky-50/50 p-3 text-[11px] text-sky-900 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
+      <strong>Postman only.</strong> This pre-request script uses Postman&apos;s{" "}
+      <code className="font-mono">pm</code> API and cannot run in the browser. Open{" "}
+      <strong>API Settings</strong> in the header, enter your Access ID and Secret Key once —
+      Signature and Expires are generated automatically when you click <strong>Run</strong> on
+      any HTTP endpoint snippet.
+    </div>
+  );
+}
+
 /* ------------------------------ dispatcher ------------------------------- */
 
 export function SnippetRunner({ snippet }: { snippet: CodeSnippet }) {
@@ -835,6 +847,7 @@ export function SnippetRunner({ snippet }: { snippet: CodeSnippet }) {
     case "python":
       return <PyodideRunner code={snippet.code} />;
     case "none":
+      if (isPostmanPreRequestScript(snippet.code)) return <PostmanScriptNote />;
       if (/^(bash|sh|shell|zsh)$/i.test(snippet.lang)) return <ShellNote />;
       return null;
     default:

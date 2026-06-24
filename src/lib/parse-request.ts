@@ -162,6 +162,11 @@ export function detectLanguage(code: string, hint?: string): string {
   return h || "text";
 }
 
+/** Postman pre-request scripts use `pm.*` and only run inside Postman. */
+export function isPostmanPreRequestScript(code: string): boolean {
+  return /\bpm\.(environment|request|variables|globals|collection|info)\b/.test(code);
+}
+
 export function classifyRunKind(lang: string, code: string): RunKind {
   const l = lang.toLowerCase();
   if (l === "json") return "json";
@@ -169,8 +174,9 @@ export function classifyRunKind(lang: string, code: string): RunKind {
   if (l === "bash" || l === "sh" || l === "shell" || l === "curl") {
     return /\bcurl\b/.test(code) ? "http" : "none";
   }
-  if (l === "javascript" || l === "js" || l === "typescript" || l === "ts")
-    return "javascript";
+  if (l === "javascript" || l === "js" || l === "typescript" || l === "ts") {
+    return isPostmanPreRequestScript(code) ? "none" : "javascript";
+  }
   if (l === "python" || l === "py") return "python";
   return "none";
 }

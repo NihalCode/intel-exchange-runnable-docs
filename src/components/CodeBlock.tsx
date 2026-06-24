@@ -5,6 +5,7 @@ import "highlight.js/styles/github-dark.css";
 import { useMemo, useState } from "react";
 import type { CodeSnippet } from "@/lib/types";
 import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
+import { isPostmanPreRequestScript } from "@/lib/parse-request";
 import { SnippetRunner } from "./runners";
 import { useRunSettings } from "./RunSettings";
 
@@ -100,7 +101,8 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
         </pre>
       </div>
       {snippet.runKind !== "none" ||
-      /^(bash|sh|shell|zsh)$/i.test(snippet.lang) ? (
+      /^(bash|sh|shell|zsh)$/i.test(snippet.lang) ||
+      isPostmanPreRequestScript(snippet.code) ? (
         <div className="border-t border-zinc-800 bg-zinc-950/40 px-3 py-2 text-zinc-200">
           <SnippetRunner snippet={runnableSnippet} />
         </div>
