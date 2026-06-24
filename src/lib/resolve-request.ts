@@ -1,4 +1,4 @@
-import { DISPLAY_BASE } from "./constants";
+import { rewriteUrlWithRuntimeBase } from "./snippet-base-url";
 import type { ExecRequest } from "./parse-request";
 import { isSensitiveName, looksLikePlaceholder } from "./security";
 import type { KeyValue, RunnableRequest } from "./types";
@@ -171,9 +171,9 @@ export function resolveExec(
   bodyOverride?: string
 ): ExecRequest {
   let url = exec.url;
-  if (url.startsWith(DISPLAY_BASE)) {
-    url = baseUrl.replace(/\/+$/, "") + url.slice(DISPLAY_BASE.length);
-  } else if (!/^https?:\/\//i.test(url)) {
+  if (/^https?:\/\//i.test(url)) {
+    url = rewriteUrlWithRuntimeBase(url, baseUrl);
+  } else {
     url = joinBase(baseUrl, url);
   }
   try {

@@ -8,6 +8,7 @@ import {
   substituteSnippetPlaceholders,
 } from "@/lib/credential-placeholders";
 import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
+import { applyRuntimeBaseUrl, rewriteUrlWithRuntimeBase } from "@/lib/snippet-base-url";
 import { isPlaceholderBase } from "@/lib/demo";
 import { proxyHttpRequest } from "@/lib/http-run";
 import { runJsInSandbox } from "@/lib/js-sandbox";
@@ -690,12 +691,9 @@ function JsRunner({ code }: { code: string }) {
 
   function prepareCode(): string {
     let out = substituteSnippetPlaceholders(code, getCredential);
-    out = out.replace(DISPLAY_BASE_RE, baseUrl.replace(/\/+$/, ""));
+    out = applyRuntimeBaseUrl(out, baseUrl);
     out = out.replace(/const url = "([^"]+)"/g, (_m, rawUrl: string) => {
-      let u = rawUrl;
-      if (u.startsWith(DISPLAY_BASE)) {
-        u = baseUrl.replace(/\/+$/, "") + u.slice(DISPLAY_BASE.length);
-      }
+      let u = rewriteUrlWithRuntimeBase(rawUrl, baseUrl);
       u = injectOpenApiAuthIntoUrl(u, getCredential);
       return `const url = ${JSON.stringify(u)}`;
     });

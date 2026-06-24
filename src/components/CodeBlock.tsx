@@ -4,7 +4,9 @@ import hljs from "highlight.js/lib/common";
 import "highlight.js/styles/github-dark.css";
 import { useMemo, useState } from "react";
 import type { CodeSnippet } from "@/lib/types";
+import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import { SnippetRunner } from "./runners";
+import { useRunSettings } from "./RunSettings";
 
 const LANG_MAP: Record<string, string> = {
   bash: "bash",
@@ -48,15 +50,24 @@ function escapeHtml(s: string): string {
 
 export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
   const [copied, setCopied] = useState(false);
+  const { baseUrl } = useRunSettings();
+  const displayCode = useMemo(
+    () => applyRuntimeBaseUrl(snippet.code, baseUrl),
+    [snippet.code, baseUrl]
+  );
+  const runnableSnippet = useMemo(
+    () => ({ ...snippet, code: displayCode }),
+    [snippet, displayCode]
+  );
   // hljs escapes its input, so the produced markup is safe to inject.
   const html = useMemo(
-    () => highlight(snippet.code, snippet.lang),
-    [snippet.code, snippet.lang]
+    () => highlight(displayCode, snippet.lang),
+    [displayCode, snippet.lang]
   );
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(snippet.code);
+      await navigator.clipboard.writeText(displayCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -91,7 +102,7 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
       {snippet.runKind !== "none" ||
       /^(bash|sh|shell|zsh)$/i.test(snippet.lang) ? (
         <div className="border-t border-zinc-800 bg-zinc-950/40 px-3 py-2 text-zinc-200">
-          <SnippetRunner snippet={snippet} />
+          <SnippetRunner snippet={runnableSnippet} />
         </div>
       ) : null}
     </div>

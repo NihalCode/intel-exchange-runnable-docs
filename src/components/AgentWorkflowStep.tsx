@@ -7,7 +7,9 @@ import {
   RequestPlaygroundPanel,
   RequestPlaygroundProvider,
 } from "./RequestPlayground";
+import { useRunSettings } from "./RunSettings";
 import { codeForRunnableRequest } from "@/lib/snippets";
+import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import type { AgentLanguage, AgentStepResult } from "@/lib/agent/types";
 import type { CodeSnippet } from "@/lib/types";
 
@@ -50,7 +52,8 @@ function SpecTable({
 
 function snippetForStep(
   step: AgentStepResult,
-  language: AgentLanguage
+  language: AgentLanguage,
+  baseUrl: string
 ): CodeSnippet {
   const langMap: Record<
     AgentLanguage,
@@ -63,10 +66,11 @@ function snippetForStep(
     go: { lang: "go", label: "Go", runKind: "none" },
   };
   const meta = langMap[language];
-  const code =
+  const rawCode =
     language === "java" || language === "go"
       ? step.code
-      : codeForRunnableRequest(step.request, language);
+      : codeForRunnableRequest(step.request, language, baseUrl);
+  const code = applyRuntimeBaseUrl(rawCode, baseUrl);
   return {
     lang: meta.lang,
     label: meta.label,
@@ -87,7 +91,11 @@ export function AgentWorkflowStep({
   totalSteps: number;
   workflowId?: string;
 }) {
-  const snippet = useMemo(() => snippetForStep(step, language), [step, language]);
+  const { baseUrl } = useRunSettings();
+  const snippet = useMemo(
+    () => snippetForStep(step, language, baseUrl),
+    [step, language, baseUrl]
+  );
 
   return (
     <section className="rounded-xl border border-zinc-200 dark:border-zinc-800">

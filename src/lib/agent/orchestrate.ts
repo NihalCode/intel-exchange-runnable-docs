@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getManifest, getPage, getProductManifest } from "../content";
-import { DISPLAY_BASE } from "../constants";
+import { baseUrlForProduct } from "../products/auth";
 import { DEFAULT_PRODUCT_ID, getProductOrThrow, inferProductFromQuery } from "../products/registry";
 import { loadCombinedAgentIndex } from "../products/search";
 import { loadAgentIndex } from "./load-index";
@@ -257,7 +257,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const language = req.language ?? "python";
   const productManifest = (await getProductManifest(activeProductId)) ?? getManifest();
-  const baseUrl = productManifest.defaultBaseUrl || DISPLAY_BASE;
+  const baseUrl = baseUrlForProduct(activeProductId);
   const productLabel = getProductOrThrow(activeProductId).displayLabel;
 
   // Combine recent user turns so follow-ups like "add pagination" still retrieve relevant docs

@@ -7,6 +7,7 @@
 
 import { injectOpenApiAuthIntoUrl } from "./credential-placeholders";
 import { DISPLAY_BASE } from "./constants";
+import { rewriteUrlWithRuntimeBase } from "./snippet-base-url";
 
 export interface SandboxResult {
   logs: string[];
@@ -182,9 +183,7 @@ export function runJsInSandbox(
       if (data.type === "fetch") {
         // Relay through the /api/run proxy, substituting the display base URL.
         const originalUrl: string = data.payload?.url ?? "";
-        let proxiedUrl = originalUrl.startsWith(DISPLAY_BASE)
-          ? baseUrl.replace(/\/+$/, "") + originalUrl.slice(DISPLAY_BASE.length)
-          : originalUrl;
+        let proxiedUrl = rewriteUrlWithRuntimeBase(originalUrl, baseUrl);
         if (getCredential) {
           proxiedUrl = injectOpenApiAuthIntoUrl(proxiedUrl, getCredential);
         }

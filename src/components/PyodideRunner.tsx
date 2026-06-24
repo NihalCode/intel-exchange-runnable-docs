@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
+import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import { ensureOpenApiAuth, substituteSnippetPlaceholders } from "@/lib/credential-placeholders";
 import { proxyHttpRequest } from "@/lib/http-run";
 import { isSensitiveName, maskText } from "@/lib/security";
@@ -102,10 +102,7 @@ _sys.modules["requests"] = _RequestsMod()
 // ---------------------------------------------------------------------------
 
 function transformCode(code: string, baseUrl: string, creds: Record<string, string>): string {
-  let out = code;
-
-  // Substitute placeholder base URL.
-  out = out.replace(DISPLAY_BASE_RE, baseUrl.replace(/\/+$/, ""));
+  let out = applyRuntimeBaseUrl(code, baseUrl);
 
   out = substituteSnippetPlaceholders(out, (name) => creds[name.toLowerCase()] ?? "");
 

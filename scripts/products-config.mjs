@@ -11,7 +11,7 @@ export const PRODUCTS = [
     docsProject: "intel-exchange-api-reference",
     docsReferer: undefined,
     docsSourceType: "theneo-md",
-    defaultBaseUrl: "https://tenantname.com/ctixapi",
+    defaultBaseUrl: "https://tenantname.cyware.com/ctixapi",
     /** Legacy path — CTIX pages live at src/content/pages/ */
     legacyContent: true,
   },
@@ -22,7 +22,7 @@ export const PRODUCTS = [
     docsProject: "collaborate-api-reference",
     docsReferer: "https://csapapi.cyware.com/",
     docsSourceType: "theneo-md",
-    defaultBaseUrl: "https://tenantname.com/csap",
+    defaultBaseUrl: "https://tenantname.cyware.com/csap",
     legacyContent: false,
   },
   {
@@ -32,7 +32,7 @@ export const PRODUCTS = [
     docsProject: "cyware-orchestrate-api-reference-theneo",
     docsReferer: "https://orchestrateapi.cyware.com/cyware-orchestrate-api-reference-theneo",
     docsSourceType: "theneo-md",
-    defaultBaseUrl: "https://tenantname.com/co",
+    defaultBaseUrl: "https://tenantname.cyware.com/co",
     legacyContent: false,
   },
   {
@@ -43,7 +43,7 @@ export const PRODUCTS = [
     docsSourceType: "postman",
     postmanCollectionUrl:
       "https://cftrapi.cyware.com/api/collections/4787352/UVeDuTqn?segregateAuth=true&versionTag=latest",
-    defaultBaseUrl: "https://tenantname.com/cftrapi",
+    defaultBaseUrl: "https://tenantname.cyware.com/cftrapi",
     legacyContent: false,
   },
 ];
