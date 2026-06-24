@@ -1,9 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import { ensureOpenApiAuth, substituteSnippetPlaceholders } from "@/lib/credential-placeholders";
 import { proxyHttpRequest } from "@/lib/http-run";
+import {
+  needsConfiguredBaseUrl,
+  responseRunHint,
+  templateTenantExplanation,
+} from "@/lib/run-feedback";
 import { isSensitiveName, maskText } from "@/lib/security";
 import type { CredField } from "@/lib/resolve-request";
 import { buildPlaygroundExec, useRequestPlayground } from "./RequestPlayground";
@@ -172,6 +177,13 @@ export function PyodideRunner({ code }: { code: string }) {
 
   const credFields = playground ? playground.credFields : extractCredFields(code);
 
+  const outputHint = useMemo(() => {
+    const text = logs.join("\n");
+    const statusMatch = text.match(/^(\d{3})\b/m);
+    const status = statusMatch ? Number(statusMatch[1]) : 0;
+    return responseRunHint(status, text, baseUrl);
+  }, [logs, baseUrl]);
+
   const buildCreds = () => {
     const c: Record<string, string> = {};
     for (const f of credFields) c[f.name.toLowerCase()] = getCredential(f.name);
@@ -240,9 +252,16 @@ export function PyodideRunner({ code }: { code: string }) {
   return (
     <div>
       {playground ? (
-        <p className="mt-1 text-[11px] opacity-60">
-          Uses values from <strong>Request parameters</strong> above.
-        </p>
+        <>
+          <p className="mt-1 text-[11px] opacity-60">
+            Uses values from <strong>Request parameters</strong> above.
+          </p>
+          {needsConfiguredBaseUrl(baseUrl) ? (
+            <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+              <strong>Configure your tenant URL.</strong> {templateTenantExplanation()}
+            </div>
+          ) : null}
+        </>
       ) : (
         <div className="mt-2">
           <AutoAuthNotice />
@@ -291,6 +310,11 @@ export function PyodideRunner({ code }: { code: string }) {
           <div className="mb-1 text-xs font-semibold uppercase tracking-wide opacity-70">
             {error ? "Error" : "Output"}
           </div>
+          {outputHint ? (
+            <div className="mb-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+              {outputHint}
+            </div>
+          ) : null}
           {logs.length > 0 ? (
             <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-relaxed">
               {maskText(logs.join("\n"), secretValues)}

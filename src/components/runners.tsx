@@ -10,6 +10,11 @@ import {
 import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
 import { applyRuntimeBaseUrl, rewriteUrlWithRuntimeBase } from "@/lib/snippet-base-url";
 import { isPlaceholderBase } from "@/lib/demo";
+import {
+  needsConfiguredBaseUrl,
+  responseRunHint,
+  templateTenantExplanation,
+} from "@/lib/run-feedback";
 import { proxyHttpRequest } from "@/lib/http-run";
 import { runJsInSandbox } from "@/lib/js-sandbox";
 import { isPostmanPreRequestScript, parseHttpSnippet, type ExecRequest } from "@/lib/parse-request";
@@ -346,7 +351,7 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const needsBaseUrl = isPlaceholderBase(baseUrl);
+  const needsBaseUrl = isPlaceholderBase(baseUrl) || needsConfiguredBaseUrl(baseUrl);
 
   const stepSlug = usingPlayground ? (playground!.stepSlug ?? "") : "";
 
@@ -507,15 +512,24 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   return (
     <div>
       {usingPlayground ? (
-        <p className="mt-1 text-[11px] opacity-60">
-          Uses values from <strong>Request parameters</strong> above.
-        </p>
+        <>
+          <p className="mt-1 text-[11px] opacity-60">
+            Uses values from <strong>Request parameters</strong> above.
+          </p>
+          {needsConfiguredBaseUrl(baseUrl) ? (
+            <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+              <strong>Configure your tenant URL.</strong> {templateTenantExplanation()}
+            </div>
+          ) : null}
+        </>
       ) : (
         <>
           {needsBaseUrl ? (
             <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
-              <strong>Set your base URL.</strong> Enter the Cyware tenant API base in the header
-              (default: <code className="font-mono">{DISPLAY_BASE}</code>).
+              <strong>Set your tenant base URL.</strong>{" "}
+              {needsConfiguredBaseUrl(baseUrl)
+                ? templateTenantExplanation()
+                : `Enter the Cyware tenant API base in the header (default: ${DISPLAY_BASE}).`}
             </div>
           ) : (
             <div className="mt-2 rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
@@ -614,6 +628,11 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
               }`}
             >
               {tagSummary}
+            </div>
+          ) : null}
+          {responseRunHint(result.status, result.body, baseUrl) ? (
+            <div className="mb-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+              {responseRunHint(result.status, result.body, baseUrl)}
             </div>
           ) : null}
           <Pre text={maskText(formatMaybeJson(result.body), secretValues)} />
