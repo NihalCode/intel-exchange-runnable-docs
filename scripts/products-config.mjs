@@ -22,7 +22,7 @@ export const PRODUCTS = [
     docsProject: "collaborate-api-reference",
     docsReferer: "https://csapapi.cyware.com/",
     docsSourceType: "theneo-md",
-    defaultBaseUrl: "https://tenantname.cyware.com/csap",
+    defaultBaseUrl: "https://csapapi.cyware.com",
     legacyContent: false,
   },
   {
@@ -32,7 +32,7 @@ export const PRODUCTS = [
     docsProject: "cyware-orchestrate-api-reference-theneo",
     docsReferer: "https://orchestrateapi.cyware.com/cyware-orchestrate-api-reference-theneo",
     docsSourceType: "theneo-md",
-    defaultBaseUrl: "https://tenantname.cyware.com/co",
+    defaultBaseUrl: "https://orchestrateapi.cyware.com",
     legacyContent: false,
   },
   {

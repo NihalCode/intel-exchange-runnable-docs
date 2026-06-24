@@ -79,8 +79,14 @@ describe("product-specific snippets", () => {
   it("Orchestrate snippets use Orchestrate base URL placeholder", () => {
     const snippets = buildEndpointSnippets(sampleEndpoint, "orchestrate");
     expect(snippets[0].code).toContain(baseUrlForProduct("orchestrate"));
+    expect(snippets[0].code).toContain("orchestrateapi.cyware.com");
     const auth = authKeyValues("orchestrate");
     expect(auth.query.some((q) => q.name === "AccessID")).toBe(true);
+  });
+
+  it("CSAP snippets use csapapi.cyware.com base URL", () => {
+    const snippets = buildEndpointSnippets(sampleEndpoint, "csap");
+    expect(snippets[0].code).toContain("https://csapapi.cyware.com");
   });
 
   it("CSAP snippets use Open API auth query params", () => {

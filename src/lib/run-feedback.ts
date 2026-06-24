@@ -30,7 +30,8 @@ export function cloudflareAccessExplanation(): string {
 export function templateTenantExplanation(): string {
   return (
     "Set your Cyware API base URL in API Settings (key icon). " +
-    "CFTR: https://cftrapi.cyware.com — or your dedicated tenant URL like https://mycompany.cyware.com/cftrapi."
+    "Hosted defaults: CFTR https://cftrapi.cyware.com · CSAP https://csapapi.cyware.com · " +
+    "Orchestrate https://orchestrateapi.cyware.com — or your dedicated tenant URL if provided."
   );
 }
 

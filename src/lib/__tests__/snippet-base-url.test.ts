@@ -22,12 +22,12 @@ const CONNECTIVITY: Record<
   },
   orchestrate: {
     slug: "authentication/test-connectivity",
-    baseSuffix: "/co",
+    baseSuffix: "orchestrateapi.cyware.com",
     wrongSuffix: "/ctixapi",
   },
   csap: {
     slug: "analyst-portal/authentication/test-connectivity",
-    baseSuffix: "/csap",
+    baseSuffix: "csapapi.cyware.com",
     wrongSuffix: "/ctixapi",
   },
 };
@@ -84,6 +84,8 @@ describe("rewriteUrlWithRuntimeBase", () => {
 describe("connectivity endpoints — all four products", () => {
   function runtimeBaseFor(productId: string, cfg: (typeof CONNECTIVITY)[string]): string {
     if (productId === "cftr") return "https://cftrapi.cyware.com";
+    if (productId === "csap") return "https://csapapi.cyware.com";
+    if (productId === "orchestrate") return "https://orchestrateapi.cyware.com";
     return `${TENANT}${cfg.baseSuffix}`;
   }
 
