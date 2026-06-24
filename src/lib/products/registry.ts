@@ -118,7 +118,7 @@ export const PRODUCTS: ApiProduct[] = [
       "Cyware CFTR API — case management, incidents, playbooks, and security orchestration for CFTR tenants.",
     docsUrl: "https://cftrapi.cyware.com/",
     docsReferencePath: "/",
-    baseApiUrl: "https://YOUR_TENANT.cyware.com/cftrapi",
+    baseApiUrl: "https://cftrapi.cyware.com",
     authType: "orchestrate-open-api",
     auth: CFTR_AUTH,
     docsSourceType: "postman",
@@ -173,8 +173,9 @@ export function apiBaseUrlHint(productId: string): string {
   switch (productId) {
     case "cftr":
       return (
-        "Live CFTR API: https://YOUR_TENANT.cyware.com/cftrapi (from CFTR admin). " +
-        "cftrapi.cyware.com is the Postman docs host only — API calls there return 404."
+        "https://cftrapi.cyware.com — CFTR hosted API. " +
+        "Paths use /cftrapi/openapi/… (e.g. test-connectivity). " +
+        "Dedicated tenants may use https://YOUR_TENANT.cyware.com/cftrapi instead."
       );
     case "csap":
       return "https://csapapi.cyware.com or your tenant URL https://YOUR_TENANT.cyware.com/csap";

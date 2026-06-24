@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   isCloudflareAccessBlock,
-  isCftrDocsHostBase,
   isPostmanDocs404,
   isTemplateTenantBase,
   responseRunHint,
@@ -11,11 +10,6 @@ describe("run-feedback", () => {
   it("detects placeholder tenant base URLs", () => {
     expect(isTemplateTenantBase("https://tenantname.cyware.com/cftrapi")).toBe(true);
     expect(isTemplateTenantBase("https://mycompany.cyware.com/cftrapi")).toBe(false);
-  });
-
-  it("detects CFTR docs host misconfiguration", () => {
-    expect(isCftrDocsHostBase("https://cftrapi.cyware.com")).toBe(true);
-    expect(isCftrDocsHostBase("https://mycompany.cyware.com/cftrapi")).toBe(false);
   });
 
   it("detects Postman docs 404 responses", () => {

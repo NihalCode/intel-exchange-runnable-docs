@@ -43,7 +43,7 @@ export const PRODUCTS = [
     docsSourceType: "postman",
     postmanCollectionUrl:
       "https://cftrapi.cyware.com/api/collections/4787352/UVeDuTqn?segregateAuth=true&versionTag=latest",
-    defaultBaseUrl: "https://tenantname.cyware.com/cftrapi",
+    defaultBaseUrl: "https://cftrapi.cyware.com",
     legacyContent: false,
   },
 ];

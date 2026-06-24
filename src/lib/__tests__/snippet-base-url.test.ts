@@ -17,7 +17,7 @@ const CONNECTIVITY: Record<
   ctix: { slug: "ping/ping", baseSuffix: "/ctixapi", wrongSuffix: "/cftrapi" },
   cftr: {
     slug: "cftr-api-reference/authentication/test-connectivity",
-    baseSuffix: "/cftrapi",
+    baseSuffix: "cftrapi.cyware.com",
     wrongSuffix: "/ctixapi",
   },
   orchestrate: {
@@ -83,6 +83,7 @@ describe("rewriteUrlWithRuntimeBase", () => {
 
 describe("connectivity endpoints — all four products", () => {
   function runtimeBaseFor(productId: string, cfg: (typeof CONNECTIVITY)[string]): string {
+    if (productId === "cftr") return "https://cftrapi.cyware.com";
     if (productId === "csap") return "https://csapapi.cyware.com";
     if (productId === "orchestrate") return "https://orchestrateapi.cyware.com";
     return `${TENANT}${cfg.baseSuffix}`;

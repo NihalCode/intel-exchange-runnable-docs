@@ -95,10 +95,9 @@ describe("product-specific snippets", () => {
     expect(req.query.some((q) => q.name === "Signature")).toBe(true);
   });
 
-  it("CFTR snippets use tenant cftrapi base URL placeholder", () => {
+  it("CFTR snippets use cftrapi.cyware.com base URL", () => {
     const snippets = buildEndpointSnippets(sampleEndpoint, "cftr");
-    expect(snippets[0].code).toContain("tenantname.cyware.com/cftrapi");
-    expect(snippets[0].code).not.toContain("cftrapi.cyware.com/test-connectivity");
+    expect(snippets[0].code).toContain("https://cftrapi.cyware.com");
   });
 
   it("CFTR test connectivity path is normalized", () => {
@@ -110,6 +109,16 @@ describe("product-specific snippets", () => {
     const req = buildRunnableRequest(page, "cftr");
     expect(req.path).toBe("/test-connectivity/");
     expect(req.query.map((q) => q.name)).toContain("AccessID");
+  });
+
+  it("CFTR openapi test connectivity path from Postman originalRequest", () => {
+    const page: EndpointPage = {
+      ...sampleEndpoint,
+      slug: "cftr-api-reference/authentication/test-connectivity",
+      path: "{{base_url}}/cftrapi/openapi/test-connectivity/?AccessID={{open_api_access_id}}&Expires={{expires}}&Signature={{signature}}",
+    };
+    const req = buildRunnableRequest(page, "cftr");
+    expect(req.path).toBe("/cftrapi/openapi/test-connectivity/");
   });
 
   it("never includes real secrets in generated snippets", () => {

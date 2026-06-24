@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import type { NavNode } from "@/lib/types";
 import { baseUrlForProduct } from "@/lib/products/auth";
 import { apiBaseUrlHint } from "@/lib/products/registry";
-import { isCftrDocsHostBase, cftrDocsHostExplanation } from "@/lib/run-feedback";
 import { useRunSettings } from "./RunSettings";
 import { ProductSelector, useProduct } from "./ProductContext";
 import { ProductRunSettingsSync } from "./RunSettings";
@@ -79,11 +78,6 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
           spellCheck={false}
           className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
         />
-        {isCftrDocsHostBase(baseUrl) ? (
-          <span className="text-[11px] text-amber-700 dark:text-amber-400">
-            {cftrDocsHostExplanation()}
-          </span>
-        ) : null}
       </label>
 
       <div className="mb-2 border-t border-zinc-100 pt-3 dark:border-zinc-800" />
