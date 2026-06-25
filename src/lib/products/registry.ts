@@ -173,9 +173,8 @@ export function apiBaseUrlHint(productId: string): string {
   switch (productId) {
     case "cftr":
       return (
-        "https://cftrapi.cyware.com — CFTR hosted API. " +
-        "Paths use /cftrapi/openapi/… (e.g. test-connectivity). " +
-        "Dedicated tenants may use https://YOUR_TENANT.cyware.com/cftrapi instead."
+        "https://cftrapi.cyware.com — CFTR API base for now (confirm tenant URL with your admin). " +
+        "Paths use /cftrapi/openapi/… (e.g. test-connectivity)."
       );
     case "csap":
       return "https://csapapi.cyware.com or your tenant URL https://YOUR_TENANT.cyware.com/csap";

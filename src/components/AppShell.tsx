@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { NavNode } from "@/lib/types";
 import { baseUrlForProduct } from "@/lib/products/auth";
 import { apiBaseUrlHint } from "@/lib/products/registry";
+import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 import { useRunSettings } from "./RunSettings";
 import { ProductSelector, useProduct } from "./ProductContext";
 import { ProductRunSettingsSync } from "./RunSettings";
@@ -156,9 +157,26 @@ function AuthPanel({ onClose }: { onClose: () => void }) {
 }
 
 function HeaderBar({ productLabel, productId }: { productLabel: string; productId: string }) {
+  const liveUi = isLiveApiUiEnabled();
   const { baseUrl, setBaseUrl, authStatus, credentialCount } = useRunSettings();
   const productDefaultUrl = baseUrlForProduct(productId);
   const [panelOpen, setPanelOpen] = useState(false);
+
+  if (!liveUi) {
+    return (
+      <div className="relative flex flex-1 items-center gap-2">
+        <span className="hidden text-[11px] text-zinc-500 sm:inline">
+          Documentation mode — example code uses placeholders only
+        </span>
+        <Link
+          href="/developer"
+          className="text-[11px] text-sky-700 underline dark:text-sky-400"
+        >
+          Developer Console
+        </Link>
+      </div>
+    );
+  }
 
   const statusDot =
     authStatus === "ok"

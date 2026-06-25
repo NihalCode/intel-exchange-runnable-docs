@@ -1,4 +1,4 @@
-import { DISPLAY_BASE, DISPLAY_BASE_RE } from "./constants";
+import { CFTR_DISPLAY_BASE, DISPLAY_BASE, DISPLAY_BASE_RE } from "./constants";
 import { baseUrlForProduct } from "./products/auth";
 import { listProducts } from "./products/registry";
 
@@ -7,6 +7,8 @@ export function productTemplateBaseUrls(): string[] {
   const fromRegistry = listProducts().map((p) => baseUrlForProduct(p.productId));
   const legacy = [
     DISPLAY_BASE,
+    CFTR_DISPLAY_BASE,
+    "https://cftrapi.cyware.com",
     "https://tenantname.com/ctixapi",
     "https://tenantname.com/csap",
     "https://tenantname.com/co",

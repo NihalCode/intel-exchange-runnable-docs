@@ -12,8 +12,8 @@ export default function AgentPage() {
     <div className="mx-auto max-w-5xl">
       <h1 className="mb-1 text-2xl font-bold tracking-tight">Documentation Agent</h1>
       <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-        Chat to plan Cyware CTIX workflows, edit and run API steps, or build full Next.js apps.
-        Follow up to refine — the agent keeps conversation context.
+        Plan Cyware API workflows from ingested documentation, review example code with placeholders,
+        or build Next.js apps. Live API runs require developer credentials.
       </p>
       <AgentChat />
     </div>

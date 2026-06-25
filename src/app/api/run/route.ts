@@ -112,6 +112,17 @@ export async function POST(request: Request) {
     );
   }
 
+  if (process.env.ENABLE_API_EXECUTION !== "true") {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "Live API execution is disabled on this server. Documentation and placeholder examples are available without credentials. Enable ENABLE_API_EXECUTION=true for developer testing.",
+      },
+      { status: 403 }
+    );
+  }
+
   try {
     await assertPublicHost(target.hostname);
   } catch (err) {

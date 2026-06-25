@@ -1,5 +1,7 @@
 import { spawn } from "node:child_process";
 import path from "node:path";
+import { requireDeveloperAccess } from "@/lib/developer/access";
+import { canRunDeveloperIngest } from "@/lib/developer/diagnostics";
 import { getProductOrThrow } from "@/lib/products/registry";
 
 export const runtime = "nodejs";
@@ -7,11 +9,22 @@ export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
 export async function POST(
-  _req: Request,
+  req: Request,
   ctx: { params: Promise<{ productId: string }> }
 ) {
+  const denied = requireDeveloperAccess(req);
+  if (denied) return denied;
+
   const { productId } = await ctx.params;
   getProductOrThrow(productId);
+
+  const ingestCheck = canRunDeveloperIngest(productId);
+  if (!ingestCheck.allowed) {
+    return Response.json(
+      { ok: false, error: "Ingest blocked.", blockers: ingestCheck.blockers },
+      { status: 403 }
+    );
+  }
 
   const script = path.join(process.cwd(), "scripts", "ingest.mjs");
   const result = await new Promise<{ code: number; stdout: string; stderr: string }>(

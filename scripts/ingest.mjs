@@ -9,6 +9,7 @@
  * Other products write to src/content/products/{productId}/.
  */
 import { mkdir, writeFile, rm, readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getProductConfig, contentDirForProduct } from "./products-config.mjs";
@@ -25,11 +26,39 @@ function parseArgs() {
   const args = process.argv.slice(2);
   let productId = "ctix";
   let delay = 0;
+  let collectionFile = process.env.POSTMAN_COLLECTION_FILE || "";
+  /** @type {"js" | "ts"} */
+  let parser = "js";
   for (const arg of args) {
     if (arg.startsWith("--product=")) productId = arg.slice("--product=".length);
     if (arg.startsWith("--delay=")) delay = Number(arg.slice("--delay=".length)) || 0;
+    if (arg.startsWith("--collection-file=")) collectionFile = arg.slice("--collection-file=".length);
+    if (arg.startsWith("--parser=")) {
+      const p = arg.slice("--parser=".length);
+      if (p === "ts" || p === "js") parser = p;
+    }
   }
-  return { productId, delay };
+  return { productId, delay, collectionFile, parser };
+}
+
+/** Parse Postman collection with the TypeScript parser (used by Developer Console import). */
+async function postmanToRecordsWithTs(collectionFile, productId) {
+  const tmpDir = path.join(ROOT, ".tmp");
+  await mkdir(tmpDir, { recursive: true });
+  const outFile = path.join(tmpDir, `postman-records-${productId}-${Date.now()}.json`);
+  const cliPath = path.join(__dirname, "postman-ts-parse-cli.ts");
+  const tsxCli = path.join(ROOT, "node_modules", "tsx", "dist", "cli.mjs");
+  const result = spawnSync(
+    process.execPath,
+    [tsxCli, cliPath, `--product=${productId}`, `--collection-file=${collectionFile}`, `--out=${outFile}`],
+    { cwd: ROOT, encoding: "utf8" }
+  );
+  if (result.status !== 0) {
+    throw new Error(
+      `TypeScript Postman parser failed:\n${(result.stderr || result.stdout || "").slice(-2000)}`
+    );
+  }
+  return JSON.parse(await readFile(outFile, "utf8"));
 }
 
 function decodeEntities(input) {
@@ -419,12 +448,29 @@ async function ingestTheneo(product, dirs) {
   return records;
 }
 
-async function ingestPostman(product, dirs) {
-  console.log(`Fetching Postman collection: ${product.postmanCollectionUrl}`);
-  const raw = await fetchText(product.postmanCollectionUrl, product);
+async function ingestPostman(product, dirs, collectionFile = "", parser = "js") {
+  let raw;
+  let collectionPath = collectionFile;
+  if (collectionFile) {
+    console.log(`Reading Postman collection file: ${collectionFile}`);
+    raw = await readFile(collectionFile, "utf8");
+  } else {
+    console.log(`Fetching Postman collection: ${product.postmanCollectionUrl}`);
+    raw = await fetchText(product.postmanCollectionUrl, product);
+    const tmpDir = path.join(ROOT, ".tmp");
+    await mkdir(tmpDir, { recursive: true });
+    collectionPath = path.join(tmpDir, `${product.productId}-collection-${Date.now()}.json`);
+    await writeFile(collectionPath, raw, "utf8");
+  }
   const collection = JSON.parse(raw);
-  const records = postmanToRecords(collection, product.productId);
-  console.log(`Parsed ${records.length} pages from Postman collection.`);
+  let records;
+  if (parser === "ts") {
+    console.log("Using TypeScript Postman parser (postman-ts-parse-cli.ts)…");
+    records = await postmanToRecordsWithTs(collectionPath, product.productId);
+  } else {
+    records = postmanToRecords(collection, product.productId);
+  }
+  console.log(`Parsed ${records.length} pages from Postman collection (${parser} parser).`);
 
   await rm(dirs.pagesDir, { recursive: true, force: true });
   await mkdir(dirs.pagesDir, { recursive: true });
@@ -432,15 +478,15 @@ async function ingestPostman(product, dirs) {
 }
 
 async function main() {
-  const { productId, delay } = parseArgs();
+  const { productId, delay, collectionFile, parser } = parseArgs();
   const product = getProductConfig(productId);
   const dirs = contentDirForProduct(ROOT, product);
 
   if (delay > 0) await new Promise((r) => setTimeout(r, delay));
 
   let records;
-  if (product.docsSourceType === "postman") {
-    records = await ingestPostman(product, dirs);
+  if (product.docsSourceType === "postman" || collectionFile) {
+    records = await ingestPostman(product, dirs, collectionFile, parser);
   } else {
     records = await ingestTheneo(product, dirs);
   }

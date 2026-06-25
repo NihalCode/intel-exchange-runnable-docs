@@ -1,7 +1,7 @@
 import { getProductOrThrow } from "./registry";
 import type { AuthConfig, AuthType } from "./types";
 import type { KeyValue } from "../types";
-import { DISPLAY_BASE } from "../constants";
+import { CFTR_DISPLAY_BASE, DISPLAY_BASE } from "../constants";
 
 /** Build auth query params / headers for runnable snippets. */
 export function authKeyValues(productId: string): {
@@ -31,6 +31,7 @@ export function getAuthConfig(productId: string): AuthConfig {
 
 export function baseUrlForProduct(productId: string): string {
   if (productId === "ctix") return DISPLAY_BASE;
+  if (productId === "cftr") return CFTR_DISPLAY_BASE;
   const product = getProductOrThrow(productId);
   if (!product.baseApiUrl.includes("YOUR_TENANT")) return product.baseApiUrl.replace(/\/+$/, "");
   return product.baseApiUrl.replace("YOUR_TENANT", "tenantname").replace(/\/+$/, "");

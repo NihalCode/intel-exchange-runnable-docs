@@ -1,25 +1,27 @@
 #!/usr/bin/env node
 /**
- * Embed the agent docs index and upsert it into Pinecone for RAG retrieval.
+ * Embed agent doc indexes and upsert into Pinecone for RAG retrieval (all products).
  *
  * - Creates the serverless index if it does not exist (dimension 512, cosine).
  * - Embeds each chunk with OpenAI text-embedding-3-small (512-dim).
- * - Upserts vectors with light metadata (slug/title/method/path/kind).
+ * - Upserts vectors with metadata (productId, slug, title, method, path, kind).
  *
  * Usage:
- *   node scripts/pinecone-upsert.mjs
+ *   node scripts/pinecone-upsert.mjs [--product=ctix|csap|orchestrate|cftr]
  *
  * Requires (from .env.local or the environment):
  *   OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_INDEX, PINECONE_CLOUD, PINECONE_REGION
+ *
+ * Run `npm run build:index` first to generate per-product agent-index.json files.
  */
 import { readFile } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { PRODUCTS, contentDirForProduct } from "./products-config.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, "..");
-const INDEX_PATH = path.join(ROOT, "src", "content", "agent-index.json");
 const CONTROL_PLANE = "https://api.pinecone.io";
 const EMBED_DIM = 512;
 
@@ -38,6 +40,35 @@ function loadEnvLocal() {
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function indexPathForProduct(product) {
+  if (product.productId === "ctix") {
+    return path.join(ROOT, "src", "content", "agent-index.json");
+  }
+  return path.join(contentDirForProduct(ROOT, product).contentDir, "agent-index.json");
+}
+
+async function loadChunks(productFilter) {
+  const targets = productFilter
+    ? PRODUCTS.filter((p) => p.productId === productFilter)
+    : PRODUCTS;
+
+  const chunks = [];
+  for (const product of targets) {
+    const indexPath = indexPathForProduct(product);
+    try {
+      const index = JSON.parse(await readFile(indexPath, "utf8"));
+      const productChunks = index.chunks ?? [];
+      for (const c of productChunks) {
+        chunks.push({ ...c, productId: c.productId ?? product.productId });
+      }
+      console.log(`[${product.productId}] Loaded ${productChunks.length} chunks from ${indexPath}`);
+    } catch {
+      console.warn(`[${product.productId}] Skipped — no index at ${indexPath} (run: npm run build:index -- --product=${product.productId})`);
+    }
+  }
+  return chunks;
 }
 
 async function embedBatch(texts, apiKey) {
@@ -93,7 +124,6 @@ async function ensureIndex(cfg) {
     throw new Error(`Create index ${create.status}: ${(await create.text()).slice(0, 300)}`);
   }
 
-  // Poll until ready.
   for (let i = 0; i < 30; i++) {
     await sleep(2000);
     const res = await pc(`${CONTROL_PLANE}/indexes/${cfg.indexName}`, cfg.apiKey);
@@ -130,9 +160,16 @@ async function main() {
   if (!openaiKey) throw new Error("OPENAI_API_KEY is required.");
   if (!cfg.apiKey) throw new Error("PINECONE_API_KEY is required.");
 
-  const index = JSON.parse(await readFile(INDEX_PATH, "utf8"));
-  const chunks = index.chunks ?? [];
-  console.log(`Loaded ${chunks.length} chunks from agent-index.json`);
+  let productFilter = null;
+  for (const arg of process.argv.slice(2)) {
+    if (arg.startsWith("--product=")) productFilter = arg.slice("--product=".length);
+  }
+
+  const chunks = await loadChunks(productFilter);
+  if (chunks.length === 0) {
+    throw new Error("No chunks loaded. Run `npm run build:index` for each product first.");
+  }
+  console.log(`Total: ${chunks.length} chunks across ${productFilter ?? "all products"}`);
 
   const host = await ensureIndex(cfg);
 
@@ -148,6 +185,7 @@ async function main() {
       id: c.id,
       values: embeddings[j],
       metadata: {
+        productId: c.productId,
         slug: c.slug,
         title: c.title,
         kind: c.kind,

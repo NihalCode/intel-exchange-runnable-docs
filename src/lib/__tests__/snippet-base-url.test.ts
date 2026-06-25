@@ -56,9 +56,9 @@ describe("applyRuntimeBaseUrl", () => {
 
   it("replaces CFTR template base in snippet code", () => {
     const template = baseUrlForProduct("cftr");
-    const code = `url = "${template}/test-connectivity/"`;
+    const code = `url = "${template}/cftrapi/openapi/test-connectivity/"`;
     expect(applyRuntimeBaseUrl(code, `${TENANT}/cftrapi`)).toContain(
-      `${TENANT}/cftrapi/test-connectivity/`
+      `${TENANT}/cftrapi/cftrapi/openapi/test-connectivity/`
     );
     expect(applyRuntimeBaseUrl(code, `${TENANT}/cftrapi`)).not.toContain("/ctixapi");
   });

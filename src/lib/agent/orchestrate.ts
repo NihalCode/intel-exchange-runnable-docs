@@ -21,8 +21,10 @@ import {
   enforceListIndicatorsPlan,
   enforceConnectivityPlan,
   enforceReportDownloadPlan,
+  enforceSetupInfoPlan,
   isReportDownloadQuery,
   isPingQuery,
+  isSetupInfoQuery,
 } from "./planner";
 import {
   confidenceFromScores,
@@ -46,6 +48,7 @@ import type {
 } from "./types";
 import type { EndpointPage } from "../types";
 import { validatePlan } from "./validate";
+import { isLiveApiUiEnabled, liveRunBlockedMessage } from "../public-docs-mode";
 
 async function endpointSlugSetForProduct(productId: string): Promise<Set<string>> {
   const manifest = (await getProductManifest(productId)) ?? getManifest();
@@ -324,8 +327,13 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   if (mode === "workflow") {
+    // Base URL / credentials FAQ — answered from product registry, not doc retrieval.
+    plan = enforceSetupInfoPlan(plan, query, activeProductId);
+
     // Connectivity questions are unambiguous — route to the product test endpoint first.
-    plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
+    if (!isSetupInfoQuery(query)) {
+      plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
+    }
 
     if (activeProductId === "ctix" && !isPingQuery(query)) {
       // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
@@ -369,10 +377,12 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     stepResults = applyScriptPlanToSteps(stepResults, query);
   }
 
+  const setupInfoAnswer = isSetupInfoQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const fallback =
-    lowConfidence ||
-    stepResults.length === 0 ||
-    (dropped.length > 0 && stepResults.length < plan.steps.length);
+    (!setupInfoAnswer &&
+      (lowConfidence ||
+        stepResults.length === 0 ||
+        (dropped.length > 0 && stepResults.length < plan.steps.length)));
 
   const titleBySlug = new Map(productManifest.pages.map((p) => [p.slug, p.title]));
 
@@ -392,6 +402,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     })),
     steps: stepResults,
     tagName,
+    docsModeNote: isLiveApiUiEnabled() ? undefined : liveRunBlockedMessage(),
     questions: plan.questions,
     retrieval: scored.slice(0, 5).map((c) => ({
       slug: c.slug,

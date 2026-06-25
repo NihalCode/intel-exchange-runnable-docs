@@ -18,4 +18,9 @@ describe("normalizePostmanEndpointPath", () => {
     expect(path).toBe("/v1/incident/{incident_unique_id}/");
     expect(pathParamNames).toContain("incident_unique_id");
   });
+
+  it("strips malformed {{base_url} prefix missing closing brace", () => {
+    const { path } = normalizePostmanEndpointPath("/{{base_url}v1/application/");
+    expect(path).toBe("/v1/application/");
+  });
 });

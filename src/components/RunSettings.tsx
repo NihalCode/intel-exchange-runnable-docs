@@ -12,6 +12,7 @@ import {
 import { generateAuthParams, type AuthParams } from "@/lib/auth-gen";
 import { isOpenApiAuthFresh } from "@/lib/credential-placeholders";
 import { isDemoModeEnabled } from "@/lib/demo";
+import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 import { baseUrlForProduct } from "@/lib/products/auth";
 import { DEFAULT_PRODUCT_ID } from "@/lib/products/registry";
 import { useProduct } from "./ProductContext";
@@ -302,6 +303,21 @@ export function AutoAuthNotice() {
   const { accessId, secretKey, authReady, getCredential, authStatus } = useRunSettings();
   const hasKeys = accessId.trim().length > 0 && secretKey.trim().length > 0;
   const exp = getCredential("expires");
+
+  if (!isLiveApiUiEnabled()) {
+    return (
+      <div className="rounded-md border border-sky-400/50 bg-sky-50/50 p-3 text-xs text-sky-900 dark:border-sky-800 dark:bg-sky-950/20 dark:text-sky-200">
+        <strong>Documentation mode:</strong> Examples below use placeholders such as{" "}
+        <code className="font-mono">&lt;ACCESS_ID&gt;</code> and{" "}
+        <code className="font-mono">&lt;BASE_URL&gt;</code>. Live API runs require developer
+        credentials — see the{" "}
+        <a href="/developer" className="underline">
+          Developer Console
+        </a>
+        .
+      </div>
+    );
+  }
 
   if (!hasKeys) {
     return (

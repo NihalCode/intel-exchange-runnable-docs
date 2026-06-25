@@ -1,4 +1,9 @@
 import type { AgentCitation, AgentPlan, AgentPlanStep, ScoredChunk } from "./types";
+import {
+  apiBaseUrlHint,
+  getProductOrThrow,
+  listProducts,
+} from "../products/registry";
 import { extractTagNameFromQuery } from "../workflow-step-context";
 
 const LIST_TAGS_SLUG = "tags/list-tags";
@@ -234,7 +239,7 @@ const CONNECTIVITY_BY_PRODUCT: Record<
     slug: "cftr-api-reference/authentication/test-connectivity",
     title: "Test connectivity",
     intro:
-      "Verify your CFTR credentials with **Test connectivity** (`GET /test-connectivity/`). " +
+      "Verify CFTR credentials with **Test connectivity** (`GET /cftrapi/openapi/test-connectivity/`). " +
       "A 200 response confirms the API connection and Open API auth are working.",
   },
   orchestrate: {
@@ -295,6 +300,116 @@ export function enforceReportDownloadPlan(
     workflow: intro,
     steps,
     citations,
+    questions: undefined,
+  };
+}
+
+/** "what is the base URL / tenant URL / where do I call the API". */
+export function isBaseUrlQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    /\b(base\s*url|api\s*url|open\s*api\s*url|tenant\s*url|root\s*url)\b/.test(q) ||
+    /\bwhat\s+(is\s+)?(the\s+)?(live\s+)?(open\s+)?api\b.*\burl\b/.test(q) ||
+    /\bwhere\s+(do\s+i\s+)?(call|send|point|hit)\b.*\bapi\b/.test(q) ||
+    /\b(all|each|every)\b.*\b(base\s*url|apis?)\b/.test(q) ||
+    /\b(base\s*url|apis?).*\b(all|each|every|four|4)\b/.test(q)
+  );
+}
+
+/** "do I need separate keys / credentials per product". */
+export function isCredentialsQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    /\b(separate|different|own|distinct)\b.*\b(key|credential|access\s*id|secret)/.test(q) ||
+    /\bhow many\b.*\b(key|credential|access\s*id)/.test(q) ||
+    /\b(same|share[ds]?)\b.*\b(key|credential|access\s*id).*\b(ctix|cftr|csap|orchestrate|product)/.test(q) ||
+    /\b(access\s*id|secret\s*key).*\b(each|all|every|four|4)\b.*\b(api|product)/.test(q) ||
+    /\buse\b.*\bmy\b.*\b(ctix|cftr|csap|orchestrate)\b.*\b(access|credential|key|secret)/.test(q) ||
+    /\b(ctix|cftr|csap|orchestrate)\b.*\b(access\s*id|secret\s*key|credential)/.test(q)
+  );
+}
+
+export function isSetupInfoQuery(query: string): boolean {
+  return isBaseUrlQuery(query) || isCredentialsQuery(query);
+}
+
+function setupInfoWorkflow(productId: string): string {
+  if (productId === "all") {
+    const lines = listProducts().map((p) => {
+      const hint = apiBaseUrlHint(p.productId);
+      return `- **${p.displayLabel}** — \`${p.baseApiUrl}\` — ${hint}`;
+    });
+    return (
+      "**Live Open API base URLs** (set in API Settings when you switch products):\n\n" +
+      `${lines.join("\n")}\n\n` +
+      "**Credentials:** each product has its **own** Access ID + Secret Key pair (generated in that product's admin). " +
+      "CTIX keys do not work for CFTR, CSAP, or Orchestrate. If you use all four products, you need **four pairs** (eight values total)."
+    );
+  }
+
+  const product = getProductOrThrow(productId);
+  const hint = apiBaseUrlHint(productId);
+  const credNote =
+    productId === "ctix"
+      ? "Generate Access ID + Secret Key in CTIX → API Settings / Integrators CSV."
+      : `Generate Access ID + Secret Key in **${product.productName}** admin (not from CTIX).`;
+
+  return (
+    `**Live Open API base URL** for ${product.displayLabel}: \`${product.baseApiUrl}\`\n\n` +
+    `${hint}\n\n` +
+    `Enter this in **API Settings** (header). ${credNote} ` +
+    `Each Cyware product uses a separate key pair — you cannot reuse CTIX credentials on other APIs.`
+  );
+}
+
+/** Answer base URL / credentials setup questions from the product registry (not doc RAG). */
+export function enforceSetupInfoPlan(
+  plan: AgentPlan,
+  query: string,
+  productId: string
+): AgentPlan {
+  if (!isSetupInfoQuery(query)) return plan;
+
+  const workflow = setupInfoWorkflow(productId);
+  const authSlug =
+    productId === "all"
+      ? undefined
+      : CONNECTIVITY_BY_PRODUCT[productId]?.slug;
+
+  const steps: AgentPlanStep[] = [];
+  const citations: AgentCitation[] = [];
+
+  if (authSlug && productId !== "all") {
+    const cfg = CONNECTIVITY_BY_PRODUCT[productId]!;
+    steps.push({
+      slug: authSlug,
+      order: 1,
+      explanation:
+        `After setting base URL \`${getProductOrThrow(productId).baseApiUrl}\`, run **${cfg.title}** to verify credentials.`,
+    });
+    citations.push({
+      slug: authSlug,
+      title: cfg.title,
+      url: docsUrlForProduct(productId, authSlug),
+    });
+  } else if (productId === "all") {
+    for (const p of listProducts()) {
+      const cfg = CONNECTIVITY_BY_PRODUCT[p.productId];
+      if (!cfg) continue;
+      citations.push({
+        slug: cfg.slug,
+        title: `${p.displayLabel}: ${cfg.title}`,
+        url: docsUrlForProduct(p.productId, cfg.slug),
+      });
+    }
+  }
+
+  return {
+    ...plan,
+    confidence: 0.95,
+    workflow,
+    steps,
+    citations: citations.length > 0 ? citations : plan.citations,
     questions: undefined,
   };
 }

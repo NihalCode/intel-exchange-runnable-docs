@@ -15,7 +15,7 @@ export function normalizePostmanEndpointPath(raw: string): {
   const embeddedQuery: KeyValue[] = [];
   const pathParamNames: string[] = [];
 
-  s = s.replace(/^\{\{base_url\}\}\/?/i, "");
+  s = s.replace(/^\/?\{\{base_url\}\}?\/?/i, "");
 
   const qIdx = s.indexOf("?");
   if (qIdx !== -1) {

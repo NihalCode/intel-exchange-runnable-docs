@@ -10,9 +10,14 @@ export function isTemplateTenantBase(baseUrl: string): boolean {
   );
 }
 
-/** @deprecated CFTR uses cftrapi.cyware.com as the hosted API base. Kept for tests. */
+/** True when the user pointed CFTR at the Postman docs host instead of a tenant API root. */
 export function isCftrDocsHostBase(baseUrl: string): boolean {
-  return false;
+  try {
+    const u = new URL((baseUrl || "").trim());
+    return u.hostname === "cftrapi.cyware.com";
+  } catch {
+    return false;
+  }
 }
 
 export function isPostmanDocs404(status: number, body: string): boolean {

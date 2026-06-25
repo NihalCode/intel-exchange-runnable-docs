@@ -107,7 +107,7 @@ describe("product-specific snippets", () => {
       path: "{{base_url}}/test-connectivity/?AccessID={{open_api_access_id}}&Expires={{expires}}&Signature={{signature}}",
     };
     const req = buildRunnableRequest(page, "cftr");
-    expect(req.path).toBe("/test-connectivity/");
+    expect(req.path).toBe("/cftrapi/openapi/test-connectivity/");
     expect(req.query.map((q) => q.name)).toContain("AccessID");
   });
 

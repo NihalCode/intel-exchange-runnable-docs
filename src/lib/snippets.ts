@@ -1,4 +1,5 @@
 import { DISPLAY_BASE } from "./constants";
+import { normalizeCftrApiPath } from "./cftr-path";
 import { authKeyValues, baseUrlForProduct } from "./products/auth";
 import { isPostmanTemplatePath, normalizePostmanEndpointPath } from "./postman-path";
 import { applyPathParams } from "./resolve-request";
@@ -126,6 +127,10 @@ export function buildRunnableRequest(page: EndpointPage, productId = "ctix"): Ru
       name,
       value: "",
     }));
+  }
+
+  if (productId === "cftr") {
+    path = normalizeCftrApiPath(path, baseUrlForProduct(productId));
   }
 
   const query = [

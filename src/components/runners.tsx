@@ -7,6 +7,7 @@ import {
   isOpenApiAuthParam,
   substituteSnippetPlaceholders,
 } from "@/lib/credential-placeholders";
+import { isLiveApiUiEnabled, liveRunBlockedMessage } from "@/lib/public-docs-mode";
 import { DISPLAY_BASE, DISPLAY_BASE_RE } from "@/lib/constants";
 import { applyRuntimeBaseUrl, rewriteUrlWithRuntimeBase } from "@/lib/snippet-base-url";
 import { isPlaceholderBase } from "@/lib/demo";
@@ -296,6 +297,7 @@ function formatMaybeJson(text: string): string {
 function HttpRunner({ code, request }: { code: string; request?: RunnableRequest }) {
   const settings = useRunSettings();
   const { baseUrl, secretValues, ensureFreshAuth } = settings;
+  const liveUi = isLiveApiUiEnabled();
   const playground = useRequestPlayground();
   const usingPlayground = !!playground && !!request;
 
@@ -425,6 +427,12 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
   }
 
   async function execute() {
+    if (!isLiveApiUiEnabled()) {
+      setError(liveRunBlockedMessage());
+      setPhase("idle");
+      return;
+    }
+
     const authErr = await ensureAuthReady();
     if (authErr) {
       setError(authErr);
@@ -524,7 +532,16 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
         </>
       ) : (
         <>
-          {needsBaseUrl ? (
+          {!liveUi ? (
+            <div className="mt-2 rounded-md border border-zinc-300/80 bg-zinc-50/80 px-3 py-2 text-xs text-zinc-700 dark:border-zinc-700 dark:bg-zinc-900/40 dark:text-zinc-300">
+              <strong>Documentation mode.</strong> Copy the example above — placeholders are
+              intentional. Live API execution is available to developers via the{" "}
+              <a href="/developer" className="font-medium underline">
+                Developer Console
+              </a>
+              .
+            </div>
+          ) : needsBaseUrl ? (
             <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
               <strong>Set your tenant base URL.</strong>{" "}
               {needsConfiguredBaseUrl(baseUrl)
@@ -538,42 +555,48 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
             </div>
           )}
 
-          <AutoAuthNotice />
-          <ManualCredentialsForm fields={credFields} />
+          {liveUi ? (
+            <>
+              <AutoAuthNotice />
+              <ManualCredentialsForm fields={credFields} />
 
-          <PathParamEditor
-            params={pathParams}
-            values={pathValues}
-            onChange={handlePathChange}
-          />
+              <PathParamEditor
+                params={pathParams}
+                values={pathValues}
+                onChange={handlePathChange}
+              />
 
-          <QueryParamEditor
-            params={editableParams}
-            values={queryValues}
-            onChange={handleQueryChange}
-          />
+              <QueryParamEditor
+                params={editableParams}
+                values={queryValues}
+                onChange={handleQueryChange}
+              />
 
-          {showBody ? (
-            <PayloadEditor
-              value={bodyText}
-              onChange={handleBodyChange}
-              jsonError={jsonError}
-            />
+              {showBody ? (
+                <PayloadEditor
+                  value={bodyText}
+                  onChange={handleBodyChange}
+                  jsonError={jsonError}
+                />
+              ) : null}
+            </>
           ) : null}
         </>
       )}
 
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        <RunButton onClick={handleRun} busy={phase === "loading"}>
-          <PlayIcon />
-          {phase === "loading" ? "Running…" : "Run"}
-        </RunButton>
-        <span className="text-[11px] opacity-50">
-          {method} · base: {baseUrl || "(set base URL above)"}
-        </span>
-      </div>
+      {liveUi ? (
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <RunButton onClick={handleRun} busy={phase === "loading"}>
+            <PlayIcon />
+            {phase === "loading" ? "Running…" : "Run"}
+          </RunButton>
+          <span className="text-[11px] opacity-50">
+            {method} · base: {baseUrl || "(set base URL above)"}
+          </span>
+        </div>
+      ) : null}
 
-      {phase === "confirm" ? (
+      {liveUi && phase === "confirm" ? (
         <ResultBox tone="info" title={`Confirm ${method} request`}>
           <p className="mb-2">
             This is a <strong>{method}</strong> request and may create, modify, or

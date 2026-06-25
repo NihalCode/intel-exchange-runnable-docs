@@ -222,6 +222,8 @@ export interface AgentResponse {
   scripts?: WorkflowScript[];
   /** Tag name extracted from the user query (for search summaries and chaining). */
   tagName?: string;
+  /** Note for public documentation mode (no live runs). */
+  docsModeNote?: string;
 }
 
 export interface AgentRequest {
