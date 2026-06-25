@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { inferProductFromQuery } from "@/lib/products/registry";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
 import type { AgentLanguage, AgentMode, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
@@ -227,6 +228,14 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       const existingApp = mode === "app" ? existingAppContext(activeAppId, priorMessages) : undefined;
 
       try {
+        const inferred = inferProductFromQuery(q);
+        const scopedProductId =
+          inferred && inferred !== "all"
+            ? inferred
+            : searchScope === "all"
+              ? "all"
+              : productId;
+
         const res = await fetch("/api/agent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -234,7 +243,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
             query: q,
             mode,
             language,
-            productId: searchScope === "all" ? "all" : productId,
+            productId: scopedProductId,
             llmApiKey: llmKey.trim() || undefined,
             history: historyForApi(priorMessages),
             existingApp,
@@ -299,6 +308,8 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       llmKey,
       activeAppId,
       persistAppResponse,
+      productId,
+      searchScope,
     ]
   );
 

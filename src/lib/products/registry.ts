@@ -192,12 +192,29 @@ export function apiBaseUrlHint(productId: string): string {
 
 export function inferProductFromQuery(query: string): string | null {
   const q = query.toLowerCase();
-  if (/\bctix\b|\bintel exchange\b|\bstix\b/.test(q) && !/\bcsap\b|\bcftr\b|\borchestrate\b/.test(q)) {
-    return "ctix";
+
+  // Numbered tour prompts: "3. CFTR: how do I …"
+  const numbered = q.match(/(?:^|\n)\s*\d+\.\s*(ctix|cftr|csap|orchestrate)\b/);
+  if (numbered) return numbered[1]!;
+
+  // Catalog / cross-product overview
+  if (
+    /\bwhat (cyware )?(products|apis)\b/.test(q) ||
+    /\bwhich (products|apis)\b.*\b(documented|available|here)\b/.test(q) ||
+    /\b(documented|available)\b.*\b(here|on this site)\b/.test(q) ||
+    /\bwhat('s| is) (documented|available)\b/.test(q)
+  ) {
+    return ALL_PRODUCTS_ID;
   }
+
+  if (/\ball (cyware )?apis?\b|\bcross[- ]product\b|\bcompare\b/.test(q)) {
+    return ALL_PRODUCTS_ID;
+  }
+
   if (/\bcsap\b|\bcollaborate\b/.test(q)) return "csap";
-  if (/\borchestrate\b|\bco api\b|\bplaybook\b/.test(q) && /\borchestrate\b/.test(q)) return "orchestrate";
   if (/\bcftr\b/.test(q)) return "cftr";
-  if (/\ball (cyware )?apis?\b|\bcross[- ]product\b|\bcompare\b/.test(q)) return ALL_PRODUCTS_ID;
+  if (/\borchestrate\b|\bco api\b/.test(q)) return "orchestrate";
+  if (/\bctix\b|\bintel exchange\b|\bstix\b/.test(q)) return "ctix";
+
   return null;
 }

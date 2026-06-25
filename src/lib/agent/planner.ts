@@ -79,10 +79,11 @@ const APP_PATTERNS: {
 ];
 
 function citationFromChunk(chunk: ScoredChunk): AgentCitation {
+  const productId = chunk.productId ?? "ctix";
   return {
     slug: chunk.slug,
     title: chunk.title,
-    url: `/docs/${chunk.slug}`,
+    url: docsUrlForProduct(productId, chunk.slug),
   };
 }
 
@@ -333,6 +334,125 @@ export function isSetupInfoQuery(query: string): boolean {
   return isBaseUrlQuery(query) || isCredentialsQuery(query);
 }
 
+/** "What products/APIs are documented here?" */
+export function isCatalogQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    /\bwhat (cyware )?(products|apis)\b/.test(q) ||
+    /\bwhich (products|apis)\b.*\b(documented|available|here)\b/.test(q) ||
+    /\b(documented|available)\b.*\b(here|on this site)\b/.test(q) ||
+    /\bwhat('s| is) (documented|available)\b/.test(q)
+  );
+}
+
+/** Answer product catalog questions from the registry (not doc RAG). */
+export function enforceCatalogPlan(plan: AgentPlan, query: string): AgentPlan {
+  if (!isCatalogQuery(query)) return plan;
+
+  const workflow =
+    "**Documented Cyware APIs on this site:**\n\n" +
+    listProducts()
+      .map(
+        (p) =>
+          `- **${p.displayLabel}** — ${p.description} (` +
+          `\`/docs/${p.productId === "ctix" ? "intel-exchange-api-reference" : p.productId}/…\`)`
+      )
+      .join("\n") +
+    "\n\nEach product uses its **own** Access ID + Secret Key. Name the product in your question " +
+    '(e.g. "CFTR: list incidents") or switch **Product** in the header.';
+
+  return {
+    workflow,
+    confidence: 0.95,
+    steps: [],
+    citations: listProducts().map((p) => ({
+      slug: p.productId,
+      title: p.displayLabel,
+      url: p.productId === "ctix" ? "/docs/intel-exchange-api-reference" : `/docs/${p.productId}`,
+    })),
+    questions: undefined,
+  };
+}
+
+const PRODUCT_DOC_INTENTS: Record<
+  string,
+  { pattern: RegExp; slug: string; title: string; intro: string }[]
+> = {
+  cftr: [
+    {
+      pattern: /\b(list|get)\b.*\bincident/i,
+      slug: "cftr-api-reference/incidents/get-list-of-incidents",
+      title: "Get List of Incidents",
+      intro:
+        "List CFTR incidents with **Get List of Incidents** (`GET /v1/incident/` → `/cftrapi/openapi/v1/incident/` on cftrapi.cyware.com).",
+    },
+  ],
+  csap: [
+    {
+      pattern: /\b(analyst portal )?(alert|alerts)\b/i,
+      slug: "analyst-portal/analyst-portal-alerts/alerts-list-analyst-member",
+      title: "Get Alerts",
+      intro:
+        "List analyst portal alerts with **Get Alerts (Analyst Portal)** (`GET csap/v1/list_alert/`).",
+    },
+  ],
+  orchestrate: [
+    {
+      pattern: /\b(product )?release version\b/i,
+      slug: "authentication/product-release-version",
+      title: "Product Release Version",
+      intro:
+        "Returns the Orchestrate application version via **Product Release Version** (`GET v1/release_version/`).",
+    },
+  ],
+  ctix: [
+    {
+      pattern: /\b(list|get|show)\b.*\btags?\b/i,
+      slug: "tags/list-tags",
+      title: "Get Tags List",
+      intro:
+        "List or search tags with **Get Tags List** (`GET ingestion/tags/`). Use query `q` to filter by name.",
+    },
+  ],
+};
+
+/** Route common per-product doc questions to canonical endpoints when retrieval is weak. */
+export function enforceProductDocPlan(
+  plan: AgentPlan,
+  query: string,
+  chunks: ScoredChunk[],
+  productId: string
+): AgentPlan {
+  if (productId === "all" || isPingQuery(query) || isSetupInfoQuery(query) || isCatalogQuery(query)) {
+    return plan;
+  }
+
+  const intents = PRODUCT_DOC_INTENTS[productId];
+  if (!intents) return plan;
+
+  for (const intent of intents) {
+    if (!intent.pattern.test(query)) continue;
+    const chunk = chunks.find((c) => c.slug === intent.slug);
+    const step: AgentPlanStep = { slug: intent.slug, order: 1, explanation: intent.intro };
+    return {
+      ...plan,
+      confidence: Math.max(plan.confidence, 0.92),
+      workflow: intent.intro,
+      steps: [step],
+      citations: [
+        {
+          slug: intent.slug,
+          title: chunk?.title ?? intent.title,
+          url: docsUrlForProduct(productId, intent.slug),
+        },
+      ],
+      questions: undefined,
+    };
+  }
+
+  return plan;
+}
+
 function setupInfoWorkflow(productId: string): string {
   if (productId === "all") {
     const lines = listProducts().map((p) => {
@@ -557,17 +677,19 @@ function stepsFromSlugs(
 export function planFromRetrieval(
   query: string,
   chunks: ScoredChunk[],
-  confidence: number
+  confidence: number,
+  productId = "ctix"
 ): AgentPlan {
+  const productLabel = getProductOrThrow(productId).displayLabel;
   const endpoints = endpointChunks(chunks);
-  const pattern = matchWorkflowPattern(query);
+  const pattern = productId === "ctix" ? matchWorkflowPattern(query) : null;
 
   let steps: AgentPlanStep[];
   let workflow: string;
 
   if (pattern) {
     steps = stepsFromSlugs(pattern.slugs, chunks, pattern.intro);
-    workflow = `${pattern.intro}\n\nThis workflow uses documented Intel Exchange endpoints only. Adjust collection IDs and STIX payloads for your tenant.`;
+    workflow = `${pattern.intro}\n\nThis workflow uses documented ${productLabel} endpoints only. Adjust IDs and payloads for your tenant.`;
   } else if (endpoints.length > 0) {
     steps = endpoints.slice(0, 4).map((c, i) => ({
       slug: c.slug,
@@ -578,25 +700,25 @@ export function planFromRetrieval(
           : c.text.split("\n\n")[0]?.slice(0, 240) ?? c.title,
     }));
     workflow =
-      `I found ${steps.length} relevant documented endpoint${steps.length === 1 ? "" : "s"} for your request. ` +
+      `I found ${steps.length} relevant documented ${productLabel} endpoint${steps.length === 1 ? "" : "s"} for your request. ` +
       `Review each step below and open the linked docs for full parameter details.`;
   } else {
     return {
       workflow:
-        "I couldn't find a confident match in the Intel Exchange API docs. Try naming a resource (e.g. threat data, import intel, collections) or browse the sidebar.",
+        `I couldn't find a confident match in the ${productLabel} API docs. Try naming a resource more specifically or browse /docs/${productId === "ctix" ? "" : productId + "/"} in the sidebar.`,
       confidence: 0,
       steps: [],
       citations: chunks.slice(0, 3).map(citationFromChunk),
       questions: [
-        "Which CTIX object are you working with (threat data, collections, rules, etc.)?",
-        "Do you need to read data, create/update it, or import a file?",
+        `Which ${productLabel} object are you working with?`,
+        "Do you need to read data, create/update it, or run a connectivity check?",
       ],
     };
   }
 
   const citations = [...new Map(steps.map((s) => {
     const chunk = chunks.find((c) => c.slug === s.slug);
-    return [s.slug, chunk ? citationFromChunk(chunk) : { slug: s.slug, title: s.slug, url: `/docs/${s.slug}` }];
+    return [s.slug, chunk ? citationFromChunk(chunk) : { slug: s.slug, title: s.slug, url: docsUrlForProduct(productId, s.slug) }];
   })).values()];
 
   return { workflow, confidence, steps, citations };

@@ -5,6 +5,7 @@ import { baseUrlForProduct } from "../products/auth";
 import { DEFAULT_PRODUCT_ID, getProductOrThrow, inferProductFromQuery } from "../products/registry";
 import { loadCombinedAgentIndex } from "../products/search";
 import { loadAgentIndex } from "./load-index";
+import { resolveProductScope } from "./product-scope";
 import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
 import { diffAppFiles, slugifyProjectName } from "./app-diff";
 import { applyRuleBasedEdits } from "./app-edit-rules";
@@ -22,6 +23,9 @@ import {
   enforceConnectivityPlan,
   enforceReportDownloadPlan,
   enforceSetupInfoPlan,
+  enforceCatalogPlan,
+  enforceProductDocPlan,
+  isCatalogQuery,
   isReportDownloadQuery,
   isPingQuery,
   isSetupInfoQuery,
@@ -58,13 +62,6 @@ async function endpointSlugSetForProduct(productId: string): Promise<Set<string>
 function filterByProduct(scored: ScoredChunk[], productId: string): ScoredChunk[] {
   if (productId === "all") return scored;
   return scored.filter((c) => (c.productId ?? "ctix") === productId);
-}
-
-function resolveProductScope(req: AgentRequest, query: string): string {
-  if (req.productId && req.productId !== "all") return req.productId;
-  const inferred = inferProductFromQuery(query);
-  if (inferred && inferred !== "all") return inferred;
-  return req.productId === "all" ? "all" : DEFAULT_PRODUCT_ID;
 }
 
 async function buildStepResults(
@@ -229,8 +226,8 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   if (
     productScope === "all" &&
-    !req.productId &&
     !inferProductFromQuery(query) &&
+    !isCatalogQuery(query) &&
     /\b(create|update|delete|get|list|how do i)\b/i.test(query)
   ) {
     return {
@@ -272,10 +269,13 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     : query;
 
   // Simpler-prompt support: expand casual phrasing into canonical doc terms.
-  const retrievalQuery = expandQueryForRetrieval(baseRetrievalQuery);
+  const retrievalQuery = expandQueryForRetrieval(
+    baseRetrievalQuery,
+    productScope === "all" ? undefined : productScope
+  );
 
   const topK = mode === "app" ? 20 : 14;
-  let scored = filterByProduct(retrieveLexical(retrievalQuery, index, topK * 2), productScope).slice(
+  let scored = filterByProduct(retrieveLexical(retrievalQuery, index, topK * 3), productScope).slice(
     0,
     topK
   );
@@ -289,7 +289,12 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       const pineconeCfg = getPineconeConfig();
       let usedPinecone = false;
       if (pineconeCfg) {
-        const matches = await queryPinecone(embedding, topK, pineconeCfg);
+        const matches = await queryPinecone(
+          embedding,
+          topK,
+          pineconeCfg,
+          productScope === "all" ? undefined : productScope
+        );
         const fromPinecone = filterByProduct(
           scoredChunksByIds(matches, index),
           productScope
@@ -318,21 +323,21 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     plan = planAppFromRetrieval(query, scored, confidence);
   } else if (apiKey && !lowConfidence) {
     try {
-      plan = await planWithLlm(query, scored, apiKey, req.history);
+      plan = await planWithLlm(query, scored, apiKey, req.history, activeProductId);
     } catch {
-      plan = planFromRetrieval(query, scored, confidence);
+      plan = planFromRetrieval(query, scored, confidence, activeProductId);
     }
   } else {
-    plan = planFromRetrieval(query, scored, confidence);
+    plan = planFromRetrieval(query, scored, confidence, activeProductId);
   }
 
   if (mode === "workflow") {
-    // Base URL / credentials FAQ — answered from product registry, not doc retrieval.
-    plan = enforceSetupInfoPlan(plan, query, activeProductId);
+    plan = enforceCatalogPlan(plan, query);
+    plan = enforceSetupInfoPlan(plan, query, productScope === "all" ? "all" : activeProductId);
 
-    // Connectivity questions are unambiguous — route to the product test endpoint first.
-    if (!isSetupInfoQuery(query)) {
+    if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {
       plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
+      plan = enforceProductDocPlan(plan, query, scored, activeProductId);
     }
 
     if (activeProductId === "ctix" && !isPingQuery(query)) {
@@ -378,8 +383,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   const setupInfoAnswer = isSetupInfoQuery(query) && (plan.confidence ?? 0) >= 0.9;
+  const catalogAnswer = isCatalogQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const fallback =
     (!setupInfoAnswer &&
+      !catalogAnswer &&
       (lowConfidence ||
         stepResults.length === 0 ||
         (dropped.length > 0 && stepResults.length < plan.steps.length)));

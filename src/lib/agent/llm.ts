@@ -1,7 +1,31 @@
 import type { AgentPlan, ScoredChunk } from "./types";
 import { formatTrimmedContext } from "./trim-context";
+import { getProductOrThrow } from "../products/registry";
 
 const MODEL = "gpt-4o-mini";
+
+const CTIX_TAG_RULES = `To add a tag to indicator(s), use slug threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags (Bulk Add Tags) with path param action_type=add_tag and body object_ids + data.tag_id. Do NOT use tag-groups/bulk-action or ingestion/tags/bulk-actions (those are for tag groups, not attaching tags to threat data).
+To list, find, or verify a tag by name, use slug tags/list-tags (GET ingestion/tags/) with query q=<name> and tag_type=user — not a full unpaged list. If q search finds the tag, report "already exists" and its id; do not create again.
+To create a tag, use slug tags/create-tag (POST ingestion/tags/, body name + colour_code). Prefer a search step with q=<name> before create (find-or-create).
+Do NOT use tag-groups, Create Tag Group, or ingestion/tags/bulk-actions for listing tags.`;
+
+function docsUrlForProduct(productId: string, slug: string): string {
+  return productId === "ctix" ? `/docs/${slug}` : `/docs/${productId}/${slug}`;
+}
+
+function systemPromptForProduct(productId: string): string {
+  const product = getProductOrThrow(productId);
+  const extra = productId === "ctix" ? `\n${CTIX_TAG_RULES}` : "";
+  return (
+    `You are a Cyware API documentation assistant for **${product.displayLabel}** only.\n` +
+    `You MUST only recommend endpoints whose slug appears in the CONTEXT below.\n` +
+    `Never invent endpoints, paths, or parameter names. Never recommend endpoints from other Cyware products.\n` +
+    `Return JSON with: workflow (markdown string), confidence (0-1), steps (array), questions (optional clarifying questions).\n` +
+    `Each step must include: slug (exact from context), order (1-based), explanation, and optional pathParams/queryParams/body/form objects using ONLY documented parameter names.` +
+    extra +
+    `\nIf the request is ambiguous, set confidence below 0.5 and include questions.`
+  );
+}
 
 interface LlmPlanJson {
   workflow?: string;
@@ -43,23 +67,12 @@ export async function planWithLlm(
   query: string,
   chunks: ScoredChunk[],
   apiKey: string,
-  history?: { role: "user" | "assistant"; content: string }[]
+  history?: { role: "user" | "assistant"; content: string }[],
+  productId = "ctix"
 ): Promise<AgentPlan> {
   const allowedSlugs = [...new Set(chunks.map((c) => c.slug))];
-  // Trim each retrieved chunk to signature + required/mentioned params so the
-  // context window carries only the relevant data (RAG, not the whole doc).
   const context = formatTrimmedContext(chunks, query, 8);
-
-  const system = `You are a Cyware Intel Exchange API documentation assistant.
-You MUST only recommend endpoints whose slug appears in the CONTEXT below.
-Never invent endpoints, paths, or parameter names.
-Return JSON with: workflow (markdown string), confidence (0-1), steps (array), questions (optional clarifying questions).
-Each step must include: slug (exact from context), order (1-based), explanation, and optional pathParams/queryParams/body/form objects using ONLY documented parameter names.
-To add a tag to indicator(s), use slug threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags (Bulk Add Tags) with path param action_type=add_tag and body object_ids + data.tag_id. Do NOT use tag-groups/bulk-action or ingestion/tags/bulk-actions (those are for tag groups, not attaching tags to threat data).
-To list, find, or verify a tag by name, use slug tags/list-tags (GET ingestion/tags/) with query q=<name> and tag_type=user — not a full unpaged list. If q search finds the tag, report "already exists" and its id; do not create again.
-To create a tag, use slug tags/create-tag (POST ingestion/tags/, body name + colour_code). Prefer a search step with q=<name> before create (find-or-create).
-Do NOT use tag-groups, Create Tag Group, or ingestion/tags/bulk-actions for listing tags.
-If the request is ambiguous, set confidence below 0.5 and include questions.`;
+  const system = systemPromptForProduct(productId);
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
     { role: "system", content: system },
@@ -127,7 +140,7 @@ If the request is ambiguous, set confidence below 0.5 and include questions.`;
       {
         slug: s.slug,
         title: chunk?.title ?? s.slug,
-        url: `/docs/${s.slug}`,
+        url: docsUrlForProduct(chunk?.productId ?? productId, s.slug),
       },
     ];
   })).values()];

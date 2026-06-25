@@ -79,11 +79,16 @@ export async function describeIndexHost(cfg: PineconeConfig): Promise<string | n
 export async function queryPinecone(
   embedding: number[],
   topK: number,
-  cfg: PineconeConfig
+  cfg: PineconeConfig,
+  productId?: string
 ): Promise<PineconeMatch[]> {
   try {
     const host = await describeIndexHost(cfg);
     if (!host) return [];
+    const filter =
+      productId && productId !== "all"
+        ? { productId: { $eq: productId } }
+        : undefined;
     const res = await pineconeFetch(`https://${host}/query`, cfg.apiKey, {
       method: "POST",
       body: JSON.stringify({
@@ -91,6 +96,7 @@ export async function queryPinecone(
         topK,
         includeMetadata: true,
         includeValues: false,
+        ...(filter ? { filter } : {}),
       }),
     });
     if (!res.ok) return [];

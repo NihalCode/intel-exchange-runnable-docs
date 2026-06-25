@@ -64,15 +64,23 @@ export function canonicalizeIntent(query: string): string {
 }
 
 /** Expand casual phrasing into a retrieval query enriched with canonical terms. */
-export function expandQueryForRetrieval(query: string): string {
+export function expandQueryForRetrieval(query: string, productId?: string): string {
   const extra = new Set<string>();
   for (const rule of SYNONYM_RULES) {
     if (rule.pattern.test(query)) {
       for (const term of rule.expand) extra.add(term);
     }
   }
+
+  if (productId && productId !== "all") {
+    extra.add(productId);
+    if (productId === "ctix") extra.add("intel exchange");
+    if (productId === "csap") extra.add("collaborate analyst portal");
+    if (productId === "orchestrate") extra.add("cyware orchestrate playbook");
+    if (productId === "cftr") extra.add("cftr incident case");
+  }
+
   if (extra.size === 0) return query;
-  // Keep the original query first (lexical scoring weights it), then add hints.
   return `${query} ${[...extra].join(" ")}`;
 }
 

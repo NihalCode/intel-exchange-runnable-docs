@@ -55,8 +55,10 @@ describe("product registry", () => {
     expect(inferProductFromQuery("How do I create an incident in CSAP?")).toBe("csap");
     expect(inferProductFromQuery("Orchestrate playbook create API")).toBe("orchestrate");
     expect(inferProductFromQuery("CFTR reports endpoint")).toBe("cftr");
+    expect(inferProductFromQuery("3. CFTR: how do I list incidents?")).toBe("cftr");
     expect(inferProductFromQuery("list STIX indicators")).toBe("ctix");
     expect(inferProductFromQuery("search all Cyware APIs for indicators")).toBe("all");
+    expect(inferProductFromQuery("What products are documented here?")).toBe("all");
   });
 
   it("validates allowed base URLs per product", () => {
