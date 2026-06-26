@@ -13,6 +13,7 @@ export function AgentMessageView({
   language,
   workflowId,
   onDeploySuccess,
+  compactAppFiles,
 }: {
   response: AgentResponse;
   language: AgentLanguage;
@@ -22,6 +23,8 @@ export function AgentMessageView({
     deploymentId: string;
     projectName: string;
   }) => void;
+  /** Hide full file browser when the workspace project panel shows files. */
+  compactAppFiles?: boolean;
 }) {
   const tagName = useMemo(() => {
     if (response.tagName?.trim()) return response.tagName.trim();
@@ -63,16 +66,27 @@ export function AgentMessageView({
       {response.appDiff ? <AgentAppDiffView diff={response.appDiff} /> : null}
 
       {response.mode === "app" && response.app ? (
-        <AgentAppBlueprintView app={response.app} onDeploySuccess={onDeploySuccess} />
+        compactAppFiles ? (
+          <p className="rounded-lg border border-indigo-200/60 bg-indigo-50/40 px-3 py-2 text-xs text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
+            {response.app.files.length} project files ready — open the <strong>Project</strong> panel on
+            the right to browse, preview, deploy, or download.
+          </p>
+        ) : (
+          <AgentAppBlueprintView app={response.app} onDeploySuccess={onDeploySuccess} />
+        )
+      ) : null}
+
+      {response.docsModeNote ? (
+        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400">
+          {response.docsModeNote}
+        </div>
       ) : null}
 
       {response.steps.length > 1 ? (
         <div className="rounded-lg border border-sky-300/50 bg-sky-50/40 px-3 py-2 text-xs dark:border-sky-900 dark:bg-sky-950/30">
-          <strong className="text-sky-900 dark:text-sky-200">Run in sequence:</strong>{" "}
-          Run steps 1 → {response.steps.length} in order. Each successful Run stores ids
-          automatically — later steps fill <code className="font-mono">{`{{tag_id}}`}</code> and{" "}
-          <code className="font-mono">{`{{threat_data_ids}}`}</code> for you. Or use the complete
-          workflow script below for one-shot execution.
+          <strong className="text-sky-900 dark:text-sky-200">Next steps:</strong>{" "}
+          Follow steps 1 → {response.steps.length} in order. Example code uses placeholders like{" "}
+          <code className="font-mono">&lt;BASE_URL&gt;</code> — a developer adds real credentials.
         </div>
       ) : null}
 

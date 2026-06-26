@@ -9,12 +9,10 @@ import {
 import { formatProblems, validateAppFiles, type AppFileProblem } from "./validate-app";
 import { repairAppFiles, repairBlueprint } from "./repair-app";
 import type { AgentAppBlueprint } from "./types";
-
-const MODEL = "gpt-4o-mini";
+import { openAiAuthHeaders, openAiChatModel } from "../openai/client";
 
 async function callOpenAi(
   messages: { role: "system" | "user" | "assistant"; content: string }[],
-  apiKey: string,
   timeoutMs: number
 ): Promise<string> {
   const controller = new AbortController();
@@ -23,12 +21,9 @@ async function callOpenAi(
   try {
     res = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: openAiAuthHeaders(),
       body: JSON.stringify({
-        model: MODEL,
+        model: openAiChatModel(),
         temperature: 0.15,
         max_tokens: 8192,
         response_format: { type: "json_object" },
@@ -66,7 +61,6 @@ type EditedFile = { path: string; code: string; language?: string; description?:
 async function attemptValidationFix<F extends EditedFile>(
   files: F[],
   problems: AppFileProblem[],
-  apiKey: string,
   startedAt: number
 ): Promise<F[] | null> {
   // Stay well inside the 60s function limit
@@ -94,7 +88,6 @@ async function attemptValidationFix<F extends EditedFile>(
         { role: "system", content: system },
         { role: "user", content: `Fix these files:\n\n${context}` },
       ],
-      apiKey,
       18_000
     );
     const parsed = JSON.parse(raw) as { files?: { path?: string; code?: string }[] };
@@ -185,7 +178,6 @@ function pickFilesForPrompt(
 export async function editAppWithLlm(
   query: string,
   existingRaw: AgentAppBlueprint,
-  apiKey: string,
   history?: { role: "user" | "assistant"; content: string }[]
 ): Promise<{ blueprint: AgentAppBlueprint; summary: string; changedPaths: string[] }> {
   // Fix CSS corruption from earlier edits so new edits aren't blocked
@@ -255,7 +247,7 @@ ${fileContext}`,
   // instead of a platform-killed request ("Internal Server Error"). Budget
   // leaves room for one corrective pass if validation fails.
   const startedAt = Date.now();
-  const raw = await callOpenAi(messages, apiKey, 40_000);
+  const raw = await callOpenAi(messages, 40_000);
   let parsed: LlmEditJson;
   try {
     parsed = JSON.parse(raw) as LlmEditJson;
@@ -330,7 +322,7 @@ ${fileContext}`,
   );
   let validationFixed = false;
   if (problems.length > 0) {
-    const fixed = await attemptValidationFix(finalFiles, problems, apiKey, startedAt);
+    const fixed = await attemptValidationFix(finalFiles, problems, startedAt);
     if (!fixed) {
       throw new Error(
         `The AI edit was rejected because it would break the app (${formatProblems(problems)}). ` +

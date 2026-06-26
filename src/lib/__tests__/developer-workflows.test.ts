@@ -97,4 +97,13 @@ describe("developer ingest blockers", () => {
     const blocking = d.blockers.filter((b) => b.blocking);
     expect(blocking.every((b) => b.id !== "public-docs-mode")).toBe(true);
   });
+
+  it("diagnostics include openai status without key value", () => {
+    delete process.env.OPENAI_API_KEY;
+    const d = runDeveloperDiagnostics();
+    expect(d.openai.configured).toBe(false);
+    expect(d.openai.visibleToClient).toBe(false);
+    expect(d.openai.developerStatusLabel).toBe("Missing");
+    expect(JSON.stringify(d.openai)).not.toMatch(/sk-[a-zA-Z0-9]{10,}/);
+  });
 });

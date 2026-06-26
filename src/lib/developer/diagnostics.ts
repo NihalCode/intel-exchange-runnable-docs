@@ -4,6 +4,7 @@ import {
   missingDeveloperCredentials,
 } from "./credential-env";
 import { listProducts } from "../products/registry";
+import { getOpenAiCredentialStatus, openAiDeveloperStatusLabel } from "../openai/credentials";
 
 export interface DeveloperBlocker {
   id: string;
@@ -19,6 +20,9 @@ export interface DeveloperDiagnostics {
   publicDocsMode: boolean;
   liveApiUiEnabled: boolean;
   openAiConfigured: boolean;
+  openai: ReturnType<typeof getOpenAiCredentialStatus> & {
+    developerStatusLabel: "Configured" | "Missing";
+  };
   pineconeConfigured: boolean;
   products: {
     productId: string;
@@ -58,7 +62,8 @@ export function runDeveloperDiagnostics(): DeveloperDiagnostics {
     blockers.push({
       id: "missing-openai",
       severity: "warning",
-      message: "OPENAI_API_KEY is unset — agent LLM planning uses rule-based fallback only.",
+      message:
+        "OPENAI_API_KEY is unset — add it to .env.local or deployment environment variables. Agent LLM planning and app edits use rule-based fallback until configured.",
       blocking: false,
     });
   }
@@ -84,13 +89,18 @@ export function runDeveloperDiagnostics(): DeveloperDiagnostics {
   }
 
   const credentialSummary = developerCredentialSummary();
+  const openai = {
+    ...getOpenAiCredentialStatus(),
+    developerStatusLabel: openAiDeveloperStatusLabel(),
+  };
 
   return {
     generatedAt: new Date().toISOString(),
     developerAccessConfigured,
     publicDocsMode: !liveApiUiEnabled,
     liveApiUiEnabled,
-    openAiConfigured: Boolean(process.env.OPENAI_API_KEY?.trim()),
+    openAiConfigured: openai.configured,
+    openai,
     pineconeConfigured: Boolean(process.env.PINECONE_API_KEY?.trim()),
     products: listProducts().map((p) => ({
       productId: p.productId,

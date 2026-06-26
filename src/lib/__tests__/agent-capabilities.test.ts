@@ -27,9 +27,8 @@ describe("resolveAgentRun", () => {
     files: [{ path: "app/page.tsx", code: "export default function Page() { return null; }" }],
   };
 
-  it("runs workflow when user selected Run workflow, even with a saved app", () => {
+  it("plans workflow for doc questions even with a saved app", () => {
     const { mode, editExistingApp } = resolveAgentRun({
-      mode: "workflow",
       query: "List threat data indicators with pagination",
       existingApp: savedApp,
     });
@@ -37,9 +36,8 @@ describe("resolveAgentRun", () => {
     expect(editExistingApp).toBe(false);
   });
 
-  it("edits saved app only in Build app mode", () => {
+  it("edits saved app when the user asks for changes", () => {
     const { mode, editExistingApp } = resolveAgentRun({
-      mode: "app",
       query: "Add dark mode",
       existingApp: savedApp,
     });
@@ -47,9 +45,8 @@ describe("resolveAgentRun", () => {
     expect(editExistingApp).toBe(true);
   });
 
-  it("builds a new app in app mode when no saved app exists", () => {
+  it("builds a new app from natural language without mode tabs", () => {
     const { mode, editExistingApp } = resolveAgentRun({
-      mode: "app",
       query: "Build a phishing analyzer",
     });
     expect(mode).toBe("app");

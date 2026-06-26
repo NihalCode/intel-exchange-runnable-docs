@@ -5,14 +5,16 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
 } from "react";
+import { resolveAgentIntent } from "@/lib/agent/intent";
 import { inferProductFromQuery } from "@/lib/products/registry";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
-import type { AgentLanguage, AgentMode, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
+import type { AgentLanguage, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
 import {
   loadActiveAppId,
   saveAppVersion,
@@ -23,6 +25,20 @@ import {
   buildQueryWithAttachments,
   type AgentAttachment,
 } from "@/lib/agent/file-extract-client";
+import {
+  appendSessionLog,
+  createSession as createWorkspaceSession,
+  deleteSession,
+  listSessions,
+  loadWorkspaceStore,
+  renameSession,
+  setActiveSession,
+  titleFromFirstMessage,
+  upsertSession,
+  type AgentWorkspaceSession,
+  type StoredChatMessage,
+} from "@/lib/agent/workspace-client";
+import type { AgentAppBlueprint } from "@/lib/agent/types";
 
 export type UserMessage = { id: string; role: "user"; content: string };
 export type AssistantMessage = {
@@ -36,6 +52,29 @@ export type ChatMessage = UserMessage | AssistantMessage | ErrorMessage;
 
 function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function toStored(messages: ChatMessage[]): StoredChatMessage[] {
+  return messages.map((m) => {
+    if (m.role === "assistant") {
+      return { id: m.id, role: "assistant", content: m.content, response: m.response };
+    }
+    return m;
+  });
+}
+
+function fromStored(messages: StoredChatMessage[]): ChatMessage[] {
+  return messages.map((m) => {
+    if (m.role === "assistant") {
+      return {
+        id: m.id,
+        role: "assistant",
+        content: m.content,
+        response: m.response as AgentResponse,
+      };
+    }
+    return m;
+  });
 }
 
 function historyForApi(messages: ChatMessage[]): { role: "user" | "assistant"; content: string }[] {
@@ -86,22 +125,51 @@ function existingAppContext(
   return undefined;
 }
 
+function latestBlueprint(
+  activeAppId: string | null,
+  messages: ChatMessage[]
+): AgentAppBlueprint | undefined {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const m = messages[i];
+    if (m.role === "assistant" && m.response.app?.files?.length) {
+      return m.response.app;
+    }
+  }
+  if (activeAppId) {
+    const app = getSavedApp(activeAppId);
+    const version = app ? getLatestVersion(app) : undefined;
+    if (app && version) return blueprintFromVersion(app, version);
+  }
+  return undefined;
+}
+
+function persistSession(
+  sessionId: string,
+  patch: Partial<AgentWorkspaceSession> & { messages?: ChatMessage[] }
+): void {
+  const store = loadWorkspaceStore();
+  const existing = store.sessions.find((s) => s.id === sessionId);
+  if (!existing) return;
+  upsertSession({
+    ...existing,
+    ...patch,
+    messages: patch.messages ? toStored(patch.messages) : existing.messages,
+  });
+}
+
 export type AgentChatState = {
   messages: ChatMessage[];
   input: string;
   setInput: (value: string) => void;
-  mode: AgentMode;
-  setMode: (mode: AgentMode) => void;
   language: AgentLanguage;
   setLanguage: (language: AgentLanguage) => void;
-  llmKey: string;
-  setLlmKey: (key: string) => void;
   showSettings: boolean;
   setShowSettings: React.Dispatch<React.SetStateAction<boolean>>;
   showImport: boolean;
   setShowImport: (show: boolean) => void;
   activeAppId: string | null;
   loading: boolean;
+  intentLabel: string | null;
   attachments: AgentAttachment[];
   extracting: boolean;
   dragOver: boolean;
@@ -109,7 +177,18 @@ export type AgentChatState = {
   bottomRef: React.RefObject<HTMLDivElement | null>;
   inputRef: React.RefObject<HTMLTextAreaElement | null>;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
+  sessions: AgentWorkspaceSession[];
+  activeSessionId: string | null;
+  selectedFilePath: string | null;
+  setSelectedFilePath: (path: string | null) => void;
+  panelLogs: string[];
+  projectApp: AgentAppBlueprint | undefined;
+  deploying: boolean;
+  committing: boolean;
   newChat: () => void;
+  switchSession: (id: string) => void;
+  renameChat: (id: string, title: string) => void;
+  deleteChat: (id: string) => void;
   addFiles: (list: FileList | File[] | null) => Promise<void>;
   send: (text?: string) => Promise<void>;
   handleDeploySuccess: (info: {
@@ -121,36 +200,86 @@ export type AgentChatState = {
   handleSelectApp: (appId: string | null) => void;
   clearActiveApp: () => void;
   removeAttachment: (index: number) => void;
+  triggerDeploy: () => void;
+  triggerCommit: () => void;
+  triggerPreview: () => void;
+  downloadProjectZip: () => Promise<void>;
+  showDeployModal: boolean;
+  setShowDeployModal: (show: boolean) => void;
 };
 
 const AgentChatContext = createContext<AgentChatState | null>(null);
 
 export function AgentChatProvider({ children }: { children: ReactNode }) {
   const { productId, searchScope } = useProduct();
+  const [sessions, setSessions] = useState<AgentWorkspaceSession[]>([]);
+  const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
-  const [mode, setMode] = useState<AgentMode>("workflow");
   const [language, setLanguage] = useState<AgentLanguage>("python");
-  const [llmKey, setLlmKey] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const [showDeployModal, setShowDeployModal] = useState(false);
   const [activeAppId, setActiveAppIdState] = useState<string | null>(null);
+  const [selectedFilePath, setSelectedFilePathState] = useState<string | null>(null);
+  const [panelLogs, setPanelLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [intentLabel, setIntentLabel] = useState<string | null>(null);
+  const [deploying] = useState(false);
+  const [committing, setCommitting] = useState(false);
   const [attachments, setAttachments] = useState<AgentAttachment[]>([]);
   const [extracting, setExtracting] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const sessionIdRef = useRef<string | null>(null);
+
+  const loadSessionIntoState = useCallback((session: AgentWorkspaceSession) => {
+    sessionIdRef.current = session.id;
+    setActiveSessionIdState(session.id);
+    setMessages(fromStored(session.messages));
+    setLanguage(session.language);
+    setActiveAppIdState(session.activeAppId ?? loadActiveAppId());
+    setSelectedFilePathState(session.selectedFilePath ?? null);
+    setPanelLogs(session.panelLogs);
+    setInput("");
+    setAttachments([]);
+  }, []);
 
   useEffect(() => {
-    setActiveAppIdState(loadActiveAppId());
+    const store = loadWorkspaceStore();
+    setSessions(store.sessions);
+    const active = store.sessions.find((s) => s.id === store.activeSessionId) ?? store.sessions[0];
+    if (active) loadSessionIntoState(active);
+  }, [loadSessionIntoState]);
+
+  const projectApp = useMemo(
+    () => latestBlueprint(activeAppId, messages),
+    [activeAppId, messages]
+  );
+
+  const refreshSessions = useCallback(() => {
+    setSessions(listSessions());
   }, []);
 
-  const handleSelectApp = useCallback((appId: string | null) => {
-    setActiveAppIdState(appId);
-    setMode("app");
+  const logPanel = useCallback((line: string) => {
+    const sid = sessionIdRef.current;
+    if (!sid) return;
+    appendSessionLog(sid, line);
+    setPanelLogs((prev) => [...prev.slice(-199), `[${new Date().toLocaleTimeString()}] ${line}`]);
   }, []);
+
+  const handleSelectApp = useCallback(
+    (appId: string | null) => {
+      setActiveAppIdState(appId);
+      if (sessionIdRef.current) {
+        persistSession(sessionIdRef.current, { activeAppId: appId });
+        refreshSessions();
+      }
+    },
+    [refreshSessions]
+  );
 
   const persistAppResponse = useCallback(
     (data: AgentResponse, deploy?: { deploymentUrl: string; deploymentId: string; projectName: string }) => {
@@ -171,16 +300,63 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         data.app.vercelProjectName = saved.vercelProjectName;
         data.app.deploymentUrl = saved.deploymentUrl;
       }
+      if (sessionIdRef.current) {
+        persistSession(sessionIdRef.current, { activeAppId: saved.id });
+        refreshSessions();
+      }
     },
-    [activeAppId]
+    [activeAppId, refreshSessions]
   );
 
   const newChat = useCallback(() => {
-    setMessages([]);
-    setInput("");
-    setAttachments([]);
+    const session = createWorkspaceSession();
+    loadSessionIntoState(session);
+    refreshSessions();
     inputRef.current?.focus();
+  }, [loadSessionIntoState, refreshSessions]);
+
+  const switchSession = useCallback(
+    (id: string) => {
+      const session = setActiveSession(id);
+      if (session) {
+        loadSessionIntoState(session);
+        refreshSessions();
+      }
+    },
+    [loadSessionIntoState, refreshSessions]
+  );
+
+  const renameChat = useCallback(
+    (id: string, title: string) => {
+      renameSession(id, title);
+      refreshSessions();
+    },
+    [refreshSessions]
+  );
+
+  const deleteChat = useCallback(
+    (id: string) => {
+      deleteSession(id);
+      const store = loadWorkspaceStore();
+      setSessions(store.sessions);
+      const active = store.sessions.find((s) => s.id === store.activeSessionId);
+      if (active) loadSessionIntoState(active);
+    },
+    [loadSessionIntoState]
+  );
+
+  const setSelectedFilePath = useCallback((path: string | null) => {
+    setSelectedFilePathState(path);
+    if (sessionIdRef.current) {
+      persistSession(sessionIdRef.current, { selectedFilePath: path });
+    }
   }, []);
+
+  useEffect(() => {
+    if (!sessionIdRef.current) return;
+    persistSession(sessionIdRef.current, { messages, language, panelLogs });
+    refreshSessions();
+  }, [messages, language, panelLogs, refreshSessions]);
 
   const addFiles = useCallback(
     async (list: FileList | File[] | null) => {
@@ -219,13 +395,24 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           : typed;
 
       const userMsg: UserMessage = { id: uid(), role: "user", content: displayContent };
+      const priorMessages = [...messages, userMsg];
       setMessages((prev) => [...prev, userMsg]);
       setInput("");
       setAttachments([]);
       setLoading(true);
 
-      const priorMessages = [...messages, userMsg].slice(0, -1);
-      const existingApp = mode === "app" ? existingAppContext(activeAppId, priorMessages) : undefined;
+      const existingCtx = existingAppContext(activeAppId, priorMessages.slice(0, -1));
+      const hasProjectFiles = (existingCtx?.files?.length ?? 0) > 0;
+      const resolved = resolveAgentIntent(q, { hasProjectFiles });
+      setIntentLabel(resolved.userLabel);
+
+      if (sessionIdRef.current && messages.length === 0) {
+        persistSession(sessionIdRef.current, {
+          title: titleFromFirstMessage(displayContent),
+          messages: priorMessages,
+        });
+        refreshSessions();
+      }
 
       try {
         const inferred = inferProductFromQuery(q);
@@ -241,12 +428,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query: q,
-            mode,
+            mode: resolved.mode,
             language,
             productId: scopedProductId,
-            llmApiKey: llmKey.trim() || undefined,
-            history: historyForApi(priorMessages),
-            existingApp,
+            history: historyForApi(priorMessages.slice(0, -1)),
+            existingApp: resolved.editExistingApp ? existingCtx : undefined,
           }),
         });
         const bodyText = await res.text();
@@ -274,8 +460,8 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 
         persistAppResponse(data);
 
-        if (mode === "app" && data.mode === "app" && data.app) {
-          setMode("app");
+        if (data.app?.files?.length) {
+          setSelectedFilePath(data.app.files[0]!.path);
         }
 
         const assistantMsg: AssistantMessage = {
@@ -285,6 +471,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           response: data,
         };
         setMessages((prev) => [...prev, assistantMsg]);
+        logPanel(resolved.userLabel);
       } catch (err) {
         const errMsg: ErrorMessage = {
           id: uid(),
@@ -292,8 +479,10 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           content: err instanceof Error ? err.message : "Something went wrong",
         };
         setMessages((prev) => [...prev, errMsg]);
+        logPanel(err instanceof Error ? err.message : "Error");
       } finally {
         setLoading(false);
+        setIntentLabel(null);
         inputRef.current?.focus();
       }
     },
@@ -303,13 +492,13 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       loading,
       extracting,
       messages,
-      mode,
       language,
-      llmKey,
       activeAppId,
       persistAppResponse,
       productId,
       searchScope,
+      logPanel,
+      refreshSessions,
     ]
   );
 
@@ -333,35 +522,58 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         deploymentId: info.deploymentId,
         vercelProjectName: info.projectName,
       });
+      if (sessionIdRef.current) {
+        persistSession(sessionIdRef.current, {
+          lastDeploy: {
+            url: info.deploymentUrl,
+            projectName: info.projectName,
+            at: new Date().toISOString(),
+          },
+        });
+      }
+      logPanel(`Deployed to ${info.deploymentUrl}`);
+      refreshSessions();
     },
-    [activeAppId]
+    [activeAppId, logPanel, refreshSessions]
   );
 
-  const loadSavedAppIntoChat = useCallback((appId: string) => {
-    const app = getSavedApp(appId);
-    const version = app ? getLatestVersion(app) : undefined;
-    if (!app || !version) return;
-    setActiveAppIdState(appId);
-    setMode("app");
-    const blueprint = blueprintFromVersion(app, version);
-    const response: AgentResponse = {
-      mode: "app",
-      workflow: `Loaded **${app.title}** v${version.version} from saved projects. Describe changes to edit in place, then redeploy to the same Vercel project (\`${app.vercelProjectName}\`).`,
-      confidence: 1,
-      fallback: false,
-      citations: [],
-      steps: [],
-      app: blueprint,
-    };
-    setMessages([
-      {
-        id: uid(),
-        role: "assistant",
-        content: response.workflow,
-        response,
-      },
-    ]);
-  }, []);
+  const loadSavedAppIntoChat = useCallback(
+    (appId: string) => {
+      const app = getSavedApp(appId);
+      const version = app ? getLatestVersion(app) : undefined;
+      if (!app || !version) return;
+      setActiveAppIdState(appId);
+      const blueprint = blueprintFromVersion(app, version);
+      const response: AgentResponse = {
+        mode: "app",
+        workflow: `Loaded **${app.title}** v${version.version}. Describe changes in plain English — I'll update the app and you can preview or deploy again.`,
+        confidence: 1,
+        fallback: false,
+        citations: [],
+        steps: [],
+        app: blueprint,
+      };
+      const nextMessages: ChatMessage[] = [
+        {
+          id: uid(),
+          role: "assistant",
+          content: response.workflow,
+          response,
+        },
+      ];
+      setMessages(nextMessages);
+      setSelectedFilePath(blueprint.files[0]?.path ?? null);
+      if (sessionIdRef.current) {
+        persistSession(sessionIdRef.current, {
+          activeAppId: appId,
+          title: app.title,
+          messages: nextMessages,
+        });
+        refreshSessions();
+      }
+    },
+    [refreshSessions]
+  );
 
   const removeAttachment = useCallback((index: number) => {
     setAttachments((prev) => prev.filter((_, idx) => idx !== index));
@@ -370,24 +582,128 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const clearActiveApp = useCallback(() => {
     setActiveAppIdState(null);
     setActiveAppId(null);
-  }, []);
+    if (sessionIdRef.current) {
+      persistSession(sessionIdRef.current, { activeAppId: null });
+      refreshSessions();
+    }
+  }, [refreshSessions]);
+
+  const triggerDeploy = useCallback(() => {
+    if (!projectApp) {
+      logPanel("No project to deploy — ask me to build an app first.");
+      return;
+    }
+    setShowDeployModal(true);
+    logPanel("Opening deploy…");
+  }, [projectApp, logPanel]);
+
+  const triggerCommit = useCallback(async () => {
+    if (!projectApp?.files?.length) {
+      logPanel("No files to commit.");
+      return;
+    }
+    setCommitting(true);
+    try {
+      const res = await fetch("/api/agent/commit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: projectApp.title,
+          summary: `Update ${projectApp.title}`,
+          files: projectApp.files.map((f) => ({ path: f.path, code: f.code })),
+        }),
+      });
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        suggestedMessage?: string;
+        message?: string;
+      };
+      if (!res.ok) {
+        logPanel(data.error ?? "Commit blocked — developer access required.");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: uid(),
+            role: "error",
+            content:
+              data.error ??
+              "Saving to Git requires developer access. Ask your admin to configure DEVELOPER_ACCESS_TOKEN, or download the project zip.",
+          },
+        ]);
+        return;
+      }
+      logPanel(data.message ?? `Commit preview: ${data.suggestedMessage}`);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: uid(),
+          role: "assistant",
+          content: data.message ?? `Suggested commit: ${data.suggestedMessage}`,
+          response: {
+            mode: "app",
+            workflow: data.message ?? `Suggested commit: ${data.suggestedMessage}`,
+            confidence: 1,
+            fallback: false,
+            citations: [],
+            steps: [],
+          },
+        },
+      ]);
+    } catch (e) {
+      logPanel(e instanceof Error ? e.message : "Commit failed");
+    } finally {
+      setCommitting(false);
+    }
+  }, [projectApp, logPanel]);
+
+  const triggerPreview = useCallback(() => {
+    if (!projectApp) {
+      logPanel("Nothing to preview yet.");
+      return;
+    }
+    logPanel("Preview — inspect files in the project panel.");
+    void send("Explain this app simply — what does each main file do?");
+  }, [projectApp, logPanel, send]);
+
+  const downloadProjectZip = useCallback(async () => {
+    if (!projectApp?.files?.length) return;
+    logPanel("Downloading project zip…");
+    const res = await fetch("/api/agent/zip", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        files: projectApp.files.map((f) => ({ path: f.path, code: f.code })),
+        appName: projectApp.title,
+      }),
+    });
+    if (!res.ok) {
+      logPanel("Download failed.");
+      return;
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${projectApp.title.replace(/\s+/g, "-").toLowerCase()}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+    logPanel("Download started.");
+  }, [projectApp, logPanel]);
 
   const value: AgentChatState = {
     messages,
     input,
     setInput,
-    mode,
-    setMode,
     language,
     setLanguage,
-    llmKey,
-    setLlmKey,
     showSettings,
     setShowSettings,
     showImport,
     setShowImport,
     activeAppId,
     loading,
+    intentLabel,
     attachments,
     extracting,
     dragOver,
@@ -395,7 +711,18 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     bottomRef,
     inputRef,
     fileInputRef,
+    sessions,
+    activeSessionId,
+    selectedFilePath,
+    setSelectedFilePath,
+    panelLogs,
+    projectApp,
+    deploying,
+    committing,
     newChat,
+    switchSession,
+    renameChat,
+    deleteChat,
     addFiles,
     send,
     handleDeploySuccess,
@@ -403,6 +730,12 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     handleSelectApp,
     clearActiveApp,
     removeAttachment,
+    triggerDeploy,
+    triggerCommit,
+    triggerPreview,
+    downloadProjectZip,
+    showDeployModal,
+    setShowDeployModal,
   };
 
   return <AgentChatContext.Provider value={value}>{children}</AgentChatContext.Provider>;

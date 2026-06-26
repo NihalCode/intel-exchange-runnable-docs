@@ -27,7 +27,7 @@ interface DeployResult {
   warnings?: string[];
 }
 
-function DeployModal({
+export function AgentDeployModal({
   app,
   onClose,
   onDeploySuccess,
@@ -352,7 +352,7 @@ export function AgentAppBlueprintView({
   return (
     <>
       {showDeploy && (
-        <DeployModal
+        <AgentDeployModal
           app={app}
           onClose={() => setShowDeploy(false)}
           onDeploySuccess={onDeploySuccess}

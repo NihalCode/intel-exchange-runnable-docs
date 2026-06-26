@@ -13,7 +13,8 @@ import { attachDiff, editAppWithLlm } from "./edit-app";
 import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
 import { embedQuery, planWithLlm } from "./llm";
-import { detectAgentMode, resolveAgentRun } from "./mode";
+import { detectAgentMode, resolveAgentRun, isExplainQuery } from "./intent";
+import { appendSimpleExplanation } from "./explain-simple";
 import {
   planAppFromRetrieval,
   planFromRetrieval,
@@ -53,6 +54,7 @@ import type {
 import type { EndpointPage } from "../types";
 import { validatePlan } from "./validate";
 import { isLiveApiUiEnabled, liveRunBlockedMessage } from "../public-docs-mode";
+import { isOpenAiConfigured, OpenAiNotConfiguredError } from "../openai/client";
 
 async function endpointSlugSetForProduct(productId: string): Promise<Set<string>> {
   const manifest = (await getProductManifest(productId)) ?? getManifest();
@@ -135,7 +137,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     };
   }
 
-  const apiKey = req.llmApiKey?.trim() || process.env.OPENAI_API_KEY?.trim();
+  const apiKeyConfigured = isOpenAiConfigured();
 
   // Edit path: patch existing app in place (never silently regenerate from scratch)
   if (hasExistingApp) {
@@ -146,16 +148,15 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     try {
       let edited: { blueprint: AgentAppBlueprint; summary: string; changedPaths: string[] };
 
-      if (apiKey) {
-        edited = await editAppWithLlm(query, base, apiKey, req.history);
+      if (apiKeyConfigured) {
+        edited = await editAppWithLlm(query, base, req.history);
       } else {
         const ruleResult = applyRuleBasedEdits(query, base);
         if (!ruleResult) {
+          const err = new OpenAiNotConfiguredError();
           return {
             mode: "app",
-            workflow:
-              "Could not apply this edit without an OpenAI API key. Add your key in Settings, " +
-              "or try a supported rule-based change (e.g. skip recipient email domains, dark mode).",
+            workflow: err.clientMessage,
             confidence: 0,
             fallback: true,
             citations: [],
@@ -208,7 +209,12 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
         appEdit: true,
       };
     } catch (err) {
-      const message = err instanceof Error ? err.message : "App edit failed";
+      const message =
+        err instanceof OpenAiNotConfiguredError
+          ? err.clientMessage
+          : err instanceof Error
+            ? err.message
+            : "App edit failed";
       return {
         mode: "app",
         workflow: `Edit failed: ${message}`,
@@ -283,9 +289,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   // Preferred path: embed query, then retrieve from Pinecone. Falls back to the
   // local hybrid/lexical index whenever creds are missing or any call fails, so
   // tests, the SSG build, and offline dev keep working unchanged.
-  if (apiKey) {
+  if (apiKeyConfigured) {
     try {
-      const embedding = await embedQuery(retrievalQuery, apiKey);
+      const embedding = await embedQuery(retrievalQuery);
       const pineconeCfg = getPineconeConfig();
       let usedPinecone = false;
       if (pineconeCfg) {
@@ -321,9 +327,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   let plan: ReturnType<typeof planFromRetrieval> & { appTitle?: string };
   if (mode === "app") {
     plan = planAppFromRetrieval(query, scored, confidence);
-  } else if (apiKey && !lowConfidence) {
+  } else if (apiKeyConfigured && !lowConfidence) {
     try {
-      plan = await planWithLlm(query, scored, apiKey, req.history, activeProductId);
+      plan = await planWithLlm(query, scored, req.history, activeProductId);
     } catch {
       plan = planFromRetrieval(query, scored, confidence, activeProductId);
     }
@@ -431,6 +437,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       ["python", "javascript"],
       activeProductId
     );
+  }
+
+  if (isExplainQuery(query)) {
+    response.workflow = appendSimpleExplanation(response, query);
   }
 
   return response;

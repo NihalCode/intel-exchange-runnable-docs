@@ -27,7 +27,9 @@ Copy `.env.example` → `.env.local`:
 
 | Variable | Purpose |
 |----------|---------|
-| `OPENAI_API_KEY` | Embeddings + LLM agent planning |
+| `OPENAI_API_KEY` | **Server-side only** — agent chat, embeddings, app edits (never `NEXT_PUBLIC_`) |
+| `OPENAI_MODEL` | Chat model (default: `gpt-4o-mini`) |
+| `OPENAI_EMBEDDING_MODEL` | Embedding model (default: `text-embedding-3-small`) |
 | `PINECONE_API_KEY` | Optional vector retrieval (falls back to local BM25) |
 | `PINECONE_INDEX` | Pinecone index name (default: `cyware-api-docs`) |
 | `DEFAULT_PRODUCT_ID` | Default product in UI (default: `ctix`) |

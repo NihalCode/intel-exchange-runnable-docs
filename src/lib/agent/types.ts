@@ -233,6 +233,5 @@ export interface AgentRequest {
   /** Scope retrieval to one product, or "all" for cross-product search. */
   productId?: string;
   history?: { role: "user" | "assistant"; content: string }[];
-  llmApiKey?: string;
   existingApp?: ExistingAppContext;
 }

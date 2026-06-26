@@ -1,8 +1,11 @@
 import type { AgentPlan, ScoredChunk } from "./types";
 import { formatTrimmedContext } from "./trim-context";
 import { getProductOrThrow } from "../products/registry";
-
-const MODEL = "gpt-4o-mini";
+import {
+  openAiAuthHeaders,
+  openAiChatModel,
+  openAiEmbeddingModel,
+} from "../openai/client";
 
 const CTIX_TAG_RULES = `To add a tag to indicator(s), use slug threat-data/bulk-actions/bulk-add-remove-tags/bulk-add-remove-tags (Bulk Add Tags) with path param action_type=add_tag and body object_ids + data.tag_id. Do NOT use tag-groups/bulk-action or ingestion/tags/bulk-actions (those are for tag groups, not attaching tags to threat data).
 To list, find, or verify a tag by name, use slug tags/list-tags (GET ingestion/tags/) with query q=<name> and tag_type=user — not a full unpaged list. If q search finds the tag, report "already exists" and its id; do not create again.
@@ -42,15 +45,12 @@ interface LlmPlanJson {
   questions?: string[];
 }
 
-export async function embedQuery(text: string, apiKey: string): Promise<number[]> {
+export async function embedQuery(text: string): Promise<number[]> {
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: openAiAuthHeaders(),
     body: JSON.stringify({
-      model: "text-embedding-3-small",
+      model: openAiEmbeddingModel(),
       input: text,
       dimensions: 512,
     }),
@@ -66,7 +66,6 @@ export async function embedQuery(text: string, apiKey: string): Promise<number[]
 export async function planWithLlm(
   query: string,
   chunks: ScoredChunk[],
-  apiKey: string,
   history?: { role: "user" | "assistant"; content: string }[],
   productId = "ctix"
 ): Promise<AgentPlan> {
@@ -89,12 +88,9 @@ export async function planWithLlm(
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: openAiAuthHeaders(),
     body: JSON.stringify({
-      model: MODEL,
+      model: openAiChatModel(),
       temperature: 0.2,
       response_format: { type: "json_object" },
       messages,
