@@ -17,8 +17,6 @@ const PRODUCTS = [
 
 const SECRET_PATTERNS = [
   /sk-[a-zA-Z0-9]{20,}/,
-  /e61e92fb-bfd9/,
-  /REDACTED/,
 ];
 
 async function loadEndpoints(pagesDir: string): Promise<EndpointPage[]> {

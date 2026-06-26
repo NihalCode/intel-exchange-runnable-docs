@@ -5,7 +5,10 @@
  *
  * Usage:
  *   node scripts/test-snippets.mjs
- * Reads credentials from env or Downloads/CYWARE KEYS.txt.
+ *
+ * Credentials (required — never hardcoded):
+ *   CTIX_ACCESS_ID, CTIX_SECRET_KEY in .env.local / shell env, or
+ *   CYWARE KEYS.txt (see .gitignore) via CYWARE_KEYS_FILE or ~/Downloads/CYWARE KEYS.txt
  */
 
 import crypto from "node:crypto";
@@ -13,10 +16,36 @@ import { readFileSync, existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-const BASE = (process.env.CTIX_BASE_URL || "https://cs-testv2.cyware.com/ctixapi").replace(/\/+$/, "");
+function loadKeys() {
+  const paths = [
+    process.env.CYWARE_KEYS_FILE,
+    join(homedir(), "Downloads", "CYWARE KEYS.txt"),
+  ].filter(Boolean);
 
-const ACCESS_ID = process.env.CTIX_ACCESS_ID || "REDACTED_CTIX_ACCESS_ID";
-const SECRET_KEY = process.env.CTIX_SECRET_KEY || "REDACTED_CTIX_SECRET_KEY";
+  let accessId = process.env.CTIX_ACCESS_ID?.trim();
+  let secretKey = process.env.CTIX_SECRET_KEY?.trim();
+
+  for (const p of paths) {
+    if (!existsSync(p)) continue;
+    const text = readFileSync(p, "utf8");
+    accessId ||= text.match(/Access ID:\s*(\S+)/i)?.[1];
+    secretKey ||= text.match(/SECRET KEY:\s*(\S+)/i)?.[1];
+    break;
+  }
+
+  return { accessId, secretKey };
+}
+
+const BASE = (process.env.CTIX_BASE_URL || "https://cs-testv2.cyware.com/ctixapi").replace(/\/+$/, "");
+const { accessId: ACCESS_ID, secretKey: SECRET_KEY } = loadKeys();
+
+if (!ACCESS_ID || !SECRET_KEY) {
+  console.error(
+    "Missing CTIX credentials. Set CTIX_ACCESS_ID and CTIX_SECRET_KEY in .env.local, " +
+      "or place CYWARE KEYS.txt in Downloads (gitignored)."
+  );
+  process.exit(1);
+}
 
 function sign() {
   const expires = Math.floor(Date.now() / 1000) + 20;
@@ -42,7 +71,7 @@ function buildUrl(path, query = {}, pathParams = {}) {
   const { expires, signature } = sign();
   const u = new URL(BASE + resolvePath(path, pathParams));
   for (const [k, v] of Object.entries(query)) {
-    if (v === undefined || v === null || String(v).trim() === "") continue; // drop empties
+    if (v === undefined || v === null || String(v).trim() === "") continue;
     u.searchParams.set(k, String(v));
   }
   u.searchParams.set("AccessID", ACCESS_ID);
@@ -51,8 +80,6 @@ function buildUrl(path, query = {}, pathParams = {}) {
   return u.toString();
 }
 
-// Each case mirrors a snippet the UI generates. Empty optional params included
-// on purpose to prove they get dropped (the old 400 bug).
 const cases = [
   { name: "Ping (no params)", method: "GET", path: "/ping/", query: {} },
   {
@@ -69,7 +96,6 @@ const cases = [
   },
 ];
 
-// Dynamic: retrieve using a real ID from the list endpoint
 {
   const listUrl = buildUrl("/ingestion/configuration/custom-attribute/", { page_size: "1" });
   const listRes = await fetch(listUrl);

@@ -128,7 +128,6 @@ describe("product-specific snippets", () => {
       const snippets = buildEndpointSnippets(sampleEndpoint, productId);
       for (const s of snippets) {
         expect(s.code).not.toMatch(/sk-[a-zA-Z0-9]{20,}/);
-        expect(s.code).not.toMatch(/e61e92fb-bfd9/);
       }
     }
   });
