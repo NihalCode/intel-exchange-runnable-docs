@@ -220,9 +220,12 @@ export function AgentChat() {
                               ? "Built for you"
                               : "Answer"}
                           {msg.response.confidence > 0
-                            ? ` · ${Math.round(msg.response.confidence * 100)}% match`
+                            ? ` · Best docs match ${Math.round(msg.response.confidence * 100)}%`
                             : ""}
                         </span>
+                        {msg.response.productContext?.label ? (
+                          <span className="text-[10px] text-zinc-400">{msg.response.productContext.label}</span>
+                        ) : null}
                       </div>
                       <div className="prose prose-sm max-w-none whitespace-pre-wrap dark:prose-invert">
                         {msg.content}

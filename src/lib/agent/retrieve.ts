@@ -169,3 +169,24 @@ export function confidenceFromScores(scored: ScoredChunk[]): number {
 export function isLowConfidence(scored: ScoredChunk[]): boolean {
   return confidenceFromScores(scored) < CONFIDENCE_THRESHOLD;
 }
+
+const PRODUCT_BOOST = 0.35;
+
+/** Prefer chunks whose productId matches user-mentioned products. */
+export function boostByProducts(scored: ScoredChunk[], productIds: string[]): ScoredChunk[] {
+  if (productIds.length === 0) return scored;
+  const set = new Set(productIds);
+  return scored
+    .map((c) => {
+      const pid = c.productId ?? "ctix";
+      const boost = set.has(pid) ? PRODUCT_BOOST : 0;
+      return { ...c, score: c.score + boost };
+    })
+    .sort((a, b) => b.score - a.score);
+}
+
+export function filterByProducts(scored: ScoredChunk[], productIds: string[]): ScoredChunk[] {
+  if (productIds.length === 0) return scored;
+  const set = new Set(productIds);
+  return scored.filter((c) => set.has(c.productId ?? "ctix"));
+}

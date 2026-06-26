@@ -206,6 +206,12 @@ export interface WorkflowScript {
   notes: string[];
 }
 
+export interface AgentProductContext {
+  products: { id: string; label: string }[];
+  source: "query" | "dropdown" | "all";
+  label: string;
+}
+
 export interface AgentResponse {
   mode: AgentMode;
   workflow: string;
@@ -224,6 +230,10 @@ export interface AgentResponse {
   tagName?: string;
   /** Note for public documentation mode (no live runs). */
   docsModeNote?: string;
+  /** Which product docs were used for this answer. */
+  productContext?: AgentProductContext;
+  /** Plain-English default formatting applied. */
+  simpleMode?: boolean;
 }
 
 export interface AgentRequest {

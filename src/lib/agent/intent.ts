@@ -1,7 +1,8 @@
 import type { AgentMode } from "./types";
 
-const EXPLAIN_SIGNAL =
-  /\b(explain (simply|like i|in plain|for (a )?non-?technical|layman|simply)|explain this (code|api|endpoint)|what does this (code|do)|help me understand|in simple terms|like i am not a developer|like i'm not a developer)\b/i;
+import { isNonTechnicalQuery, isHandoffQuery } from "./non-technical";
+
+export { isNonTechnicalQuery, isHandoffQuery };
 
 const SNIPPET_SIGNAL =
   /\b(snippet|curl|code example|show (me )?the (api )?code|fetch example|python example|javascript example|typescript example)\b/i;
@@ -61,7 +62,7 @@ export function isAppBuilderQuery(query: string): boolean {
 }
 
 export function isExplainQuery(query: string): boolean {
-  return EXPLAIN_SIGNAL.test(query);
+  return isNonTechnicalQuery(query);
 }
 
 /** Unified intent routing — user talks naturally; agent picks the tool internally. */
@@ -95,7 +96,7 @@ export function resolveAgentIntent(
       userLabel: INTENT_LABELS.preview,
     };
   }
-  if (EXPLAIN_SIGNAL.test(q)) {
+  if (isNonTechnicalQuery(q)) {
     return {
       intent: "explain",
       mode: opts.hasProjectFiles ? "app" : "workflow",

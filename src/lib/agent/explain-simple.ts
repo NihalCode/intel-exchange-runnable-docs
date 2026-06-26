@@ -1,4 +1,6 @@
 import type { AgentResponse } from "./types";
+import { parseDateRangeFromQuery } from "./date-range";
+import { buildCtixListIndicatorsAnswer, shouldUseCtixListIndicatorsTemplate } from "./non-technical";
 
 /** Append a plain-language summary block for non-technical users. */
 export function appendSimpleExplanation(response: AgentResponse, query: string): string {
@@ -43,7 +45,7 @@ export function appendSimpleExplanation(response: AgentResponse, query: string):
     lines.push("- **What you need:** Nothing to run live — read the examples with placeholder credentials.");
     lines.push("- **Next step:** Ask me to “build a simple frontend for this” or “show the Python snippet.”");
   } else {
-    lines.push("- I could not find a exact match. Try naming the product (CTIX, CSAP, Orchestrate, or CFTR) and what you want to do.");
+    lines.push("- I could not find an exact match. Try naming the product (CTIX, CSAP, Orchestrate, or CFTR) and what you want to do.");
   }
 
   if (query.trim()) {
@@ -51,4 +53,33 @@ export function appendSimpleExplanation(response: AgentResponse, query: string):
   }
 
   return `${response.workflow}${lines.join("\n")}`;
+}
+
+/**
+ * Enrich workflow text for non-technical users.
+ * CTIX list-indicators queries get the full A–G template; others get the simple-terms appendix.
+ */
+export function enrichWorkflowWithTemplate(response: AgentResponse, query: string): string {
+  const productId = response.productContext?.products[0]?.id ?? "ctix";
+
+  if (
+    response.mode === "workflow" &&
+    shouldUseCtixListIndicatorsTemplate(query, productId) &&
+    response.steps.length > 0 &&
+    !response.workflow.includes("## What you're trying to do")
+  ) {
+    return buildCtixListIndicatorsAnswer({
+      query,
+      productId,
+      dateRange: parseDateRangeFromQuery(query),
+      steps: response.steps,
+      scripts: response.scripts,
+    });
+  }
+
+  if (response.workflow.includes("## What you're trying to do")) {
+    return response.workflow;
+  }
+
+  return appendSimpleExplanation(response, query);
 }

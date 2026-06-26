@@ -1,4 +1,9 @@
 import type { AgentCitation, AgentPlan, AgentPlanStep, ScoredChunk } from "./types";
+import { parseDateRangeFromQuery } from "./date-range";
+import {
+  buildCtixListIndicatorsAnswer,
+  shouldUseCtixListIndicatorsTemplate,
+} from "./non-technical";
 import {
   apiBaseUrlHint,
   getProductOrThrow,
@@ -592,17 +597,60 @@ export function enforceListIndicatorsPlan(
   query: string,
   chunks: ScoredChunk[]
 ): AgentPlan {
-  if (!isListIndicatorsQuery(query)) return plan;
-  const intro =
-    "List threat data with **Get Threat Data List** (`POST ingestion/threat-data/list/`). " +
-    'Use a CQL query like `type = "indicator"` and set `page_size` to control how many you get back.';
+  if (!isListIndicatorsQuery(query) && !shouldUseCtixListIndicatorsTemplate(query, "ctix")) {
+    return plan;
+  }
+
+  const dateRange = parseDateRangeFromQuery(query);
+  const cqlBase = 'type = "indicator"';
+  const cqlQuery = dateRange
+    ? `${cqlBase}${dateRange.cqlFilter}`
+    : cqlBase;
+
+  const intro = dateRange
+    ? `List threat indicators from the **${dateRange.phrase}** using **Get Threat Data List** (POST ingestion/threat-data/list/). ` +
+      `Filter with CQL: "${cqlBase}" plus a **created date** range (timestamps calculated automatically in code — you do not need to supply epoch time).`
+    : 'List threat data with **Get Threat Data List** (POST ingestion/threat-data/list/). ' +
+      'Use a filter like type = "indicator" and set page_size to control how many you get back.';
+
   const { steps, citations } = planStepsForSlugs([LIST_THREAT_DATA_SLUG], chunks, intro);
+
+  const baseStep: AgentPlanStep =
+    steps[0] ??
+    ({
+      slug: LIST_THREAT_DATA_SLUG,
+      order: 1,
+      explanation: intro,
+    } as AgentPlanStep);
+
+  const stepWithParams: AgentPlanStep = {
+    ...baseStep,
+    params: {
+      query: { page_size: "100", page: "1", sort: "-ctix_created" },
+      body: { query: cqlQuery },
+    },
+  };
+
+  const useTemplate =
+    shouldUseCtixListIndicatorsTemplate(query, "ctix") || /\bnot\s+technical\b/i.test(query);
+
+  const workflow = useTemplate
+    ? buildCtixListIndicatorsAnswer({
+        query,
+        productId: "ctix",
+        dateRange,
+        steps: [],
+        scripts: undefined,
+      })
+    : intro;
+
   return {
     ...plan,
-    confidence: Math.max(plan.confidence, 0.8),
-    workflow: intro,
-    steps,
+    confidence: Math.max(plan.confidence, 0.92),
+    workflow,
+    steps: [{ ...stepWithParams, order: 1 }],
     citations,
+    questions: undefined,
   };
 }
 

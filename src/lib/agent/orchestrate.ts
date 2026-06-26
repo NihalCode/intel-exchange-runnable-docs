@@ -5,7 +5,7 @@ import { baseUrlForProduct } from "../products/auth";
 import { DEFAULT_PRODUCT_ID, getProductOrThrow, inferProductFromQuery } from "../products/registry";
 import { loadCombinedAgentIndex } from "../products/search";
 import { loadAgentIndex } from "./load-index";
-import { resolveProductScope } from "./product-scope";
+import { resolveProductScope, productScopeForFilter } from "./product-scope";
 import { appTitleFromQuery, generateAppBlueprint } from "./app-builder";
 import { diffAppFiles, slugifyProjectName } from "./app-diff";
 import { applyRuleBasedEdits } from "./app-edit-rules";
@@ -14,7 +14,15 @@ import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
 import { embedQuery, planWithLlm } from "./llm";
 import { detectAgentMode, resolveAgentRun, isExplainQuery } from "./intent";
-import { appendSimpleExplanation } from "./explain-simple";
+import { enrichWorkflowWithTemplate } from "./explain-simple";
+import {
+  filterClarifyingQuestions,
+  defaultSimpleMode,
+  softenDocsModeNote,
+  buildCtixListIndicatorsAnswer,
+  shouldUseCtixListIndicatorsTemplate,
+} from "./non-technical";
+import { parseDateRangeFromQuery } from "./date-range";
 import {
   planAppFromRetrieval,
   planFromRetrieval,
@@ -37,6 +45,8 @@ import {
   retrieveLexical,
   retrieveWithEmbedding,
   scoredChunksByIds,
+  boostByProducts,
+  filterByProducts,
 } from "./retrieve";
 import { getPineconeConfig, queryPinecone } from "./pinecone";
 import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./normalize-query";
@@ -53,7 +63,7 @@ import type {
 } from "./types";
 import type { EndpointPage } from "../types";
 import { validatePlan } from "./validate";
-import { isLiveApiUiEnabled, liveRunBlockedMessage } from "../public-docs-mode";
+import { isLiveApiUiEnabled } from "../public-docs-mode";
 import { isOpenAiConfigured, OpenAiNotConfiguredError } from "../openai/client";
 
 async function endpointSlugSetForProduct(productId: string): Promise<Set<string>> {
@@ -61,9 +71,12 @@ async function endpointSlugSetForProduct(productId: string): Promise<Set<string>
   return new Set(manifest.pages.filter((p) => p.kind === "endpoint").map((p) => p.slug));
 }
 
-function filterByProduct(scored: ScoredChunk[], productId: string): ScoredChunk[] {
-  if (productId === "all") return scored;
-  return scored.filter((c) => (c.productId ?? "ctix") === productId);
+function filterByProductScope(scored: ScoredChunk[], scope: ReturnType<typeof resolveProductScope>): ScoredChunk[] {
+  if (scope.filterMode === "all") return scored;
+  if (scope.filterMode === "multi") {
+    return boostByProducts(filterByProducts(scored, scope.productIds), scope.productIds);
+  }
+  return scored.filter((c) => (c.productId ?? "ctix") === scope.primaryProductId);
 }
 
 async function buildStepResults(
@@ -227,11 +240,14 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     }
   }
 
-  const productScope = resolveProductScope(req, query);
-  const activeProductId = productScope === "all" ? DEFAULT_PRODUCT_ID : productScope;
+  const scope = resolveProductScope(req, query);
+  const activeProductId = scope.primaryProductId;
+  const simpleMode = defaultSimpleMode(query);
+  const retrievalFilter = productScopeForFilter(scope);
 
   if (
-    productScope === "all" &&
+    scope.filterMode === "all" &&
+    scope.source === "all" &&
     !inferProductFromQuery(query) &&
     !isCatalogQuery(query) &&
     /\b(create|update|delete|get|list|how do i)\b/i.test(query)
@@ -277,14 +293,18 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   // Simpler-prompt support: expand casual phrasing into canonical doc terms.
   const retrievalQuery = expandQueryForRetrieval(
     baseRetrievalQuery,
-    productScope === "all" ? undefined : productScope
+    scope.filterMode === "single" ? scope.primaryProductId : undefined
   );
 
   const topK = mode === "app" ? 20 : 14;
-  let scored = filterByProduct(retrieveLexical(retrievalQuery, index, topK * 3), productScope).slice(
-    0,
-    topK
-  );
+  let scored = filterByProductScope(
+    retrieveLexical(retrievalQuery, index, topK * 3),
+    scope
+  ).slice(0, topK);
+
+  if (scope.filterMode === "multi") {
+    scored = boostByProducts(scored, scope.productIds).slice(0, topK);
+  }
 
   // Preferred path: embed query, then retrieve from Pinecone. Falls back to the
   // local hybrid/lexical index whenever creds are missing or any call fails, so
@@ -299,11 +319,11 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           embedding,
           topK,
           pineconeCfg,
-          productScope === "all" ? undefined : productScope
+          retrievalFilter === "all" ? undefined : retrievalFilter
         );
-        const fromPinecone = filterByProduct(
+        const fromPinecone = filterByProductScope(
           scoredChunksByIds(matches, index),
-          productScope
+          scope
         ).slice(0, topK);
         if (fromPinecone.length > 0) {
           scored = fromPinecone;
@@ -311,9 +331,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
         }
       }
       if (!usedPinecone && index.hasEmbeddings) {
-        scored = filterByProduct(
+        scored = filterByProductScope(
           retrieveWithEmbedding(retrievalQuery, index, embedding, topK * 2),
-          productScope
+          scope
         ).slice(0, topK);
       }
     } catch {
@@ -329,7 +349,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     plan = planAppFromRetrieval(query, scored, confidence);
   } else if (apiKeyConfigured && !lowConfidence) {
     try {
-      plan = await planWithLlm(query, scored, req.history, activeProductId);
+      plan = await planWithLlm(query, scored, req.history, activeProductId, simpleMode);
     } catch {
       plan = planFromRetrieval(query, scored, confidence, activeProductId);
     }
@@ -339,7 +359,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   if (mode === "workflow") {
     plan = enforceCatalogPlan(plan, query);
-    plan = enforceSetupInfoPlan(plan, query, productScope === "all" ? "all" : activeProductId);
+    plan = enforceSetupInfoPlan(plan, query, scope.filterMode === "all" ? "all" : activeProductId);
 
     if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {
       plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
@@ -357,19 +377,31 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
         plan = enforceListIndicatorsPlan(plan, intentQuery, scored);
       }
 
-      // Non-technical nudge: if the prompt is too vague to act on, ask a simple
-      // question in plain English instead of guessing at an endpoint.
-      if (isVagueQuery(query) && plan.steps.length === 0) {
+      // Non-technical nudge: only when truly vague — not when CTIX/indicators/date are named.
+      if (
+        isVagueQuery(query) &&
+        plan.steps.length === 0 &&
+        !shouldUseCtixListIndicatorsTemplate(query, activeProductId)
+      ) {
         plan = {
           ...plan,
-          questions: plan.questions ?? [
-            "What would you like to do — view, create, update, or delete something?",
-            "Which item is this about (for example: tags, indicators, threat data, or feeds)?",
-          ],
+          questions: filterClarifyingQuestions(
+            plan.questions ?? [
+              "What would you like to do — view, create, update, or delete something?",
+              "Which item is this about (for example: tags, indicators, threat data, or feeds)?",
+            ],
+            query
+          ),
         };
       }
     }
   }
+
+  const primarySlug = plan.steps[0]?.slug;
+  plan = {
+    ...plan,
+    questions: filterClarifyingQuestions(plan.questions, query, primarySlug),
+  };
 
   const endpointSlugs = await endpointSlugSetForProduct(activeProductId);
   const pages = new Map<string, EndpointPage>();
@@ -401,12 +433,17 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const tagName = activeProductId === "ctix" ? extractTagNameFromQuery(canonicalizeIntent(query)) : undefined;
 
-  const workflowPrefix =
-    productScope === "all" ? "[All products] " : `[${productLabel}] `;
+  const workflowPrefix = scope.filterMode === "all" ? "[All products] " : `[${productLabel}] `;
+
+  const workflowText = plan.workflow.startsWith("[")
+    ? plan.workflow
+    : plan.workflow.includes("## What you're trying to do")
+      ? plan.workflow
+      : `${workflowPrefix}${plan.workflow}`;
 
   const response: AgentResponse = {
     mode,
-    workflow: plan.workflow.startsWith("[") ? plan.workflow : `${workflowPrefix}${plan.workflow}`,
+    workflow: workflowText,
     confidence: plan.confidence ?? confidence,
     fallback,
     citations: plan.citations.map((c) => ({
@@ -415,8 +452,14 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     })),
     steps: stepResults,
     tagName,
-    docsModeNote: isLiveApiUiEnabled() ? undefined : liveRunBlockedMessage(),
+    docsModeNote: isLiveApiUiEnabled() ? undefined : softenDocsModeNote(),
     questions: plan.questions,
+    productContext: {
+      products: scope.products,
+      source: scope.source,
+      label: scope.label,
+    },
+    simpleMode,
     retrieval: scored.slice(0, 5).map((c) => ({
       slug: c.slug,
       title: `[${c.productId ?? activeProductId}] ${c.title}`,
@@ -439,8 +482,21 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     );
   }
 
-  if (isExplainQuery(query)) {
-    response.workflow = appendSimpleExplanation(response, query);
+  if (isExplainQuery(query) || simpleMode) {
+    response.workflow = enrichWorkflowWithTemplate(response, query);
+  } else if (
+    mode === "workflow" &&
+    shouldUseCtixListIndicatorsTemplate(query, activeProductId) &&
+    stepResults.length > 0 &&
+    !response.workflow.includes("## What you're trying to do")
+  ) {
+    response.workflow = buildCtixListIndicatorsAnswer({
+      query,
+      productId: activeProductId,
+      dateRange: parseDateRangeFromQuery(query),
+      steps: stepResults,
+      scripts: response.scripts,
+    });
   }
 
   return response;

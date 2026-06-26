@@ -191,30 +191,43 @@ export function apiBaseUrlHint(productId: string): string {
 }
 
 export function inferProductFromQuery(query: string): string | null {
+  const products = inferProductsFromQuery(query);
+  if (products.length === 0) return null;
+  if (products.length === 1) return products[0]!;
+  return ALL_PRODUCTS_ID;
+}
+
+/** Detect all product mentions in a user message (order preserved, deduped). */
+export function inferProductsFromQuery(query: string): string[] {
   const q = query.toLowerCase();
+  const found: string[] = [];
 
-  // Numbered tour prompts: "3. CFTR: how do I …"
   const numbered = q.match(/(?:^|\n)\s*\d+\.\s*(ctix|cftr|csap|orchestrate)\b/);
-  if (numbered) return numbered[1]!;
+  if (numbered) return [numbered[1]!];
 
-  // Catalog / cross-product overview
+  const patterns: { id: string; re: RegExp }[] = [
+    { id: "cftr", re: /\bcftr\b|\bcyware fusion and threat response\b|\bfusion and threat response\b/ },
+    { id: "csap", re: /\bcsap\b|\bcyware situational awareness\b|\bcollaborate\b|\banalyst portal\b/ },
+    { id: "orchestrate", re: /\borchestrate\b|\bcyware orchestrate\b|\bco api\b/ },
+    { id: "ctix", re: /\bctix\b|\bintel exchange api\b|\bintel exchange\b|\bstix\b/ },
+  ];
+
+  for (const { id, re } of patterns) {
+    if (re.test(q) && !found.includes(id)) found.push(id);
+  }
+
+  if (found.length > 1) return found;
+
   if (
     /\bwhat (cyware )?(products|apis)\b/.test(q) ||
     /\bwhich (products|apis)\b.*\b(documented|available|here)\b/.test(q) ||
     /\b(documented|available)\b.*\b(here|on this site)\b/.test(q) ||
-    /\bwhat('s| is) (documented|available)\b/.test(q)
+    /\bwhat('s| is) (documented|available)\b/.test(q) ||
+    /\ball (cyware )?apis?\b|\bcross[- ]product\b/.test(q) ||
+    (/\bcompare\b/.test(q) && found.length === 0)
   ) {
-    return ALL_PRODUCTS_ID;
+    return [ALL_PRODUCTS_ID];
   }
 
-  if (/\ball (cyware )?apis?\b|\bcross[- ]product\b|\bcompare\b/.test(q)) {
-    return ALL_PRODUCTS_ID;
-  }
-
-  if (/\bcsap\b|\bcollaborate\b/.test(q)) return "csap";
-  if (/\bcftr\b/.test(q)) return "cftr";
-  if (/\borchestrate\b|\bco api\b/.test(q)) return "orchestrate";
-  if (/\bctix\b|\bintel exchange\b|\bstix\b/.test(q)) return "ctix";
-
-  return null;
+  return found;
 }

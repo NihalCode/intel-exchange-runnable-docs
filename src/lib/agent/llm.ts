@@ -12,21 +12,48 @@ To list, find, or verify a tag by name, use slug tags/list-tags (GET ingestion/t
 To create a tag, use slug tags/create-tag (POST ingestion/tags/, body name + colour_code). Prefer a search step with q=<name> before create (find-or-create).
 Do NOT use tag-groups, Create Tag Group, or ingestion/tags/bulk-actions for listing tags.`;
 
+const NON_TECH_RULES = `
+NON-TECHNICAL USERS (default when query says "not technical", "plain English", "step by step", or "IT team"):
+- Structure workflow markdown with clear headings: What you're trying to do, Use this endpoint, Ask your IT team for, Step-by-step, Example code, What the result means, Common mistakes, Next steps.
+- Use simple words. Explain jargon immediately (e.g. "CQL filter" → "a filter that tells CTIX what records to return").
+- Always include at least one cURL example with placeholders: <BASE_URL>, <ACCESS_ID>, <SIGNATURE>, <EXPIRES>. Never real credentials.
+- Include JavaScript fetch when user asks for code or IT handoff.
+
+CLARIFYING QUESTIONS — STRICT RULES:
+- Ask at most 2 questions, ONLY when a required parameter cannot be inferred.
+- NEVER ask for epoch/unix timestamps when the user says "last 7 days", "last week", etc. — explain that code calculates timestamps automatically.
+- NEVER ask for report IDs, recipient emails, or file tokens unless the matched endpoint is specifically for report download.
+- NEVER ask which product when the user already named CTIX, CSAP, Orchestrate, or CFTR.
+- If you can answer with documented endpoints, set questions to [] and confidence >= 0.7.
+
+DATE PHRASES ("last 7 days", "yesterday", "last month"):
+- For CTIX threat data list, use POST ingestion/threat-data/list/ with CQL type = "indicator" AND ctix_created date range.
+- Explain that start/end times are computed automatically; use placeholders <START_TIME> and <END_TIME> in examples.
+
+LISTING CTIX INDICATORS:
+- Use slug threat-data/list-threat-data (POST ingestion/threat-data/list/) — NOT report endpoints, NOT email endpoints.
+`;
+
 function docsUrlForProduct(productId: string, slug: string): string {
   return productId === "ctix" ? `/docs/${slug}` : `/docs/${productId}/${slug}`;
 }
 
-function systemPromptForProduct(productId: string): string {
+function systemPromptForProduct(productId: string, simpleMode: boolean): string {
   const product = getProductOrThrow(productId);
   const extra = productId === "ctix" ? `\n${CTIX_TAG_RULES}` : "";
+  const tone = simpleMode
+    ? `\nThe user wants PLAIN ENGLISH guidance.${NON_TECH_RULES}`
+    : `\nProvide technical detail when helpful, but still use placeholders in all code.`;
+
   return (
-    `You are a Cyware API documentation assistant for **${product.displayLabel}** only.\n` +
+    `You are a Cyware API documentation assistant for **${product.displayLabel}**.\n` +
     `You MUST only recommend endpoints whose slug appears in the CONTEXT below.\n` +
-    `Never invent endpoints, paths, or parameter names. Never recommend endpoints from other Cyware products.\n` +
-    `Return JSON with: workflow (markdown string), confidence (0-1), steps (array), questions (optional clarifying questions).\n` +
+    `Never invent endpoints, paths, or parameter names. Never recommend endpoints from other Cyware products unless CONTEXT includes them.\n` +
+    `Return JSON with: workflow (markdown string), confidence (0-1), steps (array), questions (optional array, max 2, only if absolutely required).\n` +
     `Each step must include: slug (exact from context), order (1-based), explanation, and optional pathParams/queryParams/body/form objects using ONLY documented parameter names.` +
     extra +
-    `\nIf the request is ambiguous, set confidence below 0.5 and include questions.`
+    tone +
+    `\nIf retrieval truly cannot match any endpoint, set confidence below 0.5 and ask ONE focused question about the missing object type — not generic questionnaires.`
   );
 }
 
@@ -67,11 +94,12 @@ export async function planWithLlm(
   query: string,
   chunks: ScoredChunk[],
   history?: { role: "user" | "assistant"; content: string }[],
-  productId = "ctix"
+  productId = "ctix",
+  simpleMode = false
 ): Promise<AgentPlan> {
   const allowedSlugs = [...new Set(chunks.map((c) => c.slug))];
   const context = formatTrimmedContext(chunks, query, 8);
-  const system = systemPromptForProduct(productId);
+  const system = systemPromptForProduct(productId, simpleMode);
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
     { role: "system", content: system },
@@ -141,11 +169,13 @@ export async function planWithLlm(
     ];
   })).values()];
 
+  const questions = (parsed.questions ?? []).slice(0, 2);
+
   return {
     workflow: parsed.workflow ?? "Here is a suggested workflow using documented endpoints.",
     confidence: Math.max(0, Math.min(1, parsed.confidence ?? 0.5)),
     steps,
-    questions: parsed.questions,
+    questions: questions.length > 0 ? questions : undefined,
     citations,
   };
 }

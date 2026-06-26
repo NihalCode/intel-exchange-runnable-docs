@@ -2,6 +2,7 @@
 
 import { useRef, useState, useMemo } from "react";
 import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
+import { connectionRequiredMessage } from "@/lib/api-credentials";
 import { ensureOpenApiAuth, substituteSnippetPlaceholders } from "@/lib/credential-placeholders";
 import { proxyHttpRequest } from "@/lib/http-run";
 import {
@@ -12,7 +13,9 @@ import {
 import { isSensitiveName, maskText } from "@/lib/security";
 import type { CredField } from "@/lib/resolve-request";
 import { buildPlaygroundExec, useRequestPlayground } from "./RequestPlayground";
-import { AutoAuthNotice, useRunSettings } from "./RunSettings";
+import { ApiConnectionPanel } from "./ApiConnectionPanel";
+import { useProduct } from "./ProductContext";
+import { useRunSettings } from "./RunSettings";
 
 // ---------------------------------------------------------------------------
 // Pyodide loader (cached singleton)
@@ -163,11 +166,13 @@ function formatMaybeJson(text: string): string {
 }
 
 export function PyodideRunner({ code }: { code: string }) {
+  const { productId } = useProduct();
   const {
     baseUrl,
     secretValues,
     getCredential,
     ensureFreshAuth,
+    credentialsConfigured,
   } = useRunSettings();
   const playground = useRequestPlayground();
   const [phase, setPhase] = useState<"idle" | "loading-pyodide" | "running">("idle");
@@ -209,6 +214,17 @@ export function PyodideRunner({ code }: { code: string }) {
   async function run() {
     setLogs([]);
     setError("");
+
+    const method = playground?.request.method ?? "GET";
+    if (!credentialsConfigured) {
+      setError(connectionRequiredMessage(method, productId));
+      return;
+    }
+    if (needsConfiguredBaseUrl(baseUrl)) {
+      setError("Set your tenant base URL in the connection panel before running.");
+      return;
+    }
+
     const collectedLogs: string[] = [];
 
     try {
@@ -263,16 +279,14 @@ export function PyodideRunner({ code }: { code: string }) {
           ) : null}
         </>
       ) : (
-        <div className="mt-2">
-          <AutoAuthNotice />
-        </div>
+        <ApiConnectionPanel />
       )}
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={run}
-          disabled={busy}
+          disabled={busy || !credentialsConfigured || needsConfiguredBaseUrl(baseUrl)}
           className="inline-flex items-center gap-1.5 rounded-md bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-sky-500 disabled:opacity-50"
         >
           {busy ? <Spinner /> : <PlayIcon />}

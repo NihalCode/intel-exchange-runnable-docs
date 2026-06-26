@@ -10,45 +10,55 @@ import {
   useState,
 } from "react";
 import { generateAuthParams, type AuthParams } from "@/lib/auth-gen";
+import { hasProductCredentials } from "@/lib/api-credentials";
 import { isOpenApiAuthFresh } from "@/lib/credential-placeholders";
 import { isDemoModeEnabled } from "@/lib/demo";
-import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 import { baseUrlForProduct } from "@/lib/products/auth";
+import {
+  credentialKeyForField,
+  productConnectionUi,
+  type ConnectionFieldKind,
+} from "@/lib/products/connection-ui";
 import { DEFAULT_PRODUCT_ID } from "@/lib/products/registry";
 import { useProduct } from "./ProductContext";
 
 interface RunSettings {
-  /** Docs clone: simulate API responses without a Cyware tenant. */
   demoMode: boolean;
   baseUrl: string;
   setBaseUrl: (v: string) => void;
-  /** Switch displayed base URL when the active product changes. */
   syncWithProduct: (productId: string) => void;
-  /** Returns any credential value by name (case-insensitive) */
+  activeProductId: string;
   getCredential: (name: string) => string;
   setCredential: (name: string, value: string) => void;
+  getConnectionValue: (kind: ConnectionFieldKind) => string;
+  setConnectionValue: (kind: ConnectionFieldKind, value: string) => void;
   clearCredentials: () => void;
   secretValues: string[];
   credentialCount: number;
+  /** @deprecated use getConnectionValue("access-id") */
   accessId: string;
+  /** @deprecated use setConnectionValue("access-id", v) */
   setAccessId: (v: string) => void;
+  /** @deprecated use getConnectionValue("secret-key") */
   secretKey: string;
+  /** @deprecated use setConnectionValue("secret-key", v) */
   setSecretKey: (v: string) => void;
-  /** Generate Signature + Expires (always refreshes). */
   generateAuth: () => Promise<AuthParams | null>;
-  /** Generate auth only when missing or Expires has passed; used on Run. */
   ensureFreshAuth: () => Promise<string | null>;
   authStatus: "idle" | "generating" | "ok" | "error";
   authError: string;
   authReady: boolean;
+  credentialsConfigured: boolean;
 }
 
 const Ctx = createContext<RunSettings | null>(null);
 
 const BASE_URLS_KEY = "iedocs.baseUrls";
 const LEGACY_BASE_URL_KEY = "iedocs.baseUrl";
-const ACCESS_ID_KEY = "iedocs.accessId";
-const SECRET_KEY_SESSION = "iedocs.secretKey";
+const ACCESS_IDS_KEY = "iedocs.accessIds";
+const SECRETS_KEY = "iedocs.secrets";
+const LEGACY_ACCESS_ID_KEY = "iedocs.accessId";
+const LEGACY_SECRET_KEY = "iedocs.secretKey";
 
 function readStoredBaseUrls(defaultBaseUrl: string): Record<string, string> {
   try {
@@ -73,6 +83,54 @@ function writeStoredBaseUrls(urls: Record<string, string>) {
   }
 }
 
+function readAccessIds(): Record<string, string> {
+  try {
+    const raw = window.localStorage.getItem(ACCESS_IDS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, string>;
+      if (parsed && typeof parsed === "object") return parsed;
+    }
+    const legacy = window.localStorage.getItem(LEGACY_ACCESS_ID_KEY);
+    if (legacy) return { ctix: legacy };
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function writeAccessIds(ids: Record<string, string>) {
+  try {
+    window.localStorage.setItem(ACCESS_IDS_KEY, JSON.stringify(ids));
+    window.localStorage.removeItem(LEGACY_ACCESS_ID_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
+function readSecrets(): Record<string, string> {
+  try {
+    const raw = window.sessionStorage.getItem(SECRETS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, string>;
+      if (parsed && typeof parsed === "object") return parsed;
+    }
+    const legacy = window.sessionStorage.getItem(LEGACY_SECRET_KEY);
+    if (legacy) return { ctix: legacy };
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+function writeSecrets(secrets: Record<string, string>) {
+  try {
+    window.sessionStorage.setItem(SECRETS_KEY, JSON.stringify(secrets));
+    window.sessionStorage.removeItem(LEGACY_SECRET_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export function RunSettingsProvider({
   defaultBaseUrl,
   children,
@@ -89,7 +147,10 @@ export function RunSettingsProvider({
   const [authStatus, setAuthStatus] = useState<"idle" | "generating" | "ok" | "error">("idle");
   const [authError, setAuthError] = useState("");
   const baseUrlsRef = useRef<Record<string, string>>({ ctix: defaultBaseUrl });
+  const accessIdsRef = useRef<Record<string, string>>({});
+  const secretsRef = useRef<Record<string, string>>({});
   const activeProductRef = useRef(DEFAULT_PRODUCT_ID);
+  const [activeProductId, setActiveProductId] = useState(DEFAULT_PRODUCT_ID);
   const baseUrlRef = useRef(defaultBaseUrl);
 
   useEffect(() => {
@@ -100,26 +161,34 @@ export function RunSettingsProvider({
     baseUrlRef.current = baseUrl;
   }, [baseUrl]);
 
+  const loadProductCredentials = useCallback((productId: string) => {
+    const id = accessIdsRef.current[productId] ?? "";
+    const sk = secretsRef.current[productId] ?? "";
+    setAccessIdState(id);
+    secretKeyRef.current = sk;
+    setSecretKeyState(sk);
+    setCreds((prev) => ({
+      ...prev,
+      accessid: id,
+      secretkey: sk,
+    }));
+    setAuthStatus("idle");
+    setAuthError("");
+  }, []);
+
   useEffect(() => {
     try {
       const urls = readStoredBaseUrls(defaultBaseUrl);
       baseUrlsRef.current = urls;
+      accessIdsRef.current = readAccessIds();
+      secretsRef.current = readSecrets();
       const initial = urls[DEFAULT_PRODUCT_ID] ?? defaultBaseUrl;
       setBaseUrlState(initial);
-      const savedId = window.localStorage.getItem(ACCESS_ID_KEY);
-      if (savedId) {
-        setAccessIdState(savedId);
-        setCreds((p) => ({ ...p, accessid: savedId }));
-      }
-      const savedSecret = window.sessionStorage.getItem(SECRET_KEY_SESSION);
-      if (savedSecret) {
-        secretKeyRef.current = savedSecret;
-        setSecretKeyState(savedSecret);
-      }
+      loadProductCredentials(DEFAULT_PRODUCT_ID);
     } catch {
       /* ignore */
     }
-  }, [defaultBaseUrl]);
+  }, [defaultBaseUrl, loadProductCredentials]);
 
   const setBaseUrl = useCallback((v: string) => {
     setBaseUrlState(v);
@@ -128,44 +197,89 @@ export function RunSettingsProvider({
     writeStoredBaseUrls(baseUrlsRef.current);
   }, []);
 
-  const syncWithProduct = useCallback((productId: string) => {
-    const prev = activeProductRef.current;
-    if (prev !== productId) {
-      baseUrlsRef.current = { ...baseUrlsRef.current, [prev]: baseUrlRef.current };
-    }
-    activeProductRef.current = productId;
-    const next =
-      baseUrlsRef.current[productId] ?? baseUrlForProduct(productId);
-    setBaseUrlState(next);
-    baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: next };
-    writeStoredBaseUrls(baseUrlsRef.current);
-  }, []);
+  const syncWithProduct = useCallback(
+    (productId: string) => {
+      const prev = activeProductRef.current;
+      if (prev !== productId) {
+        accessIdsRef.current = { ...accessIdsRef.current, [prev]: accessId };
+        secretsRef.current = { ...secretsRef.current, [prev]: secretKeyRef.current };
+        writeAccessIds(accessIdsRef.current);
+        writeSecrets(secretsRef.current);
+        baseUrlsRef.current = { ...baseUrlsRef.current, [prev]: baseUrlRef.current };
+      }
+      activeProductRef.current = productId;
+      setActiveProductId(productId);
+      const next =
+        baseUrlsRef.current[productId] ?? baseUrlForProduct(productId);
+      setBaseUrlState(next);
+      baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: next };
+      writeStoredBaseUrls(baseUrlsRef.current);
+      loadProductCredentials(productId);
+    },
+    [accessId, loadProductCredentials]
+  );
 
-  const setAccessId = useCallback((v: string) => {
-    setAccessIdState(v);
-    setCreds((p) => ({ ...p, accessid: v }));
-    try {
-      window.localStorage.setItem(ACCESS_ID_KEY, v);
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const setAccessId = useCallback(
+    (v: string) => {
+      const pid = activeProductRef.current;
+      setAccessIdState(v);
+      accessIdsRef.current = { ...accessIdsRef.current, [pid]: v };
+      writeAccessIds(accessIdsRef.current);
+      setCreds((p) => ({ ...p, accessid: v }));
+      setAuthStatus("idle");
+    },
+    []
+  );
 
   const setSecretKey = useCallback((v: string) => {
+    const pid = activeProductRef.current;
     secretKeyRef.current = v;
     setSecretKeyState(v);
-    try {
-      if (v) window.sessionStorage.setItem(SECRET_KEY_SESSION, v);
-      else window.sessionStorage.removeItem(SECRET_KEY_SESSION);
-    } catch {
-      /* ignore */
-    }
+    secretsRef.current = { ...secretsRef.current, [pid]: v };
+    writeSecrets(secretsRef.current);
+    setAuthStatus("idle");
   }, []);
+
+  const getConnectionValue = useCallback(
+    (kind: ConnectionFieldKind): string => {
+      const key = credentialKeyForField(kind);
+      if (key === "accessid") return accessId.trim();
+      if (key === "secretkey") return secretKey;
+      return credsRef.current[key] ?? "";
+    },
+    [accessId, secretKey]
+  );
+
+  const setConnectionValue = useCallback(
+    (kind: ConnectionFieldKind, value: string) => {
+      const key = credentialKeyForField(kind);
+      if (key === "accessid") {
+        setAccessId(value);
+        return;
+      }
+      if (key === "secretkey") {
+        setSecretKey(value);
+        return;
+      }
+      setCreds((prev) => ({ ...prev, [key]: value }));
+      credsRef.current = { ...credsRef.current, [key]: value };
+      if (productConnectionUi(activeProductRef.current).fields.find((f) => f.kind === kind)?.persistence === "session") {
+        const pid = activeProductRef.current;
+        secretsRef.current = { ...secretsRef.current, [`${pid}:${key}`]: value };
+        writeSecrets(secretsRef.current);
+      }
+      setAuthStatus("idle");
+    },
+    [setAccessId, setSecretKey]
+  );
 
   const getCredential = useCallback((name: string) => {
     const key = name.toLowerCase();
     if (key === "accessid") {
       return accessId.trim() || credsRef.current.accessid || "";
+    }
+    if (key === "secretkey") {
+      return secretKeyRef.current || credsRef.current.secretkey || "";
     }
     return credsRef.current[key] ?? "";
   }, [accessId]);
@@ -175,24 +289,27 @@ export function RunSettingsProvider({
   }, []);
 
   const clearCredentials = useCallback(() => {
+    const pid = activeProductRef.current;
     setCreds({});
     credsRef.current = {};
     setSecretKeyState("");
     secretKeyRef.current = "";
+    setAccessIdState("");
+    accessIdsRef.current = { ...accessIdsRef.current, [pid]: "" };
+    secretsRef.current = { ...secretsRef.current, [pid]: "" };
+    writeAccessIds(accessIdsRef.current);
+    writeSecrets(secretsRef.current);
     setAuthStatus("idle");
     setAuthError("");
-    try {
-      window.sessionStorage.removeItem(SECRET_KEY_SESSION);
-    } catch {
-      /* ignore */
-    }
   }, []);
 
   const generateAuth = useCallback(async (): Promise<AuthParams | null> => {
     const id = accessId.trim();
     const sk = secretKeyRef.current.trim();
+    const ui = productConnectionUi(activeProductRef.current);
     if (!id || !sk) {
-      setAuthError("Enter both Access ID and Secret Key in API Settings first.");
+      const labels = ui.fields.map((f) => f.label).join(" and ");
+      setAuthError(`Enter ${labels} in the API connection panel.`);
       setAuthStatus("error");
       return null;
     }
@@ -217,10 +334,14 @@ export function RunSettingsProvider({
   }, [accessId]);
 
   const ensureFreshAuth = useCallback(async (): Promise<string | null> => {
+    const ui = productConnectionUi(activeProductRef.current);
+    if (!ui.usesOpenApi) return null;
+
     const id = accessId.trim();
     const sk = secretKeyRef.current.trim();
     if (!id || !sk) {
-      return "Open API credentials required. Set Access ID and Secret Key in API Settings (header), then click Run.";
+      const labels = ui.fields.map((f) => f.label).join(" and ");
+      return `Enter ${labels} in the connection panel, then click Run.`;
     }
 
     if (isOpenApiAuthFresh(getCredential)) {
@@ -229,12 +350,13 @@ export function RunSettingsProvider({
 
     const params = await generateAuth();
     if (!params) {
-      return "Could not generate Signature and Expires. Check Access ID and Secret Key in API Settings.";
+      return "Could not generate Signature and Expires. Check credentials in the connection panel.";
     }
     return null;
   }, [accessId, generateAuth, getCredential]);
 
   const authReady = isOpenApiAuthFresh(getCredential);
+  const credentialsConfigured = hasProductCredentials(activeProductId, getCredential);
 
   const value = useMemo<RunSettings>(
     () => ({
@@ -242,8 +364,11 @@ export function RunSettingsProvider({
       baseUrl,
       setBaseUrl,
       syncWithProduct,
+      activeProductId,
       getCredential,
       setCredential,
+      getConnectionValue,
+      setConnectionValue,
       clearCredentials,
       secretValues: Object.values(creds).filter((v) => v && v.length >= 3),
       credentialCount: Object.values(creds).filter(Boolean).length,
@@ -256,6 +381,7 @@ export function RunSettingsProvider({
       authStatus,
       authError,
       authReady,
+      credentialsConfigured,
     }),
     [
       baseUrl,
@@ -263,6 +389,8 @@ export function RunSettingsProvider({
       syncWithProduct,
       getCredential,
       setCredential,
+      getConnectionValue,
+      setConnectionValue,
       clearCredentials,
       creds,
       accessId,
@@ -274,6 +402,8 @@ export function RunSettingsProvider({
       authStatus,
       authError,
       authReady,
+      credentialsConfigured,
+      activeProductId,
     ]
   );
 
@@ -286,7 +416,7 @@ export function useRunSettings(): RunSettings {
   return ctx;
 }
 
-/** Keeps API base URL in sync with the selected product. */
+/** Keeps API base URL and credentials in sync with the selected product. */
 export function ProductRunSettingsSync() {
   const { productId } = useProduct();
   const { syncWithProduct } = useRunSettings();
@@ -298,57 +428,7 @@ export function ProductRunSettingsSync() {
   return null;
 }
 
-/** Shown on endpoint pages — auth is auto-generated on Run, not typed per snippet. */
+/** @deprecated Use ApiConnectionPanel inline on runners instead. */
 export function AutoAuthNotice() {
-  const { accessId, secretKey, authReady, getCredential, authStatus } = useRunSettings();
-  const hasKeys = accessId.trim().length > 0 && secretKey.trim().length > 0;
-  const exp = getCredential("expires");
-
-  if (!isLiveApiUiEnabled()) {
-    return (
-      <div className="rounded-md border border-sky-400/50 bg-sky-50/50 p-3 text-xs text-sky-900 dark:border-sky-800 dark:bg-sky-950/20 dark:text-sky-200">
-        <strong>Documentation mode:</strong> Examples below use placeholders such as{" "}
-        <code className="font-mono">&lt;ACCESS_ID&gt;</code> and{" "}
-        <code className="font-mono">&lt;BASE_URL&gt;</code>. Live API runs require developer
-        credentials — see the{" "}
-        <a href="/developer" className="underline">
-          Developer Console
-        </a>
-        .
-      </div>
-    );
-  }
-
-  if (!hasKeys) {
-    return (
-      <div className="rounded-md border border-amber-400/50 bg-amber-50/50 p-3 text-xs text-amber-800 dark:bg-amber-950/20 dark:text-amber-300">
-        <strong>Auth:</strong> Open <em>API Settings</em> in the header and enter your{" "}
-        <strong>Access ID</strong> and <strong>Secret Key</strong> once. Signature and Expires
-        are generated automatically when you click Run.
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={`rounded-md border p-3 text-xs ${
-        authReady
-          ? "border-emerald-400/50 bg-emerald-50/50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/20 dark:text-emerald-200"
-          : "border-sky-400/50 bg-sky-50/50 text-sky-900 dark:border-sky-800 dark:bg-sky-950/20 dark:text-sky-200"
-      }`}
-    >
-      <strong>Auth:</strong> Access ID configured
-      {authReady ? (
-        <>
-          {" "}
-          · Signature valid until <code className="font-mono">{exp}</code> (refreshes on Run when
-          expired)
-        </>
-      ) : authStatus === "generating" ? (
-        <> · Generating Signature &amp; Expires…</>
-      ) : (
-        <> · Signature &amp; Expires will be generated when you click Run</>
-      )}
-    </div>
-  );
+  return null;
 }

@@ -78,8 +78,12 @@ export function AgentMessageView({
 
       {response.docsModeNote ? (
         <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400">
-          {response.docsModeNote}
+          <strong>Note:</strong> {response.docsModeNote}
         </div>
+      ) : null}
+
+      {response.simpleMode ? (
+        <p className="text-[10px] text-zinc-400">Plain-English mode — ask to “show technical details” for more depth.</p>
       ) : null}
 
       {response.steps.length > 1 ? (

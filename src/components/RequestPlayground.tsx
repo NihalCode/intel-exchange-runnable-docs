@@ -20,7 +20,6 @@ import {
   resolveWorkflowBodyText,
   validateWorkflowTokens,
 } from "@/lib/workflow-step-context";
-import { DISPLAY_BASE } from "@/lib/constants";
 import { isPlaceholderBase } from "@/lib/demo";
 import type { ExecRequest } from "@/lib/parse-request";
 import {
@@ -39,7 +38,8 @@ import {
   initialFormTextValues,
   validateMultipartForRun,
 } from "@/lib/multipart";
-import { AutoAuthNotice, useRunSettings } from "./RunSettings";
+import { ApiConnectionPanel } from "./ApiConnectionPanel";
+import { useRunSettings } from "./RunSettings";
 
 /* ----------------------------- context ---------------------------------- */
 
@@ -531,17 +531,12 @@ export function RequestPlaygroundPanel() {
 
       {needsBaseUrl ? (
         <div className="rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
-          <strong>Set your base URL.</strong> Enter the Cyware tenant API base in the header
-          (default: <code className="font-mono">{DISPLAY_BASE}</code>).
+          <strong>Set your base URL.</strong> Enter your Cyware tenant API base in the connection
+          panel below.
         </div>
-      ) : (
-        <div className="rounded-md border border-sky-400/50 bg-sky-50/50 px-3 py-2 text-xs text-sky-800 dark:bg-sky-950/20 dark:text-sky-300">
-          <strong>Live API.</strong> Requests go to{" "}
-          <code className="font-mono">{baseUrl}</code>.
-        </div>
-      )}
+      ) : null}
 
-      <AutoAuthNotice />
+      <ApiConnectionPanel method={playground.request.method} />
 
       <PathParamEditor
         params={playground.pathParams}

@@ -37,6 +37,10 @@ const SYNONYM_RULES: SynonymRule[] = [
     pattern: /\b(report|reports)\b.*\b(download|file|attachment)\b|\b(download|get)\b.*\b(report|intel)\b.*\b(file|attachment)\b/i,
     expand: ["reports download file", "external download", "file_id token"],
   },
+  {
+    pattern: /\blast\s+\d+\s+days?\b|\blast\s+week\b|\blast\s+month\b|\byesterday\b|\bpast\s+\d+\s+days?\b/i,
+    expand: ["ctix_created", "date filter", "list threat data"],
+  },
 ];
 
 /**

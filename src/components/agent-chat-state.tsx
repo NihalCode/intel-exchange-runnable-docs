@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { resolveAgentIntent } from "@/lib/agent/intent";
-import { inferProductFromQuery } from "@/lib/products/registry";
+import { inferProductFromQuery, inferProductsFromQuery } from "@/lib/products/registry";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
 import type { AgentLanguage, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
@@ -415,13 +415,15 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const inferred = inferProductFromQuery(q);
+        const mentioned = inferProductsFromQuery(q);
         const scopedProductId =
-          inferred && inferred !== "all"
-            ? inferred
-            : searchScope === "all"
+          mentioned.length === 1 && mentioned[0] !== "all"
+            ? mentioned[0]
+            : mentioned.length > 1
               ? "all"
-              : productId;
+              : searchScope === "all"
+                ? "all"
+                : productId;
 
         const res = await fetch("/api/agent", {
           method: "POST",

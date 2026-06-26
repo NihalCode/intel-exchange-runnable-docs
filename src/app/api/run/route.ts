@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dns from "node:dns/promises";
 import net from "node:net";
 import { buildDemoResponse, shouldSimulateRequest } from "@/lib/demo";
+import { serverAuthRequiredMessage, urlHasOpenApiAuth } from "@/lib/api-credentials";
 import type { MultipartPart } from "@/lib/multipart";
 import { MAX_UPLOAD_BYTES } from "@/lib/multipart";
 
@@ -120,6 +121,13 @@ export async function POST(request: Request) {
           "Live API execution is disabled on this server. Documentation and placeholder examples are available without credentials. Enable ENABLE_API_EXECUTION=true for developer testing.",
       },
       { status: 403 }
+    );
+  }
+
+  if (!urlHasOpenApiAuth(urlStr)) {
+    return NextResponse.json(
+      { ok: false, error: serverAuthRequiredMessage(method) },
+      { status: 401 }
     );
   }
 

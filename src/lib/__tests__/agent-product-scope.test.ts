@@ -2,10 +2,29 @@ import { describe, expect, it } from "vitest";
 import { resolveProductScope } from "../agent/product-scope";
 import {
   enforceCatalogPlan,
+  enforceListIndicatorsPlan,
   enforceProductDocPlan,
   isCatalogQuery,
 } from "../agent/planner";
-import { inferProductFromQuery } from "../products/registry";
+import { inferProductFromQuery, inferProductsFromQuery } from "../products/registry";
+
+describe("inferProductsFromQuery", () => {
+  it("detects single product mentions", () => {
+    expect(inferProductsFromQuery("In CSAP, how do I fetch alerts?")).toEqual(["csap"]);
+    expect(inferProductsFromQuery("Show CFTR indicator snippet")).toEqual(["cftr"]);
+    expect(inferProductsFromQuery("CTIX threat indicators")).toEqual(["ctix"]);
+  });
+
+  it("detects multiple products", () => {
+    const ids = inferProductsFromQuery("Compare CTIX indicators with Orchestrate playbooks");
+    expect(ids).toContain("ctix");
+    expect(ids).toContain("orchestrate");
+  });
+
+  it("returns empty when no product mentioned", () => {
+    expect(inferProductsFromQuery("list tags")).toEqual([]);
+  });
+});
 
 describe("inferProductFromQuery", () => {
   it("parses numbered tour prompts", () => {
@@ -24,20 +43,37 @@ describe("inferProductFromQuery", () => {
   it("does not treat STIX-only queries as CSAP when CSAP not mentioned", () => {
     expect(inferProductFromQuery("list STIX indicators")).toBe("ctix");
   });
+
+  it("returns all when multiple products mentioned", () => {
+    expect(inferProductFromQuery("CTIX and CSAP alerts")).toBe("all");
+  });
 });
 
 describe("resolveProductScope", () => {
   it("prefers explicit product in query over UI productId", () => {
-    expect(
-      resolveProductScope(
-        { query: "CFTR: list incidents", productId: "ctix" },
-        "CFTR: list incidents"
-      )
-    ).toBe("cftr");
+    const scope = resolveProductScope(
+      { query: "CFTR: list incidents", productId: "ctix" },
+      "CFTR: list incidents"
+    );
+    expect(scope.primaryProductId).toBe("cftr");
+    expect(scope.source).toBe("query");
+    expect(scope.label).toMatch(/CFTR.*your question/i);
   });
 
   it("uses UI productId when query is ambiguous", () => {
-    expect(resolveProductScope({ query: "list tags", productId: "ctix" }, "list tags")).toBe("ctix");
+    const scope = resolveProductScope({ query: "list tags", productId: "ctix" }, "list tags");
+    expect(scope.primaryProductId).toBe("ctix");
+    expect(scope.source).toBe("dropdown");
+  });
+
+  it("supports multi-product scope from query", () => {
+    const scope = resolveProductScope(
+      { query: "CTIX indicators and Orchestrate workflows", productId: "csap" },
+      "CTIX indicators and Orchestrate workflows"
+    );
+    expect(scope.filterMode).toBe("multi");
+    expect(scope.productIds).toContain("ctix");
+    expect(scope.productIds).toContain("orchestrate");
   });
 });
 
@@ -75,5 +111,27 @@ describe("enforceProductDocPlan", () => {
       "orchestrate"
     );
     expect(plan.steps[0]?.slug).toBe("authentication/product-release-version");
+  });
+});
+
+describe("enforceListIndicatorsPlan", () => {
+  const TEST_QUERY =
+    "I'm not technical. In CTIX, how do I get a list of threat indicators from the last 7 days? Tell me step by step what to ask for, what settings I need, and show me example code I could give to my IT team — in plain English.";
+
+  it("uses non-technical template for CTIX last-7-days indicators", () => {
+    const plan = enforceListIndicatorsPlan(
+      { workflow: "", confidence: 0.2, steps: [], citations: [] },
+      TEST_QUERY,
+      []
+    );
+    expect(plan.questions).toBeUndefined();
+    expect(plan.workflow).toMatch(/What you're trying to do/i);
+    expect(plan.workflow).toMatch(/ingestion\/threat-data\/list/i);
+    expect(plan.workflow).toMatch(/Example cURL/i);
+    expect(plan.workflow).not.toMatch(/report id/i);
+    expect(plan.workflow).not.toMatch(/recipient/i);
+    expect(plan.steps[0]?.slug).toBe("threat-data/list-threat-data");
+    expect(plan.steps[0]?.params?.body?.query).toMatch(/indicator/);
+    expect(plan.steps[0]?.params?.body?.query).toMatch(/START_TIME/);
   });
 });
