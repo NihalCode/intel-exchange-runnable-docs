@@ -10,6 +10,7 @@ import {
   listProducts,
 } from "../products/registry";
 import { extractTagNameFromQuery } from "../workflow-step-context";
+import { canonicalizeIntent } from "./normalize-query";
 
 const LIST_TAGS_SLUG = "tags/list-tags";
 const CREATE_TAG_SLUG = "tags/create-tag";
@@ -379,13 +380,31 @@ export function enforceCatalogPlan(plan: AgentPlan, query: string): AgentPlan {
   };
 }
 
+const TAGS_LIST_PATTERN =
+  /\b(tags?|labels?)\b.*\b(list|get|show|all|fetch|view|retrieve)\b|\b(list|get|show|all|fetch|view|retrieve)\b.*\b(tags?|labels?)\b/i;
+const MEMBERS_PATTERN = /\b(members?|users?)\b/i;
+const APPS_INTEGRATIONS_PATTERN = /\b(apps?|integrations?)\b/i;
+const PLAYBOOKS_PATTERN = /\bplaybooks?\b/i;
+const INCIDENTS_LIST_PATTERN =
+  /\bincidents?\b.*\b(list|get|show|all|fetch|view|retrieve)\b|\b(list|get|show|all|fetch|view|retrieve)\b.*\bincidents?\b/i;
+const ALERTS_PATTERN = /\b(analyst portal )?(alert|alerts)\b/i;
+const INTEL_CATEGORIES_PATTERN = /\b(intel\s*)?(categories?|category)\b/i;
+const VERSION_PATTERN = /\b(product\s*)?(release\s*)?version\b/i;
+
 const PRODUCT_DOC_INTENTS: Record<
   string,
   { pattern: RegExp; slug: string; title: string; intro: string }[]
 > = {
   cftr: [
     {
-      pattern: /\b(list|get)\b.*\bincident/i,
+      pattern: INCIDENTS_LIST_PATTERN,
+      slug: "cftr-api-reference/incidents/get-list-of-incidents",
+      title: "Get List of Incidents",
+      intro:
+        "List CFTR incidents with **Get List of Incidents** (`GET /v1/incident/` → `/cftrapi/openapi/v1/incident/` on cftrapi.cyware.com).",
+    },
+    {
+      pattern: /\bincidents?\b/i,
       slug: "cftr-api-reference/incidents/get-list-of-incidents",
       title: "Get List of Incidents",
       intro:
@@ -394,29 +413,55 @@ const PRODUCT_DOC_INTENTS: Record<
   ],
   csap: [
     {
-      pattern: /\b(analyst portal )?(alert|alerts)\b/i,
+      pattern: ALERTS_PATTERN,
       slug: "analyst-portal/analyst-portal-alerts/alerts-list-analyst-member",
       title: "Get Alerts",
       intro:
         "List analyst portal alerts with **Get Alerts (Analyst Portal)** (`GET csap/v1/list_alert/`).",
     },
+    {
+      pattern: MEMBERS_PATTERN,
+      slug: "analyst-portal/member/member-list-analyst",
+      title: "Get Member List",
+      intro:
+        "List CSAP analyst portal members with **Get Member List** (`GET csap/v1/member/`).",
+    },
+    {
+      pattern: INTEL_CATEGORIES_PATTERN,
+      slug: "analyst-portal/intel/intel-categories-list-analyst-member",
+      title: "Get Intel Categories List",
+      intro:
+        "List intel categories with **Get Intel Categories List** (`GET csap/v1/intel_category/`).",
+    },
   ],
   orchestrate: [
     {
-      pattern: /\b(product )?release version\b/i,
+      pattern: TAGS_LIST_PATTERN,
+      slug: "tags/get-list-of-tags",
+      title: "Get List of Tags",
+      intro:
+        "List Orchestrate tags with **Get List of Tags** (`GET v1/tags/`). Use pagination params to page through results.",
+    },
+    {
+      pattern: VERSION_PATTERN,
       slug: "authentication/product-release-version",
       title: "Product Release Version",
       intro:
         "Returns the Orchestrate application version via **Product Release Version** (`GET v1/release_version/`).",
     },
-  ],
-  ctix: [
     {
-      pattern: /\b(list|get|show)\b.*\btags?\b/i,
-      slug: "tags/list-tags",
-      title: "Get Tags List",
+      pattern: APPS_INTEGRATIONS_PATTERN,
+      slug: "integrations/get-apps",
+      title: "Get Apps",
       intro:
-        "List or search tags with **Get Tags List** (`GET ingestion/tags/`). Use query `q` to filter by name.",
+        "List installed Orchestrate apps and integrations with **Get Apps** (`GET v1/apps/`).",
+    },
+    {
+      pattern: PLAYBOOKS_PATTERN,
+      slug: "playbook/get-playbook",
+      title: "Get Playbook Details",
+      intro:
+        "List all playbooks with **Get Playbook Details** (`GET v1/playbook/filter/`). Omit the playbook ID to return the full list.",
     },
   ],
 };
@@ -435,8 +480,12 @@ export function enforceProductDocPlan(
   const intents = PRODUCT_DOC_INTENTS[productId];
   if (!intents) return plan;
 
+  const intentQuery = canonicalizeIntent(query);
+
   for (const intent of intents) {
-    if (!intent.pattern.test(query)) continue;
+    if (!intent.pattern.test(intentQuery) && !intent.pattern.test(query)) continue;
+    // Do not override stronger plans from CTIX-specific enforcers (tag mgmt, list indicators).
+    if (plan.steps.length > 0 && (plan.confidence ?? 0) >= 0.9) return plan;
     const chunk = chunks.find((c) => c.slug === intent.slug);
     const step: AgentPlanStep = { slug: intent.slug, order: 1, explanation: intent.intro };
     return {
@@ -545,7 +594,8 @@ export function isPingQuery(query: string): boolean {
   return (
     /\bping\b/.test(q) ||
     /\b(connection|connectivity|reachable|api)\b.*\b(work|working|up|live|ok|alive|test)\b/.test(q) ||
-    /\b(test|check)\b.*\b(connection|connectivity|api|reachab)/.test(q) ||
+    /\b(test|check|verify)\b.*\b(connection|connectivity|api|reachab|credential|credentials|auth|keys?)\b/.test(q) ||
+    /\b(credential|credentials|auth|keys?)\b.*\b(work|working|valid|test|check)\b/.test(q) ||
     /\bis (it|the api|the connection|everything) working\b/.test(q)
   );
 }

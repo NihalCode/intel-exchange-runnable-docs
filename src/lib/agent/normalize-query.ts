@@ -24,7 +24,14 @@ const SYNONYM_RULES: SynonymRule[] = [
   { pattern: /\b(group|groups|folder|folders)\b/i, expand: ["tag group"] },
   { pattern: /\b(import|upload|bring in|load)\b/i, expand: ["import intel", "stix"] },
   { pattern: /\b(feed|feeds|source|sources|collection|collections)\b/i, expand: ["source collections"] },
-  { pattern: /\b(rule|rules|alert|alerts)\b/i, expand: ["rules"] },
+  { pattern: /\b(rule|rules)\b/i, expand: ["rules"] },
+  { pattern: /\b(alerts?)\b/i, expand: ["list_alert", "analyst portal alerts"] },
+  { pattern: /\b(members?|users?)\b/i, expand: ["member list", "member-list-analyst"] },
+  { pattern: /\b(incidents?|cases?)\b/i, expand: ["get list of incidents", "cftr incident"] },
+  { pattern: /\b(apps?|integrations?)\b/i, expand: ["get apps", "integrations"] },
+  { pattern: /\bplaybooks?\b/i, expand: ["get playbook", "playbook filter", "list playbooks"] },
+  { pattern: /\b(intel\s*)?(categories?|category)\b/i, expand: ["intel categories list"] },
+  { pattern: /\b(tags?|labels?)\b/i, expand: ["list tags", "get tags"] },
   { pattern: /\b(test|check connection|is it working|ping|health)\b/i, expand: ["ping"] },
   { pattern: /\b(delete|remove|get rid of)\b/i, expand: ["delete", "remove"] },
   { pattern: /\b(update|change|edit|rename)\b/i, expand: ["update"] },
@@ -67,6 +74,40 @@ export function canonicalizeIntent(query: string): string {
   return q;
 }
 
+const PRODUCT_EXPANSIONS: Record<string, { pattern: RegExp; expand: string[] }[]> = {
+  ctix: [
+    { pattern: /\b(tags?|labels?)\b/i, expand: ["list tags", "ingestion/tags", "get tags list"] },
+    {
+      pattern: /\b(indicators?|threat\s*data|iocs?|bad\s+(ips?|domains?|urls?))\b/i,
+      expand: ["list threat data", "threat-data/list", "ingestion/threat-data/list"],
+    },
+    { pattern: /\b(ping|connectivity|connection)\b/i, expand: ["ping", "test connectivity"] },
+  ],
+  csap: [
+    { pattern: /\b(alerts?)\b/i, expand: ["list_alert", "alerts-list-analyst-member", "analyst portal alerts"] },
+    { pattern: /\b(members?|users?)\b/i, expand: ["member-list-analyst", "csap/v1/member"] },
+    {
+      pattern: /\b(intel\s*)?(categories?|category)\b/i,
+      expand: ["intel-categories-list", "intel category"],
+    },
+    { pattern: /\b(ping|connectivity|connection|credentials?)\b/i, expand: ["test connectivity"] },
+  ],
+  orchestrate: [
+    { pattern: /\b(tags?|labels?)\b/i, expand: ["get list of tags", "v1/tags", "orchestrate tags"] },
+    { pattern: /\b(apps?|integrations?)\b/i, expand: ["get apps", "v1/apps", "integrations"] },
+    {
+      pattern: /\bplaybooks?\b/i,
+      expand: ["get playbook", "v1/playbook/filter", "list playbooks"],
+    },
+    { pattern: /\b(version|release)\b/i, expand: ["product release version", "release_version"] },
+    { pattern: /\b(ping|connectivity|connection|credentials?)\b/i, expand: ["test connectivity"] },
+  ],
+  cftr: [
+    { pattern: /\b(incidents?|cases?)\b/i, expand: ["get list of incidents", "v1/incident", "cftrapi"] },
+    { pattern: /\b(ping|connectivity|connection|credentials?)\b/i, expand: ["test connectivity"] },
+  ],
+};
+
 /** Expand casual phrasing into a retrieval query enriched with canonical terms. */
 export function expandQueryForRetrieval(query: string, productId?: string): string {
   const extra = new Set<string>();
@@ -82,6 +123,12 @@ export function expandQueryForRetrieval(query: string, productId?: string): stri
     if (productId === "csap") extra.add("collaborate analyst portal");
     if (productId === "orchestrate") extra.add("cyware orchestrate playbook");
     if (productId === "cftr") extra.add("cftr incident case");
+
+    for (const rule of PRODUCT_EXPANSIONS[productId] ?? []) {
+      if (rule.pattern.test(query)) {
+        for (const term of rule.expand) extra.add(term);
+      }
+    }
   }
 
   if (extra.size === 0) return query;

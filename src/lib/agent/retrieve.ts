@@ -190,3 +190,33 @@ export function filterByProducts(scored: ScoredChunk[], productIds: string[]): S
   const set = new Set(productIds);
   return scored.filter((c) => set.has(c.productId ?? "ctix"));
 }
+
+const LIST_QUERY_PATTERN = /\b(list|get|show|fetch|retrieve|view|all)\b/i;
+const LIST_ENDPOINT_PATTERN = /\b(list|get)\b/i;
+
+/** Boost endpoint chunks when the query asks to list/get/show and title/path match. */
+export function boostEndpointMatches(
+  scored: ScoredChunk[],
+  query: string,
+  productId?: string
+): ScoredChunk[] {
+  const wantsList = LIST_QUERY_PATTERN.test(query);
+  const ENDPOINT_KIND_BOOST = 0.12;
+  const LIST_TITLE_BOOST = 0.18;
+  const PRODUCT_MATCH_BOOST = 0.08;
+
+  return scored
+    .map((c) => {
+      let boost = 0;
+      if (c.kind === "endpoint") boost += ENDPOINT_KIND_BOOST;
+      if (wantsList && c.kind === "endpoint") {
+        const hay = `${c.title} ${c.path ?? ""} ${c.slug}`.toLowerCase();
+        if (LIST_ENDPOINT_PATTERN.test(hay)) boost += LIST_TITLE_BOOST;
+      }
+      if (productId && productId !== "all" && (c.productId ?? "ctix") === productId) {
+        boost += PRODUCT_MATCH_BOOST;
+      }
+      return boost > 0 ? { ...c, score: c.score + boost } : c;
+    })
+    .sort((a, b) => b.score - a.score);
+}

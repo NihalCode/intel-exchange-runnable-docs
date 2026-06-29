@@ -47,6 +47,7 @@ import {
   scoredChunksByIds,
   boostByProducts,
   filterByProducts,
+  boostEndpointMatches,
 } from "./retrieve";
 import { getPineconeConfig, queryPinecone } from "./pinecone";
 import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./normalize-query";
@@ -302,9 +303,15 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     scope
   ).slice(0, topK);
 
-  if (scope.filterMode === "multi") {
-    scored = boostByProducts(scored, scope.productIds).slice(0, topK);
+  if (scope.filterMode === "single") {
+    scored = boostEndpointMatches(scored, retrievalQuery, scope.primaryProductId);
+  } else if (scope.filterMode === "multi") {
+    scored = boostByProducts(scored, scope.productIds);
+    scored = boostEndpointMatches(scored, retrievalQuery);
+  } else {
+    scored = boostEndpointMatches(scored, retrievalQuery);
   }
+  scored = scored.slice(0, topK);
 
   // Preferred path: embed query, then retrieve from Pinecone. Falls back to the
   // local hybrid/lexical index whenever creds are missing or any call fails, so
@@ -363,7 +370,6 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
     if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {
       plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
-      plan = enforceProductDocPlan(plan, query, scored, activeProductId);
     }
 
     if (activeProductId === "ctix" && !isPingQuery(query)) {
@@ -394,6 +400,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           ),
         };
       }
+    }
+
+    if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {
+      plan = enforceProductDocPlan(plan, query, scored, activeProductId);
     }
   }
 
