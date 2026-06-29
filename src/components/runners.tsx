@@ -644,9 +644,9 @@ function HttpRunner({ code, request }: { code: string; request?: RunnableRequest
               {tagSummary}
             </div>
           ) : null}
-          {responseRunHint(result.status, result.body, baseUrl) ? (
+          {responseRunHint(result.status, result.body, baseUrl, productId) ? (
             <div className="mb-2 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-              {responseRunHint(result.status, result.body, baseUrl)}
+              {responseRunHint(result.status, result.body, baseUrl, productId)}
             </div>
           ) : null}
           <Pre text={maskText(formatMaybeJson(result.body), secretValues)} />

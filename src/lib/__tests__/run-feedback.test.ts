@@ -31,4 +31,16 @@ describe("run-feedback", () => {
       /API Settings/
     );
   });
+
+  it("shows CSAP-specific 404 hint, not CFTR", () => {
+    const body = "<title>Not Found</title><h1>Not Found</h1>";
+    const hint = responseRunHint(
+      404,
+      body,
+      "https://cs-test.cyware.com/api/",
+      "csap"
+    );
+    expect(hint).toMatch(/csap\/v1/i);
+    expect(hint).not.toMatch(/cftrapi\.cyware\.com/);
+  });
 });

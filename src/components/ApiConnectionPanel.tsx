@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { hasProductCredentials } from "@/lib/api-credentials";
 import { baseUrlForProduct } from "@/lib/products/auth";
 import { productConnectionUi, type ConnectionFieldDef } from "@/lib/products/connection-ui";
+import { docsHostWarning } from "@/lib/run-feedback";
 import { isMutating } from "@/lib/security";
 import { useProduct } from "./ProductContext";
 import { useRunSettings } from "./RunSettings";
@@ -76,6 +77,7 @@ export function ApiConnectionPanel({
 
   const connected = hasProductCredentials(product.productId, getCredential);
   const mutating = method ? isMutating(method) : false;
+  const docsHostNote = docsHostWarning(product.productId, baseUrl);
 
   const statusLabel = connected
     ? authReady || !ui.usesOpenApi
@@ -148,6 +150,12 @@ export function ApiConnectionPanel({
         {" · "}
         Get credentials from {ui.credentialSource}.
       </p>
+
+      {docsHostNote ? (
+        <div className="mb-2.5 rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-[11px] text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+          {docsHostNote}
+        </div>
+      ) : null}
 
       <label className="mb-2 flex flex-col gap-1 text-xs">
         <span className="font-medium text-zinc-700 dark:text-zinc-300">Base URL</span>

@@ -186,8 +186,8 @@ export function PyodideRunner({ code }: { code: string }) {
     const text = logs.join("\n");
     const statusMatch = text.match(/^(\d{3})\b/m);
     const status = statusMatch ? Number(statusMatch[1]) : 0;
-    return responseRunHint(status, text, baseUrl);
-  }, [logs, baseUrl]);
+    return responseRunHint(status, text, baseUrl, productId);
+  }, [logs, baseUrl, productId]);
 
   const buildCreds = () => {
     const c: Record<string, string> = {};
