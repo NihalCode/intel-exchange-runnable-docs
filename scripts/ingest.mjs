@@ -148,9 +148,29 @@ function fileNameForSlug(slug) {
   return slug.replace(/\//g, "__") + ".json";
 }
 
+function docsRefererFor(product) {
+  if (product.docsReferer) return product.docsReferer;
+  return `${product.docsOrigin}/${product.docsProject}/`;
+}
+
 async function fetchText(url, product, tries = 3) {
-  const headers = { "User-Agent": UA, Accept: "text/html,text/plain,*/*" };
-  if (product.docsReferer) headers.Referer = product.docsReferer;
+  const referer = docsRefererFor(product);
+  let origin;
+  try {
+    origin = new URL(referer).origin;
+  } catch {
+    origin = product.docsOrigin;
+  }
+  const headers = {
+    "User-Agent": UA,
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,text/plain,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    Referer: referer,
+    Origin: origin,
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+  };
   for (let attempt = 1; attempt <= tries; attempt++) {
     try {
       const res = await fetch(url, { headers });

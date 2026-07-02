@@ -68,6 +68,8 @@ export const PRODUCTS: ApiProduct[] = [
     docsSourceType: "theneo-md",
     docsOrigin: "https://ctixapiv3.cyware.com",
     docsProject: "intel-exchange-api-reference",
+    docsReferer:
+      "https://ctixapiv3.cyware.com/intel-exchange-api-reference/intel-exchange-api-reference",
     allowedBaseUrlPatterns: [/https:\/\/[^/]*\.cyware\.com\/ctixapi/i],
     indexed: true,
     pageCount: 527,

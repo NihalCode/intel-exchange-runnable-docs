@@ -3,12 +3,16 @@
 import { useState } from "react";
 
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
+import {
+  POSTMAN_PASTE_INSTRUCTIONS,
+  SAMPLE_POSTMAN_COLLECTION_JSON,
+} from "@/lib/developer/postman-sample";
 
 const PRODUCTS = [
-  { id: "ctix", label: "CTIX / Intel Exchange" },
-  { id: "csap", label: "CSAP" },
-  { id: "orchestrate", label: "Cyware Orchestrate" },
-  { id: "cftr", label: "CFTR" },
+  { id: "ctix", label: "CTIX / Intel Exchange", syncNote: "Theneo (ctixapiv3.cyware.com)" },
+  { id: "csap", label: "CSAP", syncNote: "Theneo (csapapi.cyware.com)" },
+  { id: "orchestrate", label: "Cyware Orchestrate", syncNote: "Theneo (orchestrateapi.cyware.com)" },
+  { id: "cftr", label: "CFTR", syncNote: "Public Postman API (usually works on Vercel)" },
 ];
 
 export function ContentManagementPanel() {
@@ -22,6 +26,8 @@ export function ContentManagementPanel() {
   const [error, setError] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState("");
 
+  const selectedProduct = PRODUCTS.find((p) => p.id === productId) ?? PRODUCTS[0]!;
+
   async function runDocSync() {
     if (!canSync) return;
     setBusy(true);
@@ -29,9 +35,18 @@ export function ContentManagementPanel() {
     setLastResult("");
     try {
       const res = await fetch(`/api/products/${productId}/ingest`, { method: "POST" });
-      const data = await res.json();
+      const text = await res.text();
+      let data: { error?: string; detail?: string };
+      try {
+        data = JSON.parse(text) as typeof data;
+      } catch {
+        throw new Error(text.slice(0, 200) || `Sync failed (HTTP ${res.status})`);
+      }
       setLastResult(JSON.stringify(data, null, 2));
-      if (!res.ok) throw new Error(data.error ?? "Sync failed");
+      if (!res.ok) {
+        const msg = [data.error, data.detail].filter(Boolean).join(" — ");
+        throw new Error(msg || "Sync failed");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Sync failed");
     } finally {
@@ -45,15 +60,31 @@ export function ContentManagementPanel() {
     setError(null);
     setLastResult("");
     try {
-      const collection = JSON.parse(collectionText);
+      let collection: unknown;
+      try {
+        collection = JSON.parse(collectionText);
+      } catch {
+        throw new Error(
+          "The text box must contain valid Postman Collection v2.1 JSON (full file contents starting with { and \"info\")."
+        );
+      }
       const res = await fetch("/api/developer/postman", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId, collection, write }),
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data: { error?: string; detail?: string };
+      try {
+        data = JSON.parse(text) as typeof data;
+      } catch {
+        throw new Error(text.slice(0, 200) || `Import failed (HTTP ${res.status})`);
+      }
       setLastResult(JSON.stringify(data, null, 2));
-      if (!res.ok) throw new Error(data.error ?? "Import failed");
+      if (!res.ok) {
+        const msg = [data.error, data.detail].filter(Boolean).join(" — ");
+        throw new Error(msg || "Parse/import failed");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Parse/import failed");
     } finally {
@@ -73,8 +104,6 @@ export function ContentManagementPanel() {
     );
   }
 
-  const postmanProducts = PRODUCTS;
-
   return (
     <div className="space-y-8" data-testid="content-management">
       <p className="text-xs text-zinc-600 dark:text-zinc-400">
@@ -85,7 +114,9 @@ export function ContentManagementPanel() {
         <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h2 className="text-sm font-semibold">Sync documentation</h2>
           <p className="mt-1 text-xs text-zinc-500">
-            Re-fetch documentation from the configured source URLs and rebuild local page files.
+            Re-fetch documentation from upstream ({selectedProduct.syncNote}). On Vercel, output is
+            written to <code className="font-mono">/tmp</code> only — it does not update the live
+            site until you commit and redeploy.
           </p>
           <label className="mt-3 block text-xs">
             <span className="text-zinc-500">Product</span>
@@ -102,6 +133,12 @@ export function ContentManagementPanel() {
               ))}
             </select>
           </label>
+          {productId !== "cftr" ? (
+            <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
+              If sync returns HTTP 403, Theneo is blocking this cloud server — use{" "}
+              <strong>Import Postman collection</strong> below instead.
+            </p>
+          ) : null}
           <button
             type="button"
             disabled={busy}
@@ -117,9 +154,7 @@ export function ContentManagementPanel() {
       {canManageSources ? (
         <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h2 className="text-sm font-semibold">Import Postman collection</h2>
-          <p className="mt-1 text-xs text-zinc-500">
-            Preview or import a Postman Collection v2.1 JSON as a documentation source.
-          </p>
+          <p className="mt-1 text-xs text-zinc-500">{POSTMAN_PASTE_INSTRUCTIONS}</p>
           <label className="mt-3 block text-xs">
             <span className="text-zinc-500">Product</span>
             <select
@@ -128,7 +163,7 @@ export function ContentManagementPanel() {
               className="mt-1 block rounded border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
               data-testid="postman-product"
             >
-              {postmanProducts.map((p) => (
+              {PRODUCTS.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.label}
                 </option>
@@ -138,12 +173,20 @@ export function ContentManagementPanel() {
           <textarea
             value={collectionText}
             onChange={(e) => setCollectionText(e.target.value)}
-            placeholder="Paste Postman Collection v2.1 JSON…"
+            placeholder='Paste full Postman export JSON here, e.g. {"info":{"name":"My API","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},...}'
             rows={10}
             className="mt-3 w-full rounded border border-zinc-300 bg-white p-2 font-mono text-[11px] dark:border-zinc-700 dark:bg-zinc-900"
             data-testid="postman-collection"
           />
           <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setCollectionText(SAMPLE_POSTMAN_COLLECTION_JSON)}
+              className="rounded border border-zinc-300 px-3 py-1.5 text-xs font-medium dark:border-zinc-700"
+            >
+              Insert sample JSON
+            </button>
             <button
               type="button"
               disabled={busy || !collectionText.trim()}
@@ -163,7 +206,7 @@ export function ContentManagementPanel() {
                 Import &amp; write docs
               </button>
             ) : (
-              <p className="text-xs text-zinc-500 self-center">
+              <p className="self-center text-xs text-zinc-500">
                 Import requires sync permission (contact an admin).
               </p>
             )}

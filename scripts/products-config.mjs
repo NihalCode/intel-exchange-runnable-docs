@@ -9,7 +9,8 @@ export const PRODUCTS = [
     productName: "Intel Exchange",
     docsOrigin: "https://ctixapiv3.cyware.com",
     docsProject: "intel-exchange-api-reference",
-    docsReferer: undefined,
+    docsReferer:
+      "https://ctixapiv3.cyware.com/intel-exchange-api-reference/intel-exchange-api-reference",
     docsSourceType: "theneo-md",
     defaultBaseUrl: "https://tenantname.cyware.com/ctixapi",
     /** Legacy path — CTIX pages live at src/content/pages/ */

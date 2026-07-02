@@ -10,6 +10,7 @@ import {
 } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
+import { formatIngestFailure } from "@/lib/developer/ingest-errors";
 import {
   ingestSpawnEnv,
   isVercelRuntime,
@@ -26,8 +27,22 @@ export const dynamic = "force-dynamic";
 
 /** POST — parse Postman collection JSON (preview or import). */
 export async function POST(req: Request) {
-  const request = req as NextRequest;
+  try {
+    return await handlePostman(req as NextRequest);
+  } catch (e) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Postman route failed.",
+        detail: e instanceof Error ? e.message : String(e),
+      },
+      { status: 500 }
+    );
+  }
+}
 
+async function handlePostman(req: NextRequest) {
+  const request = req;
   let body: { productId?: string; collection?: unknown; write?: boolean };
   try {
     body = (await req.json()) as typeof body;
@@ -132,10 +147,16 @@ export async function POST(req: Request) {
   );
 
   if (result.code !== 0) {
+    const { error, detail } = formatIngestFailure({
+      stderr: result.stderr,
+      stdout: result.stdout,
+      productId,
+    });
     return NextResponse.json(
       {
         ok: false,
-        error: "Ingestion failed.",
+        error,
+        detail,
         stdout: result.stdout.slice(-3000),
         stderr: result.stderr.slice(-1000),
         parsedSummary: {
@@ -143,7 +164,7 @@ export async function POST(req: Request) {
           records: parsedEndpointsToPageRecords(parsed).length,
         },
       },
-      { status: 500 }
+      { status: 502 }
     );
   }
 

@@ -6,6 +6,7 @@ import { guardSyncDocs } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { requireDeveloperAccess } from "@/lib/developer/access";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
+import { formatIngestFailure } from "@/lib/developer/ingest-errors";
 import {
   ingestSpawnEnv,
   isVercelRuntime,
@@ -58,9 +59,14 @@ export async function POST(
   );
 
   if (result.code !== 0) {
+    const { error, detail } = formatIngestFailure({
+      stderr: result.stderr,
+      stdout: result.stdout,
+      productId,
+    });
     return NextResponse.json(
-      { ok: false, error: "Ingestion failed", stdout: result.stdout, stderr: result.stderr },
-      { status: 500 }
+      { ok: false, error, detail, stdout: result.stdout, stderr: result.stderr },
+      { status: 502 }
     );
   }
 
