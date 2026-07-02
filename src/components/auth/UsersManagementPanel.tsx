@@ -95,12 +95,13 @@ export function UsersManagementPanel() {
   }, []);
 
   useEffect(() => {
+    if (state.loading) return;
     if (canManage) void load();
     else {
       setLoading(false);
       setError("You do not have permission to manage users.");
     }
-  }, [canManage, load]);
+  }, [canManage, load, state.loading]);
 
   async function createInvite(e: React.FormEvent) {
     e.preventDefault();
@@ -180,7 +181,7 @@ export function UsersManagementPanel() {
     setBusy(null);
   }
 
-  if (loading) {
+  if (state.loading || loading) {
     return <p className="text-sm text-zinc-500">Loading users…</p>;
   }
 
