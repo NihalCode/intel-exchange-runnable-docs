@@ -8,6 +8,7 @@ test.describe("invite-only login UX", () => {
     await expect(page.getByTestId("login-invite-note")).toContainText(
       "Ask a documentation workspace administrator for an invite"
     );
+    await expect(page.getByPlaceholder("Filter endpoints…")).toHaveCount(0);
     const body = await page.locator("body").innerText();
     expect(body.toLowerCase()).not.toContain("sign up");
     expect(body.toLowerCase()).not.toContain("create account");

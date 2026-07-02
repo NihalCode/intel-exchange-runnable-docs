@@ -6,10 +6,32 @@ import { useEffect, useState } from "react";
 import type { NavNode } from "@/lib/types";
 import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 import { productConnectionUi } from "@/lib/products/connection-ui";
+import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { ProductSelector, useProduct } from "./ProductContext";
 import { ProductRunSettingsSync, useRunSettings } from "./RunSettings";
 import { Sidebar } from "./Sidebar";
+
+function WorkspaceSettingsLink() {
+  const pathname = usePathname();
+  const { state, hasPermission } = useDocumentationAuth();
+  const show = !state.loading && hasPermission("manage_users");
+  if (!show) return null;
+
+  const active = pathname.startsWith("/settings");
+  return (
+    <Link
+      href="/settings/users"
+      className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
+        active
+          ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      }`}
+    >
+      Settings
+    </Link>
+  );
+}
 
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
@@ -129,6 +151,8 @@ export function AppShell({
         >
           AI Agent
         </Link>
+
+        <WorkspaceSettingsLink />
 
         <HeaderBar />
         <ThemeToggle />

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/AppShell";
+import { ConditionalAppShell } from "@/components/ConditionalAppShell";
 import { AgentChatSession } from "@/components/AgentChatSession";
 import { DocumentationAuthProvider } from "@/components/auth/DocumentationAuthProvider";
 import { ProductProvider } from "@/components/ProductContext";
@@ -38,7 +38,7 @@ export default function RootLayout({
           <ProductProvider>
             <DocumentationAuthProvider>
               <AgentChatSession>
-                <AppShell nav={manifest.nav}>{children}</AppShell>
+                <ConditionalAppShell nav={manifest.nav}>{children}</ConditionalAppShell>
               </AgentChatSession>
             </DocumentationAuthProvider>
           </ProductProvider>

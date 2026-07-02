@@ -30,17 +30,26 @@ export function findTransactionCookie(
   return match ?? null;
 }
 
+function escapeHtmlAttr(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 /** Browsers often drop Set-Cookie on 307 redirects to Auth0 — serve 200 + client redirect instead. */
 export function buildLoginBridgeResponse(authResponse: NextResponse, authorizeUrl: string): NextResponse {
+  const safeUrl = escapeHtmlAttr(authorizeUrl);
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="refresh" content="0;url=${encodeURI(authorizeUrl)}" />
+  <meta http-equiv="refresh" content="0;url=${safeUrl}" />
   <title>Redirecting to sign in…</title>
 </head>
 <body>
-  <p>Redirecting to sign in… <a href="${encodeURI(authorizeUrl)}">Continue</a></p>
+  <p>Redirecting to sign in… <a href="${safeUrl}">Continue</a></p>
   <script>window.location.replace(${JSON.stringify(authorizeUrl)});</script>
 </body>
 </html>`;

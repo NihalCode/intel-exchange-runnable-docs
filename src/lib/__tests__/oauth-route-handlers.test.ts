@@ -46,19 +46,22 @@ describe("oauth route helpers", () => {
     ).toBe("v2");
   });
 
-  it("builds HTML bridge with 200 and preserves cookies", () => {
+  it("builds HTML bridge with 200 and preserves cookies", async () => {
     const authResponse = NextResponse.redirect("https://tenant.us.auth0.com/authorize?state=s1");
     authResponse.cookies.set("__txn_", "value123", { httpOnly: true, sameSite: "lax", path: "/" });
 
-    const bridge = buildLoginBridgeResponse(
-      authResponse,
-      "https://tenant.us.auth0.com/authorize?state=s1"
-    );
+    const authorizeUrl =
+      "https://tenant.us.auth0.com/authorize?redirect_uri=https%3A%2F%2Fapp.example%2Fauth%2Fcallback&state=s1";
+    const bridge = buildLoginBridgeResponse(authResponse, authorizeUrl);
 
     expect(bridge.status).toBe(200);
     expect(bridge.headers.get("content-type")).toContain("text/html");
     expect(bridge.cookies.get("__txn_")?.value).toBe("value123");
     expect(bridge.headers.getSetCookie().some((c) => c.startsWith("__txn_=value123"))).toBe(true);
+
+    const html = await bridge.text();
+    expect(html).toContain("redirect_uri=https%3A%2F%2Fapp.example%2Fauth%2Fcallback");
+    expect(html).not.toContain("redirect_uri=https%253A");
   });
 
   it("injects stored transaction cookie on callback when missing", async () => {
