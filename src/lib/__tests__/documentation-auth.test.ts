@@ -3,8 +3,14 @@ import path from "node:path";
 import os from "node:os";
 import fs from "node:fs";
 
+import { POST as inviteCheckPost } from "@/app/api/auth/invite-check/route";
 import { normalizeEmail, isValidEmail } from "@/lib/documentation-auth/email-utils";
+import {
+  bootstrapOwnerEmail,
+  isBootstrapOwnerEmail,
+} from "@/lib/documentation-auth/env";
 import { hashInviteToken, generateInviteToken } from "@/lib/documentation-auth/invite-tokens";
+import * as inviteGate from "@/lib/documentation-auth/invite-gate";
 import {
   hasPermission,
   canManageUsers,
@@ -63,6 +69,7 @@ describe("invite gate", () => {
   afterEach(() => {
     resetDatabaseConnection();
     setTestDatabasePath(null);
+    delete process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL;
     try {
       fs.unlinkSync(dbPath);
     } catch {
@@ -224,6 +231,92 @@ describe("invite gate", () => {
     expect(result.allowed).toBe(false);
     expect(result.reason).toBe("disabled");
   });
+
+  it("bootstrap owner overrides expired invite", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    await createInvite({
+      email: "owner@company.com",
+      role: "viewer",
+      invitedByUserId: "admin-id",
+      expiryDays: -1,
+    });
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.role).toBe("owner");
+    expect(result.reason).toBe("valid_invite");
+  });
+
+  it("bootstrap owner overrides pending valid invite (uses owner role)", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    await createInvite({
+      email: "owner@company.com",
+      role: "developer",
+      invitedByUserId: "admin-id",
+    });
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.role).toBe("owner");
+    expect(result.reason).toBe("valid_invite");
+  });
+
+  it("bootstrap owner defers to active user record with different role", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    await createUserFromInvite({
+      auth0UserId: "auth0|owner",
+      email: "owner@company.com",
+      role: "viewer",
+    });
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.reason).toBe("active_user");
+    expect(result.role).toBe("viewer");
+  });
+
+  it("matches bootstrap owner when env email is uppercase", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "Owner@Company.COM";
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.role).toBe("owner");
+  });
+});
+
+describe("isBootstrapOwnerEmail", () => {
+  beforeEach(() => {
+    delete process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL;
+  });
+
+  afterEach(() => {
+    delete process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL;
+  });
+
+  it("returns false when env is unset", () => {
+    expect(bootstrapOwnerEmail()).toBeNull();
+    expect(isBootstrapOwnerEmail("owner@company.com")).toBe(false);
+  });
+
+  it("matches case-insensitively and trims", () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "  Owner@Company.COM ";
+    expect(bootstrapOwnerEmail()).toBe("owner@company.com");
+    expect(isBootstrapOwnerEmail("owner@company.com")).toBe(true);
+    expect(isBootstrapOwnerEmail("  OWNER@COMPANY.COM ")).toBe(true);
+    expect(isBootstrapOwnerEmail("other@company.com")).toBe(false);
+  });
+
+  it("strips wrapping quotes from env value", () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = '"owner@company.com"';
+    expect(bootstrapOwnerEmail()).toBe("owner@company.com");
+    expect(isBootstrapOwnerEmail("owner@company.com")).toBe(true);
+  });
 });
 
 describe("permissions", () => {
@@ -285,11 +378,162 @@ describe("audit logs", () => {
 });
 
 describe("invite-check endpoint security", () => {
+  const SHARED_SECRET = "test-shared-secret-at-least-32-chars-long";
+  let dbPath: string;
+
+  beforeEach(async () => {
+    resetRateLimits();
+    dbPath = path.join(os.tmpdir(), `invite-check-test-${Date.now()}-${Math.random()}.db`);
+    setTestDatabasePath(dbPath);
+    resetDatabaseConnection();
+    await clearAllDocumentationAuthData();
+    process.env.AUTH0_ACTION_SHARED_SECRET = SHARED_SECRET;
+    delete process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL;
+  });
+
+  afterEach(() => {
+    resetDatabaseConnection();
+    setTestDatabasePath(null);
+    delete process.env.AUTH0_ACTION_SHARED_SECRET;
+    delete process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL;
+    vi.restoreAllMocks();
+    try {
+      fs.unlinkSync(dbPath);
+    } catch {
+      /* ignore */
+    }
+  });
+
+  function inviteCheckRequest(
+    body: Record<string, unknown>,
+    headers: Record<string, string> = {}
+  ): Request {
+    return new Request("http://localhost/api/auth/invite-check", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${SHARED_SECRET}`,
+        ...headers,
+      },
+      body: JSON.stringify(body),
+    });
+  }
+
   it("does not log tokens in invite generation", () => {
     const spy = vi.spyOn(console, "log");
     const { rawToken } = generateInviteToken();
     expect(rawToken).toBeTruthy();
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
+  });
+
+  it("returns 503 when shared secret is not configured", async () => {
+    delete process.env.AUTH0_ACTION_SHARED_SECRET;
+    const response = await inviteCheckPost(
+      inviteCheckRequest({ email: "user@company.com" })
+    );
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: "Not configured" });
+  });
+
+  it("returns 401 for missing or wrong secret", async () => {
+    const missing = await inviteCheckPost(
+      new Request("http://localhost/api/auth/invite-check", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email: "user@company.com" }),
+      })
+    );
+    expect(missing.status).toBe(401);
+
+    const wrong = await inviteCheckPost(
+      inviteCheckRequest(
+        { email: "user@company.com" },
+        { authorization: "Bearer wrong-secret-value" }
+      )
+    );
+    expect(wrong.status).toBe(401);
+    expect(await wrong.json()).toEqual({ error: "Unauthorized" });
+  });
+
+  it("accepts x-auth0-action-secret header", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    const response = await inviteCheckPost(
+      new Request("http://localhost/api/auth/invite-check", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-auth0-action-secret": SHARED_SECRET,
+        },
+        body: JSON.stringify({ email: "owner@company.com" }),
+      })
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      allowed: true,
+      reason: "valid_invite",
+      role: "owner",
+    });
+  });
+
+  it("allows bootstrap owner via invite-check route", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    const response = await inviteCheckPost(
+      inviteCheckRequest({ email: "owner@company.com" })
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      allowed: true,
+      reason: "valid_invite",
+      role: "owner",
+    });
+  });
+
+  it("falls back to bootstrap owner when checkEmailAccess throws", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    vi.spyOn(inviteGate, "checkEmailAccess").mockRejectedValue(new Error("DB unavailable"));
+
+    const response = await inviteCheckPost(
+      inviteCheckRequest({ email: "owner@company.com" })
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      allowed: true,
+      reason: "valid_invite",
+      role: "owner",
+    });
+  });
+
+  it("returns 503 when checkEmailAccess throws for non-bootstrap email", async () => {
+    vi.spyOn(inviteGate, "checkEmailAccess").mockRejectedValue(new Error("DB unavailable"));
+
+    const response = await inviteCheckPost(
+      inviteCheckRequest({ email: "other@company.com" })
+    );
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: "Database unavailable" });
+  });
+
+  it("returns blocked result for revoked invite on non-bootstrap email", async () => {
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    const { invite } = await createInvite({
+      email: "revoked@company.com",
+      role: "viewer",
+      invitedByUserId: "admin-id",
+    });
+    await revokeInvite(invite.id);
+
+    const response = await inviteCheckPost(
+      inviteCheckRequest({ email: "revoked@company.com" })
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      allowed: false,
+      reason: "not_invited",
+    });
   });
 });
