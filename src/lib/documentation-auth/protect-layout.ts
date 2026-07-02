@@ -13,5 +13,5 @@ export async function requireProtectedWorkspace(): Promise<void> {
     redirect(accessDeniedPath(result.accessDenied.reason));
   }
 
-  redirect("/auth/login");
+  redirect("/sign-in");
 }

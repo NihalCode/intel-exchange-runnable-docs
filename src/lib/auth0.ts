@@ -15,7 +15,7 @@ import {
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
 
 function loginErrorRedirect(appBaseUrl: string, code: string, message?: string): NextResponse {
-  const url = new URL("/auth/login", appBaseUrl);
+  const url = new URL("/sign-in", appBaseUrl);
   url.searchParams.set("error", code);
   if (message) {
     url.searchParams.set("message", message);
@@ -79,5 +79,31 @@ function createAuth0Client(): Auth0Client {
   });
 }
 
-/** Auth0 SDK client — only instantiated when Auth0 env vars are configured. */
-export const auth0 = authConfigured() ? createAuth0Client() : null;
+let auth0Client: Auth0Client | null | undefined;
+
+/** Lazy Auth0 client — env vars may be unavailable at module load during build. */
+export function getAuth0(): Auth0Client | null {
+  if (auth0Client !== undefined) return auth0Client;
+  try {
+    auth0Client = authConfigured() ? createAuth0Client() : null;
+  } catch {
+    auth0Client = null;
+  }
+  return auth0Client;
+}
+
+/** @deprecated Prefer getAuth0() for runtime initialization. */
+export const auth0 = {
+  get middleware() {
+    const client = getAuth0();
+    if (!client) {
+      return () => NextResponse.json({ error: "Auth0 is not configured." }, { status: 503 });
+    }
+    return client.middleware.bind(client);
+  },
+  async getSession(...args: Parameters<Auth0Client["getSession"]>) {
+    const client = getAuth0();
+    if (!client) return null;
+    return client.getSession(...args);
+  },
+} as Pick<Auth0Client, "middleware" | "getSession">;

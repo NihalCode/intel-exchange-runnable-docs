@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 import { isAuthEnvComplete } from "@/lib/documentation-auth/env";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
-import { auth0 } from "@/lib/auth0";
+import { getAuth0 } from "@/lib/auth0";
 
 function authEnabled(): boolean {
   if (isAuthDisabled()) return false;
@@ -15,6 +15,7 @@ function authEnabled(): boolean {
 export async function getMiddlewareAuthUser(
   request: NextRequest
 ): Promise<{ sub: string; email: string } | null> {
+  const auth0 = getAuth0();
   if (!authEnabled() || !auth0) return null;
 
   const authSession = await auth0.getSession(request);

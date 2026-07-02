@@ -16,7 +16,7 @@ import type {
   DocumentationPermission,
   DocumentationRole,
 } from "@/lib/documentation-auth/types";
-import { auth0 } from "@/lib/auth0";
+import { getAuth0 } from "@/lib/auth0";
 import {
   acceptInvite,
   createUserFromInvite,
@@ -80,6 +80,7 @@ function mockSession(request?: NextRequest): AppSession {
 }
 
 async function resolveAuth0User(request?: NextRequest) {
+  const auth0 = getAuth0();
   if (!auth0) return null;
   const authSession = request
     ? await auth0.getSession(request)
@@ -125,7 +126,7 @@ export async function getAppSessionResult(
     return { session: mockSession(request) };
   }
 
-  if (!auth0) {
+  if (!getAuth0()) {
     return { session: null };
   }
 

@@ -7,7 +7,8 @@ const ERROR_COPY: Record<string, string> = {
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
 };
 
-function connectionUrl(connection?: string, returnTo?: string): string {
+/** Auth0 SDK route — must not be a Next.js page or OAuth never starts. */
+function auth0LoginUrl(connection?: string, returnTo?: string): string {
   const params = new URLSearchParams();
   if (connection) params.set("connection", connection);
   if (returnTo) params.set("returnTo", returnTo);
@@ -15,7 +16,7 @@ function connectionUrl(connection?: string, returnTo?: string): string {
   return qs ? `/auth/login?${qs}` : "/auth/login";
 }
 
-export default async function LoginPage({
+export default async function SignInPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; message?: string; returnTo?: string }>;
@@ -64,14 +65,14 @@ export default async function LoginPage({
         ) : null}
         <div className="mt-6 flex flex-col gap-3">
           <a
-            href={connectionUrl(googleConnection || "google-oauth2", returnTo)}
+            href={auth0LoginUrl(googleConnection || "google-oauth2", returnTo)}
             data-testid="login-continue-google"
             className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
           >
             Continue with Google
           </a>
           <a
-            href={connectionUrl(emailConnection, returnTo)}
+            href={auth0LoginUrl(emailConnection, returnTo)}
             data-testid="login-continue-email"
             className="inline-flex items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
           >

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("invite-only login UX", () => {
   test("login page has no signup copy", async ({ page }) => {
-    await page.goto("/auth/login");
+    await page.goto("/sign-in");
     await expect(page.getByTestId("login-continue-google")).toBeVisible();
     await expect(page.getByTestId("login-continue-email")).toBeVisible();
     await expect(page.getByTestId("login-invite-note")).toContainText(

@@ -115,7 +115,7 @@ Only the SHA-256 hash of the token is stored. Raw tokens are never logged.
 ### Uninvited Google login
 
 1. Use a Google account that has **no** invite in the database
-2. Click **Continue with Google** on `/auth/login`
+2. Click **Continue with Google** on `/sign-in`
 3. Auth0 Action should deny with `invite_required`, or app redirects to `/access/invite-required`
 
 ### Invited company email login

@@ -1,11 +1,12 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { auth0 } from "@/lib/auth0";
+import { getAuth0 } from "@/lib/auth0";
 
 export const runtime = "nodejs";
 
 async function handleAuth(request: NextRequest): Promise<NextResponse> {
+  const auth0 = getAuth0();
   if (!auth0) {
     return NextResponse.json({ error: "Auth0 is not configured." }, { status: 503 });
   }

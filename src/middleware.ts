@@ -5,10 +5,11 @@ import {
   getMiddlewareAuthUser,
   isMiddlewareAuthEnabled,
 } from "@/lib/documentation-auth/middleware-auth";
-import { auth0 } from "@/lib/auth0";
+import { getAuth0 } from "@/lib/auth0";
 
 const PUBLIC_PATHS = [
   "/auth",
+  "/sign-in",
   "/access",
   "/invite",
 ];
@@ -23,7 +24,6 @@ const PUBLIC_API_EXACT = [
 const PUBLIC_API_PREFIXES = ["/api/products"];
 
 function isPublicPath(pathname: string): boolean {
-  if (pathname === "/") return true;
   return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
@@ -33,6 +33,7 @@ function isPublicApiPath(pathname: string): boolean {
 }
 
 function isProtectedPath(pathname: string): boolean {
+  if (pathname === "/") return true;
   if (pathname.startsWith("/docs")) return true;
   if (pathname.startsWith("/agent")) return true;
   if (pathname.startsWith("/developer")) return true;
@@ -51,6 +52,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl;
+  const auth0 = getAuth0();
 
   if (!isProtectedPath(pathname) && !pathname.startsWith("/api/")) {
     if (isPublicPath(pathname)) {
@@ -73,7 +75,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!authUser && isProtectedPath(pathname)) {
-    const login = new URL("/auth/login", request.url);
+    const login = new URL("/sign-in", request.url);
     login.searchParams.set("returnTo", pathname);
     return NextResponse.redirect(login);
   }
