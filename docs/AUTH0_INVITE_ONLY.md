@@ -43,6 +43,27 @@ Never commit real credentials. Never log Auth0 tokens or invite tokens.
    - `http://localhost:3000`
 6. Set **Allowed Web Origins** to your app base URL
 
+## OAuth transaction cookie fix (`invalid_state`)
+
+Browsers often drop the Auth0 transaction cookie (`__txn_*`) on immediate **307 redirects** to Auth0. That causes **"The state parameter is invalid"** on `/auth/callback`.
+
+**Permanent fix:**
+
+1. **`/auth/*` routes** run on a **Node.js route handler** (`src/app/auth/[...slug]/route.ts`), not the edge proxy.
+2. **`/auth/login`** returns a **200 HTML bridge page** that sets the transaction cookie before redirecting to Auth0 (instead of a bare 307).
+3. If the cookie is still missing on callback, the app **restores it from storage** (`oauth_transactions` table when `DATABASE_URL` is set, or `.data/oauth-transactions.json` locally).
+
+The proxy matcher excludes `/auth` so OAuth never runs on the edge layer. **Allowed Callback URLs** remain `{APP_BASE_URL}/auth/callback` — no Auth0 dashboard change required if already configured.
+
+| Cause | Fix |
+|-------|-----|
+| `APP_BASE_URL` / `AUTH0_BASE_URL` wrong on Vercel | Set exactly your production URL (no trailing slash). Must match Auth0 Allowed Callback URLs. |
+| `AUTH0_SECRET` changed mid-login or too short | Use a stable 32+ character secret. Do not rotate while users are logging in. |
+| Login took longer than ~2 hours | Start sign-in again from `/sign-in`. |
+| Auth0 callback URL mismatch | Allowed Callback URLs must include `{APP_BASE_URL}/auth/callback` exactly. |
+
+After a failed callback, the app redirects to `/sign-in` with a friendly error message.
+
 ## Post-Login Action
 
 Create an Auth0 Action (Login / Post Login) and deploy this logic:

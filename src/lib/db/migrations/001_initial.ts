@@ -43,6 +43,15 @@ CREATE TABLE IF NOT EXISTS documentation_audit_logs (
 );
 
 CREATE INDEX IF NOT EXISTS idx_documentation_audit_created ON documentation_audit_logs(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS oauth_transactions (
+  state TEXT PRIMARY KEY,
+  cookie_name TEXT NOT NULL,
+  cookie_value TEXT NOT NULL,
+  expires_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_oauth_transactions_expires ON oauth_transactions (expires_at);
 `;
 
 export const POSTGRES_MIGRATION_SQL = `
@@ -86,4 +95,13 @@ CREATE TABLE IF NOT EXISTS documentation_audit_logs (
   metadata JSONB,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS oauth_transactions (
+  state TEXT PRIMARY KEY,
+  cookie_name TEXT NOT NULL,
+  cookie_value TEXT NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_oauth_transactions_expires ON oauth_transactions (expires_at);
 `;

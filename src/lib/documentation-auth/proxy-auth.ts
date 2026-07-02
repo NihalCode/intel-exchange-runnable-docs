@@ -75,11 +75,6 @@ export async function runDocumentationAuthProxy(
   const authResponse = await auth0.middleware(request);
   const { pathname } = request.nextUrl;
 
-  // Auth0 SDK owns /auth/* — never intercept (avoids broken OAuth callback).
-  if (pathname.startsWith("/auth")) {
-    return authResponse;
-  }
-
   if (isPublicPath(pathname)) {
     return mergeAuthHeaders(NextResponse.next(), authResponse);
   }
