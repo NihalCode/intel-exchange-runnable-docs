@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { cleanEnvValue } from "@/lib/documentation-auth/env";
+import { cleanEnvValue, isBootstrapOwnerEmail } from "@/lib/documentation-auth/env";
 import { normalizeEmail, isValidEmail } from "@/lib/documentation-auth/email-utils";
 import { checkEmailAccess } from "@/lib/documentation-auth/invite-gate";
 import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
@@ -55,7 +55,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Valid email is required" }, { status: 400 });
   }
 
-  const result = await checkEmailAccess(normalizeEmail(email));
+  const normalized = normalizeEmail(email);
+  let result;
+  try {
+    result = await checkEmailAccess(normalized);
+  } catch {
+    if (isBootstrapOwnerEmail(normalized)) {
+      const response: InviteCheckResponse = {
+        allowed: true,
+        reason: "valid_invite",
+        role: "owner",
+      };
+      return NextResponse.json(response);
+    }
+    return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
+  }
+
   const response: InviteCheckResponse = {
     allowed: result.allowed,
     reason: result.reason,

@@ -188,6 +188,25 @@ describe("invite gate", () => {
     expect(result.role).toBe("owner");
   });
 
+  it("bootstrap owner overrides revoked invite", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    const { invite } = await createInvite({
+      email: "owner@company.com",
+      role: "viewer",
+      invitedByUserId: "admin-id",
+    });
+    await revokeInvite(invite.id);
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.role).toBe("owner");
+    expect(result.reason).toBe("valid_invite");
+  });
+
   it("bootstrap owner is blocked when explicitly disabled", async () => {
     process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
     await createUserFromInvite({

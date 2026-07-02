@@ -79,6 +79,13 @@ export function bootstrapOwnerEmail(): string | null {
   return raw ? raw.trim().toLowerCase() : null;
 }
 
+/** True when email matches DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL (case-insensitive). */
+export function isBootstrapOwnerEmail(email: string): boolean {
+  const bootstrap = bootstrapOwnerEmail();
+  if (!bootstrap) return false;
+  return email.trim().toLowerCase() === bootstrap;
+}
+
 export function getAppBaseUrl(): string {
   return (
     normalizeAppBaseUrl(process.env.APP_BASE_URL) ??

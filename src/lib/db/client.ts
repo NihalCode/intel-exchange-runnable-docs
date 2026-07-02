@@ -48,6 +48,9 @@ export function resetDatabaseConnection(): void {
 
 function defaultSqlitePath(): string {
   if (testDbPath) return testDbPath;
+  if (process.env.VERCEL && !process.env.DATABASE_URL?.trim()) {
+    return "/tmp/documentation-auth.db";
+  }
   return path.join(process.cwd(), ".data", "documentation-auth.db");
 }
 

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { bootstrapOwnerEmail } from "@/lib/documentation-auth/env";
+import { isBootstrapOwnerEmail } from "@/lib/documentation-auth/env";
 import { normalizeEmail, emailDomain } from "@/lib/documentation-auth/email-utils";
 import {
   findInviteByEmail,
@@ -30,6 +30,10 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
     }
   }
 
+  if (isBootstrapOwnerEmail(normalized)) {
+    return { allowed: true, reason: "valid_invite", role: "owner" };
+  }
+
   const invite = await findInviteByEmail(normalized);
   if (invite) {
     if (invite.status === "pending" && isValidPendingInvite(invite)) {
@@ -54,11 +58,6 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
         invite,
       };
     }
-  }
-
-  const bootstrap = bootstrapOwnerEmail();
-  if (bootstrap && normalized === bootstrap) {
-    return { allowed: true, reason: "valid_invite", role: "owner" };
   }
 
   return { allowed: false, reason: "not_invited" };
