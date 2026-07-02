@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   reactCompiler: false,
   // Let Next.js inline small SVGs/data URIs instead of extra requests.
   compress: true,
+  // Ingest/Postman API routes spawn scripts/ingest.mjs — include scripts in the trace.
+  outputFileTracingIncludes: {
+    "/api/products/*/ingest": ["./scripts/**/*"],
+    "/api/developer/postman": ["./scripts/**/*"],
+  },
 };
 
 export default nextConfig;

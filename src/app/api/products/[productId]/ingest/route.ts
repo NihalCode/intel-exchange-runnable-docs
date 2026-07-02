@@ -6,6 +6,11 @@ import { guardSyncDocs } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { requireDeveloperAccess } from "@/lib/developer/access";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
+import {
+  ingestSpawnEnv,
+  isVercelRuntime,
+  VERCEL_INGEST_ROOT,
+} from "@/lib/developer/ingest-runtime";
 import { getProductOrThrow } from "@/lib/products/registry";
 
 export const runtime = "nodejs";
@@ -42,7 +47,7 @@ export async function POST(
     (resolve) => {
       const child = spawn(process.execPath, [script, `--product=${productId}`], {
         cwd: process.cwd(),
-        env: process.env,
+        env: ingestSpawnEnv(),
       });
       let stdout = "";
       let stderr = "";
@@ -64,5 +69,12 @@ export async function POST(
     productId,
     message: `Ingestion complete for ${productId}`,
     stdout: result.stdout.slice(-2000),
+    ...(isVercelRuntime()
+      ? {
+          ephemeral: true,
+          outputRoot: VERCEL_INGEST_ROOT,
+          note: "On Vercel, ingested files are written to /tmp only (not deployed). Use CI or git commit to publish doc updates.",
+        }
+      : {}),
   });
 }

@@ -10,6 +10,13 @@ import {
 } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
+import {
+  ingestSpawnEnv,
+  isVercelRuntime,
+  postmanImportTempDir,
+  postmanIngestParser,
+  VERCEL_INGEST_ROOT,
+} from "@/lib/developer/ingest-runtime";
 import { getProductOrThrow } from "@/lib/products/registry";
 import { parsePostmanCollection, parsedEndpointsToPageRecords } from "@/lib/postman";
 
@@ -97,18 +104,24 @@ export async function POST(req: Request) {
     );
   }
 
-  const tmpDir = path.join(process.cwd(), ".tmp", "postman-import");
+  const tmpDir = postmanImportTempDir();
   await mkdir(tmpDir, { recursive: true });
   const collectionPath = path.join(tmpDir, `${productId}-${Date.now()}.json`);
   await writeFile(collectionPath, JSON.stringify(body.collection), "utf8");
 
+  const parser = postmanIngestParser();
   const script = path.join(process.cwd(), "scripts", "ingest.mjs");
   const result = await new Promise<{ code: number; stdout: string; stderr: string }>(
     (resolve) => {
       const child = spawn(
         process.execPath,
-        [script, `--product=${productId}`, `--collection-file=${collectionPath}`, `--parser=ts`],
-        { cwd: process.cwd(), env: process.env }
+        [
+          script,
+          `--product=${productId}`,
+          `--collection-file=${collectionPath}`,
+          `--parser=${parser}`,
+        ],
+        { cwd: process.cwd(), env: ingestSpawnEnv() }
       );
       let stdout = "";
       let stderr = "";
@@ -141,5 +154,13 @@ export async function POST(req: Request) {
     collectionName: parsed.collectionName,
     credentialPlaceholders: parsed.credentialPlaceholders,
     stdout: result.stdout.slice(-2000),
+    parser,
+    ...(isVercelRuntime()
+      ? {
+          ephemeral: true,
+          outputRoot: VERCEL_INGEST_ROOT,
+          note: "On Vercel, imported files are written to /tmp only (not deployed). Use CI or git commit to publish doc updates.",
+        }
+      : {}),
   });
 }

@@ -480,7 +480,8 @@ async function ingestPostman(product, dirs, collectionFile = "", parser = "js") 
 async function main() {
   const { productId, delay, collectionFile, parser } = parseArgs();
   const product = getProductConfig(productId);
-  const dirs = contentDirForProduct(ROOT, product);
+  const outputRoot = process.env.INGEST_OUTPUT_ROOT?.trim() || ROOT;
+  const dirs = contentDirForProduct(outputRoot, product);
 
   if (delay > 0) await new Promise((r) => setTimeout(r, delay));
 
