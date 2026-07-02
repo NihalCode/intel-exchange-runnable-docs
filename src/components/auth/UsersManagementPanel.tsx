@@ -35,6 +35,7 @@ export function UsersManagementPanel() {
   const [inviteRole, setInviteRole] = useState<DocumentationRole>("viewer");
   const [inviteExpiryDays, setInviteExpiryDays] = useState(7);
   const [lastInviteUrl, setLastInviteUrl] = useState<string | null>(null);
+  const [lastEmailStatus, setLastEmailStatus] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -73,6 +74,7 @@ export function UsersManagementPanel() {
     setBusy("invite");
     setError(null);
     setLastInviteUrl(null);
+    setLastEmailStatus(null);
     try {
       const res = await fetch("/api/users", {
         method: "POST",
@@ -83,12 +85,26 @@ export function UsersManagementPanel() {
           expiryDays: inviteExpiryDays,
         }),
       });
-      const data = (await res.json()) as { error?: string; inviteUrl?: string };
+      const data = (await res.json()) as {
+        error?: string;
+        inviteUrl?: string;
+        email?: { sent: boolean; reason?: string; message?: string };
+      };
       if (!res.ok) {
         setError(data.error ?? "Invite failed");
         return;
       }
       setLastInviteUrl(data.inviteUrl ?? null);
+      const invited = inviteEmail;
+      if (data.email?.sent) {
+        setLastEmailStatus(`Invite email sent to ${invited}.`);
+      } else if (data.email?.reason === "provider_error") {
+        setLastEmailStatus(
+          `Invite created but email failed: ${data.email.message ?? "unknown error"}. Copy the link below.`
+        );
+      } else {
+        setLastEmailStatus("Invite created. Copy the link below (email not configured).");
+      }
       setInviteEmail("");
       await load();
     } finally {
@@ -106,8 +122,20 @@ export function UsersManagementPanel() {
   async function resendInvite(id: string) {
     setBusy(id);
     const res = await fetch(`/api/users/invites/${id}/resend`, { method: "POST" });
-    const data = (await res.json()) as { inviteUrl?: string };
+    const data = (await res.json()) as {
+      inviteUrl?: string;
+      email?: { sent: boolean; reason?: string; message?: string };
+    };
     if (data.inviteUrl) setLastInviteUrl(data.inviteUrl);
+    if (data.email?.sent) {
+      setLastEmailStatus("Invite email resent.");
+    } else if (data.email?.reason === "provider_error") {
+      setLastEmailStatus(
+        `Email failed: ${data.email.message ?? "unknown error"}. Copy the link below.`
+      );
+    } else {
+      setLastEmailStatus("Invite renewed. Copy the link below (email not configured).");
+    }
     await load();
     setBusy(null);
   }
@@ -195,6 +223,14 @@ export function UsersManagementPanel() {
           >
             Send invite
           </button>
+          {lastEmailStatus ? (
+            <p
+              className="mt-3 text-xs text-zinc-600 dark:text-zinc-400"
+              data-testid="invite-email-status"
+            >
+              {lastEmailStatus}
+            </p>
+          ) : null}
           {lastInviteUrl ? (
             <div className="mt-3 rounded bg-zinc-100 p-2 text-xs dark:bg-zinc-800" data-testid="invite-url">
               <span className="text-zinc-500">Invite link: </span>

@@ -110,6 +110,21 @@ https://your-app.example/invite?token=RAW_TOKEN
 
 Only the SHA-256 hash of the token is stored. Raw tokens are never logged.
 
+### Invite email (optional)
+
+When `RESEND_API_KEY` and `INVITE_EMAIL_FROM` are set in Vercel, **Send invite** and **Resend** email the link automatically via [Resend](https://resend.com).
+
+1. Create a Resend account and verify your sending domain
+2. Add env vars:
+   ```env
+   RESEND_API_KEY=re_...
+   INVITE_EMAIL_FROM=Cyware API Docs <invites@yourdomain.com>
+   INVITE_EMAIL_WORKSPACE_NAME=Cyware API Docs
+   ```
+3. Redeploy
+
+If email is not configured, admins still get a copyable invite link in the UI.
+
 ## Testing
 
 ### Uninvited Google login
