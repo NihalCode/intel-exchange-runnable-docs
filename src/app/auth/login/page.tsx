@@ -34,10 +34,15 @@ export default async function LoginPage({
   return (
     <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12 dark:bg-zinc-950">
       <div className="w-full max-w-md text-center">
-        <div className="mb-6 flex items-center justify-center gap-2">
-          <span className="rounded bg-sky-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
-            RUNNABLE
-          </span>
+        <div className="mb-6 flex flex-col items-center justify-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/cyware_logo.png"
+            alt="Cyware"
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+          />
           <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             Cyware API Docs
           </span>
