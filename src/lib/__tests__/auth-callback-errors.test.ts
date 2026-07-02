@@ -52,4 +52,15 @@ describe("mapAuthCallbackError", () => {
     expect(mapped.code).toBe("auth_failed");
     expect(mapped.message).not.toBe("An error occurred during the authorization flow.");
   });
+
+  it("maps invite_check_failed to auth_config not invite-only", () => {
+    const mapped = mapAuthCallbackError(
+      new OAuth2Error({
+        code: "access_denied",
+        message: "invite_check_failed",
+      })
+    );
+    expect(mapped.code).toBe("auth_config");
+    expect(mapped.message).toMatch(/AUTH0_ACTION_SHARED_SECRET/);
+  });
 });

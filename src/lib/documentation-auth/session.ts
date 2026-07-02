@@ -157,21 +157,22 @@ export async function getAppSessionResult(
       name: authUser.name,
       picture: authUser.picture,
     });
-    if (!updated) {
+    const sessionUser = updated ?? existingById;
+    if (sessionUser.status === "disabled") {
       return {
         session: null,
         auth0Authenticated: true,
-        accessDenied: { reason: "invite_required" },
+        accessDenied: { reason: "disabled" },
       };
     }
     await logDocumentationAuthEvent({
       action: "auth.login_success",
-      userId: updated.id,
-      actorEmail: updated.email,
+      userId: sessionUser.id,
+      actorEmail: sessionUser.email,
       metadata: { connection: "auth0" },
     });
     return {
-      session: toAppSession({ ...updated, name: updated.name ?? null }),
+      session: toAppSession({ ...sessionUser, name: sessionUser.name ?? null }),
       auth0Authenticated: true,
     };
   }

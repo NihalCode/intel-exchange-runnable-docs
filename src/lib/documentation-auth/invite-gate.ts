@@ -6,7 +6,6 @@ import {
   findInviteByEmail,
   findUserByEmail,
   isValidPendingInvite,
-  listUsers,
 } from "@/lib/db/repository";
 import type { DocumentationInvite, DocumentationRole, InviteCheckReason } from "@/lib/documentation-auth/types";
 
@@ -26,7 +25,7 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
     if (existing.status === "disabled") {
       return { allowed: false, reason: "disabled" };
     }
-    if (existing.status === "active") {
+    if (existing.status === "active" || existing.status === "pending") {
       return { allowed: true, reason: "active_user", role: existing.role };
     }
   }
@@ -47,14 +46,19 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
     if (invite.status === "revoked") {
       return { allowed: false, reason: "not_invited" };
     }
+    if (invite.status === "accepted") {
+      return {
+        allowed: true,
+        reason: "valid_invite",
+        role: invite.role,
+        invite,
+      };
+    }
   }
 
   const bootstrap = bootstrapOwnerEmail();
   if (bootstrap && normalized === bootstrap) {
-    const users = await listUsers();
-    if (users.length === 0) {
-      return { allowed: true, reason: "valid_invite", role: "owner" };
-    }
+    return { allowed: true, reason: "valid_invite", role: "owner" };
   }
 
   return { allowed: false, reason: "not_invited" };

@@ -175,6 +175,36 @@ describe("invite gate", () => {
     expect(result.allowed).toBe(true);
     expect(result.role).toBe("owner");
   });
+
+  it("bootstrap owner is always allowed even when other users exist", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    await createUserFromInvite({
+      auth0UserId: "auth0|other",
+      email: "other@company.com",
+      role: "viewer",
+    });
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.role).toBe("owner");
+  });
+
+  it("bootstrap owner is blocked when explicitly disabled", async () => {
+    process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL = "owner@company.com";
+    await createUserFromInvite({
+      auth0UserId: "auth0|backup",
+      email: "backup@company.com",
+      role: "owner",
+    });
+    const user = await createUserFromInvite({
+      auth0UserId: "auth0|owner",
+      email: "owner@company.com",
+      role: "owner",
+    });
+    await disableUser(user.id);
+    const result = await checkEmailAccess("owner@company.com");
+    expect(result.allowed).toBe(false);
+    expect(result.reason).toBe("disabled");
+  });
 });
 
 describe("permissions", () => {

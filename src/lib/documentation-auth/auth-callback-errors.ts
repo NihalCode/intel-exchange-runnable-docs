@@ -61,9 +61,20 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
   const oauth = unwrapOAuth2(error);
   if (oauth) {
     const code = oauth.code?.toLowerCase() ?? "";
-    const text = `${oauth.message ?? ""} ${code}`.toLowerCase();
-    if (code === "invite_required" || text.includes("invite")) {
+    const message = (oauth.message ?? "").toLowerCase();
+    if (
+      code === "invite_required" ||
+      (code === "access_denied" &&
+        (message.includes("must be invited") || message.includes("invite_required")))
+    ) {
       return inviteDeniedMessage();
+    }
+    if (code === "invite_check_failed" || message.includes("invite_check_failed")) {
+      return {
+        code: "auth_config",
+        message:
+          "Sign-in could not verify workspace access. Ask an administrator to confirm AUTH0_ACTION_SHARED_SECRET and APP_BASE_URL match in Vercel and the Auth0 Post-Login Action secrets.",
+      };
     }
     if (code === "access_denied") {
       return {
@@ -75,7 +86,7 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
 
   if (error instanceof AuthorizationError) {
     const text = `${error.message ?? ""}`.toLowerCase();
-    if (text.includes("invite")) {
+    if (text.includes("must be invited") || text.includes("invite_required")) {
       return inviteDeniedMessage();
     }
     return {
@@ -87,7 +98,7 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
 
   if (error instanceof Error && error.message.trim()) {
     const text = error.message.toLowerCase();
-    if (text.includes("invite")) {
+    if (text.includes("must be invited") || text.includes("invite_required")) {
       return inviteDeniedMessage();
     }
     return { code: "auth_failed", message: error.message };

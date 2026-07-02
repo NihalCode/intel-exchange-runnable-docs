@@ -119,7 +119,7 @@ When an invited user completes Auth0 login:
 
 ## Bootstrap owner (cold start)
 
-If the database has **zero users** and `DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL` is set, the first Auth0 login with that exact email becomes `owner` without a pre-existing invite record. Use only for initial deployment.
+If `DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL` is set, that exact email is **always** allowed to sign in as `owner` (unless that user row is disabled), even when other users or invites already exist in the database. Use this for the primary workspace owner and recovery if invite checks would otherwise block them.
 
 ## Invite links
 
