@@ -1,3 +1,4 @@
+import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
 import { formatProblems, validateAppFiles } from "@/lib/agent/validate-app";
 import { repairAppFiles } from "@/lib/agent/repair-app";
 import { syncProjectEnvVars, validateCywareEnvVars } from "@/lib/agent/vercel-env";
@@ -150,6 +151,9 @@ function hardenFiles(
 }
 
 export async function POST(req: Request) {
+  const session = await guardAskAgent(req as import("next/server").NextRequest);
+  if (session instanceof Response) return session;
+
   try {
     const { files, appName, vercelToken, projectName, envVars } =
       (await req.json()) as DeployRequest;

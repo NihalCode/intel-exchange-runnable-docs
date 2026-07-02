@@ -1,4 +1,4 @@
-import { requireDeveloperAccess } from "@/lib/developer/access";
+import { guardDeveloperDiagnostics } from "@/lib/documentation-auth/guard-api";
 import {
   canRunLiveValidation,
   validateAllProducts,
@@ -11,8 +11,8 @@ export const dynamic = "force-dynamic";
 
 /** POST — static (+ optional live) endpoint validation for developer workflows. */
 export async function POST(req: Request) {
-  const denied = requireDeveloperAccess(req);
-  if (denied) return denied;
+  const session = await guardDeveloperDiagnostics(req as import("next/server").NextRequest);
+  if (session instanceof Response) return session;
 
   let body: {
     productId?: string;

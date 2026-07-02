@@ -3,6 +3,7 @@ import dns from "node:dns/promises";
 import net from "node:net";
 import { buildDemoResponse, shouldSimulateRequest } from "@/lib/demo";
 import { serverAuthRequiredMessage, urlHasOpenApiAuth } from "@/lib/api-credentials";
+import { guardDocumentationApi } from "@/lib/documentation-auth/guard-api";
 import type { MultipartPart } from "@/lib/multipart";
 import { MAX_UPLOAD_BYTES } from "@/lib/multipart";
 
@@ -80,6 +81,12 @@ async function assertPublicHost(hostname: string): Promise<void> {
 }
 
 export async function POST(request: Request) {
+  const session = await guardDocumentationApi(
+    request as import("next/server").NextRequest,
+    "test_snippets"
+  );
+  if (session instanceof NextResponse) return session;
+
   let payload: RunBody;
   try {
     payload = (await request.json()) as RunBody;

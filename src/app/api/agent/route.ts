@@ -1,3 +1,4 @@
+import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
 import { runAgent } from "@/lib/agent/orchestrate";
 import type { AgentRequest } from "@/lib/agent/types";
 import { OpenAiNotConfiguredError } from "@/lib/openai/client";
@@ -8,6 +9,9 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
+  const session = await guardAskAgent(req as import("next/server").NextRequest);
+  if (session instanceof Response) return session;
+
   try {
     const body = (await req.json()) as AgentRequest & { llmApiKey?: string };
     // Ignore any client-supplied key — OpenAI is server-configured only.

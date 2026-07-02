@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/AppShell";
 import { AgentChatSession } from "@/components/AgentChatSession";
+import { DocumentationAuthProvider } from "@/components/auth/DocumentationAuthProvider";
 import { ProductProvider } from "@/components/ProductContext";
 import { RunSettingsProvider } from "@/components/RunSettings";
 import { getManifest } from "@/lib/content";
@@ -35,9 +36,11 @@ export default function RootLayout({
       <body className="min-h-full">
         <RunSettingsProvider defaultBaseUrl={manifest.defaultBaseUrl}>
           <ProductProvider>
-            <AgentChatSession>
-              <AppShell nav={manifest.nav}>{children}</AppShell>
-            </AgentChatSession>
+            <DocumentationAuthProvider>
+              <AgentChatSession>
+                <AppShell nav={manifest.nav}>{children}</AppShell>
+              </AgentChatSession>
+            </DocumentationAuthProvider>
           </ProductProvider>
         </RunSettingsProvider>
       </body>

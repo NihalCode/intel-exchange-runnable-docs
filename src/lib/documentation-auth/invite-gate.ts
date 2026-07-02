@@ -1,0 +1,63 @@
+import "server-only";
+
+import { bootstrapOwnerEmail } from "@/lib/documentation-auth/env";
+import { normalizeEmail, emailDomain } from "@/lib/documentation-auth/email-utils";
+import {
+  findInviteByEmail,
+  findUserByEmail,
+  isValidPendingInvite,
+  listUsers,
+} from "@/lib/db/repository";
+import type { DocumentationInvite, DocumentationRole, InviteCheckReason } from "@/lib/documentation-auth/types";
+
+export interface InviteCheckResult {
+  allowed: boolean;
+  reason: InviteCheckReason;
+  role?: DocumentationRole;
+  invite?: DocumentationInvite;
+}
+
+/** Check whether an email may access the documentation workspace. */
+export async function checkEmailAccess(email: string): Promise<InviteCheckResult> {
+  const normalized = normalizeEmail(email);
+  const existing = await findUserByEmail(normalized);
+
+  if (existing) {
+    if (existing.status === "disabled") {
+      return { allowed: false, reason: "disabled" };
+    }
+    if (existing.status === "active") {
+      return { allowed: true, reason: "active_user", role: existing.role };
+    }
+  }
+
+  const invite = await findInviteByEmail(normalized);
+  if (invite) {
+    if (invite.status === "pending" && isValidPendingInvite(invite)) {
+      return {
+        allowed: true,
+        reason: "valid_invite",
+        role: invite.role,
+        invite,
+      };
+    }
+    if (invite.status === "expired" || (invite.status === "pending" && !isValidPendingInvite(invite))) {
+      return { allowed: false, reason: "expired_invite" };
+    }
+    if (invite.status === "revoked") {
+      return { allowed: false, reason: "not_invited" };
+    }
+  }
+
+  const bootstrap = bootstrapOwnerEmail();
+  if (bootstrap && normalized === bootstrap) {
+    const users = await listUsers();
+    if (users.length === 0) {
+      return { allowed: true, reason: "valid_invite", role: "owner" };
+    }
+  }
+
+  return { allowed: false, reason: "not_invited" };
+}
+
+export { emailDomain };

@@ -1,3 +1,5 @@
+import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
+
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
@@ -152,6 +154,9 @@ const SOURCE_EXT =
   /\.(tsx?|jsx?|json|css|md|mjs|cjs|env\.example)$|^(package\.json|tsconfig\.json|next\.config\.(ts|js|mjs))$/;
 
 export async function POST(req: Request) {
+  const session = await guardAskAgent(req as import("next/server").NextRequest);
+  if (session instanceof Response) return session;
+
   try {
     const { deploymentUrl, vercelToken } = (await req.json()) as PullRequest;
     if (!deploymentUrl?.trim()) {

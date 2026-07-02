@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { requireDeveloperAccess } from "@/lib/developer/access";
+import { guardDeveloperDiagnostics } from "@/lib/documentation-auth/guard-api";
 import { canRunDeveloperIngest } from "@/lib/developer/diagnostics";
 import { getProductOrThrow } from "@/lib/products/registry";
 import { parsePostmanCollection, parsedEndpointsToPageRecords } from "@/lib/postman";
@@ -12,8 +12,8 @@ export const dynamic = "force-dynamic";
 
 /** POST — parse Postman collection JSON (preview, no write). */
 export async function POST(req: Request) {
-  const denied = requireDeveloperAccess(req);
-  if (denied) return denied;
+  const session = await guardDeveloperDiagnostics(req as import("next/server").NextRequest);
+  if (session instanceof Response) return session;
 
   let body: { productId?: string; collection?: unknown; write?: boolean };
   try {
