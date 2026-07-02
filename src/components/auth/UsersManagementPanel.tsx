@@ -23,6 +23,40 @@ interface InviteRow {
   expiresAt: string;
 }
 
+function InviteLinkCopy({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
+
+  return (
+    <div
+      className="mt-3 flex flex-col gap-2 rounded bg-zinc-100 p-2 text-xs dark:bg-zinc-800 sm:flex-row sm:items-center sm:justify-between"
+      data-testid="invite-url"
+    >
+      <div className="min-w-0 flex-1">
+        <span className="text-zinc-500">Invite link: </span>
+        <code className="break-all">{url}</code>
+      </div>
+      <button
+        type="button"
+        onClick={() => void copyLink()}
+        data-testid="invite-url-copy"
+        className="shrink-0 self-start rounded border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-950 sm:self-center"
+      >
+        {copied ? "Copied" : "Copy link"}
+      </button>
+    </div>
+  );
+}
+
 export function UsersManagementPanel() {
   const { state, hasPermission } = useDocumentationAuth();
   const canManage = hasPermission("manage_users");
@@ -231,12 +265,7 @@ export function UsersManagementPanel() {
               {lastEmailStatus}
             </p>
           ) : null}
-          {lastInviteUrl ? (
-            <div className="mt-3 rounded bg-zinc-100 p-2 text-xs dark:bg-zinc-800" data-testid="invite-url">
-              <span className="text-zinc-500">Invite link: </span>
-              <code className="break-all">{lastInviteUrl}</code>
-            </div>
-          ) : null}
+          {lastInviteUrl ? <InviteLinkCopy url={lastInviteUrl} /> : null}
         </form>
       ) : null}
 
