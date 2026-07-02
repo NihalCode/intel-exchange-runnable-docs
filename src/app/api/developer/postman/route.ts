@@ -1,8 +1,15 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { guardDeveloperDiagnostics } from "@/lib/documentation-auth/guard-api";
-import { canRunDeveloperIngest } from "@/lib/developer/diagnostics";
+import { NextResponse, type NextRequest } from "next/server";
+
+import {
+  guardDeveloperDiagnostics,
+  guardManageSources,
+  guardSyncDocs,
+} from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { canRunProductIngest } from "@/lib/developer/ingest-access";
 import { getProductOrThrow } from "@/lib/products/registry";
 import { parsePostmanCollection, parsedEndpointsToPageRecords } from "@/lib/postman";
 
@@ -10,38 +17,51 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
-/** POST — parse Postman collection JSON (preview, no write). */
+/** POST — parse Postman collection JSON (preview or import). */
 export async function POST(req: Request) {
-  const session = await guardDeveloperDiagnostics(req as import("next/server").NextRequest);
-  if (session instanceof Response) return session;
+  const request = req as NextRequest;
 
   let body: { productId?: string; collection?: unknown; write?: boolean };
   try {
     body = (await req.json()) as typeof body;
   } catch {
-    return Response.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
+    return NextResponse.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  const write = Boolean(body.write);
+
+  if (isAuthEnabled()) {
+    const sources = await guardManageSources(request);
+    if (sources instanceof NextResponse) return sources;
+    if (write) {
+      const sync = await guardSyncDocs(request);
+      if (sync instanceof NextResponse) return sync;
+    }
+  } else {
+    const session = await guardDeveloperDiagnostics(request);
+    if (session instanceof NextResponse) return session;
   }
 
   const productId = body.productId?.trim();
   if (!productId) {
-    return Response.json({ ok: false, error: "productId is required." }, { status: 400 });
+    return NextResponse.json({ ok: false, error: "productId is required." }, { status: 400 });
   }
 
   try {
     getProductOrThrow(productId);
   } catch {
-    return Response.json({ ok: false, error: `Unknown product: ${productId}` }, { status: 400 });
+    return NextResponse.json({ ok: false, error: `Unknown product: ${productId}` }, { status: 400 });
   }
 
   if (!body.collection) {
-    return Response.json({ ok: false, error: "collection JSON is required." }, { status: 400 });
+    return NextResponse.json({ ok: false, error: "collection JSON is required." }, { status: 400 });
   }
 
   let parsed;
   try {
     parsed = parsePostmanCollection(body.collection, { productId });
   } catch (e) {
-    return Response.json(
+    return NextResponse.json(
       {
         ok: false,
         error: "Failed to parse Postman collection.",
@@ -51,8 +71,8 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!body.write) {
-    return Response.json({
+  if (!write) {
+    return NextResponse.json({
       ok: true,
       preview: true,
       productId,
@@ -69,9 +89,9 @@ export async function POST(req: Request) {
     });
   }
 
-  const ingestCheck = canRunDeveloperIngest(productId);
+  const ingestCheck = canRunProductIngest(productId);
   if (!ingestCheck.allowed) {
-    return Response.json(
+    return NextResponse.json(
       { ok: false, error: "Ingest blocked.", blockers: ingestCheck.blockers },
       { status: 403 }
     );
@@ -99,7 +119,7 @@ export async function POST(req: Request) {
   );
 
   if (result.code !== 0) {
-    return Response.json(
+    return NextResponse.json(
       {
         ok: false,
         error: "Ingestion failed.",
@@ -114,7 +134,7 @@ export async function POST(req: Request) {
     );
   }
 
-  return Response.json({
+  return NextResponse.json({
     ok: true,
     productId,
     message: `Imported ${parsed.endpoints.length} endpoints from Postman collection.`,

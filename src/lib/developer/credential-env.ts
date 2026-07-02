@@ -1,5 +1,7 @@
 import type { ApiProduct } from "../products/types";
 
+import { isDeveloperAccessConfigured } from "./access";
+
 export interface DeveloperCredentialSpec {
   envKey: string;
   label: string;
@@ -88,12 +90,12 @@ export function missingDeveloperCredentials(productId?: string): string[] {
 }
 
 export function ingestBlockedReason(productId: string): string | null {
-  if (!process.env.DEVELOPER_ACCESS_TOKEN?.trim()) {
-    return "DEVELOPER_ACCESS_TOKEN is not configured on the server.";
+  if (!isDeveloperAccessConfigured()) {
+    return "DEVELOPER_ACCESS_TOKEN is not configured.";
   }
   const missing = missingDeveloperCredentials(productId);
-  if (missing.length > 0) {
-    return `Missing developer credentials for ${productId}: ${missing.join(", ")}`;
+  if (missing.length) {
+    return `Missing credentials: ${missing.join(", ")}`;
   }
   return null;
 }

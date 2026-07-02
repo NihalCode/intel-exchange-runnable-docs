@@ -18,7 +18,7 @@ function WorkspaceSettingsLink() {
   const show = !state.loading && hasPermission("manage_users");
   if (!show) return null;
 
-  const active = pathname.startsWith("/settings");
+  const active = pathname.startsWith("/settings/users");
   return (
     <Link
       href="/settings/users"
@@ -29,6 +29,28 @@ function WorkspaceSettingsLink() {
       }`}
     >
       Settings
+    </Link>
+  );
+}
+
+function WorkspaceContentLink() {
+  const pathname = usePathname();
+  const { state, hasPermission } = useDocumentationAuth();
+  const show =
+    !state.loading && (hasPermission("sync_docs") || hasPermission("manage_sources"));
+  if (!show) return null;
+
+  const active = pathname.startsWith("/settings/content");
+  return (
+    <Link
+      href="/settings/content"
+      className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
+        active
+          ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      }`}
+    >
+      Content
     </Link>
   );
 }
@@ -153,6 +175,8 @@ export function AppShell({
         </Link>
 
         <WorkspaceSettingsLink />
+
+        <WorkspaceContentLink />
 
         <HeaderBar />
         <ThemeToggle />

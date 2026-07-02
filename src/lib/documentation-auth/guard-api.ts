@@ -70,6 +70,18 @@ export async function guardDeveloperDiagnostics(
   return requirePermission("view_technical_diagnostics", request);
 }
 
+export async function guardSyncDocs(
+  request: NextRequest
+): Promise<AppSession | NextResponse> {
+  return guardDocumentationApi(request, "sync_docs");
+}
+
+export async function guardManageSources(
+  request: NextRequest
+): Promise<AppSession | NextResponse> {
+  return guardDocumentationApi(request, "manage_sources");
+}
+
 export async function getSessionOrDenied(request: NextRequest) {
   return getAppSessionResult(request);
 }

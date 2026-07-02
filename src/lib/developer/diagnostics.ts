@@ -1,4 +1,6 @@
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { isDeveloperAccessConfigured } from "./access";
+import { canRunProductIngest } from "./ingest-access";
 import {
   developerCredentialSummary,
   missingDeveloperCredentials,
@@ -39,23 +41,25 @@ export function runDeveloperDiagnostics(): DeveloperDiagnostics {
   const blockers: DeveloperBlocker[] = [];
   const developerAccessConfigured = isDeveloperAccessConfigured();
 
-  if (!developerAccessConfigured) {
-    blockers.push({
-      id: "missing-developer-token",
-      severity: "error",
-      message: "DEVELOPER_ACCESS_TOKEN is not set — Postman import and live validation are blocked.",
-      blocking: true,
-    });
-  }
+  if (!isAuthEnabled()) {
+    if (!developerAccessConfigured) {
+      blockers.push({
+        id: "missing-developer-token",
+        severity: "error",
+        message: "DEVELOPER_ACCESS_TOKEN is not set — Postman import and live validation are blocked.",
+        blocking: true,
+      });
+    }
 
-  const missing = missingDeveloperCredentials();
-  if (missing.length > 0) {
-    blockers.push({
-      id: "missing-dev-credentials",
-      severity: "warning",
-      message: `Missing server-side developer credentials: ${missing.join(", ")}`,
-      blocking: true,
-    });
+    const missing = missingDeveloperCredentials();
+    if (missing.length > 0) {
+      blockers.push({
+        id: "missing-dev-credentials",
+        severity: "warning",
+        message: `Missing server-side developer credentials: ${missing.join(", ")}`,
+        blocking: true,
+      });
+    }
   }
 
   if (!process.env.OPENAI_API_KEY?.trim()) {
@@ -115,14 +119,7 @@ export function runDeveloperDiagnostics(): DeveloperDiagnostics {
   };
 }
 
+/** @deprecated Prefer canRunProductIngest from ingest-access.ts */
 export function canRunDeveloperIngest(productId: string): { allowed: boolean; blockers: string[] } {
-  const blockers: string[] = [];
-  if (!isDeveloperAccessConfigured()) {
-    blockers.push("DEVELOPER_ACCESS_TOKEN is not configured.");
-  }
-  const missing = missingDeveloperCredentials(productId);
-  if (missing.length) {
-    blockers.push(`Missing credentials: ${missing.join(", ")}`);
-  }
-  return { allowed: blockers.length === 0, blockers };
+  return canRunProductIngest(productId);
 }

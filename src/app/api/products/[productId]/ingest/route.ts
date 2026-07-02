@@ -1,7 +1,11 @@
+import { NextResponse, type NextRequest } from "next/server";
 import { spawn } from "node:child_process";
 import path from "node:path";
+
+import { guardSyncDocs } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { requireDeveloperAccess } from "@/lib/developer/access";
-import { canRunDeveloperIngest } from "@/lib/developer/diagnostics";
+import { canRunProductIngest } from "@/lib/developer/ingest-access";
 import { getProductOrThrow } from "@/lib/products/registry";
 
 export const runtime = "nodejs";
@@ -12,15 +16,22 @@ export async function POST(
   req: Request,
   ctx: { params: Promise<{ productId: string }> }
 ) {
-  const denied = requireDeveloperAccess(req);
-  if (denied) return denied;
+  const request = req as NextRequest;
+
+  if (isAuthEnabled()) {
+    const session = await guardSyncDocs(request);
+    if (session instanceof NextResponse) return session;
+  } else {
+    const denied = requireDeveloperAccess(req);
+    if (denied) return denied;
+  }
 
   const { productId } = await ctx.params;
   getProductOrThrow(productId);
 
-  const ingestCheck = canRunDeveloperIngest(productId);
+  const ingestCheck = canRunProductIngest(productId);
   if (!ingestCheck.allowed) {
-    return Response.json(
+    return NextResponse.json(
       { ok: false, error: "Ingest blocked.", blockers: ingestCheck.blockers },
       { status: 403 }
     );
@@ -42,13 +53,13 @@ export async function POST(
   );
 
   if (result.code !== 0) {
-    return Response.json(
+    return NextResponse.json(
       { ok: false, error: "Ingestion failed", stdout: result.stdout, stderr: result.stderr },
       { status: 500 }
     );
   }
 
-  return Response.json({
+  return NextResponse.json({
     ok: true,
     productId,
     message: `Ingestion complete for ${productId}`,
