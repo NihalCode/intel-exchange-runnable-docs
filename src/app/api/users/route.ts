@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { logDocumentationAuthEvent } from "@/lib/documentation-auth/audit";
 import { deliverInviteNotification } from "@/lib/documentation-auth/deliver-invite";
+import { isInviteEmailConfigured } from "@/lib/documentation-auth/invite-email";
 import { getAppBaseUrl } from "@/lib/documentation-auth/env";
 import { requirePermission } from "@/lib/documentation-auth/session";
 import { DOCUMENTATION_ROLES } from "@/lib/documentation-auth/types";
@@ -59,14 +60,16 @@ export async function POST(request: NextRequest) {
   });
 
   const inviteUrl = buildInviteUrl(rawToken, getAppBaseUrl());
-  const emailDelivery = await deliverInviteNotification({
-    invite,
-    inviteUrl,
-    invitedByUserId: session.user.id,
-    invitedByEmail: session.user.email,
-    invitedByName: session.user.name,
-    auditAction: "auth.invite_email_sent",
-  });
+  const emailDelivery = isInviteEmailConfigured()
+    ? await deliverInviteNotification({
+        invite,
+        inviteUrl,
+        invitedByUserId: session.user.id,
+        invitedByEmail: session.user.email,
+        invitedByName: session.user.name,
+        auditAction: "auth.invite_email_sent",
+      })
+    : null;
 
-  return NextResponse.json({ invite, inviteUrl, email: emailDelivery });
+  return NextResponse.json({ invite, inviteUrl, ...(emailDelivery ? { email: emailDelivery } : {}) });
 }

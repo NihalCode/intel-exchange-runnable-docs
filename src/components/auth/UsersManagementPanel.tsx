@@ -69,7 +69,7 @@ export function UsersManagementPanel() {
   const [inviteRole, setInviteRole] = useState<DocumentationRole>("viewer");
   const [inviteExpiryDays, setInviteExpiryDays] = useState(7);
   const [lastInviteUrl, setLastInviteUrl] = useState<string | null>(null);
-  const [lastEmailStatus, setLastEmailStatus] = useState<string | null>(null);
+  const [lastInviteStatus, setLastInviteStatus] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -102,19 +102,20 @@ export function UsersManagementPanel() {
     }
   }, [canManage, load]);
 
-  async function sendInvite(e: React.FormEvent) {
+  async function createInvite(e: React.FormEvent) {
     e.preventDefault();
     if (!canManage) return;
     setBusy("invite");
     setError(null);
     setLastInviteUrl(null);
-    setLastEmailStatus(null);
+    setLastInviteStatus(null);
     try {
+      const invited = inviteEmail.trim();
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: inviteEmail,
+          email: invited,
           role: inviteRole,
           expiryDays: inviteExpiryDays,
         }),
@@ -122,23 +123,15 @@ export function UsersManagementPanel() {
       const data = (await res.json()) as {
         error?: string;
         inviteUrl?: string;
-        email?: { sent: boolean; reason?: string; message?: string };
       };
       if (!res.ok) {
         setError(data.error ?? "Invite failed");
         return;
       }
       setLastInviteUrl(data.inviteUrl ?? null);
-      const invited = inviteEmail;
-      if (data.email?.sent) {
-        setLastEmailStatus(`Invite email sent to ${invited}.`);
-      } else if (data.email?.reason === "provider_error") {
-        setLastEmailStatus(
-          `Invite created but email failed: ${data.email.message ?? "unknown error"}. Copy the link below.`
-        );
-      } else {
-        setLastEmailStatus("Invite created. Copy the link below (email not configured).");
-      }
+      setLastInviteStatus(
+        `Invite created for ${invited}. Copy the link below and share it with them.`
+      );
       setInviteEmail("");
       await load();
     } finally {
@@ -153,22 +146,17 @@ export function UsersManagementPanel() {
     setBusy(null);
   }
 
-  async function resendInvite(id: string) {
+  async function refreshInviteLink(id: string, email: string) {
     setBusy(id);
     const res = await fetch(`/api/users/invites/${id}/resend`, { method: "POST" });
-    const data = (await res.json()) as {
-      inviteUrl?: string;
-      email?: { sent: boolean; reason?: string; message?: string };
-    };
-    if (data.inviteUrl) setLastInviteUrl(data.inviteUrl);
-    if (data.email?.sent) {
-      setLastEmailStatus("Invite email resent.");
-    } else if (data.email?.reason === "provider_error") {
-      setLastEmailStatus(
-        `Email failed: ${data.email.message ?? "unknown error"}. Copy the link below.`
+    const data = (await res.json()) as { inviteUrl?: string; error?: string };
+    if (!res.ok) {
+      setError(data.error ?? "Could not create a new invite link.");
+    } else if (data.inviteUrl) {
+      setLastInviteUrl(data.inviteUrl);
+      setLastInviteStatus(
+        `New link for ${email}. Copy below and share it — the previous link no longer works.`
       );
-    } else {
-      setLastEmailStatus("Invite renewed. Copy the link below (email not configured).");
     }
     await load();
     setBusy(null);
@@ -207,8 +195,11 @@ export function UsersManagementPanel() {
   return (
     <div data-testid="users-management" className="space-y-8">
       {canManage ? (
-        <form onSubmit={sendInvite} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+        <form onSubmit={createInvite} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h2 className="text-sm font-semibold">Invite user</h2>
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            Create an invite link and share it with your teammate (Slack, email, etc.).
+          </p>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             <label className="block text-xs">
               <span className="text-zinc-500">Email</span>
@@ -255,14 +246,14 @@ export function UsersManagementPanel() {
             data-testid="invite-submit"
             className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50"
           >
-            Send invite
+            {busy === "invite" ? "Creating…" : "Create invite link"}
           </button>
-          {lastEmailStatus ? (
+          {lastInviteStatus ? (
             <p
               className="mt-3 text-xs text-zinc-600 dark:text-zinc-400"
-              data-testid="invite-email-status"
+              data-testid="invite-status"
             >
-              {lastEmailStatus}
+              {lastInviteStatus}
             </p>
           ) : null}
           {lastInviteUrl ? <InviteLinkCopy url={lastInviteUrl} /> : null}
@@ -301,10 +292,10 @@ export function UsersManagementPanel() {
                           <button
                             type="button"
                             disabled={busy === invite.id}
-                            onClick={() => void resendInvite(invite.id)}
+                            onClick={() => void refreshInviteLink(invite.id, invite.email)}
                             className="text-xs text-sky-700 underline dark:text-sky-400"
                           >
-                            Resend
+                            New link
                           </button>
                           <button
                             type="button"
