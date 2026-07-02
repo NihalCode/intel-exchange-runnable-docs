@@ -3,6 +3,8 @@ const ERROR_COPY: Record<string, string> = {
     "Sign-in could not be verified. Click a sign-in option below and complete login in this same tab.",
   auth_failed: "Sign-in could not be completed. Choose a sign-in option below to try again.",
   auth_denied: "Sign-in was cancelled or denied.",
+  auth_config:
+    "Sign-in is misconfigured on the server. Ask an administrator to verify Auth0 settings for this site.",
   invite_required:
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
 };

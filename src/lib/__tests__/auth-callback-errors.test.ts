@@ -1,0 +1,55 @@
+import { describe, expect, it } from "vitest";
+import {
+  AuthorizationCodeGrantError,
+  AuthorizationError,
+  InvalidStateError,
+  OAuth2Error,
+} from "@auth0/nextjs-auth0/errors";
+
+import { mapAuthCallbackError } from "@/lib/documentation-auth/auth-callback-errors";
+
+describe("mapAuthCallbackError", () => {
+  it("maps invalid state", () => {
+    const mapped = mapAuthCallbackError(new InvalidStateError());
+    expect(mapped.code).toBe("invalid_state");
+  });
+
+  it("maps invite_required from OAuth2 access_denied", () => {
+    const mapped = mapAuthCallbackError(
+      new OAuth2Error({
+        code: "access_denied",
+        message: "You must be invited to access this documentation workspace.",
+      })
+    );
+    expect(mapped.code).toBe("invite_required");
+  });
+
+  it("maps wrapped AuthorizationError to actionable copy", () => {
+    const mapped = mapAuthCallbackError(
+      new AuthorizationError({
+        cause: new OAuth2Error({ code: "access_denied", message: "invite_required" }),
+      })
+    );
+    expect(mapped.code).toBe("invite_required");
+  });
+
+  it("maps authorization code grant failures", () => {
+    const mapped = mapAuthCallbackError(
+      new AuthorizationCodeGrantError({
+        cause: new OAuth2Error({ code: "invalid_grant", message: "invalid grant" }),
+      })
+    );
+    expect(mapped.code).toBe("auth_failed");
+    expect(mapped.message).toMatch(/callback URLs/i);
+  });
+
+  it("maps generic AuthorizationError without leaking SDK default", () => {
+    const mapped = mapAuthCallbackError(
+      new AuthorizationError({
+        cause: new OAuth2Error({ code: "server_error", message: "upstream" }),
+      })
+    );
+    expect(mapped.code).toBe("auth_failed");
+    expect(mapped.message).not.toBe("An error occurred during the authorization flow.");
+  });
+});

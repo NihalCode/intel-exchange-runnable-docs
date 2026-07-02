@@ -1,17 +1,18 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { getAuth0 } from "@/lib/auth0";
 import {
   getMiddlewareAuthUser,
   isMiddlewareAuthEnabled,
 } from "@/lib/documentation-auth/middleware-auth";
-import { getAuth0 } from "@/lib/auth0";
 
 const PUBLIC_PATHS = [
   "/auth",
   "/sign-in",
   "/access",
   "/invite",
+  "/post-login",
 ];
 
 const PUBLIC_API_EXACT = [
@@ -46,22 +47,43 @@ function isProtectedPath(pathname: string): boolean {
   return false;
 }
 
-export async function middleware(request: NextRequest) {
+/** Preserve Auth0 session / transaction cookies on custom responses. */
+export function mergeAuthHeaders(
+  response: NextResponse,
+  authResponse: NextResponse
+): NextResponse {
+  authResponse.headers.forEach((value, key) => {
+    const lower = key.toLowerCase();
+    if (lower === "x-middleware-next") return;
+    response.headers.set(key, value);
+  });
+  return response;
+}
+
+export async function runDocumentationAuthProxy(
+  request: NextRequest
+): Promise<NextResponse> {
   if (!isMiddlewareAuthEnabled()) {
     return NextResponse.next();
   }
 
-  const { pathname } = request.nextUrl;
   const auth0 = getAuth0();
-
-  if (!isProtectedPath(pathname) && !pathname.startsWith("/api/")) {
-    if (isPublicPath(pathname)) {
-      return auth0 ? auth0.middleware(request) : NextResponse.next();
-    }
-    return auth0 ? auth0.middleware(request) : NextResponse.next();
+  if (!auth0) {
+    return NextResponse.next();
   }
 
-  const authResponse = auth0 ? await auth0.middleware(request) : NextResponse.next();
+  const authResponse = await auth0.middleware(request);
+  const { pathname } = request.nextUrl;
+
+  // Auth0 SDK owns /auth/* — never intercept (avoids broken OAuth callback).
+  if (pathname.startsWith("/auth")) {
+    return authResponse;
+  }
+
+  if (isPublicPath(pathname)) {
+    return mergeAuthHeaders(NextResponse.next(), authResponse);
+  }
+
   const authUser = await getMiddlewareAuthUser(request);
 
   if (pathname.startsWith("/api/")) {
@@ -76,15 +98,12 @@ export async function middleware(request: NextRequest) {
 
   if (!authUser && isProtectedPath(pathname)) {
     const login = new URL("/sign-in", request.url);
-    login.searchParams.set("returnTo", pathname);
-    return NextResponse.redirect(login);
+    login.searchParams.set(
+      "returnTo",
+      pathname + request.nextUrl.search
+    );
+    return mergeAuthHeaders(NextResponse.redirect(login), authResponse);
   }
 
   return authResponse;
 }
-
-export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:png|svg|jpg|jpeg|gif|webp|ico)$).*)",
-  ],
-};

@@ -37,10 +37,9 @@ const AuthContext = createContext<{
   refresh: () => Promise<void>;
 } | null>(null);
 
-const PUBLIC_PREFIXES = ["/auth", "/access", "/invite"];
+const PUBLIC_PREFIXES = ["/auth", "/access", "/invite", "/sign-in", "/post-login"];
 
 function isPublicPath(pathname: string): boolean {
-  if (pathname === "/") return true;
   return PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 
