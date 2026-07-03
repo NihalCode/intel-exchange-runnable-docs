@@ -147,6 +147,74 @@ describe("invite gate", () => {
     expect(result.reason).toBe("not_invited");
   });
 
+  it("allows re-invite after revoke with a new role", async () => {
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    const { invite: first } = await createInvite({
+      email: "reinvite@company.com",
+      role: "viewer",
+      invitedByUserId: "admin",
+    });
+    await revokeInvite(first.id);
+    await createInvite({
+      email: "reinvite@company.com",
+      role: "documentation_manager",
+      invitedByUserId: "admin",
+    });
+    const result = await checkEmailAccess("reinvite@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.reason).toBe("valid_invite");
+    expect(result.role).toBe("documentation_manager");
+  });
+
+  it("allows disabled user when a new pending invite exists", async () => {
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    const user = await createUserFromInvite({
+      auth0UserId: "auth0|viewer",
+      email: "reinvite@company.com",
+      role: "viewer",
+    });
+    await disableUser(user.id);
+    await createInvite({
+      email: "reinvite@company.com",
+      role: "documentation_manager",
+      invitedByUserId: "admin",
+    });
+    const result = await checkEmailAccess("reinvite@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.reason).toBe("valid_invite");
+    expect(result.role).toBe("documentation_manager");
+  });
+
+  it("prefers valid pending invite over revoked invite history", async () => {
+    await createUserFromInvite({
+      auth0UserId: "auth0|admin",
+      email: "admin@company.com",
+      role: "admin",
+    });
+    const { invite: revoked } = await createInvite({
+      email: "switch@company.com",
+      role: "viewer",
+      invitedByUserId: "admin",
+    });
+    await revokeInvite(revoked.id);
+    await createInvite({
+      email: "switch@company.com",
+      role: "documentation_manager",
+      invitedByUserId: "admin",
+    });
+    const result = await checkEmailAccess("switch@company.com");
+    expect(result.allowed).toBe(true);
+    expect(result.role).toBe("documentation_manager");
+  });
+
   it("blocks disabled user", async () => {
     const user = await createUserFromInvite({
       auth0UserId: "auth0|2",

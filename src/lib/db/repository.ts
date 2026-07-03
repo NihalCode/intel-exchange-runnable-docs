@@ -362,6 +362,21 @@ export async function updateUserRole(
   return findUserById(userId);
 }
 
+export async function applyInviteToExistingUser(input: {
+  userId: string;
+  role: DocumentationRole;
+  invitedByUserId?: string | null;
+}): Promise<DocumentationUser | null> {
+  ensureMigrations();
+  if (!isDocumentationRole(input.role)) return null;
+  const now = nowIso();
+  await runExecute(
+    `UPDATE documentation_users SET role = ?, status = 'active', invited_by_user_id = ?, accepted_invite_at = ?, updated_at = ? WHERE id = ?`,
+    [input.role, input.invitedByUserId ?? null, now, now, input.userId]
+  );
+  return findUserById(input.userId);
+}
+
 export async function disableUser(userId: string): Promise<DocumentationUser | null> {
   ensureMigrations();
   const user = await findUserById(userId);

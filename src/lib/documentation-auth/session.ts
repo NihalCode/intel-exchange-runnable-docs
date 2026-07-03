@@ -19,9 +19,12 @@ import type {
 import { getAuth0 } from "@/lib/auth0";
 import {
   acceptInvite,
+  applyInviteToExistingUser,
   createUserFromInvite,
+  findPendingInviteByEmail,
   findUserByAuth0Id,
   findUserByEmail,
+  isValidPendingInvite,
   updateUserOnLogin,
 } from "@/lib/db/repository";
 
@@ -139,25 +142,54 @@ export async function getAppSessionResult(
   const existingByEmail = await findUserByEmail(authUser.email);
 
   if (existingById) {
+    const pendingInvite = await findPendingInviteByEmail(authUser.email);
+
     if (existingById.status === "disabled") {
-      await logDocumentationAuthEvent({
-        action: "auth.blocked_disabled_user",
-        userId: existingById.id,
-        actorEmail: authUser.email,
-      });
-      return {
-        session: null,
-        auth0Authenticated: true,
-        accessDenied: { reason: "disabled" },
-      };
+      if (!pendingInvite || !isValidPendingInvite(pendingInvite)) {
+        await logDocumentationAuthEvent({
+          action: "auth.blocked_disabled_user",
+          userId: existingById.id,
+          actorEmail: authUser.email,
+        });
+        return {
+          session: null,
+          auth0Authenticated: true,
+          accessDenied: { reason: "disabled" },
+        };
+      }
     }
+
+    let sessionUser = existingById;
+
+    if (pendingInvite && isValidPendingInvite(pendingInvite)) {
+      const upgraded = await applyInviteToExistingUser({
+        userId: existingById.id,
+        role: pendingInvite.role,
+        invitedByUserId: pendingInvite.invitedByUserId,
+      });
+      if (upgraded) {
+        sessionUser = upgraded;
+        await acceptInvite(pendingInvite.id);
+        await logDocumentationAuthEvent({
+          action: "auth.invite_accepted",
+          userId: upgraded.id,
+          actorEmail: upgraded.email,
+          metadata: {
+            inviteId: pendingInvite.id,
+            role: upgraded.role,
+            reinvite: true,
+          },
+        });
+      }
+    }
+
     const updated = await updateUserOnLogin({
       auth0UserId: authUser.sub,
       email: authUser.email,
       name: authUser.name,
       picture: authUser.picture,
     });
-    const sessionUser = updated ?? existingById;
+    sessionUser = updated ?? sessionUser;
     if (sessionUser.status === "disabled") {
       return {
         session: null,
