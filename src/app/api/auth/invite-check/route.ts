@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 
-import { cleanEnvValue, isBootstrapOwnerEmail } from "@/lib/documentation-auth/env";
+import { cleanEnvValue, isInitialOwnerEmail } from "@/lib/documentation-auth/env";
 import { normalizeEmail, isValidEmail } from "@/lib/documentation-auth/email-utils";
 import { checkEmailAccess } from "@/lib/documentation-auth/invite-gate";
 import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import type { InviteCheckResponse } from "@/lib/documentation-auth/types";
+import { validateAuthConfig } from "@/lib/documentation-auth/validate-auth-config";
 
 export const runtime = "nodejs";
 
@@ -22,7 +23,15 @@ function sharedSecret(): string | null {
 export async function POST(request: Request) {
   const secret = sharedSecret();
   if (!secret) {
-    return NextResponse.json({ error: "Not configured" }, { status: 503 });
+    const config = validateAuthConfig();
+    return NextResponse.json(
+      {
+        error: "Not configured",
+        code: "auth_config",
+        issues: config.issues.filter((i) => i.includes("AUTH0_ACTION_SHARED_SECRET")),
+      },
+      { status: 503 }
+    );
   }
 
   const authHeader = request.headers.get("authorization")?.trim();
@@ -60,15 +69,24 @@ export async function POST(request: Request) {
   try {
     result = await checkEmailAccess(normalized);
   } catch {
-    if (isBootstrapOwnerEmail(normalized)) {
+    // DB unavailable — allow initial owner cold-start recovery only.
+    if (isInitialOwnerEmail(normalized)) {
       const response: InviteCheckResponse = {
         allowed: true,
-        reason: "valid_invite",
+        reason: "bootstrap_owner",
         role: "owner",
       };
       return NextResponse.json(response);
     }
-    return NextResponse.json({ error: "Database unavailable" }, { status: 503 });
+    const config = validateAuthConfig();
+    return NextResponse.json(
+      {
+        error: "Database unavailable",
+        code: "auth_config",
+        issues: config.issues,
+      },
+      { status: 503 }
+    );
   }
 
   const response: InviteCheckResponse = {

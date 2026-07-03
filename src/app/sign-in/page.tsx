@@ -4,8 +4,16 @@ const ERROR_COPY: Record<string, string> = {
   auth_failed: "Sign-in could not be completed. Choose a sign-in option below to try again.",
   auth_denied: "Sign-in was cancelled or denied.",
   auth_config:
-    "Sign-in is misconfigured on the server. Ask an administrator to verify Auth0 settings for this site.",
+    "Sign-in is misconfigured on the server. Ask an administrator to verify Auth0 settings, DATABASE_URL, and AUTH0_ACTION_SHARED_SECRET for this site.",
   invite_required:
+    "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
+  expired_invite:
+    "Your invite has expired. Ask an administrator to send a new invite before signing in.",
+  disabled:
+    "Your account has been disabled. Contact a workspace administrator for access.",
+  wrong_email:
+    "You signed in with a different email than the one that was invited. Use the invited email address.",
+  not_invited:
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
 };
 

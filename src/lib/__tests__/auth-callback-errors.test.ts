@@ -63,4 +63,24 @@ describe("mapAuthCallbackError", () => {
     expect(mapped.code).toBe("auth_config");
     expect(mapped.message).toMatch(/AUTH0_ACTION_SHARED_SECRET/);
   });
+
+  it("maps disabled access_denied", () => {
+    const mapped = mapAuthCallbackError(
+      new OAuth2Error({
+        code: "access_denied",
+        message: "disabled",
+      })
+    );
+    expect(mapped.code).toBe("disabled");
+  });
+
+  it("maps expired_invite access_denied", () => {
+    const mapped = mapAuthCallbackError(
+      new OAuth2Error({
+        code: "expired_invite",
+        message: "Invite expired",
+      })
+    );
+    expect(mapped.code).toBe("expired_invite");
+  });
 });

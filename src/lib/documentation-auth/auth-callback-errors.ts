@@ -24,11 +24,20 @@ function unwrapOAuth2(error: unknown): OAuth2Error | null {
   return null;
 }
 
-function inviteDeniedMessage(): AuthCallbackFailure {
+function inviteDeniedMessage(code = "invite_required"): AuthCallbackFailure {
   return {
-    code: "invite_required",
+    code,
     message:
-      "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
+      code === "expired_invite"
+        ? "Your invite has expired. Ask an administrator to send a new invite before signing in."
+        : "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
+  };
+}
+
+function disabledMessage(): AuthCallbackFailure {
+  return {
+    code: "disabled",
+    message: "Your account has been disabled. Contact a workspace administrator for access.",
   };
 }
 
@@ -64,10 +73,24 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
     const message = (oauth.message ?? "").toLowerCase();
     if (
       code === "invite_required" ||
+      code === "not_invited" ||
       (code === "access_denied" &&
         (message.includes("must be invited") || message.includes("invite_required")))
     ) {
       return inviteDeniedMessage();
+    }
+    if (code === "expired_invite" || message.includes("expired_invite")) {
+      return inviteDeniedMessage("expired_invite");
+    }
+    if (code === "disabled" || message === "disabled" || message.includes("account has been disabled")) {
+      return disabledMessage();
+    }
+    if (code === "wrong_email" || message.includes("wrong email")) {
+      return {
+        code: "wrong_email",
+        message:
+          "You signed in with a different email than the one that was invited. Use the invited email address.",
+      };
     }
     if (code === "invite_check_failed" || message.includes("invite_check_failed")) {
       return {

@@ -14,7 +14,8 @@
     "build:index": "node scripts/build-agent-index.mjs",
     "pinecone:upsert": "node scripts/pinecone-upsert.mjs",
     "ingest": "node scripts/ingest.mjs",
-    "ingest:all": "node scripts/ingest.mjs --product=ctix && node scripts/ingest.mjs --product=csap && node scripts/ingest.mjs --product=orchestrate && node scripts/ingest.mjs --product=cftr"
+    "ingest:all": "node scripts/ingest.mjs --product=ctix && node scripts/ingest.mjs --product=csap && node scripts/ingest.mjs --product=orchestrate && node scripts/ingest.mjs --product=cftr",
+    "auth:diagnose": "tsx scripts/diagnose-auth.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.24.0",

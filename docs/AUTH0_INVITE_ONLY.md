@@ -22,8 +22,10 @@ AUTH0_CLIENT_ID=
 AUTH0_CLIENT_SECRET=
 AUTH0_ACTION_SHARED_SECRET=              # Strong random secret for Post-Login Action
 APP_BASE_URL=https://your-app.example
-DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL=       # Optional cold-start owner (only when DB has zero users)
-DATABASE_URL=                            # Optional Postgres; SQLite used locally when unset
+# Cold-start owner bootstrap (only when zero active users). Canonical: INITIAL_OWNER_EMAIL
+INITIAL_OWNER_EMAIL=
+# Aliases (legacy): DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL, INITIAL_ADMIN_EMAIL
+DATABASE_URL=                            # Required on Vercel (Postgres). SQLite used locally when unset
 AUTH0_GOOGLE_CONNECTION=google-oauth2    # Optional — connection name for Google button
 AUTH0_EMAIL_CONNECTION=                  # Optional — connection name for company email button
 ```
@@ -119,7 +121,11 @@ When an invited user completes Auth0 login:
 
 ## Bootstrap owner (cold start)
 
-If `DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL` is set, that exact email is **always** allowed to sign in as `owner` (unless that user row is disabled), even when other users or invites already exist in the database. Use this for the primary workspace owner and recovery if invite checks would otherwise block them.
+When **`INITIAL_OWNER_EMAIL`** is set (aliases: `DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL`, `INITIAL_ADMIN_EMAIL`), that email may sign in as `owner` **only while the database has zero active users**. After the first active user exists, bootstrap no longer applies — use invites or ensure the owner has an active user row.
+
+Active users (including `role=owner`, `status=active`) are always allowed without a pending invite.
+
+See [PRODUCTION_AUTH_DEBUG.md](./PRODUCTION_AUTH_DEBUG.md) for troubleshooting.
 
 ## Invite links
 

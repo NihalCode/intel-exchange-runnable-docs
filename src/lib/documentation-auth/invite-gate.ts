@@ -1,8 +1,9 @@
 import "server-only";
 
-import { isBootstrapOwnerEmail } from "@/lib/documentation-auth/env";
+import { isInitialOwnerEmail } from "@/lib/documentation-auth/env";
 import { normalizeEmail, emailDomain } from "@/lib/documentation-auth/email-utils";
 import {
+  countActiveUsers,
   findInviteByEmail,
   findUserByEmail,
   isValidPendingInvite,
@@ -21,6 +22,7 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
   const normalized = normalizeEmail(email);
   const existing = await findUserByEmail(normalized);
 
+  // Rule A: active (or pending) user — always allowed, no invite required.
   if (existing) {
     if (existing.status === "disabled") {
       return { allowed: false, reason: "disabled" };
@@ -30,10 +32,15 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
     }
   }
 
-  if (isBootstrapOwnerEmail(normalized)) {
-    return { allowed: true, reason: "valid_invite", role: "owner" };
+  // Rule E: cold-start bootstrap before stale invite rows can block the owner email.
+  if (isInitialOwnerEmail(normalized)) {
+    const activeCount = await countActiveUsers();
+    if (activeCount === 0) {
+      return { allowed: true, reason: "bootstrap_owner", role: "owner" };
+    }
   }
 
+  // Rule B: valid pending invite (or accepted invite without user row yet).
   const invite = await findInviteByEmail(normalized);
   if (invite) {
     if (invite.status === "pending" && isValidPendingInvite(invite)) {
@@ -60,6 +67,7 @@ export async function checkEmailAccess(email: string): Promise<InviteCheckResult
     }
   }
 
+  // Rule D: uninvited (includes initial owner email once active users exist).
   return { allowed: false, reason: "not_invited" };
 }
 

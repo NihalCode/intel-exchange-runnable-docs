@@ -74,16 +74,45 @@ export function authEnvValidationError(env: AuthEnv = getAuthEnv()): string | nu
   return validateAuthSecret(env.secret!);
 }
 
-export function bootstrapOwnerEmail(): string | null {
-  const raw = cleanEnvValue(process.env.DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL);
-  return raw ? raw.trim().toLowerCase() : null;
+const INITIAL_OWNER_ENV_KEYS = [
+  "INITIAL_OWNER_EMAIL",
+  "DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL",
+  "INITIAL_ADMIN_EMAIL",
+] as const;
+
+/** Which env var supplied the initial owner email, if any. */
+export function initialOwnerEmailSource(): (typeof INITIAL_OWNER_ENV_KEYS)[number] | null {
+  for (const key of INITIAL_OWNER_ENV_KEYS) {
+    const raw = cleanEnvValue(process.env[key]);
+    if (raw) return key;
+  }
+  return null;
 }
 
-/** True when email matches DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL (case-insensitive). */
+/** Canonical initial owner email — checks INITIAL_OWNER_EMAIL, then legacy aliases. */
+export function initialOwnerEmail(): string | null {
+  for (const key of INITIAL_OWNER_ENV_KEYS) {
+    const raw = cleanEnvValue(process.env[key]);
+    if (raw) return raw.trim().toLowerCase();
+  }
+  return null;
+}
+
+/** @deprecated Prefer initialOwnerEmail() — kept for existing imports. */
+export function bootstrapOwnerEmail(): string | null {
+  return initialOwnerEmail();
+}
+
+/** True when email matches the configured initial owner email (case-insensitive). */
+export function isInitialOwnerEmail(email: string): boolean {
+  const owner = initialOwnerEmail();
+  if (!owner) return false;
+  return email.trim().toLowerCase() === owner;
+}
+
+/** @deprecated Prefer isInitialOwnerEmail() */
 export function isBootstrapOwnerEmail(email: string): boolean {
-  const bootstrap = bootstrapOwnerEmail();
-  if (!bootstrap) return false;
-  return email.trim().toLowerCase() === bootstrap;
+  return isInitialOwnerEmail(email);
 }
 
 export function getAppBaseUrl(): string {

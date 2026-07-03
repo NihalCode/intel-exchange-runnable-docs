@@ -64,6 +64,7 @@ export type DocumentationPermission =
 export type InviteCheckReason =
   | "active_user"
   | "valid_invite"
+  | "bootstrap_owner"
   | "not_invited"
   | "disabled"
   | "expired_invite";

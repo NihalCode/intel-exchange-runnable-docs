@@ -130,6 +130,17 @@ export async function listUsers(): Promise<DocumentationUser[]> {
   return rows.map(rowToUser);
 }
 
+/** Count users with status=active (bootstrap runs only when this is zero). */
+export async function countActiveUsers(): Promise<number> {
+  ensureMigrations();
+  const row = await runQueryOne<{ count: number | string }>(
+    "SELECT COUNT(*) AS count FROM documentation_users WHERE status = 'active'"
+  );
+  if (!row) return 0;
+  const value = row.count;
+  return typeof value === "number" ? value : Number.parseInt(String(value), 10) || 0;
+}
+
 export async function findInviteByEmail(email: string): Promise<DocumentationInvite | null> {
   ensureMigrations();
   await markExpiredInvites();
