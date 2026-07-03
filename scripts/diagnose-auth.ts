@@ -2,14 +2,12 @@
  * Safe auth configuration diagnostics — prints status only, never secret values.
  * Usage: npm run auth:diagnose
  */
-import { validateAuthConfig } from "../src/lib/documentation-auth/validate-auth-config";
-import { countActiveUsers } from "../src/lib/db/repository";
-import { getDbBackend, isPostgresConfigured } from "../src/lib/db/client";
+import { validateAuthConfigPublic } from "../src/lib/documentation-auth/auth-config-public";
 
 async function main(): Promise<void> {
   console.log("Cyware API Docs — auth diagnostics\n");
 
-  const config = validateAuthConfig();
+  const config = validateAuthConfigPublic();
 
   console.log("Configuration checks:");
   for (const [key, value] of Object.entries(config.checks)) {
@@ -25,18 +23,17 @@ async function main(): Promise<void> {
     console.log("\nNo configuration issues detected.");
   }
 
-  console.log(`\nDatabase backend: ${isPostgresConfigured() ? getDbBackend() : "sqlite (local)"}`);
+  console.log(
+    `\nDatabase backend: ${config.checks.databaseConfigured ? "postgres" : "sqlite (local or ephemeral on Vercel)"}`
+  );
+  console.log(
+    "Active user count: run GET /api/admin/auth-diagnostics when signed in as admin for live DB state."
+  );
 
-  try {
-    const activeUserCount = await countActiveUsers();
-    console.log(`Active users: ${activeUserCount}`);
-    if (activeUserCount === 0 && !config.checks.initialOwnerEmailSet) {
-      console.log(
-        "\nWarning: zero active users and no INITIAL_OWNER_EMAIL — first owner cannot bootstrap."
-      );
-    }
-  } catch (error) {
-    console.log(`Database unreachable: ${error instanceof Error ? error.message : "unknown error"}`);
+  if (!config.checks.initialOwnerEmailSet && config.checks.vercelWithoutDatabase) {
+    console.log(
+      "\nWarning: no INITIAL_OWNER_EMAIL and no Postgres on Vercel — first owner cannot bootstrap."
+    );
   }
 
   console.log(`\nOverall: ${config.ok ? "OK" : "NEEDS ATTENTION"}`);
