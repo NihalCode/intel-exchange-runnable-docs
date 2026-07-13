@@ -173,6 +173,16 @@ function denialCopy(
         steps: ["Ask another owner or administrator to reactivate your account."],
         showSignInAgain: false,
       };
+    case "recent_auth_required":
+      return {
+        title: "Recent sign-in required",
+        body:
+          "Your session is too old for this action. Sign in again to continue.",
+        steps: [
+          "Sign out and sign in again to refresh your authentication timestamp.",
+        ],
+        showSignInAgain: true,
+      };
     case "no_session":
       return {
         title: "Sign in required",
@@ -182,11 +192,19 @@ function denialCopy(
       };
     default:
       return {
-        title: "This workspace is unavailable",
+        title: "Admin access denied",
         body:
-          "You do not have access to this administrative workspace. Confirm your active organization, membership, role, and multi-factor authentication.",
-        steps: [],
-        showSignInAgain: true,
+          "You are signed in, but this account cannot open the enterprise admin dashboard.",
+        steps: [
+          workspaceRole
+            ? `Workspace role: ${workspaceRole}.`
+            : "Confirm your account has owner, admin, or developer role.",
+          enterpriseRole
+            ? `Enterprise membership role: ${enterpriseRole}.`
+            : "Confirm you belong to an active organization.",
+          `Access check: ${reason}.`,
+        ],
+        showSignInAgain: false,
       };
   }
 }

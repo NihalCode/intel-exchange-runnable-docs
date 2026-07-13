@@ -9,6 +9,11 @@ import {
 import { authorizeEnterprise, mapEnterpriseRole } from "@/lib/enterprise/policy";
 import type { OrganizationContext } from "@/lib/enterprise/types";
 
+/** When true, admin layout entry requires Auth0 MFA claims (amr/acr). Default: false. */
+export function adminLayoutRequiresMfa(): boolean {
+  return process.env.ADMIN_REQUIRE_MFA === "true";
+}
+
 export type AdminAccessDenialReason =
   | "no_session"
   | "organization_context"
@@ -72,16 +77,18 @@ export async function evaluateAdminAccess(
     };
   }
 
-  const assurance = checkStepUpAuthentication(session, { requireMfa: true });
-  if (!assurance.ok) {
-    return {
-      allowed: false,
-      reason: assurance.reason ?? "mfa_required",
-      organizationContext,
-      workspaceRole: session.user.role,
-      enterpriseRole: mapEnterpriseRole(organizationContext.principal.role),
-      mfaMethods: session.claims?.amr,
-    };
+  if (adminLayoutRequiresMfa()) {
+    const assurance = checkStepUpAuthentication(session, { requireMfa: true });
+    if (!assurance.ok) {
+      return {
+        allowed: false,
+        reason: assurance.reason ?? "mfa_required",
+        organizationContext,
+        workspaceRole: session.user.role,
+        enterpriseRole: mapEnterpriseRole(organizationContext.principal.role),
+        mfaMethods: session.claims?.amr,
+      };
+    }
   }
 
   return {
