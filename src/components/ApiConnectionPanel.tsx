@@ -45,7 +45,7 @@ function ConnectionFieldInput({
       type={field.inputType}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      placeholder={field.placeholder}
+      placeholder={compact ? field.label : field.placeholder}
       title={field.label}
       spellCheck={false}
       autoComplete="off"
