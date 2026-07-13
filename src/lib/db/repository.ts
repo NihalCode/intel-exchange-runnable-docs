@@ -312,6 +312,88 @@ export async function createUserFromInvite(input: {
   return rowToUser(row!);
 }
 
+export async function createDirectDocumentationUser(input: {
+  auth0UserId: string;
+  email: string;
+  name?: string | null;
+  role: DocumentationRole;
+  createdByUserId: string;
+  organizationId?: string | null;
+  expiresAt?: string | null;
+  providerSetupStatus?: string | null;
+}): Promise<DocumentationUser> {
+  ensureMigrations();
+  const normalized = normalizeEmail(input.email);
+  const byEmail = await findUserByEmail(normalized);
+  if (byEmail && byEmail.auth0UserId !== input.auth0UserId) {
+    throw new Error("USER_EMAIL_CONFLICT");
+  }
+  let user = byEmail ?? (await findUserByAuth0Id(input.auth0UserId));
+  if (!user) {
+    user = await createUserFromInvite({
+      auth0UserId: input.auth0UserId,
+      email: normalized,
+      name: input.name,
+      role: input.role,
+      invitedByUserId: input.createdByUserId,
+    });
+  } else {
+    await runExecute(
+      `UPDATE documentation_users SET name = ?, role = ?, status = 'active',
+       invited_by_user_id = ?, updated_at = ? WHERE id = ?`,
+      [
+        input.name ?? user.name,
+        input.role,
+        input.createdByUserId,
+        nowIso(),
+        user.id,
+      ]
+    );
+    user = (await findUserById(user.id))!;
+  }
+  const now = nowIso();
+  if (input.organizationId) {
+    const existingMembership = await runQueryOne<{ organization_id: string }>(
+      "SELECT organization_id FROM organization_memberships WHERE user_id = ? LIMIT 1",
+      [user.id]
+    );
+    if (
+      existingMembership &&
+      existingMembership.organization_id !== input.organizationId
+    ) {
+      throw new Error("CROSS_ORGANIZATION_USER");
+    }
+    await runExecute(
+      `INSERT INTO organization_memberships (
+        id, organization_id, user_id, role, status, permissions_json,
+        version, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, 'active', '[]', 1, ?, ?)
+      ON CONFLICT (organization_id, user_id) DO UPDATE SET
+        role = excluded.role, status = 'active', version = organization_memberships.version + 1,
+        updated_at = excluded.updated_at`,
+      [randomUUID(), input.organizationId, user.id, input.role, now, now]
+    );
+  }
+  await runExecute(
+    `INSERT INTO documentation_user_provisioning (
+      user_id, organization_id, expires_at, allowed_environments_json,
+      feature_metadata_json, provider_setup_status, created_at, updated_at
+    ) VALUES (?, ?, ?, '[]', '{}', ?, ?, ?)
+    ON CONFLICT (user_id) DO UPDATE SET
+      organization_id = excluded.organization_id, expires_at = excluded.expires_at,
+      provider_setup_status = excluded.provider_setup_status, updated_at = excluded.updated_at`,
+    [
+      user.id,
+      input.organizationId ?? null,
+      input.expiresAt ?? null,
+      input.providerSetupStatus ?? null,
+      now,
+      now,
+    ]
+  );
+  return user;
+}
+
 export async function updateUserOnLogin(input: {
   auth0UserId: string;
   email: string;

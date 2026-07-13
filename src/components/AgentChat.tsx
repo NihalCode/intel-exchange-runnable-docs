@@ -10,13 +10,11 @@ import { useAgentChat } from "./agent-chat-state";
 import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
 
 const QUICK_STARTS = [
-  "Build me a dashboard that shows threat intel alerts",
-  "Fetch the API snippet for creating an Orchestrate workflow",
-  "Explain this code like I am not a developer",
-  "Create an app that searches CTIX indicators",
-  "Turn this API into a simple form",
-  "Build a workflow launcher for CSAP",
-  "Debug my generated app — make errors easier to understand",
+  "How do I authenticate a CTIX API request?",
+  "Show a Python example for creating an Orchestrate workflow",
+  "Which endpoint searches CTIX indicators?",
+  "Compare the connectivity endpoints across products",
+  "Explain the required parameters for creating a CSAP alert",
 ];
 
 const LANGUAGES: { value: import("@/lib/agent/types").AgentLanguage; label: string }[] = [
@@ -27,7 +25,14 @@ const LANGUAGES: { value: import("@/lib/agent/types").AgentLanguage; label: stri
   { value: "go", label: "Go" },
 ];
 
-export function AgentChat() {
+export function AgentChat({
+  features = {},
+}: {
+  features?: Partial<Record<
+    "app_builder" | "project_workspace" | "preview" | "vercel_deployment" | "git_commit" | "project_download" | "vercel_import",
+    boolean
+  >>;
+}) {
   const chat = useAgentChat();
   const {
     messages,
@@ -64,7 +69,6 @@ export function AgentChat() {
     send,
     handleDeploySuccess,
     loadSavedAppIntoChat,
-    handleSelectApp,
     clearActiveApp,
     removeAttachment,
     triggerDeploy,
@@ -100,13 +104,13 @@ export function AgentChat() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        {showImport && (
+        {features.vercel_import && showImport && (
           <ImportVercelModal
             onClose={() => setShowImport(false)}
             onImported={(id) => loadSavedAppIntoChat(id)}
           />
         )}
-        {showDeployModal && projectApp ? (
+        {features.vercel_deployment && showDeployModal && projectApp ? (
           <AgentDeployModal
             app={projectApp}
             onClose={() => setShowDeployModal(false)}
@@ -116,9 +120,9 @@ export function AgentChat() {
 
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
           <div>
-            <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Cyware AI Agent</h2>
+            <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Documentation Agent</h2>
             <p className="text-[11px] text-zinc-500">
-              Tell me what you want — I&apos;ll find docs, write code, build apps, and explain in plain English.
+              Ask about endpoints, authentication, workflows, parameters, and code examples.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -132,14 +136,16 @@ export function AgentChat() {
           </div>
         </div>
 
-        <AgentSavedAppsBar
-          activeAppId={chat.activeAppId}
-          onSelectApp={(id) => {
-            if (id) loadSavedAppIntoChat(id);
-            else clearActiveApp();
-          }}
-          onImportClick={() => setShowImport(true)}
-        />
+        {features.project_workspace ? (
+          <AgentSavedAppsBar
+            activeAppId={chat.activeAppId}
+            onSelectApp={(id) => {
+              if (id) loadSavedAppIntoChat(id);
+              else clearActiveApp();
+            }}
+            onImportClick={() => features.vercel_import && setShowImport(true)}
+          />
+        ) : null}
 
         {showSettings ? (
           <div className="shrink-0 border-b border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/50">
@@ -168,9 +174,9 @@ export function AgentChat() {
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-2xl dark:bg-sky-950">
                 ✨
               </div>
-              <h2 className="text-lg font-semibold">What would you like to do?</h2>
+              <h2 className="text-lg font-semibold">What would you like to learn?</h2>
               <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                Ask in everyday language — no need to know APIs, Git, or deployment tools.
+                Ask in everyday language. Answers are grounded in the published product documentation.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
                 {QUICK_STARTS.map((ex) => (
@@ -332,7 +338,7 @@ export function AgentChat() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
               rows={1}
-              placeholder="Describe what you want — build an app, fetch a snippet, explain an API…"
+              placeholder="Ask about an endpoint, workflow, parameter, or code example…"
               disabled={loading}
               className="max-h-32 min-h-[42px] flex-1 resize-none rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950"
             />
@@ -347,18 +353,20 @@ export function AgentChat() {
         </div>
       </div>
 
-      <AgentProjectPanel
-        app={projectApp}
-        selectedPath={selectedFilePath}
-        onSelectPath={setSelectedFilePath}
-        logs={panelLogs}
-        onPreview={triggerPreview}
-        onDeploy={triggerDeploy}
-        onCommit={triggerCommit}
-        onDownloadZip={() => void downloadProjectZip()}
-        deploying={deploying}
-        committing={committing}
-      />
+      {features.project_workspace ? (
+        <AgentProjectPanel
+          app={projectApp}
+          selectedPath={selectedFilePath}
+          onSelectPath={setSelectedFilePath}
+          logs={panelLogs}
+          onPreview={features.preview ? triggerPreview : undefined}
+          onDeploy={features.vercel_deployment ? triggerDeploy : undefined}
+          onCommit={features.git_commit ? triggerCommit : undefined}
+          onDownloadZip={features.project_download ? () => void downloadProjectZip() : undefined}
+          deploying={deploying}
+          committing={committing}
+        />
+      ) : null}
     </div>
   );
 }

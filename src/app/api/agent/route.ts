@@ -1,4 +1,7 @@
-import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
+import {
+  guardAgentFeature,
+  guardAskAgent,
+} from "@/lib/documentation-auth/guard-api";
 import { runAgent } from "@/lib/agent/orchestrate";
 import type { AgentRequest } from "@/lib/agent/types";
 import { OpenAiNotConfiguredError } from "@/lib/openai/client";
@@ -14,6 +17,13 @@ export async function POST(req: Request) {
 
   try {
     const body = (await req.json()) as AgentRequest & { llmApiKey?: string };
+    if (body.mode === "app" || body.existingApp) {
+      const featureAccess = await guardAgentFeature(
+        req as import("next/server").NextRequest,
+        "app_builder"
+      );
+      if (featureAccess instanceof Response) return featureAccess;
+    }
     // Ignore any client-supplied key — OpenAI is server-configured only.
     const { llmApiKey: _ignored, ...agentRequest } = body;
     const result = await runAgent(agentRequest);

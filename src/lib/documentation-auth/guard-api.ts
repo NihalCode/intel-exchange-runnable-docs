@@ -9,6 +9,10 @@ import {
 } from "@/lib/documentation-auth/session";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { verifyDeveloperRequest } from "@/lib/developer/access";
+import { hasValidCredential } from "@/lib/documentation-credentials/repository";
+import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
+import type { DocumentationFeatureKey } from "@/lib/documentation-features";
+import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 
 /** Guard documentation API routes with invite-only session + optional permission. */
 export async function guardDocumentationApi(
@@ -44,7 +48,77 @@ export async function guardReadDocs(request: NextRequest): Promise<AppSession | 
 }
 
 export async function guardAskAgent(request: NextRequest): Promise<AppSession | NextResponse> {
-  return guardDocumentationApi(request, "ask_agent");
+  const session = await guardDocumentationApi(request, "ask_agent");
+  if (session instanceof NextResponse) return session;
+  // Disabling Auth0 is itself an explicit local-development mode. It never
+  // applies in production because production configuration requires Auth0.
+  if (!isAuthEnabled() && process.env.NODE_ENV !== "production") return session;
+  try {
+    const context = await resolveOrganizationContext(session);
+    const enabled = await isDocumentationFeatureEnabled({
+      organizationId: context.organization.id,
+      key: "ai_documentation_assistant",
+      role: context.principal.role,
+    });
+    if (!enabled) {
+      return NextResponse.json(
+        { error: "Feature unavailable", code: "FEATURE_DISABLED" },
+        { status: 403 }
+      );
+    }
+    const valid = await hasValidCredential(
+      context.organization.id,
+      session.user.id
+    );
+    if (!valid) {
+      return NextResponse.json(
+        {
+          error: "Authentication required",
+          code: "PRODUCT_AUTH_REQUIRED",
+          action: "/authentication",
+        },
+        { status: 403 }
+      );
+    }
+    return session;
+  } catch {
+    return NextResponse.json(
+      {
+        error: "Authentication required",
+        code: "PRODUCT_AUTH_REQUIRED",
+        action: "/authentication",
+      },
+      { status: 403 }
+    );
+  }
+}
+
+export async function guardAgentFeature(
+  request: NextRequest,
+  key: DocumentationFeatureKey
+): Promise<AppSession | NextResponse> {
+  const session = await guardAskAgent(request);
+  if (session instanceof NextResponse) return session;
+  if (!isAuthEnabled() && process.env.NODE_ENV !== "production") return session;
+  try {
+    const context = await resolveOrganizationContext(session);
+    const enabled = await isDocumentationFeatureEnabled({
+      organizationId: context.organization.id,
+      key,
+      role: context.principal.role,
+    });
+    return enabled
+      ? session
+      : NextResponse.json(
+          { error: "Feature unavailable", code: "FEATURE_DISABLED" },
+          { status: 403 }
+        );
+  } catch {
+    return NextResponse.json(
+      { error: "Feature unavailable", code: "FEATURE_DISABLED" },
+      { status: 403 }
+    );
+  }
 }
 
 export async function guardDeveloperDiagnostics(

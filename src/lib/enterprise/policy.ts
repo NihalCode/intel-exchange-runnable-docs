@@ -16,6 +16,9 @@ const ROLE_PERMISSIONS: Record<EnterpriseRole, readonly EnterprisePermission[]> 
     "changes.create",
     "changes.submit",
     "credentials.read_metadata",
+    "features.read",
+    "schemas.read",
+    "schemas.manage",
     "audit.read",
     "jobs.read",
   ],
@@ -68,6 +71,9 @@ export function authorizeEnterprise(
       permission === "security_settings.manage" ||
       permission === "audit.read_sensitive" ||
       permission === "credentials.manage" ||
+      permission === "features.manage" ||
+      permission === "schemas.review" ||
+      permission === "schemas.publish" ||
       permission === "resources.write_production"
     ) {
       return false;

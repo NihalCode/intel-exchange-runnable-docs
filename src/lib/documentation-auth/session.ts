@@ -135,20 +135,57 @@ async function resolveAuth0User(request?: NextRequest) {
     : await auth0.getSession();
   const authUser = authSession?.user;
   if (!authUser?.sub || !authUser.email) return null;
+
+  const idTokenClaims = extractIdTokenClaims(authSession);
+  const amrFromUser = Array.isArray(authUser.amr)
+    ? authUser.amr.filter((value): value is string => typeof value === "string")
+    : undefined;
+  const amrFromToken = Array.isArray(idTokenClaims?.amr)
+    ? idTokenClaims.amr.filter((value): value is string => typeof value === "string")
+    : undefined;
+
   return {
     sub: authUser.sub,
     email: normalizeEmail(authUser.email),
     name: authUser.name ?? authUser.nickname ?? null,
     picture: authUser.picture ?? null,
     organizationId:
-      typeof authUser.org_id === "string" ? authUser.org_id : undefined,
+      typeof authUser.org_id === "string"
+        ? authUser.org_id
+        : typeof idTokenClaims?.org_id === "string"
+          ? idTokenClaims.org_id
+          : undefined,
     authTime:
-      typeof authUser.auth_time === "number" ? authUser.auth_time : undefined,
-    amr: Array.isArray(authUser.amr)
-      ? authUser.amr.filter((value): value is string => typeof value === "string")
-      : undefined,
-    acr: typeof authUser.acr === "string" ? authUser.acr : undefined,
+      typeof authUser.auth_time === "number"
+        ? authUser.auth_time
+        : typeof idTokenClaims?.auth_time === "number"
+          ? idTokenClaims.auth_time
+          : undefined,
+    amr: amrFromUser?.length ? amrFromUser : amrFromToken,
+    acr:
+      typeof authUser.acr === "string"
+        ? authUser.acr
+        : typeof idTokenClaims?.acr === "string"
+          ? idTokenClaims.acr
+          : undefined,
   };
+}
+
+function extractIdTokenClaims(
+  authSession: { tokenSet?: { idToken?: string } } | null | undefined
+): Record<string, unknown> | null {
+  const idToken = authSession?.tokenSet?.idToken;
+  if (!idToken) return null;
+  const parts = idToken.split(".");
+  if (parts.length < 2) return null;
+  try {
+    const payload = parts[1]!.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = payload + "=".repeat((4 - (payload.length % 4)) % 4);
+    const json = Buffer.from(padded, "base64").toString("utf8");
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
 }
 
 function toAppSession(stored: {

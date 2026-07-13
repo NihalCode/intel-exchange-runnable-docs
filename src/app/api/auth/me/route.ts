@@ -5,31 +5,25 @@ import {
   getAppSessionResult,
   sessionToJson,
 } from "@/lib/documentation-auth/session";
-import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
-import { authorizeEnterprise } from "@/lib/enterprise/policy";
+import { evaluateAdminAccess } from "@/lib/enterprise/admin-access";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   const result = await getAppSessionResult();
   if (result.session) {
-    let enterpriseCapabilities: string[] = [];
-    try {
-      const context = await resolveOrganizationContext(result.session);
-      if (
-        authorizeEnterprise(context.principal, "admin_dashboard.access", {
-          organizationId: context.organization.id,
-        })
-      ) {
-        enterpriseCapabilities = ["admin_dashboard.access"];
-      }
-    } catch {
-      // The regular documentation session remains valid without enterprise context.
-    }
+    const access = await evaluateAdminAccess(result.session);
+    const enterpriseCapabilities = access.allowed ? ["admin_dashboard.access"] : [];
     return NextResponse.json({
       auth0Authenticated: true,
       ...sessionToJson(result.session),
       enterpriseCapabilities,
+      adminAccess: access.allowed
+        ? { allowed: true }
+        : {
+            allowed: false,
+            reason: access.reason ?? "missing_permission",
+          },
     });
   }
 

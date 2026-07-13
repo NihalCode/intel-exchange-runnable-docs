@@ -24,14 +24,14 @@ export function AgentProjectPanel({
   selectedPath: string | null;
   onSelectPath: (path: string) => void;
   logs: string[];
-  onPreview: () => void;
-  onDeploy: () => void;
-  onCommit: () => void;
-  onDownloadZip: () => void;
+  onPreview?: () => void;
+  onDeploy?: () => void;
+  onCommit?: () => void;
+  onDownloadZip?: () => void;
   deploying: boolean;
   committing: boolean;
 }) {
-  const files = useMemo(() => (app?.files ? sortPaths(app.files) : []), [app?.files]);
+  const files = useMemo(() => (app?.files ? sortPaths(app.files) : []), [app]);
   const selected = files.find((f) => f.path === selectedPath) ?? files[0];
   const mockPreview = !isLiveApiUiEnabled();
 
@@ -39,38 +39,38 @@ export function AgentProjectPanel({
     <aside className="flex w-[min(420px,38vw)] shrink-0 flex-col border-l border-zinc-200 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/30">
       <div className="flex flex-wrap items-center gap-1.5 border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
         <span className="mr-auto text-xs font-semibold text-zinc-600 dark:text-zinc-400">Project</span>
-        <button
+        {onPreview ? <button
           type="button"
           disabled={!app}
           onClick={onPreview}
           className="rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-white disabled:opacity-40 dark:border-zinc-700"
         >
           Preview
-        </button>
-        <button
+        </button> : null}
+        {onDeploy ? <button
           type="button"
           disabled={!app || deploying}
           onClick={onDeploy}
           className="rounded-md bg-indigo-600 px-2 py-0.5 text-[11px] font-semibold text-white hover:bg-indigo-700 disabled:opacity-40"
         >
           {deploying ? "Deploying…" : "Deploy"}
-        </button>
-        <button
+        </button> : null}
+        {onCommit ? <button
           type="button"
           disabled={!app || committing}
           onClick={onCommit}
           className="rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-white disabled:opacity-40 dark:border-zinc-700"
         >
           {committing ? "Saving…" : "Commit"}
-        </button>
-        <button
+        </button> : null}
+        {onDownloadZip ? <button
           type="button"
           disabled={!app}
           onClick={onDownloadZip}
           className="rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-white disabled:opacity-40 dark:border-zinc-700"
         >
           Download
-        </button>
+        </button> : null}
       </div>
 
       {!app ? (

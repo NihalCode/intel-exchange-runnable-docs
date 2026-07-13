@@ -1,4 +1,4 @@
-import { guardDeveloperDiagnostics } from "@/lib/documentation-auth/guard-api";
+import { guardAgentFeature } from "@/lib/documentation-auth/guard-api";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,7 +11,10 @@ interface CommitBody {
 
 /** POST — prepare (or optionally execute) a git commit for generated agent files. */
 export async function POST(req: Request) {
-  const session = await guardDeveloperDiagnostics(req as import("next/server").NextRequest);
+  const session = await guardAgentFeature(
+    req as import("next/server").NextRequest,
+    "git_commit"
+  );
   if (session instanceof Response) return session;
 
   let body: CommitBody;

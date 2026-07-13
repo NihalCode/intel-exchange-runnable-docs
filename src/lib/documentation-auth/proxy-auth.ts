@@ -44,18 +44,8 @@ export function isProtectedDocumentationPath(pathname: string): boolean {
 }
 
 function isProtectedPath(pathname: string): boolean {
-  if (pathname === "/") return true;
-  if (pathname.startsWith("/docs")) return true;
-  if (pathname.startsWith("/agent")) return true;
-  if (pathname.startsWith("/developer")) return true;
-  if (pathname.startsWith("/settings")) return true;
-  if (pathname.startsWith("/admin")) return true;
-  if (pathname.startsWith("/api/agent")) return true;
-  if (pathname === "/api/run" || pathname.startsWith("/api/run/")) return true;
-  if (pathname.startsWith("/api/users")) return true;
-  if (pathname.startsWith("/api/admin")) return true;
-  if (pathname.startsWith("/api/docs")) return true;
-  return false;
+  if (isPublicPath(pathname) || isPublicApiPath(pathname)) return false;
+  return true;
 }
 
 /** Preserve Auth0 session / transaction cookies on custom responses. */

@@ -1,21 +1,61 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AgentChat } from "@/components/AgentChat";
+import { getAppSession } from "@/lib/documentation-auth/session";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { hasValidCredential } from "@/lib/documentation-credentials/repository";
+import { listDocumentationFeatures } from "@/lib/documentation-features";
+import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 
 export const metadata: Metadata = {
   title: "AI Agent — Cyware API Docs",
   description:
-    "Unified Cyware AI Agent — ask in plain English, fetch API snippets, build apps, preview, deploy, and explain code.",
+    "Ask grounded questions across Cyware product documentation.",
 };
 
-export default function AgentPage() {
+export default async function AgentPage() {
+  const session = await getAppSession();
+  let credentialReady = !isAuthEnabled() && process.env.NODE_ENV !== "production";
+  let features: Record<string, boolean> = {};
+  if (session && !credentialReady) {
+    try {
+      const context = await resolveOrganizationContext(session);
+      credentialReady = await hasValidCredential(
+        context.organization.id,
+        session.user.id
+      );
+      features = Object.fromEntries(
+        (await listDocumentationFeatures(context.organization.id)).map((flag) => [
+          flag.key,
+          flag.enabled &&
+            (!flag.allowedRoles.length || flag.allowedRoles.includes(context.principal.role)),
+        ])
+      );
+    } catch {
+      credentialReady = false;
+    }
+  }
   return (
-    <div className="mx-auto max-w-[1600px]">
-      <h1 className="mb-1 text-2xl font-bold tracking-tight">Cyware AI Agent</h1>
+    <div className="mx-auto max-w-5xl">
+      <h1 className="mb-1 text-2xl font-bold tracking-tight">Documentation Agent</h1>
       <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
-        One workspace for questions, API examples, app building, and plain-English explanations across
-        CTIX, CSAP, Orchestrate, and CFTR.
+        Ask grounded questions and generate API examples across CTIX, CSAP, Orchestrate, and CFTR.
       </p>
-      <AgentChat />
+      {credentialReady ? (
+        <AgentChat features={features} />
+      ) : (
+        <section className="mt-8 rounded-xl border border-zinc-200 p-8 text-center dark:border-zinc-800">
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800" aria-hidden="true">🔒</div>
+          <h2 className="mt-4 text-lg font-semibold">Connect a product to continue</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500">
+            The Documentation Agent requires one valid per-user connection to CTIX, CFTR,
+            Orchestrate, or CSAP.
+          </p>
+          <Link href="/authentication" className="mt-5 inline-flex rounded-md bg-sky-600 px-4 py-2 text-sm font-medium text-white">
+            Configure authentication
+          </Link>
+        </section>
+      )}
     </div>
   );
 }

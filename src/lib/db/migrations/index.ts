@@ -10,6 +10,10 @@ import {
   POSTGRES_SECURITY_SETTINGS_MIGRATION_SQL,
   SQLITE_SECURITY_SETTINGS_MIGRATION_SQL,
 } from "@/lib/db/migrations/003_enterprise_security_settings";
+import {
+  POSTGRES_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
+  SQLITE_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
+} from "@/lib/db/migrations/004_documentation_platform";
 
 export interface VersionedMigration {
   version: number;
@@ -40,6 +44,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "enterprise_security_settings",
     sqlite: SQLITE_SECURITY_SETTINGS_MIGRATION_SQL,
     postgres: POSTGRES_SECURITY_SETTINGS_MIGRATION_SQL,
+  },
+  {
+    version: 4,
+    name: "documentation_platform",
+    sqlite: SQLITE_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
+    postgres: POSTGRES_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
   },
 ] as const;
 

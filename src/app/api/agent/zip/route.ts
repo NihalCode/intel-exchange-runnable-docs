@@ -1,4 +1,4 @@
-import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
+import { guardAgentFeature } from "@/lib/documentation-auth/guard-api";
 import JSZip from "jszip";
 
 export const runtime = "nodejs";
@@ -9,7 +9,10 @@ interface ZipRequest {
 }
 
 export async function POST(req: Request) {
-  const session = await guardAskAgent(req as import("next/server").NextRequest);
+  const session = await guardAgentFeature(
+    req as import("next/server").NextRequest,
+    "project_download"
+  );
   if (session instanceof Response) return session;
 
   try {

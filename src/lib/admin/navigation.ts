@@ -38,6 +38,51 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         exact: true,
       },
       {
+        href: "/admin/documentation-agent/schemas",
+        label: "Schemas",
+        permission: "schemas.read",
+      },
+      {
+        href: "/admin/documentation-agent/users",
+        label: "Users",
+        permission: "admin_dashboard.access",
+      },
+      {
+        href: "/admin/documentation-agent/authentication",
+        label: "Authentication",
+        permission: "credentials.read_metadata",
+      },
+      {
+        href: "/admin/documentation-agent/features",
+        label: "Features",
+        permission: "features.read",
+      },
+      {
+        href: "/admin/documentation-agent/deployments",
+        label: "Deployments",
+        permission: "jobs.read",
+      },
+      {
+        href: "/admin/documentation-agent/environments",
+        label: "Environments",
+        permission: "resources.read",
+      },
+      {
+        href: "/admin/documentation-agent/change-requests",
+        label: "Change Requests",
+        permission: "changes.create",
+      },
+      {
+        href: "/admin/documentation-agent/audit-logs",
+        label: "Audit Logs",
+        permission: "audit.read",
+      },
+      {
+        href: "/admin/documentation-agent/settings",
+        label: "Settings",
+        permission: "security_settings.manage",
+      },
+      {
         href: "/admin/documentation-agent/apis",
         label: "APIs",
         permission: "resources.read",

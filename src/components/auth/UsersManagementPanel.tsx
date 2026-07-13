@@ -15,78 +15,30 @@ interface UserRow {
   lastLoginAt?: string | null;
 }
 
-interface InviteRow {
-  id: string;
-  email: string;
-  role: DocumentationRole;
-  status: string;
-  expiresAt: string;
-}
-
-function InviteLinkCopy({ url }: { url: string }) {
-  const [copied, setCopied] = useState(false);
-
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard unavailable */
-    }
-  }
-
-  return (
-    <div
-      className="mt-3 flex flex-col gap-2 rounded bg-zinc-100 p-2 text-xs dark:bg-zinc-800 sm:flex-row sm:items-center sm:justify-between"
-      data-testid="invite-url"
-    >
-      <div className="min-w-0 flex-1">
-        <span className="text-zinc-500">Invite link: </span>
-        <code className="break-all">{url}</code>
-      </div>
-      <button
-        type="button"
-        onClick={() => void copyLink()}
-        data-testid="invite-url-copy"
-        className="shrink-0 self-start rounded border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-950 sm:self-center"
-      >
-        {copied ? "Copied" : "Copy link"}
-      </button>
-    </div>
-  );
+async function csrfToken() {
+  const response = await fetch("/api/admin/control-plane/context", { cache: "no-store" });
+  return ((await response.json()) as { csrfToken: string }).csrfToken;
 }
 
 export function UsersManagementPanel() {
   const { state, hasPermission } = useDocumentationAuth();
   const canManage = hasPermission("manage_users");
   const [users, setUsers] = useState<UserRow[]>([]);
-  const [invites, setInvites] = useState<InviteRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<DocumentationRole>("viewer");
-  const [inviteExpiryDays, setInviteExpiryDays] = useState(7);
-  const [lastInviteUrl, setLastInviteUrl] = useState<string | null>(null);
-  const [lastInviteStatus, setLastInviteStatus] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [role, setRole] = useState<DocumentationRole>("viewer");
+  const [expiresAt, setExpiresAt] = useState("");
+  const [status, setStatus] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const res = await fetch("/api/users");
-      if (res.status === 403) {
-        setError("You do not have permission to manage users.");
-        return;
-      }
-      if (!res.ok) {
-        setError("Could not load users.");
-        return;
-      }
-      const data = (await res.json()) as { users?: UserRow[]; invites?: InviteRow[] };
-      setUsers(data.users ?? []);
-      setInvites(data.invites ?? []);
+      const response = await fetch("/api/users", { cache: "no-store" });
+      if (!response.ok) return setError("Could not load users.");
+      setUsers(((await response.json()) as { users: UserRow[] }).users);
     } catch {
       setError("Could not load users.");
     } finally {
@@ -95,80 +47,45 @@ export function UsersManagementPanel() {
   }, []);
 
   useEffect(() => {
-    if (state.loading) return;
-    if (canManage) void load();
-    else {
-      setLoading(false);
-      setError("You do not have permission to manage users.");
-    }
+    queueMicrotask(() => {
+      if (!state.loading && canManage) void load();
+      else if (!state.loading) setLoading(false);
+    });
   }, [canManage, load, state.loading]);
 
-  async function createInvite(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canManage) return;
-    setBusy("invite");
+  async function addUser(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy("add");
     setError(null);
-    setLastInviteUrl(null);
-    setLastInviteStatus(null);
+    setStatus("");
     try {
-      const invited = inviteEmail.trim();
-      const res = await fetch("/api/users", {
+      const response = await fetch("/api/users", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: invited,
-          role: inviteRole,
-          expiryDays: inviteExpiryDays,
-        }),
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": await csrfToken() },
+        body: JSON.stringify({ email, name, role, expiresAt: expiresAt || null }),
       });
-      const data = (await res.json()) as {
-        error?: string;
-        inviteUrl?: string;
-      };
-      if (!res.ok) {
-        setError(data.error ?? "Invite failed");
-        return;
-      }
-      setLastInviteUrl(data.inviteUrl ?? null);
-      setLastInviteStatus(
-        `Invite created for ${invited}. Copy the link below and share it with them.`
+      const data = (await response.json()) as { error?: string; setupStatus?: string };
+      if (!response.ok) return setError(data.error ?? "User provisioning failed.");
+      setStatus(
+        data.setupStatus === "provider_setup_created"
+          ? "User added. Auth0 setup is ready for provider-managed completion."
+          : "User added. Provider setup is pending."
       );
-      setInviteEmail("");
+      setEmail("");
+      setName("");
+      setExpiresAt("");
       await load();
     } finally {
       setBusy(null);
     }
   }
 
-  async function revokeInvite(id: string) {
-    setBusy(id);
-    await fetch(`/api/users/invites/${id}/revoke`, { method: "POST" });
-    await load();
-    setBusy(null);
-  }
-
-  async function refreshInviteLink(id: string, email: string) {
-    setBusy(id);
-    const res = await fetch(`/api/users/invites/${id}/resend`, { method: "POST" });
-    const data = (await res.json()) as { inviteUrl?: string; error?: string };
-    if (!res.ok) {
-      setError(data.error ?? "Could not create a new invite link.");
-    } else if (data.inviteUrl) {
-      setLastInviteUrl(data.inviteUrl);
-      setLastInviteStatus(
-        `New link for ${email}. Copy below and share it — the previous link no longer works.`
-      );
-    }
-    await load();
-    setBusy(null);
-  }
-
-  async function changeRole(userId: string, role: DocumentationRole) {
+  async function changeRole(userId: string, nextRole: DocumentationRole) {
     setBusy(userId);
     await fetch(`/api/users/${userId}/role`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role }),
+      body: JSON.stringify({ role: nextRole }),
     });
     await load();
     setBusy(null);
@@ -181,203 +98,38 @@ export function UsersManagementPanel() {
     setBusy(null);
   }
 
-  if (state.loading || loading) {
-    return <p className="text-sm text-zinc-500">Loading users…</p>;
-  }
-
-  if (error) {
-    return (
-      <p className="text-sm text-red-600 dark:text-red-400" data-testid="users-error">
-        {error}
-      </p>
-    );
-  }
+  if (state.loading || loading) return <p className="text-sm text-zinc-500">Loading users…</p>;
+  if (!canManage) return <p className="text-sm text-red-600">You do not have permission to manage users.</p>;
 
   return (
     <div data-testid="users-management" className="space-y-8">
-      {canManage ? (
-        <form onSubmit={createInvite} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold">Invite user</h2>
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Create an invite link and share it with your teammate (Slack, email, etc.).
-          </p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            <label className="block text-xs">
-              <span className="text-zinc-500">Email</span>
-              <input
-                type="email"
-                required
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                data-testid="invite-email"
-              />
-            </label>
-            <label className="block text-xs">
-              <span className="text-zinc-500">Role</span>
-              <select
-                value={inviteRole}
-                onChange={(e) => setInviteRole(e.target.value as DocumentationRole)}
-                className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                data-testid="invite-role"
-              >
-                {DOCUMENTATION_ROLES.filter((r) => r !== "owner").map((r) => (
-                  <option key={r} value={r}>
-                    {r}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="block text-xs">
-              <span className="text-zinc-500">Expiration (days)</span>
-              <input
-                type="number"
-                min={1}
-                max={90}
-                value={inviteExpiryDays}
-                onChange={(e) => setInviteExpiryDays(Number(e.target.value))}
-                className="mt-1 w-full rounded border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-                data-testid="invite-expiry"
-              />
-            </label>
-          </div>
-          <button
-            type="submit"
-            disabled={busy === "invite"}
-            data-testid="invite-submit"
-            className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50"
-          >
-            {busy === "invite" ? "Creating…" : "Create invite link"}
-          </button>
-          {lastInviteStatus ? (
-            <p
-              className="mt-3 text-xs text-zinc-600 dark:text-zinc-400"
-              data-testid="invite-status"
-            >
-              {lastInviteStatus}
-            </p>
-          ) : null}
-          {lastInviteUrl ? <InviteLinkCopy url={lastInviteUrl} /> : null}
-        </form>
-      ) : null}
-
-      <section>
-        <h2 className="text-sm font-semibold">Pending invites</h2>
-        <div className="mt-2 overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-zinc-500">
-                <th className="py-2 pr-4">Email</th>
-                <th className="py-2 pr-4">Role</th>
-                <th className="py-2 pr-4">Expires</th>
-                <th className="py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invites
-                .filter((i) => i.status === "pending")
-                .map((invite) => (
-                  <tr key={invite.id} data-testid={`invite-row-${invite.id}`}>
-                    <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                      {invite.email}
-                    </td>
-                    <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                      {invite.role}
-                    </td>
-                    <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                      {new Date(invite.expiresAt).toLocaleDateString()}
-                    </td>
-                    <td className="border-t border-zinc-200 py-2 dark:border-zinc-800">
-                      {canManage ? (
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            disabled={busy === invite.id}
-                            onClick={() => void refreshInviteLink(invite.id, invite.email)}
-                            className="text-xs text-sky-700 underline dark:text-sky-400"
-                          >
-                            New link
-                          </button>
-                          <button
-                            type="button"
-                            disabled={busy === invite.id}
-                            onClick={() => void revokeInvite(invite.id)}
-                            className="text-xs text-red-600 underline"
-                          >
-                            Revoke
-                          </button>
-                        </div>
-                      ) : null}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+      <form onSubmit={addUser} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+        <h2 className="text-sm font-semibold">Add user</h2>
+        <p className="mt-1 text-xs text-zinc-500">The account is provisioned directly in Auth0. Password setup remains provider-managed.</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-4">
+          <label className="text-xs"><span>Email</span><input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>
+          <label className="text-xs"><span>Display name</span><input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>
+          <label className="text-xs"><span>Role</span><select value={role} onChange={(event) => setRole(event.target.value as DocumentationRole)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900">{DOCUMENTATION_ROLES.filter((value) => state.user?.role === "owner" || value !== "owner").map((value) => <option key={value}>{value}</option>)}</select></label>
+          <label className="text-xs"><span>Access expiry</span><input type="date" value={expiresAt} onChange={(event) => setExpiresAt(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>
         </div>
-      </section>
-
+        <button disabled={busy === "add"} className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">{busy === "add" ? "Adding…" : "Add user"}</button>
+        {status ? <p className="mt-3 text-xs text-emerald-700" role="status">{status}</p> : null}
+        {error ? <p className="mt-3 text-xs text-red-600">{error}</p> : null}
+      </form>
       <section>
-        <h2 className="text-sm font-semibold">Active users</h2>
+        <h2 className="text-sm font-semibold">Documentation users</h2>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-zinc-500">
-                <th className="py-2 pr-4">Email</th>
-                <th className="py-2 pr-4">Role</th>
-                <th className="py-2 pr-4">Status</th>
-                <th className="py-2 pr-4">Last login</th>
-                <th className="py-2">Actions</th>
+            <thead><tr className="text-left text-xs text-zinc-500"><th className="py-2">User</th><th>Role</th><th>Status</th><th>Last login</th><th>Actions</th></tr></thead>
+            <tbody>{users.map((user) => (
+              <tr key={user.id}>
+                <td className="border-t py-2 dark:border-zinc-800">{user.name || user.email}<span className="block text-xs text-zinc-500">{user.email}</span></td>
+                <td className="border-t dark:border-zinc-800">{user.id !== state.user?.id ? <select value={user.role} disabled={busy === user.id} onChange={(event) => void changeRole(user.id, event.target.value as DocumentationRole)}>{DOCUMENTATION_ROLES.map((value) => <option key={value}>{value}</option>)}</select> : user.role}</td>
+                <td className="border-t dark:border-zinc-800">{user.status}</td>
+                <td className="border-t text-xs dark:border-zinc-800">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</td>
+                <td className="border-t dark:border-zinc-800">{user.id !== state.user?.id && user.status === "active" ? <button onClick={() => void disableUser(user.id)} className="text-xs text-red-600 underline">Disable</button> : null}</td>
               </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id} data-testid={`user-row-${user.id}`}>
-                  <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                    {user.email}
-                    {user.id === state.user?.id ? " (you)" : ""}
-                  </td>
-                  <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                    {canManage && user.id !== state.user?.id ? (
-                      <select
-                        value={user.role}
-                        disabled={busy === user.id}
-                        onChange={(e) =>
-                          void changeRole(user.id, e.target.value as DocumentationRole)
-                        }
-                      >
-                        {DOCUMENTATION_ROLES.map((r) => (
-                          <option key={r} value={r}>
-                            {r}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      user.role
-                    )}
-                  </td>
-                  <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                    {user.status}
-                  </td>
-                  <td className="border-t border-zinc-200 py-2 pr-4 dark:border-zinc-800">
-                    {user.lastLoginAt
-                      ? new Date(user.lastLoginAt).toLocaleString()
-                      : "—"}
-                  </td>
-                  <td className="border-t border-zinc-200 py-2 dark:border-zinc-800">
-                    {canManage && user.id !== state.user?.id && user.status === "active" ? (
-                      <button
-                        type="button"
-                        disabled={busy === user.id}
-                        onClick={() => void disableUser(user.id)}
-                        className="text-xs text-red-600 underline"
-                      >
-                        Disable
-                      </button>
-                    ) : null}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            ))}</tbody>
           </table>
         </div>
       </section>

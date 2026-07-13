@@ -35,8 +35,28 @@ Copy `.env.example` → `.env.local`:
 | `DEFAULT_PRODUCT_ID` | Default product in UI (default: `ctix`) |
 | `ENABLE_API_EXECUTION` | Enable live API execution (optional) |
 | `MAX_CRAWL_PAGES` | Limit pages during ingest (optional) |
+| `DOCUMENTATION_CREDENTIAL_ENCRYPTION_KEY` | Required base64 32-byte AES-256-GCM key for per-user product secrets |
+| `AUTH0_MANAGEMENT_CLIENT_ID` / `AUTH0_MANAGEMENT_CLIENT_SECRET` | Auth0 M2M application used for direct user provisioning |
+| `AUTH0_MANAGEMENT_AUDIENCE` | Auth0 Management API audience (defaults to the issuer `/api/v2/`) |
+| `AUTH0_DATABASE_CONNECTION` | Auth0 connection used for provider-managed user setup |
 
-No real API credentials are required for browsing, search, or snippet generation.
+All application routes are Auth0 protected. The Documentation Agent additionally requires one
+currently valid per-user connection to CTIX, CFTR, Orchestrate, or CSAP. Users configure these
+only at `/authentication`; raw secrets are encrypted server-side and never stored in browser
+storage or returned by metadata APIs.
+
+## Enterprise documentation lifecycle
+
+- `/admin/documentation-agent/schemas` accepts OpenAPI 3 JSON/YAML, Postman JSON, legacy
+  Theneo input, and GraphQL SDL. Validation, deterministic preview, structural diff, review,
+  approval, and idempotent publication are organization scoped.
+- Developers can upload, validate, preview, and submit. Only admins or owners can approve and
+  publish, and authors cannot approve their own versions.
+- `/admin/documentation-agent/features` controls runtime capabilities. Builder, project,
+  deployment, import, commit, download, preview, and API-console flags default off and are
+  enforced by backend routes.
+- `/admin/documentation-agent/users` provisions users directly through Auth0 Management API;
+  setup remains provider managed and setup ticket URLs are not exposed.
 
 ## Content pipeline
 

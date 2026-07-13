@@ -4,12 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { NavNode } from "@/lib/types";
-import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
-import { productConnectionUi } from "@/lib/products/connection-ui";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
-import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { ProductSelector, useProduct } from "./ProductContext";
-import { ProductRunSettingsSync, useRunSettings } from "./RunSettings";
+import { ProductRunSettingsSync } from "./RunSettings";
 import { Sidebar } from "./Sidebar";
 
 function WorkspaceSettingsLink() {
@@ -74,7 +71,7 @@ function EnterpriseAdminLink() {
           : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
       }`}
     >
-      Enterprise
+      Admin
     </Link>
   );
 }
@@ -103,29 +100,40 @@ function ThemeToggle() {
   );
 }
 
-function HeaderBar() {
-  const { productId } = useProduct();
-  const ui = productConnectionUi(productId);
-  const { credentialsConfigured, authReady } = useRunSettings();
-
+function ProfileControl() {
+  const { state } = useDocumentationAuth();
+  if (state.loading || !state.user) return null;
+  const label = state.user.name || state.user.email;
   return (
-    <div className="relative flex min-w-0 flex-1 items-center gap-2">
-      <ApiConnectionPanel compact className="min-w-0" />
-      {!isLiveApiUiEnabled() ? (
-        <Link
-          href="/developer"
-          className="hidden shrink-0 text-[11px] text-sky-700 underline sm:inline dark:text-sky-400"
-        >
-          Admin
-        </Link>
-      ) : null}
-      <span className="hidden shrink-0 text-[10px] text-zinc-400 xl:inline">
-        {credentialsConfigured
-          ? authReady
-            ? `${ui.shortLabel} ready`
-            : `Add ${ui.fields.find((f) => f.kind === "secret-key")?.label ?? "Secret Key"}`
-          : `Connect ${ui.shortLabel}`}
-      </span>
+    <Link
+      href="/auth/logout"
+      title={`${label} — sign out`}
+      aria-label={`${label} — sign out`}
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+    >
+      {label.slice(0, 1).toUpperCase()}
+    </Link>
+  );
+}
+
+function HeaderBar() {
+  return (
+    <div className="relative flex min-w-0 flex-1 items-center justify-end gap-1">
+      <Link href="/" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 md:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
+        Documentation
+      </Link>
+      <Link href="/docs/ctix" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 md:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
+        API Reference
+      </Link>
+      <Link href="/docs/ctix/getting-started" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 lg:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
+        Guides
+      </Link>
+      <Link href="/changelog" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 xl:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
+        Changelog
+      </Link>
+      <Link href="/authentication" className="rounded-md px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900">
+        Authentication
+      </Link>
     </div>
   );
 }
@@ -138,7 +146,7 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { productId, product } = useProduct();
+  const { productId } = useProduct();
   const [nav, setNav] = useState<NavNode[]>(initialNav);
 
   useEffect(() => {
@@ -179,10 +187,7 @@ export function AppShell({
         </button>
 
         <Link href="/" className="flex shrink-0 items-center gap-1.5">
-          <span className="hidden text-sm font-semibold sm:inline">Cyware API Docs</span>
-          <span className="rounded bg-sky-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
-            RUNNABLE
-          </span>
+          <span className="hidden text-sm font-semibold sm:inline">Cyware Documentation</span>
         </Link>
 
         <ProductSelector className="hidden md:flex" />
@@ -195,7 +200,7 @@ export function AppShell({
               : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
           }`}
         >
-          AI Agent
+          Ask AI
         </Link>
 
         <WorkspaceSettingsLink />
@@ -206,6 +211,7 @@ export function AppShell({
 
         <HeaderBar />
         <ThemeToggle />
+        <ProfileControl />
       </header>
 
       <div className="flex flex-1">
