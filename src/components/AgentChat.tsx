@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { AgentMessageView } from "./AgentMessageView";
 import { AgentSavedAppsBar, ImportVercelModal } from "./AgentSavedAppsBar";
 import { AgentChatSidebar } from "./AgentChatSidebar";
 import { AgentProjectPanel } from "./AgentProjectPanel";
 import { AgentDeployModal } from "./AgentAppBlueprintView";
+import {
+  AgentProductAccessProvider,
+  quickStartsForProducts,
+} from "./AgentProductAccess";
 import { useAgentChat } from "./agent-chat-state";
 import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
+import { getProduct, inferProductsFromQuery } from "@/lib/products/registry";
 
 const QUICK_STARTS = [
   "How do I authenticate a CTIX API request?",
@@ -26,8 +31,45 @@ const LANGUAGES: { value: import("@/lib/agent/types").AgentLanguage; label: stri
 ];
 
 export function AgentChat({
+  credentialedProducts,
   features = {},
 }: {
+  credentialedProducts: readonly string[];
+  features?: Partial<Record<
+    "app_builder" | "project_workspace" | "preview" | "vercel_deployment" | "git_commit" | "project_download" | "vercel_import",
+    boolean
+  >>;
+}) {
+  const quickStarts = useMemo(
+    () => quickStartsForProducts(QUICK_STARTS, credentialedProducts, inferProductsFromQuery),
+    [credentialedProducts]
+  );
+  const connectedLabels = useMemo(
+    () =>
+      credentialedProducts
+        .map((id) => getProduct(id)?.displayLabel ?? id)
+        .join(", "),
+    [credentialedProducts]
+  );
+
+  return (
+    <AgentProductAccessProvider credentialedProducts={credentialedProducts}>
+      <AgentChatBody
+        quickStarts={quickStarts}
+        connectedLabels={connectedLabels}
+        features={features}
+      />
+    </AgentProductAccessProvider>
+  );
+}
+
+function AgentChatBody({
+  quickStarts,
+  connectedLabels,
+  features = {},
+}: {
+  quickStarts: string[];
+  connectedLabels: string;
   features?: Partial<Record<
     "app_builder" | "project_workspace" | "preview" | "vercel_deployment" | "git_commit" | "project_download" | "vercel_import",
     boolean
@@ -124,6 +166,9 @@ export function AgentChat({
             <p className="text-[11px] text-zinc-500">
               Ask about endpoints, authentication, workflows, parameters, and code examples.
             </p>
+            <p className="text-[11px] text-sky-700 dark:text-sky-300">
+              Connected products: {connectedLabels}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -179,7 +224,7 @@ export function AgentChat({
                 Ask in everyday language. Answers are grounded in the published product documentation.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
-                {QUICK_STARTS.map((ex) => (
+                {quickStarts.map((ex) => (
                   <button
                     key={ex}
                     type="button"

@@ -3,11 +3,13 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 
 import { db, withOrganizationTransaction } from "@/lib/db/client";
-import type {
-  CredentialMetadata,
-  CredentialStatus,
-  DocumentationProduct,
-  StoredCredential,
+import {
+  DOCUMENTATION_PRODUCTS,
+  isDocumentationProduct,
+  type CredentialMetadata,
+  type CredentialStatus,
+  type DocumentationProduct,
+  type StoredCredential,
 } from "@/lib/documentation-credentials/types";
 
 function parseArray(value: unknown): string[] {
@@ -93,19 +95,33 @@ export async function hasValidCredential(
   userId: string,
   now = new Date()
 ): Promise<boolean> {
+  const productIds = await listValidCredentialProductIds(organizationId, userId, now);
+  return productIds.length > 0;
+}
+
+export async function listValidCredentialProductIds(
+  organizationId: string,
+  userId: string,
+  now = new Date()
+): Promise<DocumentationProduct[]> {
   await db.execute(
     `UPDATE user_product_credentials SET status = 'expired', version = version + 1,
      updated_at = ? WHERE organization_id = ? AND user_id = ? AND status = 'valid'
      AND expires_at IS NOT NULL AND expires_at <= ?`,
     [now.toISOString(), organizationId, userId, now.toISOString()]
   );
-  const row = await db.queryOne<{ id: string }>(
-    `SELECT id FROM user_product_credentials
+  const rows = await db.query<{ product_id: string }>(
+    `SELECT product_id FROM user_product_credentials
      WHERE organization_id = ? AND user_id = ? AND status = 'valid'
-       AND (expires_at IS NULL OR expires_at > ?) LIMIT 1`,
+       AND (expires_at IS NULL OR expires_at > ?)
+     ORDER BY product_id`,
     [organizationId, userId, now.toISOString()]
   );
-  return Boolean(row);
+  const order = DOCUMENTATION_PRODUCTS as readonly string[];
+  return rows
+    .map((row) => row.product_id)
+    .filter(isDocumentationProduct)
+    .sort((a, b) => order.indexOf(a) - order.indexOf(b));
 }
 
 export async function upsertCredential(input: {

@@ -352,26 +352,35 @@ export function isCatalogQuery(query: string): boolean {
 }
 
 /** Answer product catalog questions from the registry (not doc RAG). */
-export function enforceCatalogPlan(plan: AgentPlan, query: string): AgentPlan {
+export function enforceCatalogPlan(
+  plan: AgentPlan,
+  query: string,
+  allowedProductIds?: readonly string[]
+): AgentPlan {
   if (!isCatalogQuery(query)) return plan;
 
+  const products =
+    allowedProductIds && allowedProductIds.length > 0
+      ? listProducts().filter((product) => allowedProductIds.includes(product.productId))
+      : listProducts();
+
   const workflow =
-    "**Documented Cyware APIs on this site:**\n\n" +
-    listProducts()
+    "**Documented Cyware APIs you can use in the agent:**\n\n" +
+    products
       .map(
         (p) =>
           `- **${p.displayLabel}** — ${p.description} (` +
           `\`/docs/${p.productId === "ctix" ? "intel-exchange-api-reference" : p.productId}/…\`)`
       )
       .join("\n") +
-    "\n\nEach product uses its **own** Access ID + Secret Key. Name the product in your question " +
-    '(e.g. "CFTR: list incidents") or switch **Product** in the header.';
+    "\n\nEach product uses its **own** Access ID + Secret Key. Connect products at **/authentication** " +
+    "before asking the agent about them.";
 
   return {
     workflow,
     confidence: 0.95,
     steps: [],
-    citations: listProducts().map((p) => ({
+    citations: products.map((p) => ({
       slug: p.productId,
       title: p.displayLabel,
       url: p.productId === "ctix" ? "/docs/intel-exchange-api-reference" : `/docs/${p.productId}`,

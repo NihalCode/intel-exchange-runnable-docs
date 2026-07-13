@@ -1,6 +1,10 @@
 import "server-only";
 
 import { getManifest, getPage, getProductManifest } from "../content";
+import {
+  buildProductAccessDeniedResponse,
+  buildProductClarificationQuestions,
+} from "../documentation-credentials/access";
 import { baseUrlForProduct } from "../products/auth";
 import { DEFAULT_PRODUCT_ID, getProductOrThrow, inferProductFromQuery } from "../products/registry";
 import { loadCombinedAgentIndex } from "../products/search";
@@ -241,13 +245,23 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     }
   }
 
-  const scope = resolveProductScope(req, query);
+  const scope = resolveProductScope(req, query, {
+    allowedProductIds: req.allowedProductIds,
+  });
+  if (scope.accessViolation) {
+    return buildProductAccessDeniedResponse(
+      scope.accessViolation.deniedProductIds,
+      scope.accessViolation.allowedProductIds,
+      mode
+    );
+  }
+
   const activeProductId = scope.primaryProductId;
   const simpleMode = defaultSimpleMode(query);
   const retrievalFilter = productScopeForFilter(scope);
 
   if (
-    scope.filterMode === "all" &&
+    scope.productIds.length > 1 &&
     scope.source === "all" &&
     !inferProductFromQuery(query) &&
     !isCatalogQuery(query) &&
@@ -260,13 +274,8 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       fallback: true,
       citations: [],
       steps: [],
-      questions: [
-        "CTIX / Intel Exchange — threat intelligence and STIX",
-        "CSAP — situational awareness and collaboration",
-        "Cyware Orchestrate — playbooks and integrations",
-        "CFTR — case management and incidents",
-        'Or say "search all Cyware APIs" for cross-product search.',
-      ],
+      allowedProductIds: [...scope.productIds],
+      questions: buildProductClarificationQuestions(scope.productIds),
     };
   }
 
@@ -365,7 +374,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   if (mode === "workflow") {
-    plan = enforceCatalogPlan(plan, query);
+    plan = enforceCatalogPlan(plan, query, req.allowedProductIds);
     plan = enforceSetupInfoPlan(plan, query, scope.filterMode === "all" ? "all" : activeProductId);
 
     if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {

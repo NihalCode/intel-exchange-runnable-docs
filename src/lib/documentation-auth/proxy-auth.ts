@@ -61,6 +61,29 @@ export function mergeAuthHeaders(
   return response;
 }
 
+function isRedirectResponse(response: NextResponse): boolean {
+  return response.status >= 300 && response.status < 400;
+}
+
+/** Continue the request while applying Auth0 rolling-session cookies to the response. */
+export function continueWithAuthHeaders(
+  request: NextRequest,
+  authResponse: NextResponse
+): NextResponse {
+  if (isRedirectResponse(authResponse)) {
+    return authResponse;
+  }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(
+    "x-pathname",
+    request.nextUrl.pathname + request.nextUrl.search
+  );
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  return mergeAuthHeaders(response, authResponse);
+}
+
 export async function runDocumentationAuthProxy(
   request: NextRequest
 ): Promise<NextResponse> {
@@ -89,7 +112,7 @@ export async function runDocumentationAuthProxy(
     if (!authUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    return authResponse;
+    return continueWithAuthHeaders(request, authResponse);
   }
 
   if (!authUser && isProtectedPath(pathname)) {
@@ -101,5 +124,5 @@ export async function runDocumentationAuthProxy(
     return mergeAuthHeaders(NextResponse.redirect(login), authResponse);
   }
 
-  return authResponse;
+  return continueWithAuthHeaders(request, authResponse);
 }

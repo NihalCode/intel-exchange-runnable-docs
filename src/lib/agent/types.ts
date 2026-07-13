@@ -234,6 +234,10 @@ export interface AgentResponse {
   productContext?: AgentProductContext;
   /** Plain-English default formatting applied. */
   simpleMode?: boolean;
+  /** Machine-readable status for credential or feature gating. */
+  code?: string;
+  /** Products the user may access in the agent for this session. */
+  allowedProductIds?: string[];
 }
 
 export interface AgentRequest {
@@ -244,4 +248,6 @@ export interface AgentRequest {
   productId?: string;
   history?: { role: "user" | "assistant"; content: string }[];
   existingApp?: ExistingAppContext;
+  /** Server-injected allowlist from per-user connected credentials. */
+  allowedProductIds?: readonly string[];
 }

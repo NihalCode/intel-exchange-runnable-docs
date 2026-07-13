@@ -553,4 +553,4 @@ export const MOCK_SUPPORT_LOGS: MockSupportLog[] = [
 ];
 
 export const PLACEHOLDER_NOTICE =
-  "Placeholder data — backend integration pending. Values shown for layout preview only.";
+  "Overview metrics and service health are illustrative. Documentation Agent APIs, schemas, audit logs, and change requests use live control-plane data.";

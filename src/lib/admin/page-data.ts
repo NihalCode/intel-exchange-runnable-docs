@@ -2,6 +2,12 @@ import "server-only";
 
 import { notFound } from "next/navigation";
 
+import {
+  buildOverviewActivity,
+  buildOverviewHealth,
+  buildOverviewMetrics,
+} from "@/lib/admin/overview-data";
+import { db } from "@/lib/db/client";
 import { getAppSession } from "@/lib/documentation-auth/session";
 import { listApiKeyMetadata } from "@/lib/enterprise/api-keys";
 import { listEnterpriseAuditEvents } from "@/lib/enterprise/audit";
@@ -60,6 +66,31 @@ export async function loadDocsAgentDashboardData(organizationId: string) {
     listEnterpriseAuditEvents(organizationId, 50),
   ]);
   return { resources, changes, credentials, audit };
+}
+
+export async function loadOverviewDashboardData(organizationId: string) {
+  const dbStarted = Date.now();
+  let databaseOk = false;
+  try {
+    await db.queryOne("SELECT 1 AS ok");
+    databaseOk = true;
+  } catch {
+    databaseOk = false;
+  }
+  const databaseLatencyMs = Date.now() - dbStarted;
+
+  const [resources, changes, jobs, audit] = await Promise.all([
+    listControlPlaneResources(organizationId),
+    listChangeRequests(organizationId, 200),
+    listJobs(organizationId, 200),
+    listEnterpriseAuditEvents(organizationId, 200),
+  ]);
+
+  return {
+    metrics: buildOverviewMetrics({ resources, changes, jobs, audit }),
+    health: buildOverviewHealth({ databaseOk, databaseLatencyMs, jobs }),
+    activity: buildOverviewActivity(audit),
+  };
 }
 
 export async function loadJobs(organizationId: string) {

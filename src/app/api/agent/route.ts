@@ -2,8 +2,11 @@ import {
   guardAgentFeature,
   guardAskAgent,
 } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { getAgentProductAccess } from "@/lib/documentation-credentials/access";
 import { runAgent } from "@/lib/agent/orchestrate";
 import type { AgentRequest } from "@/lib/agent/types";
+import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import { OpenAiNotConfiguredError } from "@/lib/openai/client";
 
 export const runtime = "nodejs";
@@ -26,7 +29,21 @@ export async function POST(req: Request) {
     }
     // Ignore any client-supplied key — OpenAI is server-configured only.
     const { llmApiKey: _ignored, ...agentRequest } = body;
-    const result = await runAgent(agentRequest);
+
+    let allowedProductIds: string[] | undefined;
+    if (isAuthEnabled() || process.env.NODE_ENV === "production") {
+      const context = await resolveOrganizationContext(session);
+      const access = await getAgentProductAccess(
+        context.organization.id,
+        session.user.id
+      );
+      allowedProductIds = access.productIds;
+    }
+
+    const result = await runAgent({
+      ...agentRequest,
+      allowedProductIds,
+    });
     return Response.json(result);
   } catch (err) {
     if (err instanceof OpenAiNotConfiguredError) {

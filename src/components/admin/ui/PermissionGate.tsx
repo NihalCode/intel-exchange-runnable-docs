@@ -65,7 +65,7 @@ export function HealthStatusRow({
 }: {
   name: string;
   status: "healthy" | "degraded" | "down";
-  latencyMs: number;
+  latencyMs?: number;
 }) {
   const dot =
     status === "healthy"
@@ -79,7 +79,9 @@ export function HealthStatusRow({
         <span className={`h-2 w-2 rounded-full ${dot}`} aria-hidden="true" />
         <span className="text-sm font-medium">{name}</span>
       </div>
-      <span className="text-xs tabular-nums text-zinc-500">{latencyMs} ms</span>
+      <span className="text-xs tabular-nums text-zinc-500">
+        {typeof latencyMs === "number" ? `${latencyMs} ms` : "—"}
+      </span>
     </div>
   );
 }

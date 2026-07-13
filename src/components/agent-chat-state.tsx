@@ -12,6 +12,7 @@ import {
 } from "react";
 import { resolveAgentIntent } from "@/lib/agent/intent";
 import { inferProductFromQuery, inferProductsFromQuery } from "@/lib/products/registry";
+import { clampAgentProductId, useAgentProductAccess } from "@/components/AgentProductAccess";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
 import type { AgentLanguage, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
@@ -212,6 +213,7 @@ const AgentChatContext = createContext<AgentChatState | null>(null);
 
 export function AgentChatProvider({ children }: { children: ReactNode }) {
   const { productId, searchScope } = useProduct();
+  const credentialedProducts = useAgentProductAccess();
   const [sessions, setSessions] = useState<AgentWorkspaceSession[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -416,14 +418,16 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 
       try {
         const mentioned = inferProductsFromQuery(q);
-        const scopedProductId =
+        const scopedProductId = clampAgentProductId(
           mentioned.length === 1 && mentioned[0] !== "all"
             ? mentioned[0]
             : mentioned.length > 1
               ? "all"
               : searchScope === "all"
                 ? "all"
-                : productId;
+                : productId,
+          credentialedProducts
+        );
 
         const res = await fetch("/api/agent", {
           method: "POST",
@@ -499,6 +503,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       persistAppResponse,
       productId,
       searchScope,
+      credentialedProducts,
       logPanel,
       refreshSessions,
     ]

@@ -24,6 +24,12 @@ describe("documentation UI credential boundaries", () => {
     );
   });
 
+  it("passes credentialed products into the agent chat", () => {
+    const agentPage = source("src/app/agent/page.tsx");
+    expect(agentPage).toContain("credentialedProducts");
+    expect(agentPage).toContain("listValidCredentialProductIds");
+  });
+
   it("keeps every application area behind authentication", () => {
     for (const route of ["/", "/docs/ctix", "/agent", "/authentication", "/changelog"]) {
       expect(isProtectedDocumentationPath(route)).toBe(true);

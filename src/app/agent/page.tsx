@@ -3,8 +3,12 @@ import Link from "next/link";
 import { AgentChat } from "@/components/AgentChat";
 import { getAppSession } from "@/lib/documentation-auth/session";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
-import { hasValidCredential } from "@/lib/documentation-credentials/repository";
+import {
+  hasValidCredential,
+  listValidCredentialProductIds,
+} from "@/lib/documentation-credentials/repository";
 import { listDocumentationFeatures } from "@/lib/documentation-features";
+import { listProducts } from "@/lib/products/registry";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 
 export const metadata: Metadata = {
@@ -16,6 +20,7 @@ export const metadata: Metadata = {
 export default async function AgentPage() {
   const session = await getAppSession();
   let credentialReady = !isAuthEnabled() && process.env.NODE_ENV !== "production";
+  let credentialedProducts = listProducts().map((product) => product.productId);
   let features: Record<string, boolean> = {};
   if (session && !credentialReady) {
     try {
@@ -24,6 +29,12 @@ export default async function AgentPage() {
         context.organization.id,
         session.user.id
       );
+      if (credentialReady) {
+        credentialedProducts = await listValidCredentialProductIds(
+          context.organization.id,
+          session.user.id
+        );
+      }
       features = Object.fromEntries(
         (await listDocumentationFeatures(context.organization.id)).map((flag) => [
           flag.key,
@@ -33,16 +44,18 @@ export default async function AgentPage() {
       );
     } catch {
       credentialReady = false;
+      credentialedProducts = [];
     }
   }
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="mb-1 text-2xl font-bold tracking-tight">Documentation Agent</h1>
       <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
-        Ask grounded questions and generate API examples across CTIX, CSAP, Orchestrate, and CFTR.
+        Ask grounded questions and generate API examples for the Cyware products you have
+        connected at /authentication.
       </p>
       {credentialReady ? (
-        <AgentChat features={features} />
+        <AgentChat features={features} credentialedProducts={credentialedProducts} />
       ) : (
         <section className="mt-8 rounded-xl border border-zinc-200 p-8 text-center dark:border-zinc-800">
           <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800" aria-hidden="true">🔒</div>

@@ -78,7 +78,7 @@ describe("resolveProductScope", () => {
 });
 
 describe("enforceCatalogPlan", () => {
-  it("lists all four products", () => {
+  it("lists all four products when no allowlist is provided", () => {
     const plan = enforceCatalogPlan(
       { workflow: "", confidence: 0, steps: [], citations: [] },
       "What products are documented here?"
