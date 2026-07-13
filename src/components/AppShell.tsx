@@ -64,10 +64,10 @@ function EnterpriseAdminLink() {
   ) {
     return null;
   }
-  const active = pathname.startsWith("/admin/documentation-agent");
+  const active = pathname.startsWith("/admin");
   return (
     <Link
-      href="/admin/documentation-agent/apis"
+      href="/admin"
       className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
         active
           ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"

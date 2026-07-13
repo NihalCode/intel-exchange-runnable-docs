@@ -1,15 +1,14 @@
-import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
+import { AdminLayoutClient } from "@/components/admin/shell/AdminLayoutClient";
+import { LoadingSkeleton } from "@/components/admin/ui/EmptyState";
 import { getAppSessionResult } from "@/lib/documentation-auth/session";
 import { checkStepUpAuthentication } from "@/lib/enterprise/auth-assurance";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
+import { ENTERPRISE_PERMISSIONS } from "@/lib/enterprise/types";
 
-export const metadata: Metadata = {
-  title: "Enterprise administration",
-  robots: { index: false, follow: false, nocache: true },
-};
+export { metadata } from "./metadata";
 
 export default async function AdminLayout({
   children,
@@ -18,23 +17,50 @@ export default async function AdminLayout({
 }) {
   const result = await getAppSessionResult();
   if (!result.session) {
-    if (!result.auth0Authenticated && !result.accessDenied) redirect("/sign-in");
+    if (!result.auth0Authenticated && !result.accessDenied) {
+      const { redirect } = await import("next/navigation");
+      redirect("/sign-in");
+    }
     return <ForbiddenState />;
   }
 
   let allowed = false;
+  let orgContext;
   try {
-    const context = await resolveOrganizationContext(result.session);
+    orgContext = await resolveOrganizationContext(result.session);
     allowed =
-      authorizeEnterprise(context.principal, "admin_dashboard.access", {
-        organizationId: context.organization.id,
+      authorizeEnterprise(orgContext.principal, "admin_dashboard.access", {
+        organizationId: orgContext.organization.id,
       }) &&
       checkStepUpAuthentication(result.session, { requireMfa: true }).ok;
   } catch {
     allowed = false;
   }
-  if (!allowed) return <ForbiddenState />;
-  return children;
+  if (!allowed || !orgContext) return <ForbiddenState />;
+
+  const capabilities = ENTERPRISE_PERMISSIONS.filter((permission) =>
+    authorizeEnterprise(orgContext.principal, permission, {
+      organizationId: orgContext.organization.id,
+    })
+  );
+
+  return (
+    <AdminLayoutClient
+      organization={{
+        id: orgContext.organization.id,
+        name: orgContext.organization.name,
+        slug: orgContext.organization.slug,
+      }}
+      user={{
+        id: orgContext.principal.userId,
+        email: result.session.user.email,
+        role: orgContext.principal.role,
+      }}
+      capabilities={capabilities}
+    >
+      <Suspense fallback={<LoadingSkeleton rows={8} />}>{children}</Suspense>
+    </AdminLayoutClient>
+  );
 }
 
 function ForbiddenState() {

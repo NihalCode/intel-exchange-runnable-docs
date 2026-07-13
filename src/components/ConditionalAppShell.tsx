@@ -13,6 +13,10 @@ function usesBareLayout(pathname: string): boolean {
   );
 }
 
+function usesAdminLayout(pathname: string): boolean {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
+
 export function ConditionalAppShell({
   nav,
   children,
@@ -22,6 +26,9 @@ export function ConditionalAppShell({
 }) {
   const pathname = usePathname();
   if (usesBareLayout(pathname)) {
+    return <>{children}</>;
+  }
+  if (usesAdminLayout(pathname)) {
     return <>{children}</>;
   }
   return <AppShell nav={nav}>{children}</AppShell>;
