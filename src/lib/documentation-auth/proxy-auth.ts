@@ -94,7 +94,7 @@ export async function runDocumentationAuthProxy(
 
   if (pathname.startsWith("/api/")) {
     if (isPublicApiPath(pathname)) {
-      return authResponse;
+      return mergeAuthHeaders(NextResponse.next(), authResponse);
     }
     if (!authUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
