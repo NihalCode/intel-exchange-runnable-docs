@@ -33,12 +33,17 @@ function isPublicApiPath(pathname: string): boolean {
   return PUBLIC_API_PREFIXES.some((p) => pathname === p || pathname.startsWith(p));
 }
 
+export function isProtectedDocumentationPath(pathname: string): boolean {
+  return isProtectedPath(pathname);
+}
+
 function isProtectedPath(pathname: string): boolean {
   if (pathname === "/") return true;
   if (pathname.startsWith("/docs")) return true;
   if (pathname.startsWith("/agent")) return true;
   if (pathname.startsWith("/developer")) return true;
   if (pathname.startsWith("/settings")) return true;
+  if (pathname.startsWith("/admin")) return true;
   if (pathname.startsWith("/api/agent")) return true;
   if (pathname === "/api/run" || pathname.startsWith("/api/run/")) return true;
   if (pathname.startsWith("/api/users")) return true;

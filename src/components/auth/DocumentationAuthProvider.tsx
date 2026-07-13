@@ -28,6 +28,7 @@ interface AuthState {
   auth0Authenticated: boolean;
   user: AuthUser | null;
   permissions: DocumentationPermission[];
+  enterpriseCapabilities: string[];
   accessDenied: { reason: string; invitedEmail?: string; redirectTo?: string } | null;
 }
 
@@ -52,6 +53,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
     auth0Authenticated: false,
     user: null,
     permissions: [],
+    enterpriseCapabilities: [],
     accessDenied: null,
   });
 
@@ -63,6 +65,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
         auth0Authenticated?: boolean;
         user?: AuthUser | null;
         permissions?: DocumentationPermission[];
+        enterpriseCapabilities?: string[];
         accessDenied?: AuthState["accessDenied"];
       };
       setState({
@@ -71,6 +74,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
         auth0Authenticated: Boolean(data.auth0Authenticated),
         user: data.user ?? null,
         permissions: data.permissions ?? [],
+        enterpriseCapabilities: data.enterpriseCapabilities ?? [],
         accessDenied: data.accessDenied ?? null,
       });
     } catch {

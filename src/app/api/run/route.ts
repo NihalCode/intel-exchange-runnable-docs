@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import dns from "node:dns/promises";
-import net from "node:net";
+
 import { buildDemoResponse, shouldSimulateRequest } from "@/lib/demo";
 import { serverAuthRequiredMessage, urlHasOpenApiAuth } from "@/lib/api-credentials";
 import { guardDocumentationApi } from "@/lib/documentation-auth/guard-api";
 import type { MultipartPart } from "@/lib/multipart";
 import { MAX_UPLOAD_BYTES } from "@/lib/multipart";
+import { assertPublicUrl, safeFetch } from "@/lib/security/public-host";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,53 +32,6 @@ const ALLOWED_METHODS = new Set([
   "HEAD",
   "OPTIONS",
 ]);
-
-function isPrivateIp(ip: string): boolean {
-  if (net.isIPv4(ip)) {
-    const [a, b] = ip.split(".").map(Number);
-    if (a === 10) return true;
-    if (a === 127) return true;
-    if (a === 0) return true;
-    if (a === 169 && b === 254) return true; // link-local / cloud metadata
-    if (a === 172 && b >= 16 && b <= 31) return true;
-    if (a === 192 && b === 168) return true;
-    if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
-    return false;
-  }
-  const lower = ip.toLowerCase();
-  if (lower === "::1" || lower === "::") return true;
-  if (lower.startsWith("fc") || lower.startsWith("fd")) return true; // ULA
-  if (lower.startsWith("fe80")) return true; // link-local
-  if (lower.startsWith("::ffff:")) return isPrivateIp(lower.slice(7));
-  return false;
-}
-
-async function assertPublicHost(hostname: string): Promise<void> {
-  const lower = hostname.toLowerCase();
-  if (
-    lower === "localhost" ||
-    lower.endsWith(".localhost") ||
-    lower.endsWith(".internal") ||
-    lower.endsWith(".local")
-  ) {
-    throw new Error("Requests to local/internal hosts are blocked.");
-  }
-  if (net.isIP(hostname)) {
-    if (isPrivateIp(hostname)) throw new Error("Requests to private IPs are blocked.");
-    return;
-  }
-  let records: { address: string }[] = [];
-  try {
-    records = await dns.lookup(hostname, { all: true });
-  } catch {
-    throw new Error(`Could not resolve host: ${hostname}`);
-  }
-  for (const r of records) {
-    if (isPrivateIp(r.address)) {
-      throw new Error("Host resolves to a private IP and is blocked.");
-    }
-  }
-}
 
 export async function POST(request: Request) {
   const session = await guardDocumentationApi(
@@ -139,7 +92,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    await assertPublicHost(target.hostname);
+    await assertPublicUrl(target);
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Blocked host." },
@@ -153,11 +106,10 @@ export async function POST(request: Request) {
 
   try {
     const outboundBody = await buildOutboundBody(method, payload);
-    const res = await fetch(target.toString(), {
+    const res = await safeFetch(target.toString(), {
       method,
       headers: outboundBody.headers,
       body: outboundBody.body,
-      redirect: "follow",
       signal: controller.signal,
     });
 

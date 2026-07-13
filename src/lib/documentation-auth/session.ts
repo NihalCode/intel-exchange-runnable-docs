@@ -2,6 +2,7 @@ import "server-only";
 
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { headers } from "next/headers";
 
 import { logDocumentationAuthEvent } from "@/lib/documentation-auth/audit";
 import { isAuthEnabled, isAuthDisabled, isTestAuthMode } from "@/lib/documentation-auth/config";
@@ -41,6 +42,12 @@ export interface AppSessionUser {
 export interface AppSession {
   user: AppSessionUser;
   authProvider: "auth0" | "test" | "disabled";
+  claims?: {
+    organizationId?: string;
+    authTime?: number;
+    amr?: string[];
+    acr?: string;
+  };
 }
 
 export interface AppSessionResult {
@@ -52,8 +59,21 @@ export interface AppSessionResult {
   auth0Authenticated?: boolean;
 }
 
-function testRoleFromRequest(request?: NextRequest): DocumentationRole {
-  const header = request?.headers.get("x-test-role")?.trim();
+function testRoleHeader(request?: NextRequest): string | undefined {
+  return request?.headers.get("x-test-role")?.trim() ?? undefined;
+}
+
+async function testRoleHeaderFromServer(): Promise<string | undefined> {
+  if (!isAuthDisabled()) return undefined;
+  try {
+    const headerStore = await headers();
+    return headerStore.get("x-test-role")?.trim() ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function testRoleFromHeader(header: string | undefined): DocumentationRole {
   const roles: DocumentationRole[] = [
     "owner",
     "admin",
@@ -67,15 +87,40 @@ function testRoleFromRequest(request?: NextRequest): DocumentationRole {
   return "owner";
 }
 
-function mockSession(request?: NextRequest): AppSession {
-  const role = testRoleFromRequest(request);
+async function testRoleFromRequest(request?: NextRequest): Promise<DocumentationRole> {
+  const header = testRoleHeader(request) ?? (await testRoleHeaderFromServer());
+  return testRoleFromHeader(header);
+}
+
+async function mockSession(request?: NextRequest): Promise<AppSession> {
+  const role = await testRoleFromRequest(request);
+  const roleHeader = testRoleHeader(request) ?? (await testRoleHeaderFromServer());
+  const roleSpecific = Boolean(roleHeader);
+  const auth0UserId = roleSpecific
+    ? `auth0|local-dev-${role}`
+    : isTestAuthMode()
+      ? `auth0|test-${role}`
+      : "auth0|local-dev";
   return {
     authProvider: isTestAuthMode() ? "test" : "disabled",
+    claims: {
+      authTime: Math.floor(Date.now() / 1000),
+      amr: ["pwd", "mfa"],
+      acr: "urn:mfa",
+    },
     user: {
-      id: isTestAuthMode() ? `test-user-${role}` : "local-dev-user",
-      auth0UserId: isTestAuthMode() ? `auth0|test-${role}` : "auth0|local-dev",
-      email: isTestAuthMode() ? `${role}@test.local` : "dev@localhost",
-      name: isTestAuthMode() ? `Test ${role}` : "Local Developer",
+      id: roleSpecific
+        ? `local-dev-${role}`
+        : isTestAuthMode()
+          ? `test-user-${role}`
+          : "local-dev-user",
+      auth0UserId,
+      email: roleSpecific
+        ? `${role}@dev.local`
+        : isTestAuthMode()
+          ? `${role}@test.local`
+          : "dev@localhost",
+      name: roleSpecific ? `Local ${role}` : isTestAuthMode() ? `Test ${role}` : "Local Developer",
       role,
       status: "active",
     },
@@ -95,6 +140,14 @@ async function resolveAuth0User(request?: NextRequest) {
     email: normalizeEmail(authUser.email),
     name: authUser.name ?? authUser.nickname ?? null,
     picture: authUser.picture ?? null,
+    organizationId:
+      typeof authUser.org_id === "string" ? authUser.org_id : undefined,
+    authTime:
+      typeof authUser.auth_time === "number" ? authUser.auth_time : undefined,
+    amr: Array.isArray(authUser.amr)
+      ? authUser.amr.filter((value): value is string => typeof value === "string")
+      : undefined,
+    acr: typeof authUser.acr === "string" ? authUser.acr : undefined,
   };
 }
 
@@ -106,9 +159,10 @@ function toAppSession(stored: {
   role: DocumentationRole;
   status: "active" | "disabled" | "pending";
   picture?: string | null;
-}): AppSession {
+}, claims?: AppSession["claims"]): AppSession {
   return {
     authProvider: "auth0",
+    claims,
     user: {
       id: stored.id,
       auth0UserId: stored.auth0UserId,
@@ -126,7 +180,7 @@ export async function getAppSessionResult(
   request?: NextRequest
 ): Promise<AppSessionResult> {
   if (!isAuthEnabled()) {
-    return { session: mockSession(request) };
+    return { session: await mockSession(request) };
   }
 
   if (!getAuth0()) {
@@ -204,7 +258,15 @@ export async function getAppSessionResult(
       metadata: { connection: "auth0" },
     });
     return {
-      session: toAppSession({ ...sessionUser, name: sessionUser.name ?? null }),
+      session: toAppSession(
+        { ...sessionUser, name: sessionUser.name ?? null },
+        {
+          organizationId: authUser.organizationId,
+          authTime: authUser.authTime,
+          amr: authUser.amr,
+          acr: authUser.acr,
+        }
+      ),
       auth0Authenticated: true,
     };
   }
@@ -287,7 +349,15 @@ export async function getAppSessionResult(
   });
 
   return {
-    session: toAppSession({ ...created, name: created.name ?? null }),
+    session: toAppSession(
+      { ...created, name: created.name ?? null },
+      {
+        organizationId: authUser.organizationId,
+        authTime: authUser.authTime,
+        amr: authUser.amr,
+        acr: authUser.acr,
+      }
+    ),
     auth0Authenticated: true,
   };
 }

@@ -1,11 +1,10 @@
 import crypto from "node:crypto";
-import dns from "node:dns/promises";
-import net from "node:net";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { buildEndpointSnippets, buildRunnableRequest } from "../snippets";
 import { applyPathParams, resolveStructured, unresolvedPathParams } from "../resolve-request";
 import { isMutating } from "../security";
+import { assertPublicUrl, safeFetch } from "../security/public-host";
 import type { EndpointPage } from "../types";
 import { envKeyFor, readDeveloperCredentialStatus } from "./credential-env";
 import { isDeveloperAccessConfigured } from "./access";
@@ -131,52 +130,14 @@ function generateOpenApiAuth(accessId: string, secretKey: string) {
   };
 }
 
-function isPrivateIp(ip: string): boolean {
-  if (net.isIPv4(ip)) {
-    const [a, b] = ip.split(".").map(Number);
-    if (a === 10 || a === 127 || a === 0) return true;
-    if (a === 169 && b === 254) return true;
-    if (a === 172 && b >= 16 && b <= 31) return true;
-    if (a === 192 && b === 168) return true;
-    if (a === 100 && b >= 64 && b <= 127) return true;
-    return false;
-  }
-  const lower = ip.toLowerCase();
-  if (lower === "::1" || lower === "::") return true;
-  if (lower.startsWith("fc") || lower.startsWith("fd")) return true;
-  if (lower.startsWith("fe80")) return true;
-  if (lower.startsWith("::ffff:")) return isPrivateIp(lower.slice(7));
-  return false;
-}
-
-async function assertPublicHost(hostname: string): Promise<void> {
-  const lower = hostname.toLowerCase();
-  if (
-    lower === "localhost" ||
-    lower.endsWith(".localhost") ||
-    lower.endsWith(".internal") ||
-    lower.endsWith(".local")
-  ) {
-    throw new Error("Requests to local/internal hosts are blocked.");
-  }
-  if (net.isIP(hostname)) {
-    if (isPrivateIp(hostname)) throw new Error("Requests to private IPs are blocked.");
-    return;
-  }
-  const records = await dns.lookup(hostname, { all: true });
-  for (const r of records) {
-    if (isPrivateIp(r.address)) throw new Error("Host resolves to a private IP.");
-  }
-}
-
 async function probeGet(url: string): Promise<{ status: number; durationMs: number; body: string }> {
   const target = new URL(url);
-  await assertPublicHost(target.hostname);
+  await assertPublicUrl(target);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   const started = Date.now();
   try {
-    const res = await fetch(url, { method: "GET", redirect: "follow", signal: controller.signal });
+    const res = await safeFetch(url, { method: "GET", signal: controller.signal });
     const body = (await res.text()).slice(0, MAX_BODY);
     return { status: res.status, durationMs: Date.now() - started, body };
   } finally {

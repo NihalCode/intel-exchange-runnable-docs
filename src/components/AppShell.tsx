@@ -55,6 +55,30 @@ function WorkspaceContentLink() {
   );
 }
 
+function EnterpriseAdminLink() {
+  const pathname = usePathname();
+  const { state } = useDocumentationAuth();
+  if (
+    state.loading ||
+    !state.enterpriseCapabilities.includes("admin_dashboard.access")
+  ) {
+    return null;
+  }
+  const active = pathname.startsWith("/admin/documentation-agent");
+  return (
+    <Link
+      href="/admin/documentation-agent/apis"
+      className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
+        active
+          ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      }`}
+    >
+      Enterprise
+    </Link>
+  );
+}
+
 function ThemeToggle() {
   const [dark, setDark] = useState(false);
   if (typeof window !== "undefined") {
@@ -177,6 +201,8 @@ export function AppShell({
         <WorkspaceSettingsLink />
 
         <WorkspaceContentLink />
+
+        <EnterpriseAdminLink />
 
         <HeaderBar />
         <ThemeToggle />

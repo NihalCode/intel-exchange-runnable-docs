@@ -4,16 +4,33 @@ import fs from "node:fs";
 import path from "node:path";
 
 import Database from "better-sqlite3";
-import { Pool } from "pg";
+import { Pool, type PoolClient } from "pg";
 
-import { MIGRATION_SQL, POSTGRES_MIGRATION_SQL } from "@/lib/db/migrations/001_initial";
+import {
+  DB_MIGRATIONS,
+  POSTGRES_MIGRATION_LEDGER_SQL,
+  SQLITE_MIGRATION_LEDGER_SQL,
+} from "@/lib/db/migrations";
 
 export type DbBackend = "sqlite" | "postgres";
 
 let sqliteDb: Database.Database | null = null;
 let pgPool: Pool | null = null;
+let pgInitialization: Promise<Pool> | null = null;
 let activeBackend: DbBackend | null = null;
 let testDbPath: string | null = null;
+let sqliteTransactionQueue: Promise<void> = Promise.resolve();
+
+export interface DbExecutor {
+  query<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>;
+  queryOne<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T | null>;
+  execute(sql: string, params?: unknown[]): Promise<void>;
+}
+
+export interface OrganizationDbContext {
+  organizationId: string;
+  userId: string;
+}
 
 export function isPostgresConfigured(): boolean {
   const url = process.env.DATABASE_URL?.trim();
@@ -43,6 +60,7 @@ export function resetDatabaseConnection(): void {
     void pgPool.end();
     pgPool = null;
   }
+  pgInitialization = null;
   activeBackend = null;
 }
 
@@ -61,17 +79,66 @@ function getSqliteDb(): Database.Database {
   sqliteDb = new Database(dbPath);
   sqliteDb.pragma("journal_mode = WAL");
   sqliteDb.pragma("foreign_keys = ON");
-  sqliteDb.exec(MIGRATION_SQL);
+  applySqliteMigrations(sqliteDb);
   activeBackend = "sqlite";
   return sqliteDb;
 }
 
+function applySqliteMigrations(db: Database.Database): void {
+  db.exec(SQLITE_MIGRATION_LEDGER_SQL);
+  const applied = db
+    .prepare("SELECT version FROM schema_migrations")
+    .all()
+    .map((row) => Number((row as { version: number }).version));
+  const appliedVersions = new Set(applied);
+  for (const migration of DB_MIGRATIONS) {
+    if (appliedVersions.has(migration.version)) continue;
+    const apply = db.transaction(() => {
+      db.exec(migration.sqlite);
+      db.prepare(
+        "INSERT INTO schema_migrations (version, name, applied_at) VALUES (?, ?, ?)"
+      ).run(migration.version, migration.name, new Date().toISOString());
+    });
+    apply();
+  }
+}
+
 async function getPgPool(): Promise<Pool> {
   if (pgPool) return pgPool;
-  pgPool = new Pool({ connectionString: process.env.DATABASE_URL });
-  await pgPool.query(POSTGRES_MIGRATION_SQL);
-  activeBackend = "postgres";
-  return pgPool;
+  if (pgInitialization) return pgInitialization;
+  pgInitialization = (async () => {
+    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query("SELECT pg_advisory_xact_lock($1)", [2026071301]);
+      await client.query(POSTGRES_MIGRATION_LEDGER_SQL);
+      const result = await client.query<{ version: number }>(
+        "SELECT version FROM schema_migrations"
+      );
+      const applied = new Set(result.rows.map((row) => Number(row.version)));
+      for (const migration of DB_MIGRATIONS) {
+        if (applied.has(migration.version)) continue;
+        await client.query(migration.postgres);
+        await client.query(
+          "INSERT INTO schema_migrations (version, name) VALUES ($1, $2)",
+          [migration.version, migration.name]
+        );
+      }
+      await client.query("COMMIT");
+      client.release();
+      pgPool = pool;
+      activeBackend = "postgres";
+      return pool;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      client.release();
+      await pool.end();
+      pgInitialization = null;
+      throw error;
+    }
+  })();
+  return pgInitialization;
 }
 
 export async function runQuery<T = Record<string, unknown>>(
@@ -86,7 +153,7 @@ export async function runQuery<T = Record<string, unknown>>(
   }
   const db = getSqliteDb();
   const stmt = db.prepare(sql);
-  if (/^\s*(INSERT|UPDATE|DELETE)/i.test(sql)) {
+  if (!stmt.reader) {
     stmt.run(...params);
     return [];
   }
@@ -110,6 +177,117 @@ export async function runExecute(sql: string, params: unknown[] = []): Promise<v
   }
   const db = getSqliteDb();
   db.prepare(sql).run(...params);
+}
+
+export const db: DbExecutor = {
+  query: runQuery,
+  queryOne: runQueryOne,
+  execute: runExecute,
+};
+
+function executorForPostgres(client: PoolClient): DbExecutor {
+  return {
+    async query<T>(sql: string, params: unknown[] = []) {
+      const converted = convertPlaceholders(sql, params);
+      const result = await client.query(converted.sql, converted.params);
+      return result.rows as T[];
+    },
+    async queryOne<T>(sql: string, params: unknown[] = []) {
+      const rows = await this.query<T>(sql, params);
+      return rows[0] ?? null;
+    },
+    async execute(sql: string, params: unknown[] = []) {
+      const converted = convertPlaceholders(sql, params);
+      await client.query(converted.sql, converted.params);
+    },
+  };
+}
+
+function executorForSqlite(db: Database.Database): DbExecutor {
+  return {
+    async query<T>(sql: string, params: unknown[] = []) {
+      const statement = db.prepare(sql);
+      if (!statement.reader) {
+        statement.run(...params);
+        return [];
+      }
+      return statement.all(...params) as T[];
+    },
+    async queryOne<T>(sql: string, params: unknown[] = []) {
+      const statement = db.prepare(sql);
+      return (statement.get(...params) as T | undefined) ?? null;
+    },
+    async execute(sql: string, params: unknown[] = []) {
+      db.prepare(sql).run(...params);
+    },
+  };
+}
+
+/**
+ * Runs a callback atomically. Repository/service code should use the supplied
+ * executor for every operation in the callback.
+ */
+export async function withTransaction<T>(
+  callback: (transaction: DbExecutor) => Promise<T>
+): Promise<T> {
+  if (isPostgresConfigured()) {
+    const pool = await getPgPool();
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const result = await callback(executorForPostgres(client));
+      await client.query("COMMIT");
+      return result;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  const previous = sqliteTransactionQueue;
+  let releaseQueue!: () => void;
+  sqliteTransactionQueue = new Promise<void>((resolve) => {
+    releaseQueue = resolve;
+  });
+  await previous;
+  const db = getSqliteDb();
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    const result = await callback(executorForSqlite(db));
+    db.exec("COMMIT");
+    return result;
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  } finally {
+    releaseQueue();
+  }
+}
+
+/**
+ * Applies transaction-local RLS identity on Postgres. SQLite has no RLS, so
+ * repositories must still include organization_id in every query.
+ */
+export async function withOrganizationTransaction<T>(
+  context: OrganizationDbContext,
+  callback: (transaction: DbExecutor) => Promise<T>
+): Promise<T> {
+  if (!context.organizationId || !context.userId) {
+    throw new Error("Organization and user context are required");
+  }
+  return withTransaction(async (transaction) => {
+    if (isPostgresConfigured()) {
+      await transaction.query("SELECT set_config('app.organization_id', ?, true)", [
+        context.organizationId,
+      ]);
+      await transaction.query("SELECT set_config('app.user_id', ?, true)", [
+        context.userId,
+      ]);
+    }
+    return callback(transaction);
+  });
 }
 
 function convertPlaceholders(
