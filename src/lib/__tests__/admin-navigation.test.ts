@@ -36,6 +36,7 @@ describe("admin navigation", () => {
 
   it("resolves page titles from pathname", () => {
     expect(pageTitleForPath("/admin/security/settings")).toBe("Settings");
-    expect(pageTitleForPath("/admin/support-agent/integrations")).toBe("Integrations");
+    expect(pageTitleForPath("/admin/support-agent/apis")).toBe("API Endpoints");
+    expect(pageTitleForPath("/admin/support-agent/escalation")).toBe("Escalation");
   });
 });

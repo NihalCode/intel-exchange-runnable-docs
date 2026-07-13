@@ -85,6 +85,11 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         exact: true,
       },
       {
+        href: "/admin/support-agent/apis",
+        label: "API Endpoints",
+        permission: "admin_dashboard.access",
+      },
+      {
         href: "/admin/support-agent/integrations",
         label: "Integrations",
         permission: "admin_dashboard.access",
@@ -95,19 +100,34 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         permission: "admin_dashboard.access",
       },
       {
-        href: "/admin/support-agent/responses",
-        label: "Responses",
+        href: "/admin/support-agent/actions",
+        label: "Agent Actions",
         permission: "admin_dashboard.access",
       },
       {
-        href: "/admin/support-agent/analytics",
-        label: "Analytics",
+        href: "/admin/support-agent/escalation",
+        label: "Escalation",
         permission: "admin_dashboard.access",
       },
       {
-        href: "/admin/support-agent/settings",
-        label: "Settings",
-        permission: "admin_dashboard.access",
+        href: "/admin/support-agent/keys",
+        label: "API Keys",
+        permission: "credentials.read_metadata",
+      },
+      {
+        href: "/admin/support-agent/domains",
+        label: "Domains",
+        permission: "resources.read",
+      },
+      {
+        href: "/admin/support-agent/webhooks",
+        label: "Webhooks",
+        permission: "resources.read",
+      },
+      {
+        href: "/admin/support-agent/logs",
+        label: "Logs",
+        permission: "audit.read",
       },
     ],
   },

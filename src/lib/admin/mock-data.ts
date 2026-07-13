@@ -315,5 +315,242 @@ export const MOCK_SUPPORT_ANALYTICS = {
   volumeTrend: [120, 135, 128, 142, 138, 155, 149, 162, 158, 170, 165, 178],
 };
 
+export interface MockSupportApiEndpoint {
+  id: string;
+  name: string;
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  route: string;
+  environment: EnterpriseEnvironment;
+  status: "active" | "disabled" | "draft";
+  health: "healthy" | "degraded" | "down";
+}
+
+export interface MockAgentAction {
+  id: string;
+  name: string;
+  category: string;
+  risk: "low" | "medium" | "high" | "restricted";
+  environment: EnterpriseEnvironment;
+  enabled: boolean;
+  approvalRequired: boolean;
+}
+
+export interface MockEscalationRule {
+  id: string;
+  name: string;
+  trigger: string;
+  destination: string;
+  priority: "low" | "medium" | "high" | "urgent";
+  enabled: boolean;
+  lastTriggered: string | null;
+}
+
+export interface MockSupportApiKey {
+  id: string;
+  name: string;
+  prefix: string;
+  environment: EnterpriseEnvironment;
+  status: "active" | "expiring" | "revoked";
+  lastUsed: string | null;
+}
+
+export interface MockSupportDomain {
+  id: string;
+  domain: string;
+  environment: EnterpriseEnvironment;
+  dnsStatus: "verified" | "pending" | "failed";
+  sslStatus: "active" | "provisioning" | "failed";
+  primary: boolean;
+}
+
+export interface MockSupportLog {
+  id: string;
+  timestamp: string;
+  requestId: string;
+  endpoint: string;
+  method: string;
+  status: number;
+  environment: EnterpriseEnvironment;
+  durationMs: number;
+}
+
+export const MOCK_SUPPORT_API_ENDPOINTS: MockSupportApiEndpoint[] = [
+  {
+    id: "api-1",
+    name: "Create ticket",
+    method: "POST",
+    route: "/v1/tickets",
+    environment: "production",
+    status: "active",
+    health: "healthy",
+  },
+  {
+    id: "api-2",
+    name: "Search knowledge base",
+    method: "GET",
+    route: "/v1/kb/search",
+    environment: "staging",
+    status: "active",
+    health: "healthy",
+  },
+  {
+    id: "api-3",
+    name: "Escalate conversation",
+    method: "POST",
+    route: "/v1/conversations/escalate",
+    environment: "production",
+    status: "draft",
+    health: "degraded",
+  },
+];
+
+export const MOCK_AGENT_ACTIONS: MockAgentAction[] = [
+  {
+    id: "act-1",
+    name: "Close ticket",
+    category: "Tickets",
+    risk: "low",
+    environment: "production",
+    enabled: true,
+    approvalRequired: false,
+  },
+  {
+    id: "act-2",
+    name: "Issue refund",
+    category: "Billing",
+    risk: "high",
+    environment: "production",
+    enabled: true,
+    approvalRequired: true,
+  },
+  {
+    id: "act-3",
+    name: "Export customer PII",
+    category: "Customer data",
+    risk: "restricted",
+    environment: "staging",
+    enabled: false,
+    approvalRequired: true,
+  },
+];
+
+export const MOCK_ESCALATION_RULES: MockEscalationRule[] = [
+  {
+    id: "esc-1",
+    name: "Human handoff request",
+    trigger: "Customer requests a human",
+    destination: "Tier 1 queue",
+    priority: "high",
+    enabled: true,
+    lastTriggered: "2026-07-13T11:20:00Z",
+  },
+  {
+    id: "esc-2",
+    name: "Low confidence response",
+    trigger: "Response confidence below 0.6",
+    destination: "Review queue",
+    priority: "medium",
+    enabled: true,
+    lastTriggered: "2026-07-12T16:45:00Z",
+  },
+  {
+    id: "esc-3",
+    name: "Billing dispute",
+    trigger: "Billing dispute detected",
+    destination: "Billing specialists",
+    priority: "urgent",
+    enabled: false,
+    lastTriggered: null,
+  },
+];
+
+export const MOCK_SUPPORT_API_KEYS: MockSupportApiKey[] = [
+  {
+    id: "key-1",
+    name: "Production widget",
+    prefix: "sk_live_…a4f2",
+    environment: "production",
+    status: "active",
+    lastUsed: "2026-07-13T10:30:00Z",
+  },
+  {
+    id: "key-2",
+    name: "Staging integration",
+    prefix: "sk_test_…9b1c",
+    environment: "staging",
+    status: "expiring",
+    lastUsed: "2026-07-11T08:00:00Z",
+  },
+];
+
+export const MOCK_SUPPORT_DOMAINS: MockSupportDomain[] = [
+  {
+    id: "dom-1",
+    domain: "support.example.com",
+    environment: "production",
+    dnsStatus: "verified",
+    sslStatus: "active",
+    primary: true,
+  },
+  {
+    id: "dom-2",
+    domain: "support-staging.example.com",
+    environment: "staging",
+    dnsStatus: "pending",
+    sslStatus: "provisioning",
+    primary: false,
+  },
+];
+
+export const MOCK_SUPPORT_WEBHOOKS: MockWebhook[] = [
+  {
+    id: "swh-1",
+    url: "https://hooks.example.com/support/tickets",
+    events: ["ticket.created", "ticket.escalated"],
+    environment: "production",
+    status: "active",
+  },
+  {
+    id: "swh-2",
+    url: "https://hooks.example.com/support/staging",
+    events: ["conversation.closed"],
+    environment: "staging",
+    status: "disabled",
+  },
+];
+
+export const MOCK_SUPPORT_LOGS: MockSupportLog[] = [
+  {
+    id: "log-1",
+    timestamp: "2026-07-13T12:01:00Z",
+    requestId: "req_8f2a",
+    endpoint: "/v1/tickets",
+    method: "POST",
+    status: 201,
+    environment: "production",
+    durationMs: 142,
+  },
+  {
+    id: "log-2",
+    timestamp: "2026-07-13T12:00:45Z",
+    requestId: "req_8f29",
+    endpoint: "/v1/kb/search",
+    method: "GET",
+    status: 200,
+    environment: "production",
+    durationMs: 89,
+  },
+  {
+    id: "log-3",
+    timestamp: "2026-07-13T11:58:12Z",
+    requestId: "req_8f28",
+    endpoint: "/v1/conversations/escalate",
+    method: "POST",
+    status: 503,
+    environment: "staging",
+    durationMs: 1204,
+  },
+];
+
 export const PLACEHOLDER_NOTICE =
   "Placeholder data — backend integration pending. Values shown for layout preview only.";
