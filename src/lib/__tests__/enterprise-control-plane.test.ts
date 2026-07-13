@@ -21,8 +21,10 @@ import {
   createChangeRequest,
   markChangeDeploying,
   reviewChangeRequest,
+  scheduleChangeRequest,
   submitChangeRequest,
 } from "@/lib/enterprise/change-workflow";
+import { computeSanitizedConfigDiff } from "@/lib/enterprise/change-detail";
 import {
   CSRF_COOKIE_NAME,
   CSRF_HEADER_NAME,
@@ -34,8 +36,22 @@ import {
   createControlPlaneResource,
   createMembership,
   createOrganization,
+  enqueueJob,
+  claimDueJobs,
+  completeJob,
   findControlPlaneResource,
+  getActiveConfigForResource,
+  getConfigVersionDetail,
+  listDueScheduledChanges,
+  listJobs,
 } from "@/lib/enterprise/repository";
+import {
+  getSecuritySettings,
+  updateSecuritySettings,
+} from "@/lib/enterprise/security-settings";
+import { processControlPlaneJobs } from "@/lib/enterprise/job-processor";
+import { createVaultProvider, resolveVaultProviderKind } from "@/lib/enterprise/vault-providers";
+import { isPublicDocumentationApiPath } from "@/lib/documentation-auth/proxy-auth";
 import type { EnterprisePrincipal } from "@/lib/enterprise/types";
 
 describe("enterprise authorization policy", () => {
@@ -324,5 +340,150 @@ describe("enterprise persistence and workflows", () => {
     });
     expect(active.state).toBe("ACTIVE");
     expect(active.approvedByUserId).toBe(approverId);
+  });
+
+  it("schedules approved changes for future activation", async () => {
+    const requester = workflowContext(requesterId, "owner");
+    const approver = workflowContext(approverId, "admin");
+    const draft = await createChangeRequest(requester, {
+      resourceId,
+      config: { mode: "scheduled" },
+      diff: { mode: { from: "v1", to: "scheduled" } },
+      idempotencyKey: "schedule-test",
+    });
+    const pending = await submitChangeRequest(requester, draft.id, draft.version);
+    const approved = await reviewChangeRequest(approver, {
+      id: pending.id,
+      expectedVersion: pending.version,
+      decision: "APPROVED",
+    });
+    const scheduledFor = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const scheduled = await scheduleChangeRequest(approver, {
+      id: approved.id,
+      expectedVersion: approved.version,
+      scheduledFor,
+    });
+    expect(scheduled.state).toBe("SCHEDULED");
+    expect(scheduled.scheduledFor).toBe(scheduledFor);
+  });
+
+  it("returns sanitized config diff against active configuration", async () => {
+    const requester = workflowContext(requesterId, "owner");
+    const draft = await createChangeRequest(requester, {
+      resourceId,
+      config: { mode: "detail-test", token: "secret-value" },
+      diff: { mode: { from: "v1", to: "detail-test" } },
+      idempotencyKey: "detail-test",
+    });
+    const target = await getConfigVersionDetail(
+      organizationId,
+      draft.targetConfigVersionId
+    );
+    expect(target).not.toBeNull();
+    const active = await getActiveConfigForResource(organizationId, resourceId);
+    const diff = computeSanitizedConfigDiff(active, target!.config);
+    expect(diff).toHaveProperty("mode");
+    expect(JSON.stringify(diff)).not.toContain("secret-value");
+  });
+
+  it("manages security settings with optimistic locking", async () => {
+    const initial = await getSecuritySettings(organizationId);
+    expect(initial.version).toBe(0);
+    const saved = await updateSecuritySettings({
+      organizationId,
+      actorUserId: requesterId,
+      expectedVersion: 0,
+      patch: { auditRetentionDays: 120 },
+    });
+    expect(saved.version).toBe(1);
+    expect(saved.settings.auditRetentionDays).toBe(120);
+  });
+
+  it("enqueues, claims, and completes background jobs", async () => {
+    const job = await enqueueJob({
+      organizationId,
+      jobType: "noop",
+      payload: { source: "test" },
+    });
+    expect(job.status).toBe("queued");
+    const claimed = await withOrganizationTransaction(
+      { organizationId, userId: requesterId },
+      (transaction) =>
+        claimDueJobs(
+          { organizationId, lockedBy: "test-worker", limit: 5 },
+          transaction
+        )
+    );
+    expect(claimed.some((entry) => entry.id === job.id)).toBe(true);
+    const running = claimed.find((entry) => entry.id === job.id)!;
+    await withOrganizationTransaction(
+      { organizationId, userId: requesterId },
+      (transaction) =>
+        completeJob(
+          {
+            organizationId,
+            id: running.id,
+            expectedVersion: running.version,
+            result: { ok: true },
+          },
+          transaction
+        )
+    );
+    const jobs = await listJobs(organizationId);
+    expect(jobs.find((entry) => entry.id === job.id)?.status).toBe("completed");
+  });
+
+  it("activates due scheduled changes during job processing", async () => {
+    const requester = workflowContext(requesterId, "owner");
+    const approver = workflowContext(approverId, "admin");
+    const draft = await createChangeRequest(requester, {
+      resourceId,
+      config: { mode: "cron-activate" },
+      diff: { mode: { from: "v1", to: "cron-activate" } },
+      idempotencyKey: "cron-activate-test",
+    });
+    const pending = await submitChangeRequest(requester, draft.id, draft.version);
+    const approved = await reviewChangeRequest(approver, {
+      id: pending.id,
+      expectedVersion: pending.version,
+      decision: "APPROVED",
+    });
+    const past = new Date(Date.now() - 60_000).toISOString();
+    await withOrganizationTransaction(
+      { organizationId, userId: approverId },
+      (transaction) =>
+        transaction.execute(
+          `UPDATE change_requests
+           SET state = 'SCHEDULED', scheduled_for = ?, version = version + 1, updated_at = ?
+           WHERE organization_id = ? AND id = ?`,
+          [past, new Date().toISOString(), organizationId, approved.id]
+        )
+    );
+    const due = await listDueScheduledChanges(organizationId, new Date().toISOString());
+    expect(due.some((entry) => entry.id === approved.id)).toBe(true);
+    const result = await processControlPlaneJobs({ organizationId, limit: 10 });
+    expect(result.scheduledChangesActivated).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("enterprise public health endpoints", () => {
+  it("allows unauthenticated load balancer probes", () => {
+    expect(isPublicDocumentationApiPath("/api/health/live")).toBe(true);
+    expect(isPublicDocumentationApiPath("/api/health/ready")).toBe(true);
+    expect(isPublicDocumentationApiPath("/api/admin/control-plane/context")).toBe(
+      false
+    );
+  });
+});
+
+describe("enterprise vault providers", () => {
+  afterEach(() => {
+    delete process.env.VAULT_PROVIDER;
+  });
+
+  it("creates an environment vault provider when configured", () => {
+    process.env.VAULT_PROVIDER = "env";
+    expect(resolveVaultProviderKind()).toBe("env");
+    expect(createVaultProvider()).not.toBeNull();
   });
 });

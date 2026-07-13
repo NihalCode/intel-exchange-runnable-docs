@@ -8,6 +8,7 @@ import {
   withOrganizationTransaction,
 } from "@/lib/db/client";
 import type { EnterpriseEnvironment } from "@/lib/enterprise/types";
+import { storeApiKeyInVault } from "@/lib/enterprise/vault-providers";
 
 export interface ApiCredentialMetadata {
   id: string;
@@ -116,6 +117,14 @@ async function insertApiKey(
   executor: DbExecutor
 ): Promise<OneTimeApiKey> {
   const plaintext = generateApiKey();
+  let vaultRef = input.vaultRef ?? null;
+  if (!vaultRef) {
+    try {
+      vaultRef = await storeApiKeyInVault(input.name, plaintext);
+    } catch {
+      vaultRef = null;
+    }
+  }
   const keyHash = hashApiKey(plaintext);
   const id = randomUUID();
   const now = new Date().toISOString();
@@ -131,7 +140,7 @@ async function insertApiKey(
       input.name,
       input.environment,
       keyHash,
-      input.vaultRef ?? null,
+      vaultRef,
       plaintext.slice(-4),
       input.expiresAt ?? null,
       input.rotatedFromId ?? null,

@@ -336,6 +336,55 @@ export async function findConfigVersion(
     : null;
 }
 
+export interface ConfigVersionDetail {
+  id: string;
+  resourceId: string;
+  versionNumber: number;
+  config: Record<string, unknown>;
+  sanitizedDiff: Record<string, unknown>;
+  createdByUserId: string;
+  createdAt: string;
+}
+
+export async function getConfigVersionDetail(
+  organizationId: string,
+  id: string,
+  executor: DbExecutor = db
+): Promise<ConfigVersionDetail | null> {
+  const row = await executor.queryOne(
+    `SELECT id, resource_id, version_number, config_json, sanitized_diff_json,
+            created_by_user_id, created_at
+     FROM control_plane_config_versions
+     WHERE organization_id = ? AND id = ? LIMIT 1`,
+    [organizationId, id]
+  );
+  if (!row) return null;
+  return {
+    id: String(row.id),
+    resourceId: String(row.resource_id),
+    versionNumber: Number(row.version_number),
+    config: parseJsonObject(row.config_json),
+    sanitizedDiff: parseJsonObject(row.sanitized_diff_json),
+    createdByUserId: String(row.created_by_user_id),
+    createdAt: String(row.created_at),
+  };
+}
+
+export async function getActiveConfigForResource(
+  organizationId: string,
+  resourceId: string,
+  executor: DbExecutor = db
+): Promise<Record<string, unknown> | null> {
+  const resource = await findControlPlaneResource(organizationId, resourceId, executor);
+  if (!resource?.activeConfigVersion) return null;
+  const row = await executor.queryOne(
+    `SELECT config_json FROM control_plane_config_versions
+     WHERE organization_id = ? AND resource_id = ? AND version_number = ? LIMIT 1`,
+    [organizationId, resourceId, resource.activeConfigVersion]
+  );
+  return row ? parseJsonObject(row.config_json) : null;
+}
+
 export interface ConfigVersionRecord {
   id: string;
   resourceId: string;
@@ -427,6 +476,22 @@ export async function listChangeRequests(
     `SELECT * FROM change_requests
      WHERE organization_id = ? ORDER BY updated_at DESC LIMIT ?`,
     [organizationId, safeLimit]
+  );
+  return rows.map(rowToChangeRequest);
+}
+
+export async function listDueScheduledChanges(
+  organizationId: string,
+  asOf: string,
+  limit = 25,
+  executor: DbExecutor = db
+): Promise<ChangeRequestRecord[]> {
+  const safeLimit = Math.min(Math.max(Math.floor(limit), 1), 100);
+  const rows = await executor.query(
+    `SELECT * FROM change_requests
+     WHERE organization_id = ? AND state = 'SCHEDULED' AND scheduled_for <= ?
+     ORDER BY scheduled_for ASC LIMIT ?`,
+    [organizationId, asOf, safeLimit]
   );
   return rows.map(rowToChangeRequest);
 }
@@ -591,4 +656,207 @@ export class ResourceNotFoundError extends Error {
     super("Resource not found");
     this.name = "ResourceNotFoundError";
   }
+}
+
+export type BackgroundJobStatus = "queued" | "running" | "completed" | "failed";
+
+export interface BackgroundJobRecord {
+  id: string;
+  organizationId: string;
+  jobType: string;
+  status: BackgroundJobStatus;
+  payload: Record<string, unknown>;
+  result: Record<string, unknown> | null;
+  attempts: number;
+  maxAttempts: number;
+  runAfter: string;
+  lockedAt: string | null;
+  lockedBy: string | null;
+  lastError: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+function rowToBackgroundJob(row: Record<string, unknown>): BackgroundJobRecord {
+  return {
+    id: String(row.id),
+    organizationId: String(row.organization_id),
+    jobType: String(row.job_type),
+    status: row.status as BackgroundJobStatus,
+    payload: parseJsonObject(row.payload_json),
+    result:
+      row.result_json == null ? null : parseJsonObject(row.result_json),
+    attempts: Number(row.attempts),
+    maxAttempts: Number(row.max_attempts),
+    runAfter: String(row.run_after),
+    lockedAt: row.locked_at == null ? null : String(row.locked_at),
+    lockedBy: row.locked_by == null ? null : String(row.locked_by),
+    lastError: row.last_error == null ? null : String(row.last_error),
+    version: Number(row.version),
+    createdAt: String(row.created_at),
+    updatedAt: String(row.updated_at),
+  };
+}
+
+export async function enqueueJob(
+  input: {
+    organizationId: string;
+    jobType: string;
+    payload?: Record<string, unknown>;
+    runAfter?: string;
+    maxAttempts?: number;
+  },
+  executor: DbExecutor = db
+): Promise<BackgroundJobRecord> {
+  const id = randomUUID();
+  const now = nowIso();
+  const runAfter = input.runAfter ?? now;
+  await executor.execute(
+    `INSERT INTO background_jobs (
+      id, organization_id, job_type, status, payload_json, attempts, max_attempts,
+      run_after, version, created_at, updated_at
+    ) VALUES (?, ?, ?, 'queued', ?, 0, ?, ?, 1, ?, ?)`,
+    [
+      id,
+      input.organizationId,
+      input.jobType,
+      JSON.stringify(input.payload ?? {}),
+      input.maxAttempts ?? 5,
+      runAfter,
+      now,
+      now,
+    ]
+  );
+  const row = await executor.queryOne(
+    "SELECT * FROM background_jobs WHERE organization_id = ? AND id = ? LIMIT 1",
+    [input.organizationId, id]
+  );
+  return rowToBackgroundJob(row!);
+}
+
+export async function listJobs(
+  organizationId: string,
+  limit = 50,
+  executor: DbExecutor = db
+): Promise<BackgroundJobRecord[]> {
+  const safeLimit = Math.min(Math.max(Math.floor(limit), 1), 200);
+  const rows = await executor.query(
+    `SELECT * FROM background_jobs
+     WHERE organization_id = ?
+     ORDER BY created_at DESC LIMIT ?`,
+    [organizationId, safeLimit]
+  );
+  return rows.map(rowToBackgroundJob);
+}
+
+export async function claimDueJobs(
+  input: {
+    organizationId: string;
+    lockedBy: string;
+    limit?: number;
+  },
+  executor: DbExecutor = db
+): Promise<BackgroundJobRecord[]> {
+  const safeLimit = Math.min(Math.max(Math.floor(input.limit ?? 10), 1), 50);
+  const now = nowIso();
+  const candidates = await executor.query(
+    `SELECT * FROM background_jobs
+     WHERE organization_id = ? AND status = 'queued' AND run_after <= ?
+     ORDER BY run_after ASC LIMIT ?`,
+    [input.organizationId, now, safeLimit]
+  );
+  const claimed: BackgroundJobRecord[] = [];
+  for (const candidate of candidates) {
+    const id = String(candidate.id);
+    const version = Number(candidate.version);
+    await executor.execute(
+      `UPDATE background_jobs
+       SET status = 'running', locked_at = ?, locked_by = ?,
+           attempts = attempts + 1, version = version + 1, updated_at = ?
+       WHERE organization_id = ? AND id = ? AND status = 'queued' AND version = ?`,
+      [now, input.lockedBy, now, input.organizationId, id, version]
+    );
+    const updated = await executor.queryOne(
+      "SELECT * FROM background_jobs WHERE organization_id = ? AND id = ? LIMIT 1",
+      [input.organizationId, id]
+    );
+    if (updated && String(updated.status) === "running") {
+      claimed.push(rowToBackgroundJob(updated));
+    }
+  }
+  return claimed;
+}
+
+export async function completeJob(
+  input: {
+    organizationId: string;
+    id: string;
+    expectedVersion: number;
+    result?: Record<string, unknown>;
+  },
+  executor: DbExecutor = db
+): Promise<BackgroundJobRecord> {
+  const now = nowIso();
+  await executor.execute(
+    `UPDATE background_jobs
+     SET status = 'completed', result_json = ?, last_error = NULL,
+         version = version + 1, updated_at = ?
+     WHERE organization_id = ? AND id = ? AND status = 'running' AND version = ?`,
+    [
+      JSON.stringify(input.result ?? {}),
+      now,
+      input.organizationId,
+      input.id,
+      input.expectedVersion,
+    ]
+  );
+  const row = await executor.queryOne(
+    "SELECT * FROM background_jobs WHERE organization_id = ? AND id = ? LIMIT 1",
+    [input.organizationId, input.id]
+  );
+  if (!row || String(row.status) !== "completed") {
+    throw new OptimisticLockError();
+  }
+  return rowToBackgroundJob(row);
+}
+
+export async function failJob(
+  input: {
+    organizationId: string;
+    id: string;
+    expectedVersion: number;
+    error: string;
+  },
+  executor: DbExecutor = db
+): Promise<BackgroundJobRecord> {
+  const now = nowIso();
+  const row = await executor.queryOne(
+    "SELECT attempts, max_attempts FROM background_jobs WHERE organization_id = ? AND id = ? LIMIT 1",
+    [input.organizationId, input.id]
+  );
+  if (!row) throw new OptimisticLockError();
+  const attempts = Number(row.attempts);
+  const maxAttempts = Number(row.max_attempts);
+  const terminal = attempts >= maxAttempts;
+  await executor.execute(
+    `UPDATE background_jobs
+     SET status = ?, last_error = ?, locked_at = NULL, locked_by = NULL,
+         version = version + 1, updated_at = ?
+     WHERE organization_id = ? AND id = ? AND status = 'running' AND version = ?`,
+    [
+      terminal ? "failed" : "queued",
+      input.error.slice(0, 500),
+      now,
+      input.organizationId,
+      input.id,
+      input.expectedVersion,
+    ]
+  );
+  const updated = await executor.queryOne(
+    "SELECT * FROM background_jobs WHERE organization_id = ? AND id = ? LIMIT 1",
+    [input.organizationId, input.id]
+  );
+  if (!updated) throw new OptimisticLockError();
+  return rowToBackgroundJob(updated);
 }

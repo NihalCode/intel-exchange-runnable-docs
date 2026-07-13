@@ -30,6 +30,34 @@ test.describe("enterprise admin surface", () => {
     await context.close();
   });
 
+  test("owner role can load documentation-agent security page", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      extraHTTPHeaders: { "x-test-role": "owner" },
+    });
+    const page = await context.newPage();
+    await page.goto("/admin/documentation-agent/security");
+    await expect(
+      page.getByRole("heading", { name: /documentation agent security/i })
+    ).toBeVisible();
+    await context.close();
+  });
+
+  test("owner role can load documentation-agent jobs page", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      extraHTTPHeaders: { "x-test-role": "owner" },
+    });
+    const page = await context.newPage();
+    await page.goto("/admin/documentation-agent/jobs");
+    await expect(
+      page.getByRole("heading", { name: /documentation agent jobs/i })
+    ).toBeVisible();
+    await context.close();
+  });
+
   test("admin HTML responses include noindex robots directive", async ({
     page,
   }) => {

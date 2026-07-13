@@ -20,6 +20,8 @@ const PUBLIC_API_EXACT = [
   "/api/auth/session",
   "/api/auth/me",
   "/api/invites/validate",
+  "/api/health/live",
+  "/api/health/ready",
 ];
 
 const PUBLIC_API_PREFIXES = ["/api/products"];
@@ -31,6 +33,10 @@ function isPublicPath(pathname: string): boolean {
 function isPublicApiPath(pathname: string): boolean {
   if (PUBLIC_API_EXACT.includes(pathname)) return true;
   return PUBLIC_API_PREFIXES.some((p) => pathname === p || pathname.startsWith(p));
+}
+
+export function isPublicDocumentationApiPath(pathname: string): boolean {
+  return isPublicApiPath(pathname);
 }
 
 export function isProtectedDocumentationPath(pathname: string): boolean {

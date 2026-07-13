@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AdminSubNav } from "@/components/admin/AdminSubNav";
+import { OneTimeSecretModal } from "@/components/admin/OneTimeSecretModal";
 import type { EnterpriseAuditEvent } from "@/lib/enterprise/audit";
 import type { ChangeRequestRecord, EnterprisePermission } from "@/lib/enterprise/types";
 import type {
@@ -29,36 +31,70 @@ const inputClass =
 const buttonClass =
   "rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white hover:bg-sky-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none";
 
+interface ChangeDetail {
+  change: ChangeRequestRecord;
+  resource: {
+    id: string;
+    name: string;
+    environment: string;
+    activeConfigVersion: number | null;
+    version: number;
+  };
+  targetConfig: {
+    id: string;
+    versionNumber: number;
+    sanitizedDiff: Record<string, unknown>;
+  };
+  diffVsActive: Record<string, unknown>;
+}
+
 export function DocumentationAgentDashboard(props: Props) {
   const router = useRouter();
   const capabilities = new Set(props.capabilities);
   const [operation, setOperation] = useState("Ready");
   const [busy, setBusy] = useState(false);
+  const [oneTimeSecret, setOneTimeSecret] = useState<string | null>(null);
+  const [changeDetail, setChangeDetail] = useState<ChangeDetail | null>(null);
+  const [scheduleFor, setScheduleFor] = useState<Record<string, string>>({});
+  const [rollbackVersion, setRollbackVersion] = useState<Record<string, string>>({});
+
+  async function getCsrfToken(): Promise<string> {
+    const contextResponse = await fetch("/api/admin/control-plane/context", {
+      cache: "no-store",
+    });
+    if (!contextResponse.ok) throw new Error("Authorization refresh failed");
+    const context = (await contextResponse.json()) as { csrfToken: string };
+    return context.csrfToken;
+  }
 
   async function mutate(path: string, body: Record<string, unknown>, idempotencyKey?: string) {
     setBusy(true);
     setOperation("Operation in progress");
     try {
-      const contextResponse = await fetch("/api/admin/control-plane/context", {
-        cache: "no-store",
-      });
-      if (!contextResponse.ok) throw new Error("Authorization refresh failed");
-      const context = (await contextResponse.json()) as { csrfToken: string };
+      const csrfToken = await getCsrfToken();
       const response = await fetch(path, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": context.csrfToken,
+          "X-CSRF-Token": csrfToken,
           ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}),
         },
         body: JSON.stringify(body),
       });
-      const result = (await response.json()) as { error?: string };
+      const result = (await response.json()) as {
+        error?: string;
+        plaintext?: string;
+        oneTime?: boolean;
+      };
       if (!response.ok) throw new Error(result.error ?? "Operation failed");
+      if (result.oneTime && result.plaintext) {
+        setOneTimeSecret(result.plaintext);
+      }
       setOperation("Operation completed successfully");
       router.refresh();
     } catch (error) {
       setOperation(error instanceof Error ? error.message : "Operation failed");
+      throw error;
     } finally {
       setBusy(false);
     }
@@ -92,6 +128,32 @@ export function DocumentationAgentDashboard(props: Props) {
     }
   }
 
+  async function createCredential(formData: FormData) {
+    await mutate("/api/admin/control-plane/credentials", {
+      name: String(formData.get("name") ?? ""),
+      environment: String(formData.get("environment") ?? ""),
+      expiresAt: null,
+    });
+  }
+
+  async function viewChangeDetail(changeId: string) {
+    setBusy(true);
+    setOperation("Loading change detail");
+    try {
+      const response = await fetch(`/api/admin/control-plane/changes/${changeId}`, {
+        cache: "no-store",
+      });
+      const result = (await response.json()) as ChangeDetail & { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "Failed to load change detail");
+      setChangeDetail(result);
+      setOperation("Change detail loaded");
+    } catch (error) {
+      setOperation(error instanceof Error ? error.message : "Failed to load change detail");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const grouped = ["development", "staging", "production"].map((environment) => ({
     environment,
     resources: props.resources.filter((resource) => resource.environment === environment),
@@ -119,6 +181,8 @@ export function DocumentationAgentDashboard(props: Props) {
           Operation status: {operation}
         </p>
       </header>
+
+      <AdminSubNav capabilities={props.capabilities} />
 
       {capabilities.has("resources.write") ? (
         <section aria-labelledby="create-resource-heading">
@@ -242,7 +306,7 @@ export function DocumentationAgentDashboard(props: Props) {
       <section aria-labelledby="changes-heading">
         <h2 id="changes-heading" className="text-xl font-semibold">Change status</h2>
         <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[760px] text-left text-sm">
+          <table className="w-full min-w-[960px] text-left text-sm">
             <caption className="sr-only">Documentation Agent change requests</caption>
             <thead>
               <tr className="border-b border-zinc-300 dark:border-zinc-700">
@@ -253,52 +317,143 @@ export function DocumentationAgentDashboard(props: Props) {
               </tr>
             </thead>
             <tbody>
-              {props.changes.map((change) => (
-                <tr key={change.id} className="border-b border-zinc-200 dark:border-zinc-800">
-                  <td className="p-2 font-mono text-xs">{change.id.slice(0, 12)}</td>
-                  <td className="p-2">{change.state.replaceAll("_", " ")}</td>
-                  <td className="p-2">
-                    <time dateTime={change.updatedAt}>
-                      {new Date(change.updatedAt).toLocaleString()}
-                    </time>
-                  </td>
-                  <td className="p-2">
-                    <div className="flex flex-wrap gap-2">
-                      {change.state === "DRAFT" && capabilities.has("changes.submit") ? (
+              {props.changes.map((change) => {
+                const resource = props.resources.find((item) => item.id === change.resourceId);
+                return (
+                  <tr key={change.id} className="border-b border-zinc-200 dark:border-zinc-800">
+                    <td className="p-2 font-mono text-xs">{change.id.slice(0, 12)}</td>
+                    <td className="p-2">{change.state.replaceAll("_", " ")}</td>
+                    <td className="p-2">
+                      <time dateTime={change.updatedAt}>
+                        {new Date(change.updatedAt).toLocaleString()}
+                      </time>
+                    </td>
+                    <td className="p-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <ActionButton
                           disabled={busy}
-                          label="Submit"
-                          onClick={() => mutate(`/api/admin/control-plane/changes/${change.id}/submit`, { expectedVersion: change.version })}
+                          label="View diff"
+                          onClick={() => void viewChangeDetail(change.id)}
                         />
-                      ) : null}
-                      {change.state === "PENDING_REVIEW" &&
-                      change.requestedByUserId !== props.currentUserId &&
-                      capabilities.has("changes.approve") ? (
-                        <>
-                          <ActionButton disabled={busy} label="Approve" onClick={() => mutate(`/api/admin/control-plane/changes/${change.id}/approve`, { expectedVersion: change.version })} />
-                          <ActionButton disabled={busy} label="Reject" onClick={() => mutate(`/api/admin/control-plane/changes/${change.id}/reject`, { expectedVersion: change.version })} />
-                        </>
-                      ) : null}
-                      {change.state === "APPROVED" && capabilities.has("changes.activate") ? (
-                        <ActionButton
-                          disabled={busy}
-                          label="Activate"
-                          onClick={() => {
-                            const resource = props.resources.find((item) => item.id === change.resourceId);
-                            return mutate(`/api/admin/control-plane/changes/${change.id}/activate`, {
-                              expectedVersion: change.version,
-                              expectedResourceVersion: resource?.version ?? 1,
-                            });
-                          }}
-                        />
-                      ) : null}
-                      {!["DRAFT", "PENDING_REVIEW", "APPROVED"].includes(change.state) ? (
-                        <span>No action available</span>
-                      ) : null}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        {change.state === "DRAFT" && capabilities.has("changes.submit") ? (
+                          <ActionButton
+                            disabled={busy}
+                            label="Submit"
+                            onClick={() =>
+                              mutate(`/api/admin/control-plane/changes/${change.id}/submit`, {
+                                expectedVersion: change.version,
+                              })
+                            }
+                          />
+                        ) : null}
+                        {change.state === "PENDING_REVIEW" &&
+                        change.requestedByUserId !== props.currentUserId &&
+                        capabilities.has("changes.approve") ? (
+                          <>
+                            <ActionButton
+                              disabled={busy}
+                              label="Approve"
+                              onClick={() =>
+                                mutate(`/api/admin/control-plane/changes/${change.id}/approve`, {
+                                  expectedVersion: change.version,
+                                })
+                              }
+                            />
+                            <ActionButton
+                              disabled={busy}
+                              label="Reject"
+                              onClick={() =>
+                                mutate(`/api/admin/control-plane/changes/${change.id}/reject`, {
+                                  expectedVersion: change.version,
+                                })
+                              }
+                            />
+                          </>
+                        ) : null}
+                        {change.state === "APPROVED" && capabilities.has("changes.activate") ? (
+                          <>
+                            <input
+                              aria-label={`Schedule activation for ${change.id.slice(0, 12)}`}
+                              className={`${inputClass} max-w-56`}
+                              type="datetime-local"
+                              value={scheduleFor[change.id] ?? ""}
+                              onChange={(event) =>
+                                setScheduleFor((current) => ({
+                                  ...current,
+                                  [change.id]: event.target.value,
+                                }))
+                              }
+                            />
+                            <ActionButton
+                              disabled={busy || !scheduleFor[change.id]}
+                              label="Schedule"
+                              onClick={() => {
+                                const value = scheduleFor[change.id];
+                                if (!value) return;
+                                return mutate(
+                                  `/api/admin/control-plane/changes/${change.id}/schedule`,
+                                  {
+                                    expectedVersion: change.version,
+                                    scheduledFor: new Date(value).toISOString(),
+                                  }
+                                );
+                              }}
+                            />
+                            <ActionButton
+                              disabled={busy}
+                              label="Activate now"
+                              onClick={() =>
+                                mutate(`/api/admin/control-plane/changes/${change.id}/activate`, {
+                                  expectedVersion: change.version,
+                                  expectedResourceVersion: resource?.version ?? 1,
+                                })
+                              }
+                            />
+                          </>
+                        ) : null}
+                        {change.state === "ACTIVE" && capabilities.has("changes.rollback") ? (
+                          <>
+                            <select
+                              aria-label={`Rollback version for ${change.id.slice(0, 12)}`}
+                              className={inputClass}
+                              value={rollbackVersion[change.id] ?? ""}
+                              onChange={(event) =>
+                                setRollbackVersion((current) => ({
+                                  ...current,
+                                  [change.id]: event.target.value,
+                                }))
+                              }
+                            >
+                              <option value="">Select version</option>
+                              {(resource?.versions ?? []).map((version) => (
+                                <option key={version.id} value={version.id}>
+                                  v{version.versionNumber}
+                                </option>
+                              ))}
+                            </select>
+                            <ActionButton
+                              disabled={busy || !rollbackVersion[change.id]}
+                              label="Rollback"
+                              onClick={() =>
+                                mutate(`/api/admin/control-plane/changes/${change.id}/rollback`, {
+                                  expectedVersion: change.version,
+                                  expectedResourceVersion: resource?.version ?? 1,
+                                  rollbackConfigVersionId: rollbackVersion[change.id] ?? "",
+                                })
+                              }
+                            />
+                          </>
+                        ) : null}
+                        {!["DRAFT", "PENDING_REVIEW", "APPROVED", "ACTIVE"].includes(
+                          change.state
+                        ) ? (
+                          <span>No action available</span>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -306,11 +461,30 @@ export function DocumentationAgentDashboard(props: Props) {
 
       <section aria-labelledby="credentials-heading">
         <h2 id="credentials-heading" className="text-xl font-semibold">
-          API credential metadata
+          API credentials
         </h2>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-          Secret values and key hashes are never shown in this dashboard.
+          Secret values and key hashes are never shown after initial creation or rotation.
         </p>
+        {capabilities.has("credentials.manage") ? (
+          <form action={createCredential} className="mt-4 flex flex-wrap items-end gap-3">
+            <label className="grid gap-1 text-sm">
+              Credential name
+              <input className={inputClass} name="name" required maxLength={100} />
+            </label>
+            <label className="grid gap-1 text-sm">
+              Environment
+              <select className={inputClass} name="environment" defaultValue="development">
+                <option value="development">Development</option>
+                <option value="staging">Staging</option>
+                <option value="production">Production</option>
+              </select>
+            </label>
+            <button className={buttonClass} disabled={busy} type="submit">
+              Create credential
+            </button>
+          </form>
+        ) : null}
         <table className="mt-4 w-full text-left text-sm">
           <caption className="sr-only">Organization API credential metadata</caption>
           <thead>
@@ -319,6 +493,7 @@ export function DocumentationAgentDashboard(props: Props) {
               <th scope="col" className="p-2">Environment</th>
               <th scope="col" className="p-2">Ending</th>
               <th scope="col" className="p-2">Status</th>
+              <th scope="col" className="p-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -328,6 +503,35 @@ export function DocumentationAgentDashboard(props: Props) {
                 <td className="p-2 capitalize">{credential.environment}</td>
                 <td className="p-2 font-mono">••••{credential.last4}</td>
                 <td className="p-2 capitalize">{credential.status}</td>
+                <td className="p-2">
+                  {capabilities.has("credentials.manage") &&
+                  credential.status === "active" ? (
+                    <div className="flex flex-wrap gap-2">
+                      <ActionButton
+                        disabled={busy}
+                        label="Rotate"
+                        onClick={() =>
+                          mutate(
+                            `/api/admin/control-plane/credentials/${credential.id}/rotate`,
+                            { expectedVersion: credential.version }
+                          )
+                        }
+                      />
+                      <ActionButton
+                        disabled={busy}
+                        label="Revoke"
+                        onClick={() =>
+                          mutate(
+                            `/api/admin/control-plane/credentials/${credential.id}/revoke`,
+                            { expectedVersion: credential.version }
+                          )
+                        }
+                      />
+                    </div>
+                  ) : (
+                    <span>—</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -358,6 +562,51 @@ export function DocumentationAgentDashboard(props: Props) {
           ))}
         </ol>
       </section>
+
+      {oneTimeSecret ? (
+        <OneTimeSecretModal
+          title="API credential created"
+          secret={oneTimeSecret}
+          description="Store this API key in your secret manager. It cannot be retrieved again from this dashboard."
+          onClose={() => setOneTimeSecret(null)}
+        />
+      ) : null}
+
+      {changeDetail ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="change-detail-title"
+        >
+          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-700 dark:bg-zinc-950">
+            <h2 id="change-detail-title" className="text-lg font-semibold">
+              Change detail — {changeDetail.resource.name}
+            </h2>
+            <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+              Status: {changeDetail.change.state.replaceAll("_", " ")} · Target v
+              {changeDetail.targetConfig.versionNumber}
+            </p>
+            <h3 className="mt-4 font-medium">Sanitized diff vs active configuration</h3>
+            <pre className="mt-2 overflow-x-auto rounded-md border border-zinc-200 bg-zinc-50 p-3 text-xs dark:border-zinc-800 dark:bg-zinc-900">
+              {JSON.stringify(changeDetail.diffVsActive, null, 2)}
+            </pre>
+            <h3 className="mt-4 font-medium">Target version diff (sanitized)</h3>
+            <pre className="mt-2 overflow-x-auto rounded-md border border-zinc-200 bg-zinc-50 p-3 text-xs dark:border-zinc-800 dark:bg-zinc-900">
+              {JSON.stringify(changeDetail.targetConfig.sanitizedDiff, null, 2)}
+            </pre>
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                className={buttonClass}
+                onClick={() => setChangeDetail(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

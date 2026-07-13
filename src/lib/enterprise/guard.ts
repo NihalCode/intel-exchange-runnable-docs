@@ -40,6 +40,7 @@ const SENSITIVE_PERMISSIONS = new Set<EnterprisePermission>([
   "changes.rollback",
   "credentials.manage",
   "security_settings.manage",
+  "jobs.manage",
   "audit.read_sensitive",
 ]);
 

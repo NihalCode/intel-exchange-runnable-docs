@@ -6,6 +6,7 @@ import {
   markChangeDeploying,
   reviewChangeRequest,
   rollbackChangeRequest,
+  scheduleChangeRequest,
   submitChangeRequest,
 } from "@/lib/enterprise/change-workflow";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
@@ -15,6 +16,7 @@ import {
 } from "@/lib/enterprise/repository";
 import type { EnterprisePermission } from "@/lib/enterprise/types";
 import {
+  ApiInputError,
   auditApiEvent,
   controlPlaneJson,
   errorResponse,
@@ -33,6 +35,7 @@ const PERMISSIONS: Record<string, EnterprisePermission> = {
   submit: "changes.submit",
   approve: "changes.approve",
   reject: "changes.approve",
+  schedule: "changes.activate",
   activate: "changes.activate",
   rollback: "changes.rollback",
 };
@@ -101,6 +104,17 @@ export async function POST(
           body.expectedResourceVersion,
           "expectedResourceVersion"
         ),
+      });
+    } else if (action === "schedule") {
+      exactKeys(body, ["expectedVersion", "scheduledFor"]);
+      const scheduledFor = requiredString(body.scheduledFor, "scheduledFor", 40);
+      if (!Number.isFinite(Date.parse(scheduledFor))) {
+        throw new ApiInputError("scheduledFor must be an ISO date");
+      }
+      updated = await scheduleChangeRequest(workflowContext(access, request), {
+        id,
+        expectedVersion: requiredInteger(body.expectedVersion, "expectedVersion"),
+        scheduledFor,
       });
     } else {
       exactKeys(body, [
