@@ -58,7 +58,7 @@ export default async function Home() {
       </div>
 
       <div className="mt-10 grid gap-4 md:grid-cols-3">
-        <Link href="/docs/ctix/getting-started" className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+        <Link href="/guides" className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
           <p className="text-xs font-semibold text-sky-600">Quick start</p>
           <h2 className="mt-2 font-semibold">Make your first API request</h2>
           <p className="mt-2 text-xs leading-5 text-zinc-500">Configure product authentication and run a documented request safely.</p>

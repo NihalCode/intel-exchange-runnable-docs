@@ -117,23 +117,30 @@ function ProfileControl() {
 }
 
 function HeaderBar() {
+  const pathname = usePathname();
+  const navLink = (href: string, label: string, className = "hidden md:inline") => {
+    const active = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+    return (
+      <Link
+        href={href}
+        className={`rounded-md px-2 py-1 text-xs ${className} ${
+          active
+            ? "bg-sky-100 font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+            : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+        }`}
+      >
+        {label}
+      </Link>
+    );
+  };
+
   return (
     <div className="relative flex min-w-0 flex-1 items-center justify-end gap-1">
-      <Link href="/" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 md:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
-        Documentation
-      </Link>
-      <Link href="/docs/ctix" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 md:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
-        API Reference
-      </Link>
-      <Link href="/docs/ctix/getting-started" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 lg:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
-        Guides
-      </Link>
-      <Link href="/changelog" className="hidden rounded-md px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-100 xl:inline dark:text-zinc-400 dark:hover:bg-zinc-900">
-        Changelog
-      </Link>
-      <Link href="/authentication" className="rounded-md px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900">
-        Authentication
-      </Link>
+      {navLink("/", "Documentation")}
+      {navLink("/docs/ctix", "API Reference")}
+      {navLink("/guides", "Guides", "hidden lg:inline")}
+      {navLink("/changelog", "Changelog", "hidden xl:inline")}
+      {navLink("/authentication", "Authentication", "inline font-medium")}
     </div>
   );
 }
