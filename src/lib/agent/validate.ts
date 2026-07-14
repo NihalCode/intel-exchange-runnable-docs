@@ -145,3 +145,16 @@ export function validatePlan(
   steps.sort((a, b) => a.order - b.order);
   return { steps, dropped };
 }
+
+/**
+ * Keeps a model-suggested but undocumented endpoint from being presented as a
+ * usable workflow. The caller should use this only when every proposed step was
+ * rejected, rather than silently returning the model's prose.
+ */
+export function unsupportedEndpointAbstention(dropped: readonly string[]): string {
+  const names = dropped.map((slug) => `\`${slug}\``).join(", ");
+  return (
+    `I can’t verify ${names} as a documented API endpoint, so I won’t suggest a request path. ` +
+    "TODO: confirm the endpoint in the product API reference or provide the intended documented object type."
+  );
+}

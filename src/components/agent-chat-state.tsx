@@ -27,6 +27,7 @@ import {
   buildQueryWithAttachments,
   type AgentAttachment,
 } from "@/lib/agent/file-extract-client";
+import { createAgentRequestId } from "@/lib/agent/events";
 import {
   appendSessionLog,
   createSession as createWorkspaceSession,
@@ -251,6 +252,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sessionIdRef = useRef<string | null>(null);
   const requestControllerRef = useRef<AbortController | null>(null);
+  const activeServerTurnRef = useRef<{ conversationId: string; turnId: string } | null>(null);
 
   useEffect(() => {
     return () => requestControllerRef.current?.abort();
@@ -324,7 +326,13 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   );
 
   const startServerTurn = useCallback(
-    async (conversationId: string, sessionId: string, messageId: string, userText: string) => {
+    async (
+      conversationId: string,
+      sessionId: string,
+      messageId: string,
+      userText: string,
+      requestId: string
+    ): Promise<string | null> => {
       try {
         const idempotencyKey = `${sessionId}:${messageId}`;
         const response = await fetch(`/api/agent/conversations/${conversationId}/turns`, {
@@ -332,18 +340,22 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           headers: {
             "Content-Type": "application/json",
             "Idempotency-Key": idempotencyKey,
+            "X-Request-Id": requestId,
           },
           body: JSON.stringify({ userText, idempotencyKey }),
         });
-        if (!response.ok) return;
+        if (!response.ok) return null;
         const data = (await response.json()) as ServerTurnResponse;
         const turnId = data.turn?.id;
         if (typeof turnId === "string" && turnId) {
           persistSession(sessionId, { serverTurnId: turnId });
           refreshSessions();
+          return turnId;
         }
+        return null;
       } catch {
         // A failed audit write must never prevent the agent response.
+        return null;
       }
     },
     [refreshSessions]
@@ -489,6 +501,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       setStatusMessage(null);
       const requestController = new AbortController();
       requestControllerRef.current = requestController;
+      const requestId = createAgentRequestId();
 
       const existingCtx = existingAppContext(activeAppId, priorMessages.slice(0, -1));
       const hasProjectFiles = (existingCtx?.files?.length ?? 0) > 0;
@@ -505,16 +518,34 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 
       try {
         const currentSessionId = sessionIdRef.current;
+        let serverConversationId: string | null = null;
+        let serverTurnId: string | null = null;
         if (authState.authenticated && currentSessionId) {
-          const conversationId = await ensureServerConversation(currentSessionId);
-          if (conversationId) {
+          serverConversationId = await ensureServerConversation(currentSessionId);
+          if (serverConversationId) {
             // Store only the user-authored text. Extracted attachment content stays in memory.
-            await startServerTurn(
-              conversationId,
+            serverTurnId = await startServerTurn(
+              serverConversationId,
               currentSessionId,
               userMsg.id,
-              typed || "Analyze the attached file(s)."
+              typed || "Analyze the attached file(s).",
+              requestId
             );
+            if (serverTurnId) {
+              activeServerTurnRef.current = {
+                conversationId: serverConversationId,
+                turnId: serverTurnId,
+              };
+            }
+            if (requestController.signal.aborted) {
+              if (serverTurnId) {
+                void fetch(
+                  `/api/agent/conversations/${serverConversationId}/turns/${serverTurnId}/cancel`,
+                  { method: "POST" }
+                );
+              }
+              return;
+            }
           }
         }
 
@@ -532,7 +563,10 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 
         const res = await fetch("/api/agent", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-Request-Id": requestId,
+          },
           signal: requestController.signal,
           body: JSON.stringify({
             query: q,
@@ -541,8 +575,12 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
             productId: scopedProductId,
             history: historyForApi(priorMessages.slice(0, -1)),
             existingApp: resolved.editExistingApp ? existingCtx : undefined,
+            conversationId: serverConversationId ?? undefined,
+            turnId: serverTurnId ?? undefined,
           }),
         });
+        const responseRequestId = res.headers.get("x-agent-request-id");
+        if (responseRequestId) logPanel(`Agent request ${responseRequestId}`);
         const bodyText = await res.text();
         let data: AgentResponse & { error?: string | { message?: string; code?: string } };
         try {
@@ -595,6 +633,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       } finally {
         if (requestControllerRef.current === requestController) {
           requestControllerRef.current = null;
+          activeServerTurnRef.current = null;
         }
         setLoading(false);
         setIntentLabel(null);
@@ -626,6 +665,13 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     const controller = requestControllerRef.current;
     if (!controller || controller.signal.aborted) return;
     controller.abort();
+    const activeTurn = activeServerTurnRef.current;
+    if (activeTurn) {
+      void fetch(
+        `/api/agent/conversations/${activeTurn.conversationId}/turns/${activeTurn.turnId}/cancel`,
+        { method: "POST" }
+      );
+    }
     setStatusMessage("Request stopped.");
   }, []);
 
