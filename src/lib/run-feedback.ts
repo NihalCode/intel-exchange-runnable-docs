@@ -93,9 +93,13 @@ export function csap404Explanation(baseUrl?: string): string {
 
 export function orchestrate404Explanation(baseUrl?: string): string {
   const base = (baseUrl || "").replace(/\/+$/, "");
+  const probe =
+    /\/soarapi$/i.test(base)
+      ? `${base}/openapi/v1/test_connectivity/`
+      : `${base}/v1/test_connectivity/`;
   return (
-    "404 — check Orchestrate base URL and path. " +
-    `Test connectivity: ${base}/v1/test_connectivity/ with AccessID, Signature, and Expires.`
+    "404 — check Orchestrate base URL and path (tenant …/soarapi/openapi or …/co). " +
+    `Test connectivity: ${probe} with AccessID, Signature, and Expires.`
   );
 }
 

@@ -64,6 +64,9 @@ describe("product registry", () => {
   it("validates allowed base URLs per product", () => {
     expect(isAllowedBaseUrl("ctix", "https://tenant.cyware.com/ctixapi/ping/")).toBe(true);
     expect(isAllowedBaseUrl("csap", "https://tenant.cyware.com/csap/api/")).toBe(true);
+    expect(isAllowedBaseUrl("orchestrate", "https://cs-test.cyware.com/soarapi/openapi/")).toBe(
+      true
+    );
     expect(isAllowedBaseUrl("ctix", "https://evil.example.com/ctixapi/")).toBe(false);
   });
 });

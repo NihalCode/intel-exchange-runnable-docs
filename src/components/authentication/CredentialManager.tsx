@@ -12,14 +12,47 @@ type Credential = {
   authorizedScopes: string[];
   validatedAt: string | null;
   expiresAt: string | null;
+  validationErrorCode?: string | null;
 };
 
 const PRODUCTS: Array<{ id: ProductId; label: string; hint: string }> = [
   { id: "ctix", label: "CTIX / Intel Exchange", hint: "Tenant URL ending in /ctixapi" },
-  { id: "cftr", label: "CFTR", hint: "CFTR tenant Open API URL" },
-  { id: "orchestrate", label: "Cyware Orchestrate", hint: "Orchestrate tenant API URL" },
-  { id: "csap", label: "CSAP", hint: "CSAP tenant API URL" },
+  { id: "cftr", label: "CFTR", hint: "CFTR tenant Open API URL (…/cftrapi)" },
+  {
+    id: "orchestrate",
+    label: "Cyware Orchestrate",
+    hint: "Tenant Open API URL, e.g. https://YOUR_TENANT.cyware.com/soarapi/openapi/",
+  },
+  {
+    id: "csap",
+    label: "CSAP",
+    hint: "Tenant URL ending in /csap, or https://csapapi.cyware.com",
+  },
 ];
+
+function connectFailureMessage(
+  status: number,
+  data: { error?: string; code?: string; credential?: Credential }
+): string {
+  if (data.code === "BASE_URL_NOT_ALLOWED" || data.error?.includes("not allowed")) {
+    return (
+      data.error ??
+      "Base URL is not allowed for this product. Check the tenant Open API path."
+    );
+  }
+  const code = data.credential?.validationErrorCode;
+  if (code === "PROVIDER_REJECTED") {
+    return "Connection could not be validated. Check the Access ID and Secret Key.";
+  }
+  if (code === "VALIDATION_TIMEOUT") {
+    return "Connection timed out. Check the Base URL and try again.";
+  }
+  if (code === "CONNECTIVITY_FAILED") {
+    return "Could not reach the Base URL. Check the URL and network access.";
+  }
+  if (status === 400 && data.error) return data.error;
+  return "Connection could not be validated. Check the URL and credentials.";
+}
 
 async function csrfToken(): Promise<string> {
   const response = await fetch("/api/admin/control-plane/context", { cache: "no-store" });
@@ -77,7 +110,18 @@ export function CredentialManager() {
 
   async function connect(productId: ProductId) {
     const formValues = forms[productId];
-    if (!formValues?.baseUrl || !formValues.accessId || !formValues.secretKey) return;
+    if (!formValues?.baseUrl?.trim()) {
+      setMessage((value) => ({ ...value, [productId]: "Base URL is required." }));
+      return;
+    }
+    if (!formValues.accessId?.trim()) {
+      setMessage((value) => ({ ...value, [productId]: "Access ID is required." }));
+      return;
+    }
+    if (!formValues.secretKey?.trim()) {
+      setMessage((value) => ({ ...value, [productId]: "Secret Key is required." }));
+      return;
+    }
     setBusy(productId);
     setMessage((value) => ({ ...value, [productId]: "" }));
     try {
@@ -87,24 +131,36 @@ export function CredentialManager() {
         headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
         body: JSON.stringify({ productId, ...formValues }),
       });
-      const data = (await response.json()) as { credential?: Credential; error?: string };
+      const data = (await response.json()) as {
+        credential?: Credential;
+        error?: string;
+        code?: string;
+      };
       const connected = response.ok && data.credential?.status === "valid";
       if (connected) {
         applyProductCredentials(productId, formValues);
+        setForms((current) => ({
+          ...current,
+          [productId]: { ...current[productId]!, secretKey: "" },
+        }));
+        setMessage((value) => ({
+          ...value,
+          [productId]:
+            "Connected. Credentials are ready for the API playground on this product.",
+        }));
+      } else {
+        // Keep Secret Key on failure so the user can retry without retyping.
+        setMessage((value) => ({
+          ...value,
+          [productId]: connectFailureMessage(response.status, data),
+        }));
       }
-      setMessage((value) => ({
-        ...value,
-        [productId]: connected
-          ? "Connected. Credentials are ready for the API playground on this product."
-          : "Connection could not be validated. Check the URL and credentials.",
-      }));
-      setForms((current) => ({
-        ...current,
-        [productId]: { ...current[productId]!, secretKey: "" },
-      }));
       await load();
     } catch {
-      setMessage((value) => ({ ...value, [productId]: "Connection could not be validated." }));
+      setMessage((value) => ({
+        ...value,
+        [productId]: "Connection could not be validated.",
+      }));
     } finally {
       setBusy(null);
     }

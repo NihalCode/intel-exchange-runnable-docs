@@ -4,7 +4,10 @@ import {
   listCredentialMetadata,
   revokeCredential,
 } from "@/lib/documentation-credentials/repository";
-import { validateAndStoreCredential } from "@/lib/documentation-credentials/service";
+import {
+  CredentialValidationError,
+  validateAndStoreCredential,
+} from "@/lib/documentation-credentials/service";
 import {
   isDocumentationProduct,
   type DocumentationProduct,
@@ -63,6 +66,12 @@ export async function POST(request: NextRequest) {
     });
     return controlPlaneJson({ credential }, { status: credential.status === "valid" ? 200 : 422 });
   } catch (error) {
+    if (error instanceof CredentialValidationError) {
+      return controlPlaneJson(
+        { error: error.message, code: error.code },
+        { status: 400 }
+      );
+    }
     return errorResponse(error);
   }
 }
