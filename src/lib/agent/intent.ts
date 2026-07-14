@@ -26,8 +26,10 @@ const UI_EDIT_SIGNAL =
 const API_TROUBLESHOOTING_SIGNAL =
   /\b(?:http\s*)?(?:400|401|403|404|409|422|429|500|502|503|504)\b|\b(?:endpoint|api|exporting indicators|after (?:an )?upgrade)\b/i;
 
-const DEPLOY_SIGNAL = /\b(deploy|publish|ship|put (it )?live|vercel)\b/i;
-const COMMIT_SIGNAL = /\b(commit|save to git|push to github|git commit)\b/i;
+const DEPLOY_SIGNAL =
+  /\b(?:deploy|publish|ship|put (it )?live)\b.+\b(?:app|project|site|frontend|vercel)\b|\bvercel\b.+\b(?:deploy|publish)\b|\bdeploy (?:to |on )?vercel\b/i;
+const COMMIT_SIGNAL =
+  /\b(?:save to git|push to github|git commit)\b|\bcommit\b.+\b(?:app|project|changes|workspace|generated)\b|\b(?:app|project|changes|workspace)\b.+\bcommit\b/i;
 const PREVIEW_SIGNAL = /\b(preview|run (the )?app|test (the )?app|try it)\b/i;
 
 export type AgentIntent =

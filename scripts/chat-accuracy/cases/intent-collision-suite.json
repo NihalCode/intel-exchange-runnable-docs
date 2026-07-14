@@ -1,0 +1,43 @@
+[
+  {
+    "id": "collision-deploy-playbook",
+    "prompt": "deploy the playbook",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["orchestrate"],
+    "mustNotContain": ["app_edit"]
+  },
+  {
+    "id": "collision-commit-result",
+    "prompt": "commit the result",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "hasProjectFiles": true,
+    "mustNotContain": ["app_edit"]
+  },
+  {
+    "id": "collision-fix-api-error",
+    "prompt": "fix this API error",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "hasProjectFiles": true,
+    "mustNotContain": ["app_edit"]
+  },
+  {
+    "id": "collision-search-support",
+    "prompt": "search support",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "responseType": "gated_unavailable"
+  },
+  {
+    "id": "collision-explicit-app-deploy",
+    "prompt": "deploy the app to vercel",
+    "expectedIntent": "deploy",
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "hasProjectFiles": true
+  }
+]

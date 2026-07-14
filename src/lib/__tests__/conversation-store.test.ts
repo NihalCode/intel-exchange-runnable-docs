@@ -5,6 +5,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
+  cancelTurn,
   completeTurnWithFinal,
   createConversation,
   getConversation,
@@ -118,5 +119,22 @@ describe("agent conversation store", () => {
         contentText: "This must not be stored.",
       })
     ).rejects.toThrow("Turn does not belong to this conversation");
+  });
+
+  it("cancels an in-progress turn without creating a duplicate final", async () => {
+    const conversation = await createConversation({ organizationId, userId, title: "Cancel" });
+    const started = await startTurn({
+      conversationId: conversation.id,
+      orgId: organizationId,
+      userId,
+      idempotencyKey: "cancel-1",
+      userText: "Long running request",
+    });
+
+    const cancelled = await cancelTurn(started.turn.id, organizationId, userId, conversation.id);
+    expect(cancelled?.status).toBe("cancelled");
+
+    const detail = await getConversation(conversation.id, organizationId, userId);
+    expect(detail?.messages.filter((message) => message.type === "assistant_final")).toHaveLength(0);
   });
 });

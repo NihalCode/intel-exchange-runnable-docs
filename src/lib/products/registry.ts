@@ -210,7 +210,7 @@ export function inferProductsFromQuery(query: string): string[] {
   const patterns: { id: string; re: RegExp }[] = [
     { id: "cftr", re: /\bcftr\b|\bcyware fusion and threat response\b|\bfusion and threat response\b/ },
     { id: "csap", re: /\bcsap\b|\bcyware situational awareness\b|\bcollaborate\b|\banalyst portal\b/ },
-    { id: "orchestrate", re: /\borchestrate\b|\bcyware orchestrate\b|\bco api\b/ },
+    { id: "orchestrate", re: /\borchestrate\b|\bcyware orchestrate\b|\bco api\b|\bplaybooks?\b/ },
     { id: "ctix", re: /\bctix\b|\bintel exchange api\b|\bintel exchange\b|\bstix\b/ },
   ];
 

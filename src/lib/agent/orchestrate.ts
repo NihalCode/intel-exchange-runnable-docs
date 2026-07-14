@@ -61,8 +61,12 @@ import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./nor
 import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
 import {
   fabricationRefusal,
+  isDangerousSideEffectInjection,
   isFabricationPromptInjection,
+  isSecretDisclosureInjection,
   isZendeskSupportQuery,
+  dangerousSideEffectRefusal,
+  secretDisclosureRefusal,
   supportSearchUnavailable,
 } from "./safety";
 import { defaultDocumentationFeatureEnabled } from "../documentation-features/keys";
@@ -166,6 +170,30 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       fallback: true,
       citations: [],
       steps: [],
+    };
+  }
+
+  if (isSecretDisclosureInjection(query)) {
+    return {
+      mode: "workflow",
+      workflow: secretDisclosureRefusal(),
+      confidence: 0,
+      fallback: true,
+      citations: [],
+      steps: [],
+      code: "SECRET_DISCLOSURE_REFUSED",
+    };
+  }
+
+  if (isDangerousSideEffectInjection(query)) {
+    return {
+      mode: "workflow",
+      workflow: dangerousSideEffectRefusal(),
+      confidence: 0,
+      fallback: true,
+      citations: [],
+      steps: [],
+      code: "SIDE_EFFECT_REFUSED",
     };
   }
 

@@ -7,6 +7,8 @@ import ctixSuite from "../../../scripts/chat-accuracy/cases/ctix-suite.json";
 import cftrSuite from "../../../scripts/chat-accuracy/cases/cftr-suite.json";
 import csapSuite from "../../../scripts/chat-accuracy/cases/csap-suite.json";
 import orchestrateSuite from "../../../scripts/chat-accuracy/cases/orchestrate-suite.json";
+import intentCollisionSuite from "../../../scripts/chat-accuracy/cases/intent-collision-suite.json";
+import securitySuite from "../../../scripts/chat-accuracy/cases/security-suite.json";
 import ctixIndex from "../../content/agent-index.json";
 import csapIndex from "../../content/products/csap/agent-index.json";
 import cftrIndex from "../../content/products/cftr/agent-index.json";
@@ -16,15 +18,30 @@ import { resolveAgentIntent } from "../agent/intent";
 import { runAgent } from "../agent/orchestrate";
 import { resolveProductScope } from "../agent/product-scope";
 import { retrieveLexical, evidenceFromScores } from "../agent/retrieve";
-import { fabricationRefusal, supportSearchUnavailable } from "../agent/safety";
+import {
+  dangerousSideEffectRefusal,
+  fabricationRefusal,
+  secretDisclosureRefusal,
+  supportSearchUnavailable,
+} from "../agent/safety";
 import type { AgentIndex } from "../agent/types";
 import { defaultDocumentationFeatureEnabled } from "../documentation-features/keys";
 
 type ChatTestCase = {
   id: string;
   prompt: string;
-  expectedIntent: "workflow" | "snippet" | "app_build" | "app_edit" | "explain";
-  fallbackIntent?: Array<"workflow" | "snippet" | "app_build" | "app_edit" | "explain">;
+  expectedIntent:
+    | "workflow"
+    | "snippet"
+    | "app_build"
+    | "app_edit"
+    | "explain"
+    | "deploy"
+    | "commit"
+    | "preview";
+  fallbackIntent?: Array<
+    "workflow" | "snippet" | "app_build" | "app_edit" | "explain" | "deploy" | "commit" | "preview"
+  >;
   expectedProducts: string[];
   productSelector?: string;
   expectedSlug?: string;
@@ -32,7 +49,14 @@ type ChatTestCase = {
   rankExpected?: boolean;
   mustContain?: string[];
   mustNotContain?: string[];
-  responseType?: "plan" | "gated_unavailable" | "refusal" | "abstention" | "abstention_or_no_invent";
+  responseType?:
+    | "plan"
+    | "gated_unavailable"
+    | "refusal"
+    | "secret_refusal"
+    | "side_effect_refusal"
+    | "abstention"
+    | "abstention_or_no_invent";
   hasProjectFiles?: boolean;
   conversationHistory?: Array<{ role: string; content: string }>;
 };
@@ -55,6 +79,8 @@ const testCases = [
   ...(cftrSuite as ChatTestCase[]),
   ...(csapSuite as ChatTestCase[]),
   ...(orchestrateSuite as ChatTestCase[]),
+  ...(intentCollisionSuite as ChatTestCase[]),
+  ...(securitySuite as ChatTestCase[]),
 ];
 const caseResults: CaseResult[] = [];
 
@@ -222,6 +248,20 @@ describe("demo-critical chat accuracy harness", () => {
         if (fixture.responseType === "refusal") {
           const response = await runAgent({ query: fixture.prompt, productId: "ctix" });
           expect(response.workflow).toBe(fabricationRefusal());
+          expect(response.steps).toEqual([]);
+        }
+
+        if (fixture.responseType === "secret_refusal") {
+          const response = await runAgent({ query: fixture.prompt, productId: "ctix" });
+          expect(response.workflow).toBe(secretDisclosureRefusal());
+          expect(response.code).toBe("SECRET_DISCLOSURE_REFUSED");
+          expect(response.steps).toEqual([]);
+        }
+
+        if (fixture.responseType === "side_effect_refusal") {
+          const response = await runAgent({ query: fixture.prompt, productId: "ctix" });
+          expect(response.workflow).toBe(dangerousSideEffectRefusal());
+          expect(response.code).toBe("SIDE_EFFECT_REFUSED");
           expect(response.steps).toEqual([]);
         }
 
