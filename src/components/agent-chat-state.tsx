@@ -181,6 +181,7 @@ export type AgentChatState = {
   activeAppId: string | null;
   loading: boolean;
   intentLabel: string | null;
+  statusMessage: string | null;
   attachments: AgentAttachment[];
   extracting: boolean;
   dragOver: boolean;
@@ -202,6 +203,7 @@ export type AgentChatState = {
   deleteChat: (id: string) => void;
   addFiles: (list: FileList | File[] | null) => Promise<void>;
   send: (text?: string) => Promise<void>;
+  cancel: () => void;
   handleDeploySuccess: (info: {
     deploymentUrl: string;
     deploymentId: string;
@@ -238,6 +240,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const [panelLogs, setPanelLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [intentLabel, setIntentLabel] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [deploying] = useState(false);
   const [committing, setCommitting] = useState(false);
   const [attachments, setAttachments] = useState<AgentAttachment[]>([]);
@@ -247,6 +250,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sessionIdRef = useRef<string | null>(null);
+  const requestControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => requestControllerRef.current?.abort();
+  }, []);
 
   const loadSessionIntoState = useCallback((session: AgentWorkspaceSession) => {
     sessionIdRef.current = session.id;
@@ -478,6 +486,9 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       setInput("");
       setAttachments([]);
       setLoading(true);
+      setStatusMessage(null);
+      const requestController = new AbortController();
+      requestControllerRef.current = requestController;
 
       const existingCtx = existingAppContext(activeAppId, priorMessages.slice(0, -1));
       const hasProjectFiles = (existingCtx?.files?.length ?? 0) > 0;
@@ -522,6 +533,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         const res = await fetch("/api/agent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: requestController.signal,
           body: JSON.stringify({
             query: q,
             mode: resolved.mode,
@@ -569,6 +581,10 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         setMessages((prev) => [...prev, assistantMsg]);
         logPanel(resolved.userLabel);
       } catch (err) {
+        if (requestController.signal.aborted) {
+          logPanel("Request stopped.");
+          return;
+        }
         const errMsg: ErrorMessage = {
           id: uid(),
           role: "error",
@@ -577,6 +593,9 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         setMessages((prev) => [...prev, errMsg]);
         logPanel(err instanceof Error ? err.message : "Error");
       } finally {
+        if (requestControllerRef.current === requestController) {
+          requestControllerRef.current = null;
+        }
         setLoading(false);
         setIntentLabel(null);
         inputRef.current?.focus();
@@ -602,6 +621,13 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       startServerTurn,
     ]
   );
+
+  const cancel = useCallback(() => {
+    const controller = requestControllerRef.current;
+    if (!controller || controller.signal.aborted) return;
+    controller.abort();
+    setStatusMessage("Request stopped.");
+  }, []);
 
   const handleDeploySuccess = useCallback(
     (info: { deploymentUrl: string; deploymentId: string; projectName: string }) => {
@@ -805,6 +831,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     activeAppId,
     loading,
     intentLabel,
+    statusMessage,
     attachments,
     extracting,
     dragOver,
@@ -826,6 +853,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     deleteChat,
     addFiles,
     send,
+    cancel,
     handleDeploySuccess,
     loadSavedAppIntoChat,
     handleSelectApp,
