@@ -14,6 +14,10 @@ import {
   POSTGRES_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
   SQLITE_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
 } from "@/lib/db/migrations/004_documentation_platform";
+import {
+  POSTGRES_AGENT_CONVERSATIONS_MIGRATION_SQL,
+  SQLITE_AGENT_CONVERSATIONS_MIGRATION_SQL,
+} from "@/lib/db/migrations/005_agent_conversations";
 
 export interface VersionedMigration {
   version: number;
@@ -50,6 +54,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "documentation_platform",
     sqlite: SQLITE_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
     postgres: POSTGRES_DOCUMENTATION_PLATFORM_MIGRATION_SQL,
+  },
+  {
+    version: 5,
+    name: "agent_conversations",
+    sqlite: SQLITE_AGENT_CONVERSATIONS_MIGRATION_SQL,
+    postgres: POSTGRES_AGENT_CONVERSATIONS_MIGRATION_SQL,
   },
 ] as const;
 
