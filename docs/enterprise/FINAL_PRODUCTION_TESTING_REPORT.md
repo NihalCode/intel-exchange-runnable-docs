@@ -7,6 +7,8 @@ Status: **demo-ready** for Auth0-gated production (Support Agent / Zendesk remai
 | Field | Value |
 |---|---|
 | Prior production SHA | `aa6bc50` |
+| This release SHA | `286dcb6` |
+| Deployment ID | `dpl_3dQ4f1vvYmk55rZqMzFUvQ6MBCsN` |
 | Production URL | https://intel-exchange-runnable-docs.vercel.app |
 | Health `/api/health/ready` | `200` `{ database: true, authConfig: true }` |
 | Auth gate | Docs + agent require Auth0; public auth pages only |
