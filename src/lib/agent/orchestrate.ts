@@ -59,6 +59,12 @@ import {
 import { getPineconeConfig, queryPineconeWithStatus } from "./pinecone";
 import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./normalize-query";
 import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
+import {
+  fabricationRefusal,
+  isFabricationPromptInjection,
+  isZendeskSupportQuery,
+  supportSearchUnavailable,
+} from "./safety";
 import { extractTagNameFromQuery } from "../workflow-step-context";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
@@ -159,6 +165,29 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       fallback: true,
       citations: [],
       steps: [],
+    };
+  }
+
+  if (isFabricationPromptInjection(query)) {
+    return {
+      mode: "workflow",
+      workflow: fabricationRefusal(),
+      confidence: 0,
+      fallback: true,
+      citations: [],
+      steps: [],
+    };
+  }
+
+  if (isZendeskSupportQuery(query)) {
+    return {
+      mode: "workflow",
+      workflow: supportSearchUnavailable(),
+      confidence: 0,
+      fallback: true,
+      citations: [],
+      steps: [],
+      code: "SUPPORT_AGENT_UNAVAILABLE",
     };
   }
 
