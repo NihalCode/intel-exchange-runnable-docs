@@ -17,6 +17,36 @@ describe("admin navigation", () => {
     expect(allItems.some((i) => i.href === "/admin/security/settings")).toBe(false);
   });
 
+  it("hides feature-gated items until their feature is enabled", () => {
+    const capabilities = [
+      "admin_dashboard.access",
+      "resources.read",
+      "security_settings.manage",
+    ] as const;
+    const disabled = filterNavByCapabilities(capabilities);
+    const enabled = filterNavByCapabilities(capabilities, [
+      "support_agent",
+      "placeholder_admin_modules",
+    ]);
+
+    expect(
+      disabled.flatMap((group) => group.items).some((item) => item.href === "/admin/support-agent")
+    ).toBe(false);
+    expect(
+      disabled
+        .flatMap((group) => group.items)
+        .some((item) => item.href === "/admin/documentation-agent/sources")
+    ).toBe(false);
+    expect(
+      enabled.flatMap((group) => group.items).some((item) => item.href === "/admin/support-agent")
+    ).toBe(true);
+    expect(
+      enabled
+        .flatMap((group) => group.items)
+        .some((item) => item.href === "/admin/documentation-agent/sources")
+    ).toBe(true);
+  });
+
   it("matches exact overview routes", () => {
     const overview = ADMIN_NAV_GROUPS[0]!.items[0]!;
     expect(isNavItemActive("/admin", overview)).toBe(true);

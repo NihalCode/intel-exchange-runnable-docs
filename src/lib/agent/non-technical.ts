@@ -1,4 +1,4 @@
-import type { AgentPlan, AgentStepResult, WorkflowScript } from "./types";
+import type { AgentStepResult, WorkflowScript } from "./types";
 import { parseDateRangeFromQuery, type ParsedDateRange } from "./date-range";
 import { getProductOrThrow } from "../products/registry";
 

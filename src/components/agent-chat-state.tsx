@@ -11,8 +11,9 @@ import {
   type ReactNode,
 } from "react";
 import { resolveAgentIntent } from "@/lib/agent/intent";
-import { inferProductFromQuery, inferProductsFromQuery } from "@/lib/products/registry";
+import { inferProductsFromQuery } from "@/lib/products/registry";
 import { clampAgentProductId, useAgentProductAccess } from "@/components/AgentProductAccess";
+import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
 import type { AgentLanguage, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
@@ -30,6 +31,7 @@ import {
   appendSessionLog,
   createSession as createWorkspaceSession,
   deleteSession,
+  getSession,
   listSessions,
   loadWorkspaceStore,
   renameSession,
@@ -50,6 +52,14 @@ export type AssistantMessage = {
 };
 export type ErrorMessage = { id: string; role: "error"; content: string };
 export type ChatMessage = UserMessage | AssistantMessage | ErrorMessage;
+
+type ServerConversationResponse = {
+  conversation?: { id?: unknown };
+};
+
+type ServerTurnResponse = {
+  turn?: { id?: unknown };
+};
 
 function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -171,6 +181,7 @@ export type AgentChatState = {
   activeAppId: string | null;
   loading: boolean;
   intentLabel: string | null;
+  statusMessage: string | null;
   attachments: AgentAttachment[];
   extracting: boolean;
   dragOver: boolean;
@@ -192,6 +203,7 @@ export type AgentChatState = {
   deleteChat: (id: string) => void;
   addFiles: (list: FileList | File[] | null) => Promise<void>;
   send: (text?: string) => Promise<void>;
+  cancel: () => void;
   handleDeploySuccess: (info: {
     deploymentUrl: string;
     deploymentId: string;
@@ -213,6 +225,7 @@ const AgentChatContext = createContext<AgentChatState | null>(null);
 
 export function AgentChatProvider({ children }: { children: ReactNode }) {
   const { productId, searchScope } = useProduct();
+  const { state: authState } = useDocumentationAuth();
   const credentialedProducts = useAgentProductAccess();
   const [sessions, setSessions] = useState<AgentWorkspaceSession[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
@@ -227,6 +240,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const [panelLogs, setPanelLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [intentLabel, setIntentLabel] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [deploying] = useState(false);
   const [committing, setCommitting] = useState(false);
   const [attachments, setAttachments] = useState<AgentAttachment[]>([]);
@@ -236,6 +250,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const sessionIdRef = useRef<string | null>(null);
+  const requestControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => requestControllerRef.current?.abort();
+  }, []);
 
   const loadSessionIntoState = useCallback((session: AgentWorkspaceSession) => {
     sessionIdRef.current = session.id;
@@ -250,10 +269,17 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const store = loadWorkspaceStore();
-    setSessions(store.sessions);
-    const active = store.sessions.find((s) => s.id === store.activeSessionId) ?? store.sessions[0];
-    if (active) loadSessionIntoState(active);
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      const store = loadWorkspaceStore();
+      setSessions(store.sessions);
+      const session = store.sessions.find((s) => s.id === store.activeSessionId) ?? store.sessions[0];
+      if (session) loadSessionIntoState(session);
+    });
+    return () => {
+      active = false;
+    };
   }, [loadSessionIntoState]);
 
   const projectApp = useMemo(
@@ -264,6 +290,64 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const refreshSessions = useCallback(() => {
     setSessions(listSessions());
   }, []);
+
+  const ensureServerConversation = useCallback(
+    async (sessionId: string): Promise<string | null> => {
+      const session = getSession(sessionId);
+      if (!session) return null;
+
+      try {
+        if (session.serverConversationId) {
+          const existing = await fetch(`/api/agent/conversations/${session.serverConversationId}`);
+          if (existing.ok) return session.serverConversationId;
+        }
+
+        const response = await fetch("/api/agent/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: session.title }),
+        });
+        if (!response.ok) return null;
+        const data = (await response.json()) as ServerConversationResponse;
+        const id = data.conversation?.id;
+        if (typeof id !== "string" || !id) return null;
+
+        persistSession(sessionId, { serverConversationId: id });
+        refreshSessions();
+        return id;
+      } catch {
+        // Server persistence is best-effort; the local workspace remains usable offline.
+        return null;
+      }
+    },
+    [refreshSessions]
+  );
+
+  const startServerTurn = useCallback(
+    async (conversationId: string, sessionId: string, messageId: string, userText: string) => {
+      try {
+        const idempotencyKey = `${sessionId}:${messageId}`;
+        const response = await fetch(`/api/agent/conversations/${conversationId}/turns`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey,
+          },
+          body: JSON.stringify({ userText, idempotencyKey }),
+        });
+        if (!response.ok) return;
+        const data = (await response.json()) as ServerTurnResponse;
+        const turnId = data.turn?.id;
+        if (typeof turnId === "string" && turnId) {
+          persistSession(sessionId, { serverTurnId: turnId });
+          refreshSessions();
+        }
+      } catch {
+        // A failed audit write must never prevent the agent response.
+      }
+    },
+    [refreshSessions]
+  );
 
   const logPanel = useCallback((line: string) => {
     const sid = sessionIdRef.current;
@@ -402,6 +486,9 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       setInput("");
       setAttachments([]);
       setLoading(true);
+      setStatusMessage(null);
+      const requestController = new AbortController();
+      requestControllerRef.current = requestController;
 
       const existingCtx = existingAppContext(activeAppId, priorMessages.slice(0, -1));
       const hasProjectFiles = (existingCtx?.files?.length ?? 0) > 0;
@@ -417,6 +504,20 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       }
 
       try {
+        const currentSessionId = sessionIdRef.current;
+        if (authState.authenticated && currentSessionId) {
+          const conversationId = await ensureServerConversation(currentSessionId);
+          if (conversationId) {
+            // Store only the user-authored text. Extracted attachment content stays in memory.
+            await startServerTurn(
+              conversationId,
+              currentSessionId,
+              userMsg.id,
+              typed || "Analyze the attached file(s)."
+            );
+          }
+        }
+
         const mentioned = inferProductsFromQuery(q);
         const scopedProductId = clampAgentProductId(
           mentioned.length === 1 && mentioned[0] !== "all"
@@ -432,6 +533,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         const res = await fetch("/api/agent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: requestController.signal,
           body: JSON.stringify({
             query: q,
             mode: resolved.mode,
@@ -479,6 +581,10 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         setMessages((prev) => [...prev, assistantMsg]);
         logPanel(resolved.userLabel);
       } catch (err) {
+        if (requestController.signal.aborted) {
+          logPanel("Request stopped.");
+          return;
+        }
         const errMsg: ErrorMessage = {
           id: uid(),
           role: "error",
@@ -487,6 +593,9 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         setMessages((prev) => [...prev, errMsg]);
         logPanel(err instanceof Error ? err.message : "Error");
       } finally {
+        if (requestControllerRef.current === requestController) {
+          requestControllerRef.current = null;
+        }
         setLoading(false);
         setIntentLabel(null);
         inputRef.current?.focus();
@@ -504,10 +613,21 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       productId,
       searchScope,
       credentialedProducts,
+      authState.authenticated,
+      ensureServerConversation,
       logPanel,
       refreshSessions,
+      setSelectedFilePath,
+      startServerTurn,
     ]
   );
+
+  const cancel = useCallback(() => {
+    const controller = requestControllerRef.current;
+    if (!controller || controller.signal.aborted) return;
+    controller.abort();
+    setStatusMessage("Request stopped.");
+  }, []);
 
   const handleDeploySuccess = useCallback(
     (info: { deploymentUrl: string; deploymentId: string; projectName: string }) => {
@@ -579,7 +699,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         refreshSessions();
       }
     },
-    [refreshSessions]
+    [refreshSessions, setSelectedFilePath]
   );
 
   const removeAttachment = useCallback((index: number) => {
@@ -711,6 +831,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     activeAppId,
     loading,
     intentLabel,
+    statusMessage,
     attachments,
     extracting,
     dragOver,
@@ -732,6 +853,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     deleteChat,
     addFiles,
     send,
+    cancel,
     handleDeploySuccess,
     loadSavedAppIntoChat,
     handleSelectApp,

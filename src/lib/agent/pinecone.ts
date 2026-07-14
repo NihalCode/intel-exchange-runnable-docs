@@ -21,6 +21,12 @@ export interface PineconeMatch {
   metadata?: Record<string, unknown>;
 }
 
+export interface PineconeQueryResult {
+  matches: PineconeMatch[];
+  /** True only when the vector request could not be completed. */
+  failed: boolean;
+}
+
 /** Read Pinecone config from env. Returns null when creds are absent. */
 export function getPineconeConfig(): PineconeConfig | null {
   const apiKey = process.env.PINECONE_API_KEY?.trim();
@@ -75,16 +81,16 @@ export async function describeIndexHost(cfg: PineconeConfig): Promise<string | n
   return data.host;
 }
 
-/** Query topK nearest vectors. Returns [] on any failure (caller falls back). */
-export async function queryPinecone(
+/** Query topK nearest vectors and report whether an empty result was a failure. */
+export async function queryPineconeWithStatus(
   embedding: number[],
   topK: number,
   cfg: PineconeConfig,
   productId?: string
-): Promise<PineconeMatch[]> {
+): Promise<PineconeQueryResult> {
   try {
     const host = await describeIndexHost(cfg);
-    if (!host) return [];
+    if (!host) return { matches: [], failed: true };
     const filter =
       productId && productId !== "all"
         ? { productId: { $eq: productId } }
@@ -99,10 +105,20 @@ export async function queryPinecone(
         ...(filter ? { filter } : {}),
       }),
     });
-    if (!res.ok) return [];
+    if (!res.ok) return { matches: [], failed: true };
     const data = (await res.json()) as { matches?: PineconeMatch[] };
-    return data.matches ?? [];
+    return { matches: data.matches ?? [], failed: false };
   } catch {
-    return [];
+    return { matches: [], failed: true };
   }
+}
+
+/** Query topK nearest vectors. Compatibility wrapper for existing callers. */
+export async function queryPinecone(
+  embedding: number[],
+  topK: number,
+  cfg: PineconeConfig,
+  productId?: string
+): Promise<PineconeMatch[]> {
+  return (await queryPineconeWithStatus(embedding, topK, cfg, productId)).matches;
 }

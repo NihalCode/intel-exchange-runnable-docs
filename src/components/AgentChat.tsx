@@ -12,6 +12,7 @@ import {
 } from "./AgentProductAccess";
 import { useAgentChat } from "./agent-chat-state";
 import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
+import { degradedRetrievalNotice, evidenceLabel, progressLabel } from "@/lib/agent/answer-ux";
 import { getProduct, inferProductsFromQuery } from "@/lib/products/registry";
 
 const QUICK_STARTS = [
@@ -88,6 +89,7 @@ function AgentChatBody({
     setShowImport,
     loading,
     intentLabel,
+    statusMessage,
     attachments,
     extracting,
     dragOver,
@@ -109,6 +111,7 @@ function AgentChatBody({
     deleteChat,
     addFiles,
     send,
+    cancel,
     handleDeploySuccess,
     loadSavedAppIntoChat,
     clearActiveApp,
@@ -122,9 +125,12 @@ function AgentChatBody({
   } = chat;
 
   const isEmpty = messages.length === 0;
-
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
   }, [messages, loading, bottomRef]);
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -135,7 +141,17 @@ function AgentChatBody({
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] min-h-[560px] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+    <section
+      aria-labelledby="agent-chat-heading"
+      className="flex h-[calc(100vh-8rem)] min-h-[560px] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+    >
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {loading
+          ? progressLabel(intentLabel)
+          : extracting
+            ? "Reading attached files"
+            : statusMessage ?? ""}
+      </div>
       <AgentChatSidebar
         sessions={sessions}
         activeSessionId={activeSessionId}
@@ -162,7 +178,7 @@ function AgentChatBody({
 
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
           <div>
-            <h2 className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Documentation Agent</h2>
+            <h2 id="agent-chat-heading" className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Documentation Agent</h2>
             <p className="text-[11px] text-zinc-500">
               Ask about endpoints, authentication, workflows, parameters, and code examples.
             </p>
@@ -174,6 +190,8 @@ function AgentChatBody({
             <button
               type="button"
               onClick={() => setShowSettings((s) => !s)}
+              aria-expanded={showSettings}
+              aria-controls="agent-chat-settings"
               className="rounded-lg px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
             >
               {showSettings ? "Hide settings" : "Settings"}
@@ -193,7 +211,7 @@ function AgentChatBody({
         ) : null}
 
         {showSettings ? (
-          <div className="shrink-0 border-b border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div id="agent-chat-settings" className="shrink-0 border-b border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/50">
             <div className="flex flex-wrap items-end gap-3">
               <label className="flex flex-col gap-1 text-xs">
                 <span className="font-semibold text-zinc-600 dark:text-zinc-400">Example code language</span>
@@ -213,7 +231,7 @@ function AgentChatBody({
           </div>
         ) : null}
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div aria-label="Conversation" className="flex-1 overflow-y-auto px-4 py-4">
           {isEmpty ? (
             <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
               <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-2xl dark:bg-sky-950">
@@ -251,12 +269,14 @@ function AgentChatBody({
                 if (msg.role === "error") {
                   return (
                     <div key={msg.id} className="flex justify-start">
-                      <div className="max-w-[90%] rounded-2xl rounded-bl-sm border border-red-300 bg-red-50 px-4 py-2.5 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+                      <div role="alert" className="max-w-[90%] rounded-2xl rounded-bl-sm border border-red-300 bg-red-50 px-4 py-2.5 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
                         {msg.content}
                       </div>
                     </div>
                   );
                 }
+                const evidence = evidenceLabel(msg.response.retrievalEvidence);
+                const retrievalNotice = degradedRetrievalNotice(msg.response.retrievalDegraded);
                 return (
                   <div key={msg.id} className="flex justify-start">
                     <div className="w-full max-w-full space-y-3 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
@@ -270,14 +290,21 @@ function AgentChatBody({
                             : msg.response.mode === "app"
                               ? "Built for you"
                               : "Answer"}
-                          {msg.response.confidence > 0
-                            ? ` · Best docs match ${Math.round(msg.response.confidence * 100)}%`
-                            : ""}
                         </span>
+                        {evidence ? (
+                          <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-200">
+                            {evidence}
+                          </span>
+                        ) : null}
                         {msg.response.productContext?.label ? (
                           <span className="text-[10px] text-zinc-400">{msg.response.productContext.label}</span>
                         ) : null}
                       </div>
+                      {retrievalNotice ? (
+                        <p className="rounded-lg border border-sky-200 bg-sky-50/70 px-3 py-2 text-xs text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-200">
+                          {retrievalNotice}
+                        </p>
+                      ) : null}
                       <div className="prose prose-sm max-w-none whitespace-pre-wrap dark:prose-invert">
                         {msg.content}
                       </div>
@@ -295,11 +322,14 @@ function AgentChatBody({
 
               {loading ? (
                 <div className="flex justify-start">
-                  <div className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+                  <div
+                    aria-live="polite"
+                    className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60"
+                  >
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs dark:bg-sky-950">
                       AI
                     </span>
-                    <span className="text-sm text-zinc-500">{intentLabel ?? "Working on it…"}</span>
+                    <span className="text-sm text-zinc-500">{progressLabel(intentLabel)}</span>
                   </div>
                 </div>
               ) : null}
@@ -383,6 +413,7 @@ function AgentChatBody({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={onKeyDown}
               rows={1}
+              aria-label="Ask the documentation agent"
               placeholder="Ask about an endpoint, workflow, parameter, or code example…"
               disabled={loading}
               className="max-h-32 min-h-[42px] flex-1 resize-none rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950"
@@ -394,7 +425,21 @@ function AgentChatBody({
             >
               Send
             </button>
+            {loading ? (
+              <button
+                type="button"
+                onClick={cancel}
+                className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-xl border border-red-300 px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/30"
+              >
+                Stop
+              </button>
+            ) : null}
           </form>
+          {statusMessage ? (
+            <p role="status" className="mx-auto mt-2 max-w-3xl text-xs text-zinc-500 dark:text-zinc-400">
+              {statusMessage}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -412,6 +457,6 @@ function AgentChatBody({
           committing={committing}
         />
       ) : null}
-    </div>
+    </section>
   );
 }

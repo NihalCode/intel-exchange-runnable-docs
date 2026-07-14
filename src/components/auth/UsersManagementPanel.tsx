@@ -84,7 +84,10 @@ export function UsersManagementPanel() {
     setBusy(userId);
     await fetch(`/api/users/${userId}/role`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": await csrfToken(),
+      },
       body: JSON.stringify({ role: nextRole }),
     });
     await load();
@@ -93,7 +96,10 @@ export function UsersManagementPanel() {
 
   async function disableUser(userId: string) {
     setBusy(userId);
-    await fetch(`/api/users/${userId}/disable`, { method: "PATCH" });
+    await fetch(`/api/users/${userId}/disable`, {
+      method: "PATCH",
+      headers: { "X-CSRF-Token": await csrfToken() },
+    });
     await load();
     setBusy(null);
   }

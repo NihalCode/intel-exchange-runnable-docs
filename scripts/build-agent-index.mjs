@@ -3,7 +3,7 @@
  * Build lexical search index for all products (or one with --product=).
  * Usage: node scripts/build-agent-index.mjs [--embed] [--product=ctix|csap|...]
  */
-import { readFile, writeFile, access } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PRODUCTS, contentDirForProduct } from "./products-config.mjs";

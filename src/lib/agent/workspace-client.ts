@@ -12,6 +12,10 @@ export interface AgentWorkspaceSession {
   createdAt: string;
   updatedAt: string;
   messages: StoredChatMessage[];
+  /** Server-side conversation UUID when this local chat has been authenticated. */
+  serverConversationId?: string;
+  /** Most recently started server turn; reserved for future streaming/finalization. */
+  serverTurnId?: string;
   language: AgentLanguage;
   productId?: string;
   searchScope: "product" | "all";

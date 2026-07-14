@@ -9,6 +9,7 @@ import {
   OpenAiNotConfiguredError,
   openAiChatModel,
   openAiEmbeddingModel,
+  sanitizeProviderError,
 } from "../openai/client";
 
 describe("OpenAI server-side configuration", () => {
@@ -62,6 +63,12 @@ describe("OpenAI server-side configuration", () => {
     expect(err.clientMessage).toContain("workspace administrator");
     expect(err.clientMessage).not.toMatch(/OPENAI_API_KEY|\.env/i);
     expect(err.developerMessage).toContain("OPENAI_API_KEY");
+  });
+
+  it("sanitizes provider response bodies before they reach clients", () => {
+    const responseBody = '{"error":{"message":"invalid key sk-secret-should-not-leak"}}';
+    expect(sanitizeProviderError(new Error(`Embedding failed (401): ${responseBody}`)))
+      .toBe("The AI service is temporarily unavailable. Please try again later.");
   });
 
   it("developer status label shows Configured or Missing only", () => {

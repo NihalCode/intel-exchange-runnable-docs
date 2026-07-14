@@ -8,7 +8,10 @@ import {
   withOrganizationTransaction,
 } from "@/lib/db/client";
 import type { EnterpriseEnvironment } from "@/lib/enterprise/types";
-import { storeApiKeyInVault } from "@/lib/enterprise/vault-providers";
+import {
+  resolveVaultProviderKind,
+  storeApiKeyInVault,
+} from "@/lib/enterprise/vault-providers";
 
 export interface ApiCredentialMetadata {
   id: string;
@@ -118,11 +121,10 @@ async function insertApiKey(
 ): Promise<OneTimeApiKey> {
   const plaintext = generateApiKey();
   let vaultRef = input.vaultRef ?? null;
-  if (!vaultRef) {
-    try {
-      vaultRef = await storeApiKeyInVault(input.name, plaintext);
-    } catch {
-      vaultRef = null;
+  if (!vaultRef && resolveVaultProviderKind()) {
+    vaultRef = await storeApiKeyInVault(input.name, plaintext);
+    if (!vaultRef) {
+      throw new Error("Configured vault did not return an API key reference");
     }
   }
   const keyHash = hashApiKey(plaintext);

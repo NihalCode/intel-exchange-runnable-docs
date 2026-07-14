@@ -10,11 +10,17 @@ const SNIPPET_SIGNAL =
 const APP_SIGNAL =
   /\b(build|create|make|develop|generate|scaffold|turn .+ into (a )?(app|form|dashboard|tool|website))\b[\s\S]{0,60}\b(app|application|website|web app|dashboard|portal|tool|analyzer|platform|form|frontend)\b/i;
 
-const APP_USE_CASE =
-  /\b(phishing|email analyzer|ioc checker|threat intel (portal|dashboard)|alert viewer|workflow launcher|investigation helper|report generator|admin panel)\b/i;
+/** References that make an edit to the loaded application unambiguous. */
+const PROJECT_EDIT_SIGNAL =
+  /\b(?:app\/[\w./-]+\.(?:tsx?|jsx?)|[\w./-]+\.(?:tsx?|jsx?)|in (?:the )?(?:app|project|generated app)|(?:change|edit|update|fix)\s+(?:the )?(?:code|ui|app|project|page|component))\b/i;
 
-const EDIT_SIGNAL =
-  /\b(add|change|update|fix|rename|delete|remove|make it|cleaner|easier|export|filter|chart|ui look|use the (cftr|csap|orchestrate|ctix))\b/i;
+/** A construction verb plus a UI feature is an edit request, not API troubleshooting. */
+const UI_EDIT_SIGNAL =
+  /\b(?:add|change|update|remove|delete|rename|redesign|restyle|improve|fix)\s+(?:(?:a|an|the)\s+)?(?:filter|chart|dashboard|dark mode|theme|button|table|form|modal|navigation|sidebar|layout|page|component|ui|user interface|export(?:\s+(?:button|action|control|feature|to csv))?)\b/i;
+
+/** Documentation/API failures must not be mistaken for loaded-app edits. */
+const API_TROUBLESHOOTING_SIGNAL =
+  /\b(?:http\s*)?(?:400|401|403|404|409|422|429|500|502|503|504)\b|\b(?:endpoint|api|exporting indicators|after (?:an )?upgrade)\b/i;
 
 const DEPLOY_SIGNAL = /\b(deploy|publish|ship|put (it )?live|vercel)\b/i;
 const COMMIT_SIGNAL = /\b(commit|save to git|push to github|git commit)\b/i;
@@ -53,7 +59,7 @@ export function detectAgentMode(query: string, explicit?: AgentMode): AgentMode 
   if (explicit === "workflow") return "workflow";
   if (explicit === "app") return "app";
   const q = query.trim();
-  if (APP_SIGNAL.test(q) || APP_USE_CASE.test(q)) return "app";
+  if (APP_SIGNAL.test(q)) return "app";
   return "workflow";
 }
 
@@ -113,8 +119,19 @@ export function resolveAgentIntent(
     };
   }
 
-  const wantsApp = APP_SIGNAL.test(q) || APP_USE_CASE.test(q);
-  if (opts.hasProjectFiles && (EDIT_SIGNAL.test(q) || wantsApp || opts.explicitMode === "app")) {
+  const wantsApp = APP_SIGNAL.test(q);
+  const wantsAppEdit = PROJECT_EDIT_SIGNAL.test(q) || UI_EDIT_SIGNAL.test(q);
+  const isApiTroubleshooting = API_TROUBLESHOOTING_SIGNAL.test(q);
+
+  if (isApiTroubleshooting && !wantsApp && !wantsAppEdit) {
+    return {
+      intent: "workflow",
+      mode: "workflow",
+      editExistingApp: false,
+      userLabel: INTENT_LABELS.workflow,
+    };
+  }
+  if (opts.hasProjectFiles && (wantsAppEdit || wantsApp)) {
     return {
       intent: "app_edit",
       mode: "app",

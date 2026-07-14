@@ -22,7 +22,8 @@ interface AwsSdkModule {
 
 function loadAwsSdk(): AwsSdkModule | null {
   try {
-    return nodeRequire("@aws-sdk/client-secrets-manager") as AwsSdkModule;
+    const packageName = ["@aws-sdk", "client-secrets-manager"].join("/");
+    return nodeRequire(packageName) as AwsSdkModule;
   } catch {
     return null;
   }
@@ -98,33 +99,14 @@ class HashicorpVaultProvider implements SecretVault {
   }
 }
 
-class AwsVaultStub implements SecretVault {
-  async getSecret(reference: string): Promise<string | null> {
-    void reference;
-    return null;
-  }
-
-  async putSecret(name: string, _value: string): Promise<string> {
-    const safeName = name.replace(/[^a-zA-Z0-9/_-]/g, "-");
-    return `aws://${safeName}`;
-  }
-
-  async deleteSecret(reference: string): Promise<void> {
-    void reference;
-  }
-}
-
 class AwsSecretsManagerProvider implements SecretVault {
   private client: {
     send(command: unknown): Promise<{ ARN?: string; SecretString?: string }>;
   } | null = null;
   private sdk: AwsSdkModule | null = null;
   private readonly region: string;
-  private readonly stubFallback: AwsVaultStub;
-
   constructor() {
     this.region = process.env.AWS_REGION?.trim() ?? "us-east-1";
-    this.stubFallback = new AwsVaultStub();
     this.sdk = loadAwsSdk();
     if (this.sdk) {
       this.client = new this.sdk.SecretsManagerClient({ region: this.region });
@@ -132,7 +114,11 @@ class AwsSecretsManagerProvider implements SecretVault {
   }
 
   async getSecret(reference: string): Promise<string | null> {
-    if (!this.client || !this.sdk) return this.stubFallback.getSecret(reference);
+    if (!this.client || !this.sdk) {
+      throw new Error(
+        "AWS Secrets Manager is configured but @aws-sdk/client-secrets-manager is unavailable"
+      );
+    }
     const secretId = reference.startsWith("aws://")
       ? reference.slice("aws://".length)
       : reference;
@@ -147,7 +133,11 @@ class AwsSecretsManagerProvider implements SecretVault {
   }
 
   async putSecret(name: string, value: string): Promise<string> {
-    if (!this.client || !this.sdk) return this.stubFallback.putSecret(name, value);
+    if (!this.client || !this.sdk) {
+      throw new Error(
+        "AWS Secrets Manager is configured but @aws-sdk/client-secrets-manager is unavailable"
+      );
+    }
     const safeName = name.replace(/[^a-zA-Z0-9/_-]/g, "-");
     const response = await this.client.send(
       new this.sdk.CreateSecretCommand({
@@ -161,8 +151,9 @@ class AwsSecretsManagerProvider implements SecretVault {
 
   async deleteSecret(reference: string): Promise<void> {
     if (!this.client || !this.sdk) {
-      await this.stubFallback.deleteSecret(reference);
-      return;
+      throw new Error(
+        "AWS Secrets Manager is configured but @aws-sdk/client-secrets-manager is unavailable"
+      );
     }
     const secretId = reference.startsWith("aws://")
       ? reference.slice("aws://".length)

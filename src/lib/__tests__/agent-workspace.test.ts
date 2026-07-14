@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   createEmptySession,
   createSession,
-  deleteSession,
   getSession,
   listSessions,
   loadWorkspaceStore,
@@ -55,6 +54,7 @@ describe("workspace-client", () => {
 
   it("returning to an old chat restores messages and files context", () => {
     const session = createEmptySession();
+    session.serverConversationId = "conversation-123";
     session.messages = [
       { id: "u1", role: "user", content: "Build a dashboard" },
       {
@@ -85,6 +85,7 @@ describe("workspace-client", () => {
     const restored = getSession(session.id);
     expect(restored?.messages).toHaveLength(2);
     expect(restored?.activeAppId).toBe("app-123");
+    expect(restored?.serverConversationId).toBe("conversation-123");
     expect(
       (restored?.messages[1] as { response?: { app?: { files?: unknown[] } } }).response?.app?.files
     ).toHaveLength(1);
@@ -108,6 +109,33 @@ describe("resolveAgentIntent — unified workspace", () => {
     const r = resolveAgentIntent("Add a filter for severity", { hasProjectFiles: true });
     expect(r.intent).toBe("app_edit");
     expect(r.editExistingApp).toBe(true);
+  });
+
+  it("edits a specifically named project file", () => {
+    const r = resolveAgentIntent("Change app/page.tsx to add a status filter", {
+      hasProjectFiles: true,
+    });
+    expect(r.intent).toBe("app_edit");
+  });
+
+  it("keeps API troubleshooting in workflow mode despite a loaded project", () => {
+    const r = resolveAgentIntent("I get a 404 exporting indicators after the upgrade. Fix this.", {
+      hasProjectFiles: true,
+    });
+    expect(r.intent).toBe("workflow");
+    expect(r.editExistingApp).toBe(false);
+  });
+
+  it("keeps CTIX documentation questions out of app routing", () => {
+    const r = resolveAgentIntent("What does CTIX indicator export do?", {
+      hasProjectFiles: true,
+    });
+    expect(r.intent).not.toBe("app_edit");
+    expect(r.intent).not.toBe("app_build");
+  });
+
+  it("does not treat a product use case alone as an app build", () => {
+    expect(resolveAgentIntent("phishing", { hasProjectFiles: false }).intent).not.toBe("app_build");
   });
 
   it("still plans workflow for doc questions without edit signals", () => {

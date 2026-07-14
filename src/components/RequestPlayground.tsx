@@ -173,12 +173,19 @@ export function RequestPlaygroundProvider({
     if (!storageId) return;
     const saved = loadPlaygroundDraft(storageId);
     if (!saved) return;
-    setPathValues(mergeStringRecords(defaultPathValues, saved.pathValues));
-    setQueryValues(mergeStringRecords(defaultQueryValues, saved.queryValues));
     const nextBody = mergeBodyText(defaultBodyText, saved.bodyText);
-    setBodyTextState(nextBody);
-    setJsonError(validateJson(nextBody));
-    setFormTextValues(mergeStringRecords(defaultFormTextValues, saved.formTextValues));
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      setPathValues(mergeStringRecords(defaultPathValues, saved.pathValues));
+      setQueryValues(mergeStringRecords(defaultQueryValues, saved.queryValues));
+      setBodyTextState(nextBody);
+      setJsonError(validateJson(nextBody));
+      setFormTextValues(mergeStringRecords(defaultFormTextValues, saved.formTextValues));
+    });
+    return () => {
+      active = false;
+    };
   }, [
     storageId,
     defaultPathValues,

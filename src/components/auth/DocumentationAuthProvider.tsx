@@ -12,6 +12,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import type { DocumentationPermission, DocumentationRole } from "@/lib/documentation-auth/types";
 import { hasPermission } from "@/lib/documentation-auth/permissions";
+import { isPublicPagePath } from "@/lib/documentation-auth/route-policy";
 
 interface AuthUser {
   id: string;
@@ -37,12 +38,6 @@ const AuthContext = createContext<{
   hasPermission: (permission: DocumentationPermission) => boolean;
   refresh: () => Promise<void>;
 } | null>(null);
-
-const PUBLIC_PREFIXES = ["/auth", "/access", "/invite", "/sign-in", "/post-login"];
-
-function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
 
 export function DocumentationAuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -83,11 +78,11 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
   }, []);
 
   useEffect(() => {
-    void refresh();
+    void Promise.resolve().then(refresh);
   }, [refresh]);
 
   useEffect(() => {
-    if (state.loading || isPublicPath(pathname)) return;
+    if (state.loading || isPublicPagePath(pathname)) return;
 
     if (state.accessDenied?.redirectTo) {
       router.replace(state.accessDenied.redirectTo);

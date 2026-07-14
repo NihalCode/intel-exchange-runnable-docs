@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { NavNode } from "@/lib/types";
 
 const METHOD_COLORS: Record<string, string> = {
@@ -52,7 +52,8 @@ function NavItem({
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
-            aria-label={open ? "Collapse" : "Expand"}
+            aria-expanded={open}
+            aria-label={`${open ? "Collapse" : "Expand"} ${node.title}`}
             className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
           >
             <svg
@@ -116,6 +117,7 @@ export function Sidebar({
   productId?: string;
 }) {
   const [filter, setFilter] = useState("");
+  const endpointFilterId = useId();
   const flat = useMemo(() => flatten(nav), [nav]);
   const matches = useMemo(() => {
     const q = filter.trim().toLowerCase();
@@ -124,9 +126,13 @@ export function Sidebar({
   }, [filter, flat]);
 
   return (
-    <nav className="flex h-full flex-col">
+    <nav aria-label="API documentation" className="flex h-full flex-col">
       <div className="p-3">
+        <label htmlFor={endpointFilterId} className="sr-only">
+          Filter endpoints
+        </label>
         <input
+          id={endpointFilterId}
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter endpoints…"

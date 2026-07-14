@@ -258,6 +258,63 @@ describe("enterprise persistence and workflows", () => {
     expect(await verifyApiKey(organizationId, `${issued.plaintext}x`)).toBeNull();
   });
 
+  it("allows hash-only API key creation when no vault provider is configured", async () => {
+    const previousProvider = process.env.VAULT_PROVIDER;
+    delete process.env.VAULT_PROVIDER;
+    try {
+      const issued = await createApiKey({
+        organizationId,
+        name: "local-automation",
+        environment: "development",
+        createdByUserId: requesterId,
+      });
+      const row = await withOrganizationTransaction(
+        { organizationId, userId: requesterId },
+        (transaction) =>
+          transaction.queryOne<{ vault_ref: string | null }>(
+            "SELECT vault_ref FROM api_credential_metadata WHERE id = ?",
+            [issued.metadata.id]
+          )
+      );
+      expect(row?.vault_ref).toBeNull();
+    } finally {
+      if (previousProvider === undefined) delete process.env.VAULT_PROVIDER;
+      else process.env.VAULT_PROVIDER = previousProvider;
+    }
+  });
+
+  it("aborts API key creation when a configured vault write fails", async () => {
+    const previousProvider = process.env.VAULT_PROVIDER;
+    const previousNodeEnv = process.env.NODE_ENV;
+    const mutableEnv = process.env as Record<string, string | undefined>;
+    process.env.VAULT_PROVIDER = "env";
+    mutableEnv.NODE_ENV = "production";
+    try {
+      await expect(
+        createApiKey({
+          organizationId,
+          name: "vault-failure",
+          environment: "production",
+          createdByUserId: requesterId,
+        })
+      ).rejects.toThrow("Environment vault writes are disabled in production");
+      const row = await withOrganizationTransaction(
+        { organizationId, userId: requesterId },
+        (transaction) =>
+          transaction.queryOne(
+            "SELECT id FROM api_credential_metadata WHERE organization_id = ? AND name = ?",
+            [organizationId, "vault-failure"]
+          )
+      );
+      expect(row).toBeNull();
+    } finally {
+      if (previousProvider === undefined) delete process.env.VAULT_PROVIDER;
+      else process.env.VAULT_PROVIDER = previousProvider;
+      if (previousNodeEnv === undefined) delete mutableEnv.NODE_ENV;
+      else mutableEnv.NODE_ENV = previousNodeEnv;
+    }
+  });
+
   it("redacts nested audit secrets and keeps events immutable", async () => {
     await withOrganizationTransaction(
       { organizationId, userId: requesterId },

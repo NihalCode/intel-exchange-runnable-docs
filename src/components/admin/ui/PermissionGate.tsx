@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 
 import { buttonSecondaryClass } from "@/components/admin/ui/tokens";
+import { useFocusTrap } from "@/components/useFocusTrap";
 import type { EnterprisePermission } from "@/lib/enterprise/types";
 
 export function PermissionGate({
@@ -123,9 +124,13 @@ export function DetailsDrawer({
   onClose: () => void;
   children: ReactNode;
 }) {
+  const drawerRef = useFocusTrap(open, onClose);
+
   if (!open) return null;
   return (
     <div
+      ref={drawerRef}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex justify-end bg-black/40"
       role="dialog"
       aria-modal="true"

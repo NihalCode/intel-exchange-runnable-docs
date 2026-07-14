@@ -304,7 +304,7 @@ export function parsePostmanCollection(
         );
 
         let bodyFields: ParsedPostmanParam[] = [];
-        let contentType = "application/json";
+        const contentType = "application/json";
         if (req.body?.mode === "raw" && req.body.raw) {
           try {
             bodyFields = objectToParamFields(JSON.parse(req.body.raw) as Record<string, unknown>);

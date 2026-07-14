@@ -9,6 +9,7 @@ export interface AdminContextValue {
   organization: { id: string; name: string; slug: string };
   user: { id: string; email: string; role: string };
   capabilities: EnterprisePermission[];
+  enabledFeatures: string[];
   csrfToken?: string;
   selectedEnvironment: EnterpriseEnvironment;
   setEnvironment: (env: EnterpriseEnvironment) => void;
@@ -28,12 +29,14 @@ export function AdminProvider({
   organization,
   user,
   capabilities,
+  enabledFeatures,
   csrfToken,
   children,
 }: {
   organization: AdminContextValue["organization"];
   user: AdminContextValue["user"];
   capabilities: EnterprisePermission[];
+  enabledFeatures: string[];
   csrfToken?: string;
   children: React.ReactNode;
 }) {
@@ -62,12 +65,21 @@ export function AdminProvider({
       organization,
       user,
       capabilities,
+      enabledFeatures,
       csrfToken,
       selectedEnvironment,
       setEnvironment,
       hasPermission: (permission) => capabilities.includes(permission),
     }),
-    [organization, user, capabilities, csrfToken, selectedEnvironment, setEnvironment]
+    [
+      organization,
+      user,
+      capabilities,
+      enabledFeatures,
+      csrfToken,
+      selectedEnvironment,
+      setEnvironment,
+    ]
   );
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;

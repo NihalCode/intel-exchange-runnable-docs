@@ -1,5 +1,4 @@
 import { listProductManifests } from "@/lib/content";
-import { listProducts } from "@/lib/products/registry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

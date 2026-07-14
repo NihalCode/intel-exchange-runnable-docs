@@ -1,4 +1,11 @@
-import type { AgentIndex, AgentChunk, ScoredChunk } from "./types";
+import type {
+  AgentIndex,
+  AgentChunk,
+  RetrievalEvidence,
+  RetrievalMode,
+  ScoredChunk,
+} from "./types";
+export type { RetrievalEvidence } from "./types";
 import { termFrequencies, tokenize } from "./tokenize";
 
 const K1 = 1.2;
@@ -115,6 +122,58 @@ export function mergeHybridScores(
   return [...byId.values()].sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
+/**
+ * Fuse independently-ranked result sets without assuming their scores share a
+ * scale. Reciprocal rank fusion preserves strong lexical matches even when a
+ * vector store returns different documents.
+ */
+export function fuseRankedResults(
+  lexical: ScoredChunk[],
+  semantic: ScoredChunk[],
+  limit = 12,
+  rankConstant = 60
+): ScoredChunk[] {
+  const byId = new Map<string, ScoredChunk>();
+
+  for (const [rank, chunk] of lexical.entries()) {
+    byId.set(chunk.id, {
+      ...chunk,
+      score: 1 / (rankConstant + rank + 1),
+    });
+  }
+
+  for (const [rank, chunk] of semantic.entries()) {
+    const contribution = 1 / (rankConstant + rank + 1);
+    const existing = byId.get(chunk.id);
+    if (existing) {
+      existing.semanticScore = chunk.semanticScore;
+      existing.score += contribution;
+    } else {
+      byId.set(chunk.id, {
+        ...chunk,
+        score: contribution,
+      });
+    }
+  }
+
+  return [...byId.values()].sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
+/** Derive a visible retrieval status without exposing provider error details. */
+export function retrievalStatus(
+  vectorAttempted: boolean,
+  vectorContributed: boolean,
+  vectorFailed: boolean
+): { retrievalMode: RetrievalMode; retrievalDegraded: boolean } {
+  if (vectorContributed) {
+    return { retrievalMode: "hybrid", retrievalDegraded: vectorFailed };
+  }
+  if (vectorAttempted && vectorFailed) {
+    return { retrievalMode: "degraded_lexical", retrievalDegraded: true };
+  }
+  return { retrievalMode: "lexical", retrievalDegraded: false };
+}
+
 export function retrieveWithEmbedding(
   query: string,
   index: AgentIndex,
@@ -159,15 +218,38 @@ export function scoredChunksByIds(
   return out;
 }
 
-export const CONFIDENCE_THRESHOLD = 0.12;
+/**
+ * Convert retrieval evidence into a deliberately coarse compatibility value.
+ * Do not expose ranking/similarity scores as user-facing probability.
+ */
+export function evidenceFromScores(scored: ScoredChunk[]): RetrievalEvidence {
+  if (scored.length === 0) return "no_verified_match";
+  if (scored.length === 1) return "limited_evidence";
+
+  const lexicalSupport = scored.filter((chunk) => chunk.lexicalScore > 0).length;
+  const corroboratingEndpoints = new Set(
+    scored.filter((chunk) => chunk.kind === "endpoint").map((chunk) => chunk.slug)
+  ).size;
+  if (lexicalSupport >= 2 && corroboratingEndpoints >= 2) return "strong_match";
+  return "partial_match";
+}
 
 export function confidenceFromScores(scored: ScoredChunk[]): number {
-  if (scored.length === 0) return 0;
-  return Math.min(1, scored[0].score);
+  switch (evidenceFromScores(scored)) {
+    case "strong_match":
+      return 0.75;
+    case "partial_match":
+      return 0.5;
+    case "limited_evidence":
+      return 0.25;
+    case "no_verified_match":
+      return 0;
+  }
 }
 
 export function isLowConfidence(scored: ScoredChunk[]): boolean {
-  return confidenceFromScores(scored) < CONFIDENCE_THRESHOLD;
+  const evidence = evidenceFromScores(scored);
+  return evidence === "limited_evidence" || evidence === "no_verified_match";
 }
 
 const PRODUCT_BOOST = 0.35;

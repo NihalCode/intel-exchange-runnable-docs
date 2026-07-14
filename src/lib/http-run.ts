@@ -1,5 +1,4 @@
 import type { ExecRequest } from "./parse-request";
-import type { MultipartPart } from "./multipart";
 
 export interface HttpProxyResult {
   ok: boolean;

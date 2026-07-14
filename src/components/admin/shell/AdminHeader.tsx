@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { EnvironmentSelector } from "@/components/admin/shell/ProductionBanner";
 import {
   breadcrumbsForPath,
-  filterNavByCapabilities,
-  isNavItemActive,
   pageTitleForPath,
 } from "@/lib/admin/navigation";
 

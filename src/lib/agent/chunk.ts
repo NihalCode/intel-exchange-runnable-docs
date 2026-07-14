@@ -1,20 +1,6 @@
 import type { DocPage, EndpointPage, ParamField, SectionPage } from "../types";
 import type { AgentChunk, AgentChunkKind } from "./types";
 
-function flattenParamNames(fields: ParamField[] | undefined, prefix = ""): string[] {
-  if (!fields) return [];
-  const names: string[] = [];
-  for (const f of fields) {
-    if (!f.name) continue;
-    const full = prefix ? `${prefix}.${f.name}` : f.name;
-    names.push(full);
-    if (f.complexItems?.length) {
-      names.push(...flattenParamNames(f.complexItems, full));
-    }
-  }
-  return names;
-}
-
 function describeParams(fields: ParamField[] | undefined, label: string): string {
   if (!fields?.length) return "";
   const lines = fields

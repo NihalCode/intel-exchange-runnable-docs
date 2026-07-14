@@ -26,7 +26,6 @@ export interface OverviewHealthService {
   status: "healthy" | "degraded" | "down";
   latencyMs: number | null;
   lastChecked: string;
-  placeholder?: boolean;
 }
 
 export interface OverviewActivityItem {
@@ -231,13 +230,6 @@ export function buildOverviewHealth(input: {
       latencyMs: running > 0 ? 95 : syncRecent ? 140 : null,
       lastChecked,
     },
-    {
-      name: "Support agent gateway",
-      status: "degraded",
-      latencyMs: null,
-      lastChecked,
-      placeholder: true,
-    },
   ];
 }
 
@@ -253,6 +245,3 @@ export function buildOverviewActivity(
     timestamp: event.createdAt,
   }));
 }
-
-export const OVERVIEW_NOTICE =
-  "Support agent health is illustrative until that integration ships. All other metrics and activity come from the enterprise control plane.";

@@ -126,26 +126,24 @@ function fixPackageJson(code: string): string {
   }
 }
 
-/**
- * Generated/edited apps must deploy reliably even if an LLM edit introduced a
- * lint warning or a minor type issue — skip blocking checks at build time.
- */
-function hardenNextConfig(code: string): string {
-  if (code.includes("ignoreBuildErrors")) return code;
-  const anchor = code.match(/const nextConfig(?::\s*NextConfig)?\s*=\s*\{/);
-  if (!anchor) return code;
-  return code.replace(
-    anchor[0],
-    `${anchor[0]}\n  eslint: { ignoreDuringBuilds: true },\n  typescript: { ignoreBuildErrors: true },`
-  );
+/** Remove Next.js quality-gate bypasses before a generated app is deployed. */
+function stripNextConfigQualityGateBypasses(code: string): string {
+  return code
+    .replace(
+      /^\s*(?:eslint|typescript)\s*:\s*\{\s*(?:ignoreDuringBuilds|ignoreBuildErrors)\s*:\s*true\s*,?\s*\},?\s*$/gm,
+      ""
+    )
+    .replace(/\b(?:ignoreDuringBuilds|ignoreBuildErrors)\s*:\s*true\s*,?\s*/g, "");
 }
 
-function hardenFiles(
+function sanitizeFilesForDeploy(
   files: { path: string; code: string }[]
 ): { path: string; code: string }[] {
   return files.map((f) => {
     if (f.path === "package.json") return { ...f, code: fixPackageJson(f.code) };
-    if (/^next\.config\.(ts|js|mjs)$/.test(f.path)) return { ...f, code: hardenNextConfig(f.code) };
+    if (/^next\.config\.(ts|js|mjs)$/.test(f.path)) {
+      return { ...f, code: stripNextConfigQualityGateBypasses(f.code) };
+    }
     return f;
   });
 }
@@ -200,7 +198,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const normalizedFiles = hardenFiles(normalizeFilePaths(files));
+    const normalizedFiles = sanitizeFilesForDeploy(normalizeFilePaths(files));
     const { files: repairedFiles, notes: repairNotes } = repairAppFiles(normalizedFiles);
 
     if (!repairedFiles.some((f) => f.path === "package.json")) {

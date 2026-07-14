@@ -383,10 +383,6 @@ function parsePostmanUrl(urlRaw) {
   return { path: s, query: embeddedQuery, pathParams };
 }
 
-function extractPostmanPath(urlRaw) {
-  return parsePostmanUrl(urlRaw).path;
-}
-
 function objectToParamFields(obj, prefix = "") {
   const fields = [];
   for (const [key, val] of Object.entries(obj)) {

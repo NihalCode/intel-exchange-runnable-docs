@@ -2,8 +2,6 @@
 
 import type { ReactNode } from "react";
 
-import { cardClass } from "@/components/admin/ui/tokens";
-
 export function PageHeader({
   title,
   description,

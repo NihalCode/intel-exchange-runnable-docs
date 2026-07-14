@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   return controlPlaneJson(
     { error: "Use POST to process due jobs" },
     { status: 405 }

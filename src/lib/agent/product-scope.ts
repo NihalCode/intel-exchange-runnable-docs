@@ -78,24 +78,6 @@ function accessViolationScope(
   };
 }
 
-function scopeFromProductIds(
-  productIds: string[],
-  source: ProductScopeSource,
-  label: string
-): ResolvedProductScope {
-  const unique = [...new Set(productIds)];
-  const filterMode =
-    unique.length > 1 ? ("multi" as const) : ("single" as const);
-  return {
-    primaryProductId: unique[0] ?? DEFAULT_PRODUCT_ID,
-    productIds: unique,
-    filterMode,
-    source,
-    label,
-    products: productEntries(unique),
-  };
-}
-
 /**
  * Resolve which product's docs to retrieve and plan against.
  * Explicit product mentions in the query beat the UI product selector.

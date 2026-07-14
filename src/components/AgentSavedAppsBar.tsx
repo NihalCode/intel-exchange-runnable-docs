@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useFocusTrap } from "./useFocusTrap";
 import type { SavedAppProject } from "@/lib/agent/types";
 import {
   loadDeploySettings,
@@ -27,6 +28,7 @@ export function ImportVercelModal({
   const [token, setToken] = useState(() => loadDeploySettings().vercelToken);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useFocusTrap(true, onClose);
 
   function setVercelToken(value: string) {
     setToken(value);
@@ -80,10 +82,17 @@ export function ImportVercelModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="import-from-vercel-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+    >
       <div className="w-full max-w-md rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
         <div className="border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold">Import from Vercel</h2>
+          <h2 id="import-from-vercel-title" className="text-sm font-semibold">Import from Vercel</h2>
           <p className="mt-0.5 text-xs text-zinc-500">
             Pull source files from a live deployment to edit in place.
           </p>
@@ -109,7 +118,7 @@ export function ImportVercelModal({
             />
           </label>
           {error ? (
-            <p className="rounded-md border border-red-300 bg-red-50 px-2 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/30">
+            <p role="alert" className="rounded-md border border-red-300 bg-red-50 px-2 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/30">
               {error}
             </p>
           ) : null}
@@ -163,6 +172,7 @@ export function AgentSavedAppsBar({
     <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-zinc-50/50 px-4 py-2 dark:border-zinc-800 dark:bg-zinc-900/30">
       <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Project</span>
       <select
+        aria-label="Active project"
         value={activeAppId ?? ""}
         onChange={(e) => {
           const id = e.target.value || null;

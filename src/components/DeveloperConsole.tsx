@@ -20,15 +20,22 @@ export function DeveloperConsole() {
   const [lastResult, setLastResult] = useState<string>("");
 
   useEffect(() => {
-    try {
-      const t = sessionStorage.getItem(TOKEN_KEY);
-      if (t) {
-        setToken(t);
-        setStored(true);
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      try {
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        if (token) {
+          setToken(token);
+          setStored(true);
+        }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const saveToken = () => {

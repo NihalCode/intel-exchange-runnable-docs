@@ -1,5 +1,7 @@
 "use client";
 
+import { useFocusTrap } from "@/components/useFocusTrap";
+
 interface Props {
   title: string;
   secret: string;
@@ -8,18 +10,23 @@ interface Props {
 }
 
 export function OneTimeSecretModal({ title, secret, description, onClose }: Props) {
+  const dialogRef = useFocusTrap(true, onClose);
+
   return (
     <div
+      ref={dialogRef}
+      tabIndex={-1}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="one-time-secret-title"
+      aria-describedby="one-time-secret-description"
     >
       <div className="w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-6 shadow-xl dark:border-zinc-700 dark:bg-zinc-950">
         <h2 id="one-time-secret-title" className="text-lg font-semibold">
           {title}
         </h2>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
+        <p id="one-time-secret-description" className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
           {description}
         </p>
         <pre className="mt-4 overflow-x-auto rounded-md border border-amber-300 bg-amber-50 p-3 font-mono text-sm text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
