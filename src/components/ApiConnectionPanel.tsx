@@ -184,6 +184,10 @@ export function ApiConnectionPanel({
       </div>
 
       <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">{ui.footnote}</p>
+      <p className="mt-1 text-[11px] leading-relaxed text-zinc-500">
+        Credentials from Authentication auto-fill here for this product. If fields are empty after
+        connecting, refresh this page or open the product docs again.
+      </p>
 
       {ui.usesOpenApi && connected && authStatus !== "ok" ? (
         <button

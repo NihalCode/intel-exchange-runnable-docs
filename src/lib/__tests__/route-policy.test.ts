@@ -61,6 +61,7 @@ describe("documentation route policy — Auth0-gated app", () => {
       "/api/agent",
       "/api/run",
       "/api/authentication/credentials",
+      "/api/authentication/credentials/session",
       "/api/admin/control-plane/context",
     ]) {
       expect(isPublicApiPath(pathname)).toBe(false);

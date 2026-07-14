@@ -18,9 +18,10 @@ export default function AuthenticationPage() {
           from the dropdown, then add your tenant URL and Open API credentials.
         </p>
         <p className="mt-2 text-xs text-zinc-500">
-          Credentials are validated server-side and encrypted at rest; the secret key is never
-          returned to this browser. Obtain an Access ID and Secret Key from Open API settings in
-          your product tenant.
+          Credentials are validated server-side and encrypted at rest. After a successful connect,
+          they are loaded into your browser session for the matching product&apos;s API playground
+          (secret stays in session storage only, never localStorage). Obtain an Access ID and Secret
+          Key from Open API settings in your product tenant.
         </p>
       </div>
       <CredentialManager />

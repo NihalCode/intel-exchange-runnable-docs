@@ -32,6 +32,11 @@ interface RunSettings {
   setCredential: (name: string, value: string) => void;
   getConnectionValue: (kind: ConnectionFieldKind) => string;
   setConnectionValue: (kind: ConnectionFieldKind, value: string) => void;
+  applyProductCredentials: (
+    productId: string,
+    values: { baseUrl?: string; accessId: string; secretKey: string }
+  ) => void;
+  hydrateFromAuthentication: (productId?: string) => Promise<boolean>;
   clearCredentials: () => void;
   secretValues: string[];
   credentialCount: number;
@@ -204,28 +209,6 @@ export function RunSettingsProvider({
     writeStoredBaseUrls(baseUrlsRef.current);
   }, []);
 
-  const syncWithProduct = useCallback(
-    (productId: string) => {
-      const prev = activeProductRef.current;
-      if (prev !== productId) {
-        accessIdsRef.current = { ...accessIdsRef.current, [prev]: accessId };
-        secretsRef.current = { ...secretsRef.current, [prev]: secretKeyRef.current };
-        writeAccessIds(accessIdsRef.current);
-        writeSecrets(secretsRef.current);
-        baseUrlsRef.current = { ...baseUrlsRef.current, [prev]: baseUrlRef.current };
-      }
-      activeProductRef.current = productId;
-      setActiveProductId(productId);
-      const next =
-        baseUrlsRef.current[productId] ?? baseUrlForProduct(productId);
-      setBaseUrlState(next);
-      baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: next };
-      writeStoredBaseUrls(baseUrlsRef.current);
-      loadProductCredentials(productId);
-    },
-    [accessId, loadProductCredentials]
-  );
-
   const setAccessId = useCallback(
     (v: string) => {
       const pid = activeProductRef.current;
@@ -246,6 +229,105 @@ export function RunSettingsProvider({
     writeSecrets(secretsRef.current);
     setAuthStatus("idle");
   }, []);
+
+  const applyProductCredentials = useCallback(
+    (
+      productId: string,
+      values: { baseUrl?: string; accessId: string; secretKey: string }
+    ) => {
+      const access = values.accessId.trim();
+      const secret = values.secretKey.trim();
+      if (!access || !secret) return;
+
+      if (values.baseUrl?.trim()) {
+        const url = values.baseUrl.trim().replace(/\/+$/, "");
+        baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: url };
+        writeStoredBaseUrls(baseUrlsRef.current);
+        if (activeProductRef.current === productId) {
+          setBaseUrlState(url);
+          baseUrlRef.current = url;
+        }
+      }
+
+      accessIdsRef.current = { ...accessIdsRef.current, [productId]: access };
+      secretsRef.current = { ...secretsRef.current, [productId]: secret };
+      writeAccessIds(accessIdsRef.current);
+      writeSecrets(secretsRef.current);
+
+      if (activeProductRef.current === productId) {
+        setAccessIdState(access);
+        secretKeyRef.current = secret;
+        setSecretKeyState(secret);
+        setCreds((prev) => ({
+          ...prev,
+          accessid: access,
+          secretkey: secret,
+        }));
+        setAuthStatus("idle");
+        setAuthError("");
+      }
+    },
+    []
+  );
+
+  const hydrateFromAuthentication = useCallback(
+    async (productId?: string): Promise<boolean> => {
+      const pid = productId ?? activeProductRef.current;
+      const localAccess = (accessIdsRef.current[pid] ?? "").trim();
+      const localSecret = (secretsRef.current[pid] ?? "").trim();
+      if (localAccess && localSecret) return true;
+
+      try {
+        const context = await fetch("/api/admin/control-plane/context", { cache: "no-store" });
+        if (!context.ok) return false;
+        const { csrfToken } = (await context.json()) as { csrfToken?: string };
+        if (!csrfToken) return false;
+
+        const response = await fetch("/api/authentication/credentials/session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken,
+          },
+          body: JSON.stringify({ productId: pid }),
+          cache: "no-store",
+        });
+        if (!response.ok) return false;
+        const data = (await response.json()) as {
+          material?: { baseUrl: string; accessId: string; secretKey: string } | null;
+        };
+        if (!data.material?.accessId || !data.material.secretKey) return false;
+        applyProductCredentials(pid, data.material);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [applyProductCredentials]
+  );
+
+  const syncWithProduct = useCallback(
+    (productId: string) => {
+      const prev = activeProductRef.current;
+      if (prev !== productId) {
+        accessIdsRef.current = { ...accessIdsRef.current, [prev]: accessId };
+        secretsRef.current = { ...secretsRef.current, [prev]: secretKeyRef.current };
+        writeAccessIds(accessIdsRef.current);
+        writeSecrets(secretsRef.current);
+        baseUrlsRef.current = { ...baseUrlsRef.current, [prev]: baseUrlRef.current };
+      }
+      activeProductRef.current = productId;
+      setActiveProductId(productId);
+      const next =
+        baseUrlsRef.current[productId] ?? baseUrlForProduct(productId);
+      setBaseUrlState(next);
+      baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: next };
+      writeStoredBaseUrls(baseUrlsRef.current);
+      loadProductCredentials(productId);
+      void hydrateFromAuthentication(productId);
+    },
+    [accessId, hydrateFromAuthentication, loadProductCredentials]
+  );
 
   const getConnectionValue = useCallback(
     (kind: ConnectionFieldKind): string => {
@@ -385,6 +467,8 @@ export function RunSettingsProvider({
       setCredential,
       getConnectionValue,
       setConnectionValue,
+      applyProductCredentials,
+      hydrateFromAuthentication,
       clearCredentials,
       secretValues: Object.values(creds).filter((v) => v && v.length >= 3),
       credentialCount: Object.values(creds).filter(Boolean).length,
@@ -407,6 +491,8 @@ export function RunSettingsProvider({
       setCredential,
       getConnectionValue,
       setConnectionValue,
+      applyProductCredentials,
+      hydrateFromAuthentication,
       clearCredentials,
       creds,
       accessId,
@@ -435,11 +521,15 @@ export function useRunSettings(): RunSettings {
 /** Keeps API base URL and credentials in sync with the selected product. */
 export function ProductRunSettingsSync() {
   const { productId } = useProduct();
-  const { syncWithProduct } = useRunSettings();
+  const { syncWithProduct, hydrateFromAuthentication } = useRunSettings();
 
   useEffect(() => {
     syncWithProduct(productId);
   }, [productId, syncWithProduct]);
+
+  useEffect(() => {
+    void hydrateFromAuthentication(productId);
+  }, [productId, hydrateFromAuthentication]);
 
   return null;
 }

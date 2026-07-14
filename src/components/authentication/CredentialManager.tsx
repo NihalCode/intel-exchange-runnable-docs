@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRunSettings } from "@/components/RunSettings";
 
 type ProductId = "ctix" | "cftr" | "orchestrate" | "csap";
 type Credential = {
@@ -33,9 +34,12 @@ function statusLabel(status: string | undefined): string {
 }
 
 export function CredentialManager() {
+  const { applyProductCredentials } = useRunSettings();
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<ProductId>("ctix");
-  const [forms, setForms] = useState<Record<string, { baseUrl: string; accessId: string; secretKey: string }>>({});
+  const [forms, setForms] = useState<
+    Record<string, { baseUrl: string; accessId: string; secretKey: string }>
+  >({});
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<Record<string, string>>({});
 
@@ -84,12 +88,15 @@ export function CredentialManager() {
         body: JSON.stringify({ productId, ...formValues }),
       });
       const data = (await response.json()) as { credential?: Credential; error?: string };
+      const connected = response.ok && data.credential?.status === "valid";
+      if (connected) {
+        applyProductCredentials(productId, formValues);
+      }
       setMessage((value) => ({
         ...value,
-        [productId]:
-          response.ok && data.credential?.status === "valid"
-            ? "Connected and validated."
-            : "Connection could not be validated. Check the URL and credentials.",
+        [productId]: connected
+          ? "Connected. Credentials are ready for the API playground on this product."
+          : "Connection could not be validated. Check the URL and credentials.",
       }));
       setForms((current) => ({
         ...current,
