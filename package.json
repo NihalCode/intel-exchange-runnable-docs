@@ -2,6 +2,10 @@
   "name": "intel-exchange-runnable-docs",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20 <25",
+    "npm": ">=10"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,7 +19,9 @@
     "pinecone:upsert": "node scripts/pinecone-upsert.mjs",
     "ingest": "node scripts/ingest.mjs",
     "ingest:all": "node scripts/ingest.mjs --product=ctix && node scripts/ingest.mjs --product=csap && node scripts/ingest.mjs --product=orchestrate && node scripts/ingest.mjs --product=cftr",
-    "auth:diagnose": "tsx scripts/diagnose-auth.ts"
+    "auth:diagnose": "tsx scripts/diagnose-auth.ts",
+    "security:scan-secrets": "node scripts/security/scan-secrets.mjs",
+    "archive:check": "node scripts/security/check-archive.mjs"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.24.0",
