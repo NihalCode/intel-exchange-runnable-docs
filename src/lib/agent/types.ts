@@ -221,6 +221,10 @@ export type RetrievalEvidence =
 
 export type RetrievalMode = "hybrid" | "lexical" | "degraded_lexical";
 
+/**
+ * Public response assembled from validated documentation data. Raw model JSON
+ * must pass the versioned LLM plan contract before it can contribute here.
+ */
 export interface AgentResponse {
   mode: AgentMode;
   workflow: string;

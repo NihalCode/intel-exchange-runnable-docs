@@ -1,5 +1,6 @@
 import type { AgentPlan, ScoredChunk } from "./types";
 import { formatTrimmedContext } from "./trim-context";
+import { validateLlmPlanPayload } from "./llm-contract";
 import { getProductOrThrow } from "../products/registry";
 import {
   openAiAuthHeaders,
@@ -57,21 +58,6 @@ function systemPromptForProduct(productId: string, simpleMode: boolean): string 
   );
 }
 
-interface LlmPlanJson {
-  workflow?: string;
-  confidence?: number;
-  steps?: {
-    slug?: string;
-    order?: number;
-    explanation?: string;
-    pathParams?: Record<string, string>;
-    queryParams?: Record<string, string>;
-    body?: Record<string, unknown>;
-    form?: Record<string, string>;
-  }[];
-  questions?: string[];
-}
-
 export async function embedQuery(text: string): Promise<number[]> {
   const res = await fetch("https://api.openai.com/v1/embeddings", {
     method: "POST",
@@ -83,8 +69,7 @@ export async function embedQuery(text: string): Promise<number[]> {
     }),
   });
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Embedding failed (${res.status}): ${err.slice(0, 200)}`);
+    throw new Error("Embedding request failed.");
   }
   const data = (await res.json()) as { data: { embedding: number[] }[] };
   return data.data[0]?.embedding ?? [];
@@ -126,36 +111,22 @@ export async function planWithLlm(
   });
 
   if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`LLM plan failed (${res.status}): ${err.slice(0, 300)}`);
+    throw new Error("LLM planning request failed.");
   }
 
   const data = (await res.json()) as {
     choices: { message: { content: string } }[];
   };
-  const raw = data.choices[0]?.message?.content ?? "{}";
-  let parsed: LlmPlanJson;
+  const raw = data.choices[0]?.message?.content;
+  let parsed: unknown;
   try {
-    parsed = JSON.parse(raw) as LlmPlanJson;
+    parsed = JSON.parse(raw ?? "{}");
   } catch {
-    throw new Error("LLM returned invalid JSON plan");
+    throw new Error("LLM returned an invalid JSON plan.");
   }
 
-  const allowed = new Set(allowedSlugs);
-  const steps = (parsed.steps ?? [])
-    .filter((s) => s.slug && allowed.has(s.slug))
-    .map((s) => ({
-      slug: s.slug!,
-      order: s.order ?? 1,
-      explanation: s.explanation ?? "",
-      params: {
-        path: s.pathParams,
-        query: s.queryParams,
-        body: s.body,
-        form: s.form,
-      },
-    }))
-    .sort((a, b) => a.order - b.order);
+  const validated = validateLlmPlanPayload(parsed, new Set(allowedSlugs));
+  const steps = [...validated.steps].sort((a, b) => a.order - b.order);
 
   const citations = [...new Map(steps.map((s) => {
     const chunk = chunks.find((c) => c.slug === s.slug);
@@ -169,13 +140,11 @@ export async function planWithLlm(
     ];
   })).values()];
 
-  const questions = (parsed.questions ?? []).slice(0, 2);
-
   return {
-    workflow: parsed.workflow ?? "Here is a suggested workflow using documented endpoints.",
-    confidence: Math.max(0, Math.min(1, parsed.confidence ?? 0.5)),
+    workflow: validated.workflow,
+    confidence: validated.confidence,
     steps,
-    questions: questions.length > 0 ? questions : undefined,
+    questions: validated.questions,
     citations,
   };
 }
