@@ -72,7 +72,13 @@ export async function runDocumentationAuthProxy(
   const { pathname } = request.nextUrl;
 
   if (isPublicPagePath(pathname)) {
-    return mergeAuthHeaders(NextResponse.next(), authResponse);
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set(
+      "x-pathname",
+      request.nextUrl.pathname + request.nextUrl.search
+    );
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    return mergeAuthHeaders(response, authResponse);
   }
 
   const authUser = await getMiddlewareAuthUser(request);
