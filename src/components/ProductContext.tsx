@@ -104,6 +104,7 @@ export function ProductSelector({ className = "" }: { className?: string }) {
       <label className="flex items-center gap-1.5 text-xs">
         <span className="font-semibold text-zinc-600 dark:text-zinc-400">Product</span>
         <select
+          aria-label="Active documentation product"
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
           className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs font-medium dark:border-zinc-600 dark:bg-zinc-900"
@@ -118,6 +119,7 @@ export function ProductSelector({ className = "" }: { className?: string }) {
       <label className="flex items-center gap-1.5 text-xs">
         <span className="font-semibold text-zinc-600 dark:text-zinc-400">Search</span>
         <select
+          aria-label="Documentation search scope"
           value={searchScope}
           onChange={(e) => setSearchScope(e.target.value as "product" | "all")}
           className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs dark:border-zinc-600 dark:bg-zinc-900"

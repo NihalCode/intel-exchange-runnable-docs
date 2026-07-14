@@ -10,6 +10,7 @@ import {
   saveDeploySettings,
 } from "@/lib/agent/deploy-settings-client";
 import { useRunSettings } from "./RunSettings";
+import { useFocusTrap } from "./useFocusTrap";
 
 interface DeployState {
   vercelToken: string;
@@ -89,6 +90,7 @@ export function AgentDeployModal({
   }) => void;
 }) {
   const run = useRunSettings();
+  const dialogRef = useFocusTrap(true, onClose);
   const [form, setForm] = useState<DeployState>(() => {
     const saved = loadDeploySettings();
     const next = {
@@ -163,11 +165,18 @@ export function AgentDeployModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+    <div
+      ref={dialogRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="deploy-to-vercel-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+    >
       <div className="w-full max-w-lg rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold">Deploy to Vercel</h2>
-          <button type="button" onClick={onClose} className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200">
+          <h2 id="deploy-to-vercel-title" className="text-sm font-semibold">Deploy to Vercel</h2>
+          <button type="button" aria-label="Close deploy dialog" onClick={onClose} className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200">
             <CloseIcon />
           </button>
         </div>
@@ -266,7 +275,7 @@ export function AgentDeployModal({
             </div>
 
             {error && (
-              <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+              <div role="alert" className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
                 {error}
               </div>
             )}

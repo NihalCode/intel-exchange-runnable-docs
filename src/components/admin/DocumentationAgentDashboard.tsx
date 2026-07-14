@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { AdminSubNav } from "@/components/admin/AdminSubNav";
 import { OneTimeSecretModal } from "@/components/admin/OneTimeSecretModal";
+import { useFocusTrap } from "@/components/useFocusTrap";
 import type { EnterpriseAuditEvent } from "@/lib/enterprise/audit";
 import type { ChangeRequestRecord, EnterprisePermission } from "@/lib/enterprise/types";
 import type {
@@ -55,6 +56,10 @@ export function DocumentationAgentDashboard(props: Props) {
   const [busy, setBusy] = useState(false);
   const [oneTimeSecret, setOneTimeSecret] = useState<string | null>(null);
   const [changeDetail, setChangeDetail] = useState<ChangeDetail | null>(null);
+  const changeDetailRef = useFocusTrap(
+    Boolean(changeDetail),
+    () => setChangeDetail(null)
+  );
   const [scheduleFor, setScheduleFor] = useState<Record<string, string>>({});
   const [rollbackVersion, setRollbackVersion] = useState<Record<string, string>>({});
 
@@ -160,7 +165,7 @@ export function DocumentationAgentDashboard(props: Props) {
   }));
 
   return (
-    <main className="mx-auto max-w-7xl space-y-10" aria-labelledby="dashboard-title">
+    <section className="mx-auto max-w-7xl space-y-10" aria-labelledby="dashboard-title">
       <header>
         <p className="text-sm font-medium text-sky-700 dark:text-sky-300">
           {props.organization.name}
@@ -574,6 +579,8 @@ export function DocumentationAgentDashboard(props: Props) {
 
       {changeDetail ? (
         <div
+          ref={changeDetailRef}
+          tabIndex={-1}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
           role="dialog"
           aria-modal="true"
@@ -607,7 +614,7 @@ export function DocumentationAgentDashboard(props: Props) {
           </div>
         </div>
       ) : null}
-    </main>
+    </section>
   );
 }
 

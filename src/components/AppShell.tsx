@@ -8,6 +8,7 @@ import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvide
 import { ProductSelector, useProduct } from "./ProductContext";
 import { ProductRunSettingsSync } from "./RunSettings";
 import { Sidebar } from "./Sidebar";
+import { useFocusTrap } from "./useFocusTrap";
 
 function WorkspaceSettingsLink() {
   const pathname = usePathname();
@@ -135,13 +136,13 @@ function HeaderBar() {
   };
 
   return (
-    <div className="relative flex min-w-0 flex-1 items-center justify-end gap-1">
+    <nav aria-label="Primary navigation" className="relative flex min-w-0 flex-1 items-center justify-end gap-1">
       {navLink("/", "Documentation")}
       {navLink("/docs/ctix", "API Reference")}
       {navLink("/guides", "Guides", "hidden lg:inline")}
       {navLink("/changelog", "Changelog", "hidden xl:inline")}
       {navLink("/authentication", "Authentication", "inline font-medium")}
-    </div>
+    </nav>
   );
 }
 
@@ -179,15 +180,21 @@ export function AppShell({
   const { currentSlug, activeProductId } = parseDocsPath(pathname);
   const sidebarProductId = activeProductId ?? productId;
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const drawerRef = useFocusTrap(drawerOpen, () => setDrawerOpen(false));
 
   return (
     <div className="flex min-h-screen flex-col">
       <ProductRunSettingsSync />
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-zinc-200 bg-white/90 px-3 py-2 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/90">
         <button
           type="button"
           onClick={() => setDrawerOpen((o) => !o)}
           aria-label="Toggle navigation"
+          aria-expanded={drawerOpen}
+          aria-controls="documentation-navigation-drawer"
           className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-300 lg:hidden dark:border-zinc-700"
         >
           <MenuIcon />
@@ -236,7 +243,15 @@ export function AppShell({
         {drawerOpen ? (
           <div className="fixed inset-0 z-40 lg:hidden">
             <div className="absolute inset-0 bg-black/40" onClick={() => setDrawerOpen(false)} />
-            <div className="absolute left-0 top-0 h-full w-80 max-w-[85%] border-r border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
+            <aside
+              ref={drawerRef}
+              id="documentation-navigation-drawer"
+              tabIndex={-1}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Documentation navigation"
+              className="absolute left-0 top-0 h-full w-80 max-w-[85%] border-r border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950"
+            >
               <ProductSelector className="border-b border-zinc-200 p-3 dark:border-zinc-800" />
               <Sidebar
                 nav={nav}
@@ -244,11 +259,13 @@ export function AppShell({
                 productId={sidebarProductId}
                 onNavigate={() => setDrawerOpen(false)}
               />
-            </div>
+            </aside>
           </div>
         ) : null}
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-8">{children}</main>
+        <main id="main-content" tabIndex={-1} className="min-w-0 flex-1 px-4 py-6 sm:px-8">
+          {children}
+        </main>
       </div>
     </div>
   );

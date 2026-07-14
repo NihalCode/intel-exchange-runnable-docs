@@ -24,6 +24,13 @@ This branch (`enterprise/phase-0-intake`) is intentionally unpushed.
   diagnostics.
 - **Phase 13 — API runner hardening:** restricted execution to approved product
   destinations and added DNS-aware SSRF protections with redirect validation.
+- **Phase 14 — focused accessibility:** added skip links and landmarks, reliable
+  keyboard focus styling, accessible control names, live agent status/error
+  announcements, modal/drawer focus management, and reduced-motion support;
+  duplicate sidebar filter IDs are avoided when both navigations are rendered.
+- **Agent request cancellation:** agent requests now use `AbortController`; the
+  chat displays a Stop control while processing and treats cancellation as a
+  normal stopped request rather than an error.
 - **Phase 17 — AI evaluation fixtures:** started a versioned, deterministic
   golden corpus for intent routing, product scope, retrieval UX mapping, and
   LLM plan-contract rejection behavior.
@@ -39,8 +46,9 @@ This branch (`enterprise/phase-0-intake`) is intentionally unpushed.
 - **RLS and MFA are incomplete;** MFA is currently optional for the
   administrative dashboard and database row-level enforcement needs production
   rollout work.
-- **Accessibility needs a dedicated pass,** including keyboard navigation,
-  focus management, labels, and automated a11y coverage.
+- **Automated accessibility coverage remains limited;** the focused pass covers
+  core keyboard paths and helper tests, but broader component and screen-reader
+  regression coverage should be added before release.
 - **Evaluation gates are incomplete:** regression fixtures have started, but
   representative retrieval/planning evals and release thresholds are still
   required before treating model changes as production ready.

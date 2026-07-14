@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { useAdmin } from "@/components/admin/context/AdminContext";
+import { useFocusTrap } from "@/components/useFocusTrap";
 import {
   filterNavByCapabilities,
   isNavItemActive,
@@ -43,6 +44,7 @@ export function AdminSidebar() {
   const groups = filterNavByCapabilities(capabilities, enabledFeatures);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [mobileOpen, setMobileOpen] = useState(false);
+  const mobileDrawerRef = useFocusTrap(mobileOpen, () => setMobileOpen(false));
 
   useEffect(() => {
     let active = true;
@@ -87,6 +89,8 @@ export function AdminSidebar() {
         type="button"
         className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-sky-700 text-white shadow-lg lg:hidden"
         aria-label="Open admin navigation"
+        aria-expanded={mobileOpen}
+        aria-controls="admin-navigation-drawer"
         onClick={() => setMobileOpen(true)}
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -114,7 +118,15 @@ export function AdminSidebar() {
             aria-label="Close navigation"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-72 border-r border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
+          <aside
+            ref={mobileDrawerRef}
+            id="admin-navigation-drawer"
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Administration navigation"
+            className="absolute left-0 top-0 h-full w-72 border-r border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950"
+          >
             <div className="border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
               <p className="text-sm font-semibold">Enterprise Admin</p>
             </div>
