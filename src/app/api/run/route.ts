@@ -5,7 +5,12 @@ import { serverAuthRequiredMessage, urlHasOpenApiAuth } from "@/lib/api-credenti
 import { guardDocumentationApi } from "@/lib/documentation-auth/guard-api";
 import type { MultipartPart } from "@/lib/multipart";
 import { MAX_UPLOAD_BYTES } from "@/lib/multipart";
-import { assertPublicUrl, safeFetch } from "@/lib/security/public-host";
+import { PRODUCTS } from "@/lib/products/registry";
+import {
+  assertPublicUrl,
+  PublicHostError,
+  safeFetch,
+} from "@/lib/security/public-host";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +37,19 @@ const ALLOWED_METHODS = new Set([
   "HEAD",
   "OPTIONS",
 ]);
+
+function isApprovedApiDestination(target: URL): boolean {
+  return PRODUCTS.some((product) =>
+    product.allowedBaseUrlPatterns.some((pattern) => pattern.test(target.toString()))
+  );
+}
+
+function blockedDestinationResponse() {
+  return NextResponse.json(
+    { error: "The requested API destination is not permitted." },
+    { status: 400 }
+  );
+}
 
 export async function POST(request: Request) {
   const session = await guardDocumentationApi(
@@ -84,6 +102,13 @@ export async function POST(request: Request) {
     );
   }
 
+  // Keep the product registry as the primary destination allowlist. The
+  // public-host guard below remains necessary because an allowed hostname can
+  // still resolve to a private address.
+  if (!isApprovedApiDestination(target)) {
+    return blockedDestinationResponse();
+  }
+
   if (!urlHasOpenApiAuth(urlStr)) {
     return NextResponse.json(
       { ok: false, error: serverAuthRequiredMessage(method) },
@@ -93,11 +118,8 @@ export async function POST(request: Request) {
 
   try {
     await assertPublicUrl(target);
-  } catch (err) {
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Blocked host." },
-      { status: 400 }
-    );
+  } catch {
+    return blockedDestinationResponse();
   }
 
   const controller = new AbortController();
@@ -150,12 +172,12 @@ export async function POST(request: Request) {
       {
         error: aborted
           ? `Request timed out after ${TIMEOUT_MS / 1000}s (or exceeded size limit).`
-          : err instanceof Error
-            ? err.message
-            : "Request failed.",
+          : err instanceof PublicHostError
+            ? "The requested API destination is not permitted."
+            : "Unable to complete the API request.",
         durationMs: Date.now() - started,
       },
-      { status: 502 }
+      { status: err instanceof PublicHostError ? 400 : 502 }
     );
   } finally {
     clearTimeout(timer);

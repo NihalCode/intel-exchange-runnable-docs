@@ -8,6 +8,8 @@ import {
   safeFetch,
 } from "@/lib/security/public-host";
 
+const resolvePublic = async () => [{ address: "93.184.216.34" }];
+
 describe("public host SSRF guards", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -19,6 +21,7 @@ describe("public host SSRF guards", () => {
     expect(isPrivateIp("127.0.0.1")).toBe(true);
     expect(isPrivateIp("169.254.169.254")).toBe(true);
     expect(isPrivateIp("192.168.1.1")).toBe(true);
+    expect(isPrivateIp("224.0.0.1")).toBe(true);
     expect(isPrivateIp("::1")).toBe(true);
     expect(isPrivateIp("8.8.8.8")).toBe(false);
   });
@@ -38,22 +41,52 @@ describe("public host SSRF guards", () => {
     ).rejects.toThrow(/private/i);
   });
 
-  it("re-validates redirect targets and blocks private redirect hops", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(null, {
-          status: 302,
-          headers: { location: "http://127.0.0.1/internal" },
-        })
-      );
-    vi.stubGlobal("fetch", fetchMock);
+  it("rejects a DNS answer containing a private address before fetching", async () => {
+    const resolve = vi.fn().mockResolvedValue([
+      { address: "93.184.216.34" },
+      { address: "169.254.169.254" },
+    ]);
+    const fetchMock = vi.fn();
 
     await expect(
-      safeFetch("https://example.com/start", { method: "GET" })
+      safeFetch("https://api.cyware.com/ctixapi", { resolve, fetch: fetchMock })
+    ).rejects.toThrow(/private/i);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("re-validates redirect targets and blocks private redirect hops", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response(null, {
+        status: 302,
+        headers: { location: "http://127.0.0.1/internal" },
+      })
+    );
+
+    await expect(
+      safeFetch("https://api.cyware.com/ctixapi/start", {
+        method: "GET",
+        resolve: resolvePublic,
+        fetch: fetchMock,
+      })
     ).rejects.toThrow(/private/i);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0]?.[1]?.redirect).toBe("manual");
+  });
+
+  it("re-resolves same-host redirects to catch DNS rebinding", async () => {
+    const resolve = vi
+      .fn()
+      .mockResolvedValueOnce([{ address: "93.184.216.34" }])
+      .mockResolvedValueOnce([{ address: "10.0.0.7" }]);
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response(null, { status: 302, headers: { location: "/ctixapi/next" } })
+    );
+
+    await expect(
+      safeFetch("https://api.cyware.com/ctixapi/start", { resolve, fetch: fetchMock })
+    ).rejects.toThrow(/private/i);
+    expect(resolve).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
   it("follows safe redirects to public hosts", async () => {
@@ -66,9 +99,11 @@ describe("public host SSRF guards", () => {
         })
       )
       .mockResolvedValueOnce(new Response("ok", { status: 200 }));
-    vi.stubGlobal("fetch", fetchMock);
 
-    const response = await safeFetch("https://example.com/start");
+    const response = await safeFetch("https://api.cyware.com/ctixapi/start", {
+      resolve: resolvePublic,
+      fetch: fetchMock,
+    });
     expect(response.status).toBe(200);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
