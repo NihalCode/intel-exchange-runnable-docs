@@ -1,6 +1,7 @@
 # Enterprise Remediation Progress
 
-This branch (`enterprise/phase-0-intake`) is intentionally unpushed.
+This branch (`enterprise/phase-0-intake`) holds the remediation workstream and is
+merged to `main` for production deploy.
 
 ## Completed work
 
