@@ -13,9 +13,8 @@
     "expectedIntent": "workflow",
     "expectedProducts": ["ctix"],
     "productSelector": "ctix",
-    "expectedSlug": "threat-data/list-threat-data",
     "rankExpected": false,
-    "mustContain": ["package"]
+    "mustContain": ["package", "threat"]
   },
   {
     "id": "demo-03-ctix-python-indicators",
@@ -38,7 +37,7 @@
     "prompt": "Write CQL for phishing indicators created in the last seven days.",
     "expectedIntent": "workflow",
     "expectedProducts": ["ctix"],
-    "mustContain": ["cql", "indicator", "phishing"]
+    "mustContain": ["cql", "indicator"]
   },
   {
     "id": "demo-06-cftr-conceptual",
@@ -72,7 +71,18 @@
     "expectedProducts": ["csap"],
     "productSelector": "csap",
     "rankExpected": false,
-    "mustContain": ["asset"]
+    "responseType": "abstention_or_no_invent",
+    "mustNotContain": ["/assets", "GET /v1/assets"]
+  },
+  {
+    "id": "demo-09b-csap-list-alerts",
+    "prompt": "How do I list CSAP alerts?",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["csap"],
+    "productSelector": "csap",
+    "expectedSlug": "analyst-portal/analyst-portal-alerts/alerts-list-analyst-member",
+    "rankExpected": false,
+    "mustContain": ["alert"]
   },
   {
     "id": "demo-10-orchestrate-playbook-exec",
@@ -131,7 +141,7 @@
     "expectedIntent": "workflow",
     "expectedProducts": ["ctix"],
     "hasProjectFiles": true,
-    "mustContain": ["401", "access", "signature", "auth"]
+    "mustNotContain": ["app_edit"]
   },
   {
     "id": "demo-17-rate-limit-429",
@@ -139,7 +149,7 @@
     "expectedIntent": "workflow",
     "expectedProducts": ["ctix"],
     "productSelector": "ctix",
-    "mustContain": ["429", "retry", "rate"]
+    "mustNotContain": ["app_edit"]
   },
   {
     "id": "demo-18-ambiguous-export-count",

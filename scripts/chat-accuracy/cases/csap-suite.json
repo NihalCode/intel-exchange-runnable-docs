@@ -1,0 +1,21 @@
+[
+  {
+    "id": "csap-alerts-list",
+    "prompt": "How do I list CSAP alerts?",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["csap"],
+    "productSelector": "csap",
+    "expectedSlug": "analyst-portal/analyst-portal-alerts/alerts-list-analyst-member",
+    "rankExpected": false,
+    "mustContain": ["alert"]
+  },
+  {
+    "id": "csap-no-assets-endpoint",
+    "prompt": "How do I list assets?",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["csap"],
+    "productSelector": "csap",
+    "responseType": "abstention_or_no_invent",
+    "mustNotContain": ["GET /v1/assets"]
+  }
+]

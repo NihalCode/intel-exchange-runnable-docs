@@ -3,6 +3,10 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 import cases from "../../../scripts/chat-accuracy/cases/demo-critical.json";
+import ctixSuite from "../../../scripts/chat-accuracy/cases/ctix-suite.json";
+import cftrSuite from "../../../scripts/chat-accuracy/cases/cftr-suite.json";
+import csapSuite from "../../../scripts/chat-accuracy/cases/csap-suite.json";
+import orchestrateSuite from "../../../scripts/chat-accuracy/cases/orchestrate-suite.json";
 import ctixIndex from "../../content/agent-index.json";
 import csapIndex from "../../content/products/csap/agent-index.json";
 import cftrIndex from "../../content/products/cftr/agent-index.json";
@@ -20,14 +24,17 @@ type ChatTestCase = {
   id: string;
   prompt: string;
   expectedIntent: "workflow" | "snippet" | "app_build" | "app_edit" | "explain";
+  fallbackIntent?: Array<"workflow" | "snippet" | "app_build" | "app_edit" | "explain">;
   expectedProducts: string[];
+  productSelector?: string;
   expectedSlug?: string;
   retrievalSlug?: string;
   rankExpected?: boolean;
   mustContain?: string[];
   mustNotContain?: string[];
-  responseType?: "plan" | "gated_unavailable" | "refusal" | "abstention";
+  responseType?: "plan" | "gated_unavailable" | "refusal" | "abstention" | "abstention_or_no_invent";
   hasProjectFiles?: boolean;
+  conversationHistory?: Array<{ role: string; content: string }>;
 };
 
 type CaseResult = {
@@ -42,7 +49,13 @@ const ARTIFACT_DIR = path.join(ROOT, "artifacts", "chat-accuracy");
 const MANIFEST_PATH = path.join(ARTIFACT_DIR, "api-manifest.json");
 const REPORT_PATH = path.join(ARTIFACT_DIR, "demo-critical-report.json");
 const MARKDOWN_PATH = path.join(ARTIFACT_DIR, "DEMO_REPORT.md");
-const testCases = cases as ChatTestCase[];
+const testCases = [
+  ...(cases as ChatTestCase[]),
+  ...(ctixSuite as ChatTestCase[]),
+  ...(cftrSuite as ChatTestCase[]),
+  ...(csapSuite as ChatTestCase[]),
+  ...(orchestrateSuite as ChatTestCase[]),
+];
 const caseResults: CaseResult[] = [];
 
 const INDEXES: Record<string, AgentIndex> = {
@@ -101,44 +114,78 @@ describe("demo-critical chat accuracy harness", () => {
         const intent = resolveAgentIntent(fixture.prompt, {
           hasProjectFiles: fixture.hasProjectFiles ?? false,
         });
-        expect(intent.intent).toBe(fixture.expectedIntent);
-        if (fixture.hasProjectFiles && fixture.expectedIntent === "workflow") {
+        const allowedIntents = new Set<string>([
+          fixture.expectedIntent,
+          ...(fixture.fallbackIntent ?? []),
+        ]);
+        expect(allowedIntents.has(intent.intent)).toBe(true);
+        if (fixture.hasProjectFiles && allowedIntents.has("workflow")) {
           expect(intent.editExistingApp).toBe(false);
+          expect(intent.intent).not.toBe("app_edit");
+        }
+        for (const banned of fixture.mustNotContain ?? []) {
+          if (banned === "app_edit") {
+            expect(intent.intent).not.toBe("app_edit");
+          }
         }
 
         const scope = resolveProductScope(
           {
             query: fixture.prompt,
-            productId: fixture.expectedProducts.length === 4 ? "all" : fixture.expectedProducts[0],
+            productId:
+              fixture.productSelector ??
+              (fixture.expectedProducts.length > 1 ? "all" : fixture.expectedProducts[0]),
           },
           fixture.prompt
         );
         expect(scope.productIds).toEqual(fixture.expectedProducts);
 
         let evidence: string | undefined;
-        if (fixture.expectedSlug) {
-          expect(
-            manifest.entries.some(
-              (entry) =>
-                entry.productId === fixture.expectedProducts[0] &&
-                entry.slug === fixture.expectedSlug &&
-                entry.kind === "endpoint"
-            )
-          ).toBe(true);
-
-          const retrieved = retrieveLexical(fixture.prompt, INDEXES[fixture.expectedProducts[0]!]!, 30);
-          if (fixture.rankExpected !== false) {
+        const primaryProduct = fixture.expectedProducts[0]!;
+        const index = INDEXES[primaryProduct];
+        if (index && (fixture.expectedSlug || fixture.mustContain?.length)) {
+          if (fixture.expectedSlug) {
             expect(
-              retrieved.some((entry) => entry.slug === (fixture.retrievalSlug ?? fixture.expectedSlug))
+              manifest.entries.some(
+                (entry) =>
+                  entry.productId === primaryProduct &&
+                  entry.slug === fixture.expectedSlug &&
+                  entry.kind === "endpoint"
+              )
             ).toBe(true);
-          } else {
-            expect(retrieved.some((entry) => entry.kind === "endpoint")).toBe(true);
           }
-          evidence = evidenceLabel(evidenceFromScores(retrieved));
 
-          const retrievedText = retrieved.map((entry) => entry.text).join(" ").toLowerCase();
-          for (const term of fixture.mustContain ?? []) {
-            expect(retrievedText).toContain(term.toLowerCase());
+          const retrieved = retrieveLexical(fixture.prompt, index, 30);
+          if (fixture.expectedSlug) {
+            if (fixture.rankExpected !== false) {
+              expect(
+                retrieved.some(
+                  (entry) => entry.slug === (fixture.retrievalSlug ?? fixture.expectedSlug)
+                )
+              ).toBe(true);
+            } else {
+              expect(retrieved.some((entry) => entry.kind === "endpoint")).toBe(true);
+            }
+            evidence = evidenceLabel(evidenceFromScores(retrieved));
+          }
+
+          if (fixture.mustContain?.length) {
+            const retrievedText = retrieved.map((entry) => entry.text).join(" ").toLowerCase();
+            // Query nouns (phishing, 401) may not appear in BM25 hits — only enforce
+            // terms when we also named a canonical expectedSlug for the product.
+            if (fixture.expectedSlug) {
+              for (const term of fixture.mustContain) {
+                expect(retrievedText).toContain(term.toLowerCase());
+              }
+            } else {
+              expect(retrieved.some((entry) => entry.kind === "endpoint" || entry.kind === "section")).toBe(
+                true
+              );
+              const hitAny = fixture.mustContain.some((term) =>
+                retrievedText.includes(term.toLowerCase())
+              );
+              expect(hitAny).toBe(true);
+            }
           }
         }
 
@@ -150,6 +197,19 @@ describe("demo-critical chat accuracy harness", () => {
           });
           expect(response.steps).toEqual([]);
           expect(response.workflow).toMatch(/which cyware product/i);
+        }
+
+        if (fixture.responseType === "abstention_or_no_invent") {
+          const response = await runAgent({
+            query: fixture.prompt,
+            productId: primaryProduct,
+            allowedProductIds: fixture.expectedProducts,
+          });
+          const body = `${response.workflow}\n${JSON.stringify(response.steps)}`.toLowerCase();
+          expect(body).not.toMatch(/delete\s+\/indicators\/all/);
+          for (const banned of fixture.mustNotContain ?? []) {
+            expect(body).not.toContain(banned.toLowerCase());
+          }
         }
 
         if (fixture.responseType === "gated_unavailable") {

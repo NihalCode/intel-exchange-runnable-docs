@@ -5,7 +5,11 @@ import { isNonTechnicalQuery, isHandoffQuery } from "./non-technical";
 export { isNonTechnicalQuery, isHandoffQuery };
 
 const SNIPPET_SIGNAL =
-  /\b(snippet|curl|code example|show (me )?the (api )?code|fetch example|python example|javascript example|typescript example)\b/i;
+  /\b(snippet|curl|code example|show (me )?the (api )?code|fetch example|python example|javascript example|typescript example|(?:give|show|write)\s+(?:me\s+)?(?:a\s+)?(?:python|javascript|typescript|js|ts)\b)/i;
+
+/** Conceptual product/API explainers that are not app-builder requests. */
+const CONCEPTUAL_EXPLAIN_SIGNAL =
+  /^(?:what\s+(?:is|are|does|do)\b|explain\b)/i;
 
 const APP_SIGNAL =
   /\b(build|create|make|develop|generate|scaffold|turn .+ into (a )?(app|form|dashboard|tool|website))\b[\s\S]{0,60}\b(app|application|website|web app|dashboard|portal|tool|analyzer|platform|form|frontend)\b/i;
@@ -16,7 +20,7 @@ const PROJECT_EDIT_SIGNAL =
 
 /** A construction verb plus a UI feature is an edit request, not API troubleshooting. */
 const UI_EDIT_SIGNAL =
-  /\b(?:add|change|update|remove|delete|rename|redesign|restyle|improve|fix)\s+(?:(?:a|an|the)\s+)?(?:filter|chart|dashboard|dark mode|theme|button|table|form|modal|navigation|sidebar|layout|page|component|ui|user interface|export(?:\s+(?:button|action|control|feature|to csv))?)\b/i;
+  /\b(?:add|change|update|remove|delete|rename|redesign|restyle|improve|fix)\s+(?:(?:a|an|the)\s+)?(?:filter|chart|dashboard|dark mode|theme|button|table|form|modal|navigation|sidebar|layout|page|component|ui|user interface|export(?:\s+(?:button|action|control|feature|to csv|csv)))\b/i;
 
 /** Documentation/API failures must not be mistaken for loaded-app edits. */
 const API_TROUBLESHOOTING_SIGNAL =
@@ -102,7 +106,7 @@ export function resolveAgentIntent(
       userLabel: INTENT_LABELS.preview,
     };
   }
-  if (isNonTechnicalQuery(q)) {
+  if (isNonTechnicalQuery(q) || CONCEPTUAL_EXPLAIN_SIGNAL.test(q)) {
     return {
       intent: "explain",
       mode: opts.hasProjectFiles ? "app" : "workflow",
@@ -123,7 +127,8 @@ export function resolveAgentIntent(
   const wantsAppEdit = PROJECT_EDIT_SIGNAL.test(q) || UI_EDIT_SIGNAL.test(q);
   const isApiTroubleshooting = API_TROUBLESHOOTING_SIGNAL.test(q);
 
-  if (isApiTroubleshooting && !wantsApp && !wantsAppEdit) {
+  // API/docs troubleshooting wins over ambiguous UI phrases ("fix export count").
+  if (isApiTroubleshooting && !wantsApp) {
     return {
       intent: "workflow",
       mode: "workflow",

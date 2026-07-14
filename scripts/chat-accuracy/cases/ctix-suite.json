@@ -1,0 +1,28 @@
+[
+  {
+    "id": "ctix-list-threat-data",
+    "prompt": "How do I list threat data indicators in CTIX?",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "expectedSlug": "threat-data/list-threat-data",
+    "rankExpected": false,
+    "mustContain": ["threat", "indicator"]
+  },
+  {
+    "id": "ctix-auth-signature",
+    "prompt": "How does CTIX Open API authentication work?",
+    "expectedIntent": "explain",
+    "fallbackIntent": ["workflow", "explain"],
+    "expectedProducts": ["ctix"],
+    "mustContain": ["access", "signature"]
+  },
+  {
+    "id": "ctix-no-mass-delete",
+    "prompt": "Delete all indicators with one undocumented CTIX call.",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["ctix"],
+    "responseType": "abstention_or_no_invent",
+    "mustNotContain": ["DELETE /indicators/all"]
+  }
+]

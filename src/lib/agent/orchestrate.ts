@@ -65,6 +65,7 @@ import {
   isZendeskSupportQuery,
   supportSearchUnavailable,
 } from "./safety";
+import { defaultDocumentationFeatureEnabled } from "../documentation-features/keys";
 import { extractTagNameFromQuery } from "../workflow-step-context";
 import { buildStepPlaygroundMeta, buildStepSpec } from "./spec";
 import type {
@@ -180,15 +181,18 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   if (isZendeskSupportQuery(query)) {
-    return {
-      mode: "workflow",
-      workflow: supportSearchUnavailable(),
-      confidence: 0,
-      fallback: true,
-      citations: [],
-      steps: [],
-      code: "SUPPORT_AGENT_UNAVAILABLE",
-    };
+    // Fail closed until Support Agent / Zendesk connector is explicitly enabled.
+    if (!defaultDocumentationFeatureEnabled("support_agent")) {
+      return {
+        mode: "workflow",
+        workflow: supportSearchUnavailable(),
+        confidence: 0,
+        fallback: true,
+        citations: [],
+        steps: [],
+        code: "SUPPORT_AGENT_UNAVAILABLE",
+      };
+    }
   }
 
   const apiKeyConfigured = isOpenAiConfigured();

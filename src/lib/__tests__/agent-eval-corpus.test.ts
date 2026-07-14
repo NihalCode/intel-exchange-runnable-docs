@@ -12,14 +12,14 @@ import { buildProductAccessDeniedResponse } from "../documentation-credentials/a
  * plan-boundary behavior. Add new fixtures rather than changing expectations
  * without intentionally advancing the corpus version.
  */
-const AGENT_EVAL_CORPUS_VERSION = 2;
+const AGENT_EVAL_CORPUS_VERSION = 3;
 
 const GOLDEN_INTENT_FIXTURES = [
   {
-    name: "conceptual CTIX question remains a documentation workflow",
+    name: "conceptual CTIX question explains docs without app routing",
     query: "What does CTIX indicator export do?",
     hasProjectFiles: true,
-    expectedIntent: "workflow",
+    expectedIntent: "explain",
   },
   {
     name: "HTTP 404 troubleshooting remains a workflow with a loaded app",
