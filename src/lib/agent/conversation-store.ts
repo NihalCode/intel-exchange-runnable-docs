@@ -351,6 +351,8 @@ export async function completeTurnWithFinal(input: {
   turnId: string;
   organizationId: string;
   userId: string;
+  /** Require the final to be attached to this caller-owned conversation. */
+  conversationId?: string;
   contentText: string;
   metadata?: Record<string, unknown>;
 }): Promise<{ message: AgentMessage; idempotent: boolean }> {
@@ -360,6 +362,9 @@ export async function completeTurnWithFinal(input: {
     async (tx) => {
       const turn = await getScopedTurn(tx, input.turnId, input.organizationId, input.userId);
       if (!turn) throw new ConversationStoreConflictError("Turn not found");
+      if (input.conversationId && turn.conversationId !== input.conversationId) {
+        throw new ConversationStoreConflictError("Turn does not belong to this conversation");
+      }
       const existing = await tx.queryOne(
         "SELECT * FROM agent_messages WHERE turn_id = ? AND type = 'assistant_final' LIMIT 1",
         [turn.id]
@@ -403,12 +408,14 @@ export async function completeTurnWithFinal(input: {
 export async function cancelTurn(
   turnId: string,
   organizationId: string,
-  userId: string
+  userId: string,
+  conversationId?: string
 ): Promise<AgentTurn | null> {
   ensureMigrations();
   return withOrganizationTransaction({ organizationId, userId }, async (tx) => {
     const turn = await getScopedTurn(tx, turnId, organizationId, userId);
     if (!turn) return null;
+    if (conversationId && turn.conversationId !== conversationId) return null;
     if (turn.status === "completed") return turn;
     const now = nowIso();
     await tx.execute(

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { validateStep } from "../agent/validate";
+import { unsupportedEndpointAbstention, validateStep } from "../agent/validate";
 import type { EndpointPage } from "../types";
 
 const PAGE: EndpointPage = {
@@ -51,5 +51,13 @@ describe("validateStep", () => {
       SLUGS
     );
     expect(result).toBeNull();
+  });
+
+  it("returns an explicit abstention instead of an invented request path", () => {
+    const message = unsupportedEndpointAbstention(["fake/endpoint"]);
+
+    expect(message).toContain("`fake/endpoint`");
+    expect(message).toContain("won’t suggest a request path");
+    expect(message).toContain("TODO:");
   });
 });

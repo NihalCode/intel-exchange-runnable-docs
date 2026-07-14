@@ -268,6 +268,9 @@ export interface AgentRequest {
   productId?: string;
   history?: { role: "user" | "assistant"; content: string }[];
   existingApp?: ExistingAppContext;
+  /** Optional conversation persistence IDs, supplied by the authenticated client. */
+  conversationId?: string;
+  turnId?: string;
   /** Server-injected allowlist from per-user connected credentials. */
   allowedProductIds?: readonly string[];
 }

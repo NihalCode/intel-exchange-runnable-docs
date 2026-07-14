@@ -70,7 +70,7 @@ import type {
   ScoredChunk,
 } from "./types";
 import type { EndpointPage } from "../types";
-import { validatePlan } from "./validate";
+import { unsupportedEndpointAbstention, validatePlan } from "./validate";
 import { isLiveApiUiEnabled } from "../public-docs-mode";
 import {
   isOpenAiConfigured,
@@ -478,7 +478,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const workflowPrefix = scope.filterMode === "all" ? "[All products] " : `[${productLabel}] `;
 
-  const workflowText = plan.workflow.startsWith("[")
+  const unsupportedOnly = plan.steps.length > 0 && dropped.length === plan.steps.length;
+  const workflowText = unsupportedOnly
+    ? unsupportedEndpointAbstention(dropped)
+    : plan.workflow.startsWith("[")
     ? plan.workflow
     : plan.workflow.includes("## What you're trying to do")
       ? plan.workflow
@@ -488,8 +491,8 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     mode,
     workflow: workflowText,
     confidence,
-    fallback,
-    citations: plan.citations.map((c) => ({
+    fallback: fallback || unsupportedOnly,
+    citations: (unsupportedOnly ? [] : plan.citations).map((c) => ({
       ...c,
       title: titleBySlug.get(c.slug) ?? c.title,
     })),

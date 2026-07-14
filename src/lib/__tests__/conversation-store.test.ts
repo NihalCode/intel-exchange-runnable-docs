@@ -97,4 +97,26 @@ describe("agent conversation store", () => {
       })
     ).rejects.toThrow("Conversation not found");
   });
+
+  it("does not finalize a turn under another conversation", async () => {
+    const first = await createConversation({ organizationId, userId });
+    const second = await createConversation({ organizationId, userId });
+    const started = await startTurn({
+      conversationId: first.id,
+      orgId: organizationId,
+      userId,
+      idempotencyKey: "conversation-mismatch",
+      userText: "List indicators",
+    });
+
+    await expect(
+      completeTurnWithFinal({
+        turnId: started.turn.id,
+        conversationId: second.id,
+        organizationId,
+        userId,
+        contentText: "This must not be stored.",
+      })
+    ).rejects.toThrow("Turn does not belong to this conversation");
+  });
 });
