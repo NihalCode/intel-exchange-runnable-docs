@@ -108,7 +108,11 @@ export const PRODUCTS: ApiProduct[] = [
     docsOrigin: "https://orchestrateapi.cyware.com",
     docsProject: "cyware-orchestrate-api-reference-theneo",
     docsReferer: "https://orchestrateapi.cyware.com/cyware-orchestrate-api-reference-theneo",
-    allowedBaseUrlPatterns: [/https:\/\/[^/]*\.cyware\.com\/co/i, /^https:\/\/orchestrateapi\.cyware\.com/i],
+    allowedBaseUrlPatterns: [
+      /https:\/\/[^/]*\.cyware\.com\/co(\/|$|\?)/i,
+      /https:\/\/[^/]*\.cyware\.com\/soarapi(\/|$|\?)/i,
+      /^https:\/\/orchestrateapi\.cyware\.com/i,
+    ],
     indexed: true,
     pageCount: 73,
   },
@@ -182,8 +186,8 @@ export function apiBaseUrlHint(productId: string): string {
       return "https://csapapi.cyware.com or your tenant URL https://YOUR_TENANT.cyware.com/csap";
     case "orchestrate":
       return (
-        "https://orchestrateapi.cyware.com for API calls. " +
-        "The /cyware-orchestrate-api-reference-theneo path is docs browsing only."
+        "https://YOUR_TENANT.cyware.com/soarapi/openapi/ (or …/soarapi, or …/co), " +
+        "or https://orchestrateapi.cyware.com. Docs paths under /cyware-orchestrate-api-reference-theneo are browsing only."
       );
     case "ctix":
       return "https://YOUR_TENANT.cyware.com/ctixapi (e.g. cs-testv2.cyware.com/ctixapi for Cyware demo tenant)";

@@ -143,7 +143,11 @@ export function validatePlan(
   }
 
   steps.sort((a, b) => a.order - b.order);
-  return { steps, dropped };
+  // Contiguous 1..n after drops so UI never shows "Step 2 of 1".
+  return {
+    steps: steps.map((step, index) => ({ ...step, order: index + 1 })),
+    dropped,
+  };
 }
 
 /**

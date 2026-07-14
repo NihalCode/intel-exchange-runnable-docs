@@ -42,6 +42,8 @@ import {
   isReportDownloadQuery,
   isPingQuery,
   isSetupInfoQuery,
+  isRateLimitQuery,
+  enforceRateLimitGuidancePlan,
 } from "./planner";
 import {
   confidenceFromScores,
@@ -461,12 +463,13 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   if (mode === "workflow") {
     plan = enforceCatalogPlan(plan, query, req.allowedProductIds);
     plan = enforceSetupInfoPlan(plan, query, scope.filterMode === "all" ? "all" : activeProductId);
+    plan = enforceRateLimitGuidancePlan(plan, query);
 
-    if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {
+    if (!isSetupInfoQuery(query) && !isCatalogQuery(query) && !isRateLimitQuery(query)) {
       plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
     }
 
-    if (activeProductId === "ctix" && !isPingQuery(query)) {
+    if (activeProductId === "ctix" && !isPingQuery(query) && !isRateLimitQuery(query)) {
       // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
       // rule-based enforcers fire for non-technical phrasing.
       const intentQuery = canonicalizeIntent(query);
@@ -496,7 +499,11 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       }
     }
 
-    if (!isSetupInfoQuery(query) && !isCatalogQuery(query)) {
+    if (
+      !isSetupInfoQuery(query) &&
+      !isCatalogQuery(query) &&
+      !isRateLimitQuery(query)
+    ) {
       plan = enforceProductDocPlan(plan, query, scored, activeProductId);
     }
   }
@@ -526,12 +533,14 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   const setupInfoAnswer = isSetupInfoQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const catalogAnswer = isCatalogQuery(query) && (plan.confidence ?? 0) >= 0.9;
+  const rateLimitAnswer = isRateLimitQuery(query) && (plan.confidence ?? 0) >= 0.9;
+  // Do not mark fallback merely because validation dropped a sibling step while
+  // a usable step remains — that contradicts strong/partial evidence badges.
   const fallback =
     (!setupInfoAnswer &&
       !catalogAnswer &&
-      (lowConfidence ||
-        stepResults.length === 0 ||
-        (dropped.length > 0 && stepResults.length < plan.steps.length)));
+      !rateLimitAnswer &&
+      (lowConfidence || stepResults.length === 0));
 
   const titleBySlug = new Map(productManifest.pages.map((p) => [p.slug, p.title]));
 

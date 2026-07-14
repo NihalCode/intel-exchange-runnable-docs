@@ -340,6 +340,43 @@ export function isSetupInfoQuery(query: string): boolean {
   return isBaseUrlQuery(query) || isCredentialsQuery(query);
 }
 
+/** HTTP 429 / rate-limit client guidance — not an endpoint lookup. */
+export function isRateLimitQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  return (
+    /\b429\b/.test(q) ||
+    /\brate[- ]?limit(?:ed|ing|s)?\b/.test(q) ||
+    /\btoo many requests\b/.test(q) ||
+    (/\bretry[- ]?after\b/.test(q) && /\b(header|response|429|limit)\b/.test(q))
+  );
+}
+
+/**
+ * Prefer client-side retry guidance over an unrelated retrieved endpoint
+ * (e.g. "Get Actions List" matching on "handle … responses").
+ */
+export function enforceRateLimitGuidancePlan(plan: AgentPlan, query: string): AgentPlan {
+  if (!isRateLimitQuery(query)) return plan;
+
+  const workflow =
+    "HTTP **429 Too Many Requests** means the Open API rate limit was hit. " +
+    "There is no dedicated “handle 429” documentation endpoint — handle it in your client:\n\n" +
+    "1. **Back off and retry** with exponential delay (e.g. 1s → 2s → 4s), capped around 30–60s.\n" +
+    "2. Honour **`Retry-After`** when the response includes it (seconds or HTTP-date).\n" +
+    "3. **Reduce request rate** — smaller page sizes, less aggressive polling, and batching where the API allows.\n" +
+    "4. Treat 429 as **transient**; do not invent alternate paths. Generated workflow scripts already retry 429/5xx with backoff.\n\n" +
+    "If 429s persist after backing off, check concurrent integrations sharing the same Open API key.";
+
+  return {
+    ...plan,
+    confidence: Math.max(plan.confidence, 0.9),
+    workflow,
+    steps: [],
+    citations: [],
+    questions: undefined,
+  };
+}
+
 /** "What products/APIs are documented here?" */
 export function isCatalogQuery(query: string): boolean {
   const q = query.toLowerCase();

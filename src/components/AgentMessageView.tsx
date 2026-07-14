@@ -5,6 +5,7 @@ import { AgentAppBlueprintView } from "./AgentAppBlueprintView";
 import { AgentAppDiffView } from "./AgentAppDiffView";
 import { AgentWorkflowScript } from "./AgentWorkflowScript";
 import { AgentWorkflowStep } from "./AgentWorkflowStep";
+import { shouldShowLowConfidenceBanner } from "@/lib/agent/answer-ux";
 import type { AgentLanguage, AgentResponse } from "@/lib/agent/types";
 import { setWorkflowTagName } from "@/lib/workflow-step-context";
 
@@ -46,7 +47,11 @@ export function AgentMessageView({
 
   return (
     <div className="space-y-4">
-      {response.fallback ? (
+      {shouldShowLowConfidenceBanner({
+        fallback: response.fallback,
+        retrievalEvidence: response.retrievalEvidence,
+        stepCount: response.steps.length,
+      }) ? (
         <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
           Low confidence match — review carefully or refine your question.
         </div>

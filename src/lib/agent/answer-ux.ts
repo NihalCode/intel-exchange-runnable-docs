@@ -15,6 +15,38 @@ export function evidenceLabel(evidence?: RetrievalEvidence): string | undefined 
   return evidence ? EVIDENCE_LABELS[evidence] : undefined;
 }
 
+/** True when retrieval evidence itself is weak — aligns with {@link evidenceLabel}. */
+export function isLowEvidence(evidence?: RetrievalEvidence): boolean {
+  return evidence === "limited_evidence" || evidence === "no_verified_match";
+}
+
+/**
+ * Whether the amber "Low confidence match" banner should appear.
+ *
+ * Must stay coherent with the evidence badge: do not show for strong/partial
+ * matches that still have a usable remaining step (e.g. after validation drops
+ * an invalid sibling step). Show for weak evidence or true unsupported / empty
+ * answers when `fallback` is set.
+ */
+export function shouldShowLowConfidenceBanner(opts: {
+  fallback?: boolean;
+  retrievalEvidence?: RetrievalEvidence;
+  stepCount?: number;
+}): boolean {
+  const { fallback = false, retrievalEvidence, stepCount = 0 } = opts;
+
+  if (isLowEvidence(retrievalEvidence)) return true;
+
+  if (
+    (retrievalEvidence === "strong_match" || retrievalEvidence === "partial_match") &&
+    stepCount > 0
+  ) {
+    return false;
+  }
+
+  return fallback;
+}
+
 /** Copy shown only when vector retrieval has fallen back to the local index. */
 export function degradedRetrievalNotice(retrievalDegraded?: boolean): string | undefined {
   return retrievalDegraded

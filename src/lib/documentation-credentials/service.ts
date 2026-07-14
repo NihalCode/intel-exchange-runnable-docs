@@ -19,10 +19,15 @@ import { isAllowedBaseUrl } from "@/lib/products/registry";
 import { assertPublicUrl, safeFetch } from "@/lib/security/public-host";
 import { maskValue } from "@/lib/security";
 
-const CONNECTIVITY_PATHS: Record<DocumentationProduct, string> = {
+/**
+ * Connectivity probe paths relative to each product's Open API root.
+ * Absolute-from-host forms are used when the configured base has no product prefix
+ * (e.g. docs hosts like csapapi.cyware.com / orchestrateapi.cyware.com).
+ */
+const CONNECTIVITY_SUFFIX: Record<DocumentationProduct, string> = {
   ctix: "/ping/",
-  cftr: "/cftrapi/openapi/test-connectivity/",
-  csap: "/csap/v1/test_connectivity/",
+  cftr: "/openapi/test-connectivity/",
+  csap: "/v1/test_connectivity/",
   orchestrate: "/v1/test_connectivity/",
 };
 
@@ -32,8 +37,8 @@ const TIMEOUT_MS = 10_000;
 export class CredentialValidationError extends Error {
   readonly code: string;
 
-  constructor(code: string) {
-    super("The credentials could not be validated");
+  constructor(code: string, message = "The credentials could not be validated") {
+    super(message);
     this.name = "CredentialValidationError";
     this.code = code;
   }
@@ -47,18 +52,81 @@ export function credentialAad(
   return `${organizationId}:${userId}:${productId}`;
 }
 
-function connectivityUrl(productId: DocumentationProduct, baseUrl: string): URL {
-  const base = new URL(baseUrl);
-  const configuredPath = base.pathname.replace(/\/+$/, "");
-  let path = CONNECTIVITY_PATHS[productId];
-  if (productId === "ctix" && configuredPath.endsWith("/ctixapi")) {
-    path = `${configuredPath}/ping/`;
-  } else if (productId === "cftr" && configuredPath.endsWith("/cftrapi")) {
-    path = `${configuredPath}/openapi/test-connectivity/`;
-  } else if (configuredPath && configuredPath !== "/") {
-    path = `${configuredPath}${path}`;
+function normalizePathname(pathname: string): string {
+  const trimmed = pathname.replace(/\/+$/, "");
+  return trimmed === "" ? "" : trimmed;
+}
+
+function joinPath(root: string, suffix: string): string {
+  const left = root.replace(/\/+$/, "");
+  const right = suffix.startsWith("/") ? suffix : `/${suffix}`;
+  return `${left}${right}`.replace(/\/{2,}/g, "/") || "/";
+}
+
+/**
+ * Build the absolute connectivity-check URL for a product + tenant base URL.
+ * Handles common tenant shapes (…/ctixapi, …/cftrapi, …/csap, …/soarapi[/openapi], …/co)
+ * and docs hosts without a product path prefix.
+ */
+export function buildConnectivityUrl(
+  productId: DocumentationProduct,
+  baseUrl: string
+): URL {
+  const base = new URL(baseUrl.trim());
+  const root = normalizePathname(base.pathname);
+  let pathname: string;
+
+  switch (productId) {
+    case "ctix": {
+      const ctixRoot = root.endsWith("/ctixapi") ? root : root || "/ctixapi";
+      pathname = joinPath(ctixRoot, CONNECTIVITY_SUFFIX.ctix);
+      break;
+    }
+    case "cftr": {
+      if (root.endsWith("/cftrapi")) {
+        pathname = joinPath(root, CONNECTIVITY_SUFFIX.cftr);
+      } else {
+        pathname = "/cftrapi/openapi/test-connectivity/";
+      }
+      break;
+    }
+    case "csap": {
+      // Docs path is csap/v1/test_connectivity/. Avoid doubling /csap when the
+      // tenant base already ends with /csap.
+      if (root.endsWith("/csap") || /(^|\/)csap$/i.test(root)) {
+        pathname = joinPath(root, CONNECTIVITY_SUFFIX.csap);
+      } else if (!root) {
+        pathname = `/csap${CONNECTIVITY_SUFFIX.csap}`;
+      } else if (/(^|\/)csap(\/|$)/i.test(root)) {
+        pathname = joinPath(root, CONNECTIVITY_SUFFIX.csap);
+      } else {
+        pathname = joinPath(root, `/csap${CONNECTIVITY_SUFFIX.csap}`);
+      }
+      break;
+    }
+    case "orchestrate": {
+      // Tenants commonly use …/soarapi/openapi or …/soarapi; older installs use …/co.
+      if (root.endsWith("/soarapi")) {
+        pathname = joinPath(root, `/openapi${CONNECTIVITY_SUFFIX.orchestrate}`);
+      } else if (
+        root.endsWith("/soarapi/openapi") ||
+        root.endsWith("/co/openapi") ||
+        root.endsWith("/co")
+      ) {
+        pathname = joinPath(root, CONNECTIVITY_SUFFIX.orchestrate);
+      } else if (!root) {
+        pathname = CONNECTIVITY_SUFFIX.orchestrate;
+      } else {
+        pathname = joinPath(root, CONNECTIVITY_SUFFIX.orchestrate);
+      }
+      break;
+    }
+    default: {
+      pathname = CONNECTIVITY_SUFFIX[productId] ?? "/";
+    }
   }
-  base.pathname = path.replace(/\/{2,}/g, "/");
+
+  base.pathname = pathname.endsWith("/") ? pathname : `${pathname}/`;
   base.search = "";
   base.hash = "";
   return base;
@@ -101,9 +169,12 @@ export async function validateAndStoreCredential(input: {
 }): Promise<CredentialMetadata> {
   const baseUrl = input.baseUrl.trim().replace(/\/+$/, "");
   if (!isAllowedBaseUrl(input.productId, baseUrl)) {
-    throw new CredentialValidationError("BASE_URL_NOT_ALLOWED");
+    throw new CredentialValidationError(
+      "BASE_URL_NOT_ALLOWED",
+      "Base URL is not allowed for this product. Use a Cyware tenant Open API URL (for Orchestrate: …/soarapi/openapi or …/co)."
+    );
   }
-  const target = connectivityUrl(input.productId, baseUrl);
+  const target = buildConnectivityUrl(input.productId, baseUrl);
   await assertPublicUrl(target);
   target.search = authQuery(input.accessId, input.secretKey).toString();
 
