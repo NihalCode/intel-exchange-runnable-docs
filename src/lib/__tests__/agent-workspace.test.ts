@@ -54,6 +54,7 @@ describe("workspace-client", () => {
 
   it("returning to an old chat restores messages and files context", () => {
     const session = createEmptySession();
+    session.serverConversationId = "conversation-123";
     session.messages = [
       { id: "u1", role: "user", content: "Build a dashboard" },
       {
@@ -84,6 +85,7 @@ describe("workspace-client", () => {
     const restored = getSession(session.id);
     expect(restored?.messages).toHaveLength(2);
     expect(restored?.activeAppId).toBe("app-123");
+    expect(restored?.serverConversationId).toBe("conversation-123");
     expect(
       (restored?.messages[1] as { response?: { app?: { files?: unknown[] } } }).response?.app?.files
     ).toHaveLength(1);

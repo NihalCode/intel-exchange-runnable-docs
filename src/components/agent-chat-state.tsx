@@ -13,6 +13,7 @@ import {
 import { resolveAgentIntent } from "@/lib/agent/intent";
 import { inferProductsFromQuery } from "@/lib/products/registry";
 import { clampAgentProductId, useAgentProductAccess } from "@/components/AgentProductAccess";
+import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
 import type { AgentLanguage, AgentResponse, ExistingAppContext } from "@/lib/agent/types";
@@ -30,6 +31,7 @@ import {
   appendSessionLog,
   createSession as createWorkspaceSession,
   deleteSession,
+  getSession,
   listSessions,
   loadWorkspaceStore,
   renameSession,
@@ -50,6 +52,14 @@ export type AssistantMessage = {
 };
 export type ErrorMessage = { id: string; role: "error"; content: string };
 export type ChatMessage = UserMessage | AssistantMessage | ErrorMessage;
+
+type ServerConversationResponse = {
+  conversation?: { id?: unknown };
+};
+
+type ServerTurnResponse = {
+  turn?: { id?: unknown };
+};
 
 function uid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -213,6 +223,7 @@ const AgentChatContext = createContext<AgentChatState | null>(null);
 
 export function AgentChatProvider({ children }: { children: ReactNode }) {
   const { productId, searchScope } = useProduct();
+  const { state: authState } = useDocumentationAuth();
   const credentialedProducts = useAgentProductAccess();
   const [sessions, setSessions] = useState<AgentWorkspaceSession[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string | null>(null);
@@ -271,6 +282,64 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   const refreshSessions = useCallback(() => {
     setSessions(listSessions());
   }, []);
+
+  const ensureServerConversation = useCallback(
+    async (sessionId: string): Promise<string | null> => {
+      const session = getSession(sessionId);
+      if (!session) return null;
+
+      try {
+        if (session.serverConversationId) {
+          const existing = await fetch(`/api/agent/conversations/${session.serverConversationId}`);
+          if (existing.ok) return session.serverConversationId;
+        }
+
+        const response = await fetch("/api/agent/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: session.title }),
+        });
+        if (!response.ok) return null;
+        const data = (await response.json()) as ServerConversationResponse;
+        const id = data.conversation?.id;
+        if (typeof id !== "string" || !id) return null;
+
+        persistSession(sessionId, { serverConversationId: id });
+        refreshSessions();
+        return id;
+      } catch {
+        // Server persistence is best-effort; the local workspace remains usable offline.
+        return null;
+      }
+    },
+    [refreshSessions]
+  );
+
+  const startServerTurn = useCallback(
+    async (conversationId: string, sessionId: string, messageId: string, userText: string) => {
+      try {
+        const idempotencyKey = `${sessionId}:${messageId}`;
+        const response = await fetch(`/api/agent/conversations/${conversationId}/turns`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey,
+          },
+          body: JSON.stringify({ userText, idempotencyKey }),
+        });
+        if (!response.ok) return;
+        const data = (await response.json()) as ServerTurnResponse;
+        const turnId = data.turn?.id;
+        if (typeof turnId === "string" && turnId) {
+          persistSession(sessionId, { serverTurnId: turnId });
+          refreshSessions();
+        }
+      } catch {
+        // A failed audit write must never prevent the agent response.
+      }
+    },
+    [refreshSessions]
+  );
 
   const logPanel = useCallback((line: string) => {
     const sid = sessionIdRef.current;
@@ -424,6 +493,20 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       }
 
       try {
+        const currentSessionId = sessionIdRef.current;
+        if (authState.authenticated && currentSessionId) {
+          const conversationId = await ensureServerConversation(currentSessionId);
+          if (conversationId) {
+            // Store only the user-authored text. Extracted attachment content stays in memory.
+            await startServerTurn(
+              conversationId,
+              currentSessionId,
+              userMsg.id,
+              typed || "Analyze the attached file(s)."
+            );
+          }
+        }
+
         const mentioned = inferProductsFromQuery(q);
         const scopedProductId = clampAgentProductId(
           mentioned.length === 1 && mentioned[0] !== "all"
@@ -511,9 +594,12 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       productId,
       searchScope,
       credentialedProducts,
+      authState.authenticated,
+      ensureServerConversation,
       logPanel,
       refreshSessions,
       setSelectedFilePath,
+      startServerTurn,
     ]
   );
 
