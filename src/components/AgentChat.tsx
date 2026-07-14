@@ -12,6 +12,7 @@ import {
 } from "./AgentProductAccess";
 import { useAgentChat } from "./agent-chat-state";
 import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
+import { degradedRetrievalNotice, evidenceLabel, progressLabel } from "@/lib/agent/answer-ux";
 import { getProduct, inferProductsFromQuery } from "@/lib/products/registry";
 
 const QUICK_STARTS = [
@@ -257,6 +258,8 @@ function AgentChatBody({
                     </div>
                   );
                 }
+                const evidence = evidenceLabel(msg.response.retrievalEvidence);
+                const retrievalNotice = degradedRetrievalNotice(msg.response.retrievalDegraded);
                 return (
                   <div key={msg.id} className="flex justify-start">
                     <div className="w-full max-w-full space-y-3 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
@@ -270,14 +273,21 @@ function AgentChatBody({
                             : msg.response.mode === "app"
                               ? "Built for you"
                               : "Answer"}
-                          {msg.response.confidence > 0
-                            ? ` · Best docs match ${Math.round(msg.response.confidence * 100)}%`
-                            : ""}
                         </span>
+                        {evidence ? (
+                          <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-200">
+                            {evidence}
+                          </span>
+                        ) : null}
                         {msg.response.productContext?.label ? (
                           <span className="text-[10px] text-zinc-400">{msg.response.productContext.label}</span>
                         ) : null}
                       </div>
+                      {retrievalNotice ? (
+                        <p className="rounded-lg border border-sky-200 bg-sky-50/70 px-3 py-2 text-xs text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-200">
+                          {retrievalNotice}
+                        </p>
+                      ) : null}
                       <div className="prose prose-sm max-w-none whitespace-pre-wrap dark:prose-invert">
                         {msg.content}
                       </div>
@@ -295,11 +305,14 @@ function AgentChatBody({
 
               {loading ? (
                 <div className="flex justify-start">
-                  <div className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
+                  <div
+                    aria-live="polite"
+                    className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60"
+                  >
                     <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs dark:bg-sky-950">
                       AI
                     </span>
-                    <span className="text-sm text-zinc-500">{intentLabel ?? "Working on it…"}</span>
+                    <span className="text-sm text-zinc-500">{progressLabel(intentLabel)}</span>
                   </div>
                 </div>
               ) : null}
