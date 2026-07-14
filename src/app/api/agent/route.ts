@@ -7,7 +7,7 @@ import { getAgentProductAccess } from "@/lib/documentation-credentials/access";
 import { runAgent } from "@/lib/agent/orchestrate";
 import type { AgentRequest } from "@/lib/agent/types";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
-import { OpenAiNotConfiguredError } from "@/lib/openai/client";
+import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
 
 export const runtime = "nodejs";
 // LLM-backed planning/edits can take 20-40s; Vercel's default function
@@ -53,7 +53,6 @@ export async function POST(req: Request) {
         { status: 503 }
       );
     }
-    const message = err instanceof Error ? err.message : "Agent request failed";
-    return Response.json({ error: message }, { status: 500 });
+    return Response.json({ error: sanitizeProviderError(err, "Agent request failed") }, { status: 500 });
   }
 }

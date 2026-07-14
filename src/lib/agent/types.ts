@@ -212,15 +212,31 @@ export interface AgentProductContext {
   label: string;
 }
 
+/** Coarse retrieval evidence, not a probability derived from similarity scores. */
+export type RetrievalEvidence =
+  | "strong_match"
+  | "partial_match"
+  | "limited_evidence"
+  | "no_verified_match";
+
+export type RetrievalMode = "hybrid" | "lexical" | "degraded_lexical";
+
 export interface AgentResponse {
   mode: AgentMode;
   workflow: string;
+  /** Legacy compatibility value derived from retrieval evidence or planning. */
   confidence: number;
   fallback: boolean;
   citations: AgentCitation[];
   steps: AgentStepResult[];
   questions?: string[];
   retrieval?: { slug: string; title: string; score: number }[];
+  /** User-visible coarse evidence classification for the documentation matches. */
+  retrievalEvidence?: RetrievalEvidence;
+  /** Whether both lexical and vector retrieval contributed to this answer. */
+  retrievalMode?: RetrievalMode;
+  /** Vector retrieval was attempted but unavailable or failed; lexical results remain. */
+  retrievalDegraded?: boolean;
   app?: AgentAppBlueprint;
   appDiff?: AgentAppDiff;
   appEdit?: boolean;

@@ -45,7 +45,10 @@ import {
 } from "./planner";
 import {
   confidenceFromScores,
+  evidenceFromScores,
+  fuseRankedResults,
   isLowConfidence,
+  retrievalStatus,
   retrieveLexical,
   retrieveWithEmbedding,
   scoredChunksByIds,
@@ -53,7 +56,7 @@ import {
   filterByProducts,
   boostEndpointMatches,
 } from "./retrieve";
-import { getPineconeConfig, queryPinecone } from "./pinecone";
+import { getPineconeConfig, queryPineconeWithStatus } from "./pinecone";
 import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./normalize-query";
 import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
 import { extractTagNameFromQuery } from "../workflow-step-context";
@@ -69,7 +72,11 @@ import type {
 import type { EndpointPage } from "../types";
 import { validatePlan } from "./validate";
 import { isLiveApiUiEnabled } from "../public-docs-mode";
-import { isOpenAiConfigured, OpenAiNotConfiguredError } from "../openai/client";
+import {
+  isOpenAiConfigured,
+  OpenAiNotConfiguredError,
+  sanitizeProviderError,
+} from "../openai/client";
 
 async function endpointSlugSetForProduct(productId: string): Promise<Set<string>> {
   const manifest = (await getProductManifest(productId)) ?? getManifest();
@@ -230,9 +237,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       const message =
         err instanceof OpenAiNotConfiguredError
           ? err.clientMessage
-          : err instanceof Error
-            ? err.message
-            : "App edit failed";
+          : sanitizeProviderError(err, "App edit failed");
       return {
         mode: "app",
         workflow: `Edit failed: ${message}`,
@@ -322,42 +327,61 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
   scored = scored.slice(0, topK);
 
-  // Preferred path: embed query, then retrieve from Pinecone. Falls back to the
-  // local hybrid/lexical index whenever creds are missing or any call fails, so
-  // tests, the SSG build, and offline dev keep working unchanged.
+  let vectorContributed = false;
+  let vectorFailed = false;
+
+  // Preferred path: embed query and fuse vector results with lexical results.
+  // RRF does not compare BM25 and vector score magnitudes, and never discards
+  // a strong local lexical match just because Pinecone returned a result.
   if (apiKeyConfigured) {
     try {
       const embedding = await embedQuery(retrievalQuery);
+      if (embedding.length === 0) {
+        vectorFailed = true;
+      }
       const pineconeCfg = getPineconeConfig();
-      let usedPinecone = false;
-      if (pineconeCfg) {
-        const matches = await queryPinecone(
+      if (embedding.length > 0 && pineconeCfg) {
+        const vectorResult = await queryPineconeWithStatus(
           embedding,
           topK,
           pineconeCfg,
           retrievalFilter === "all" ? undefined : retrievalFilter
         );
+        if (vectorResult.failed) vectorFailed = true;
         const fromPinecone = filterByProductScope(
-          scoredChunksByIds(matches, index),
+          scoredChunksByIds(vectorResult.matches, index),
           scope
         ).slice(0, topK);
         if (fromPinecone.length > 0) {
-          scored = fromPinecone;
-          usedPinecone = true;
+          scored = fuseRankedResults(scored, fromPinecone, topK);
+          vectorContributed = true;
+        } else if (vectorResult.matches.length > 0) {
+          // An index/document-version mismatch is not a trustworthy vector result.
+          vectorFailed = true;
         }
       }
-      if (!usedPinecone && index.hasEmbeddings) {
+      if (!vectorContributed && embedding.length > 0 && index.hasEmbeddings) {
         scored = filterByProductScope(
           retrieveWithEmbedding(retrievalQuery, index, embedding, topK * 2),
           scope
         ).slice(0, topK);
+        vectorContributed = true;
+      }
+      if (!vectorContributed && !pineconeCfg && !index.hasEmbeddings) {
+        vectorFailed = true;
       }
     } catch {
-      /* lexical only */
+      vectorFailed = true;
     }
   }
+  const { retrievalMode, retrievalDegraded } = retrievalStatus(
+    apiKeyConfigured,
+    vectorContributed,
+    vectorFailed
+  );
 
   const confidence = confidenceFromScores(scored);
+  const retrievalEvidence = evidenceFromScores(scored);
   const lowConfidence = isLowConfidence(scored);
 
   let plan: ReturnType<typeof planFromRetrieval> & { appTitle?: string };
@@ -463,7 +487,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const response: AgentResponse = {
     mode,
     workflow: workflowText,
-    confidence: plan.confidence ?? confidence,
+    confidence,
     fallback,
     citations: plan.citations.map((c) => ({
       ...c,
@@ -479,6 +503,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       label: scope.label,
     },
     simpleMode,
+    retrievalEvidence,
+    retrievalMode,
+    retrievalDegraded,
     retrieval: scored.slice(0, 5).map((c) => ({
       slug: c.slug,
       title: `[${c.productId ?? activeProductId}] ${c.title}`,

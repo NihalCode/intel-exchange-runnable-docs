@@ -18,6 +18,19 @@ export function isOpenAiConfigured(): boolean {
   return Boolean(process.env.OPENAI_API_KEY?.trim());
 }
 
+/**
+ * Provider responses can include request payloads, model identifiers, and
+ * diagnostic details. Keep those server-side and return a stable user message.
+ */
+export function sanitizeProviderError(error: unknown, fallback = "The AI service is unavailable."): string {
+  if (error instanceof OpenAiNotConfiguredError) return error.clientMessage;
+  const message = error instanceof Error ? error.message : "";
+  if (/openai|embedding|llm plan|api\.openai\.com|provider/i.test(message)) {
+    return "The AI service is temporarily unavailable. Please try again later.";
+  }
+  return fallback;
+}
+
 /** Server-side only — never return this value to the client. */
 export function requireOpenAiApiKey(): string {
   const apiKey = process.env.OPENAI_API_KEY?.trim();

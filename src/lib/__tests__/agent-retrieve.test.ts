@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { retrieveLexical, confidenceFromScores } from "../agent/retrieve";
-import type { AgentIndex } from "../agent/types";
+import {
+  confidenceFromScores,
+  evidenceFromScores,
+  fuseRankedResults,
+  retrieveLexical,
+  retrievalStatus,
+} from "../agent/retrieve";
+import type { AgentIndex, ScoredChunk } from "../agent/types";
 
 const FIXTURE: AgentIndex = {
   version: 1,
@@ -94,10 +100,46 @@ describe("retrieveLexical", () => {
 });
 
 describe("confidenceFromScores", () => {
-  it("returns top normalized score capped at 1", () => {
+  it("returns a conservative compatibility value", () => {
     const scored = retrieveLexical("import stix", FIXTURE, 1);
     const conf = confidenceFromScores(scored);
     expect(conf).toBeGreaterThan(0);
     expect(conf).toBeLessThanOrEqual(1);
+  });
+});
+
+describe("fuseRankedResults", () => {
+  it("keeps strong lexical matches when vector results disagree", () => {
+    const lexical = retrieveLexical("import stix bundle upload", FIXTURE, 2);
+    const semantic: ScoredChunk[] = [{
+      ...FIXTURE.chunks[2],
+      score: 0.99,
+      lexicalScore: 0,
+      semanticScore: 0.99,
+    }];
+
+    const fused = fuseRankedResults(lexical, semantic, 3);
+
+    expect(fused.map((chunk) => chunk.slug)).toContain("import-intel/import-intel");
+    expect(fused.map((chunk) => chunk.slug)).toContain("threat-data");
+  });
+});
+
+describe("retrieval evidence and status", () => {
+  it("uses coarse evidence labels instead of ranking scores", () => {
+    expect(evidenceFromScores([])).toBe("no_verified_match");
+    expect(evidenceFromScores(retrieveLexical("ping", FIXTURE, 1))).toBe("limited_evidence");
+    expect(evidenceFromScores(retrieveLexical("import stix bundle upload ping health", FIXTURE, 3))).toBe("strong_match");
+  });
+
+  it("marks lexical fallback as degraded after a vector failure", () => {
+    expect(retrievalStatus(true, false, true)).toEqual({
+      retrievalMode: "degraded_lexical",
+      retrievalDegraded: true,
+    });
+    expect(retrievalStatus(true, true, true)).toEqual({
+      retrievalMode: "hybrid",
+      retrievalDegraded: true,
+    });
   });
 });
