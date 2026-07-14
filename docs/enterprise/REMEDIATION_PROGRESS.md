@@ -24,6 +24,9 @@ This branch (`enterprise/phase-0-intake`) is intentionally unpushed.
   diagnostics.
 - **Phase 13 — API runner hardening:** restricted execution to approved product
   destinations and added DNS-aware SSRF protections with redirect validation.
+- **Phase 17 — AI evaluation fixtures:** started a versioned, deterministic
+  golden corpus for intent routing, product scope, retrieval UX mapping, and
+  LLM plan-contract rejection behavior.
 - **Phase 19 — CI quality gates:** added CI checks for secret scanning,
   zero-warning linting, type checking, tests, and production builds.
 
@@ -38,6 +41,6 @@ This branch (`enterprise/phase-0-intake`) is intentionally unpushed.
   rollout work.
 - **Accessibility needs a dedicated pass,** including keyboard navigation,
   focus management, labels, and automated a11y coverage.
-- **Evaluation gates are incomplete:** add representative retrieval/planning
-  evals and release thresholds before treating model changes as production
-  ready.
+- **Evaluation gates are incomplete:** regression fixtures have started, but
+  representative retrieval/planning evals and release thresholds are still
+  required before treating model changes as production ready.
