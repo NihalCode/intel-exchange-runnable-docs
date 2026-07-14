@@ -2,13 +2,13 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-describe("public documentation layouts", () => {
-  it("does not require a protected workspace on docs routes", () => {
+describe("Auth0-gated documentation layouts", () => {
+  it("requires a protected workspace on docs routes", () => {
     const layout = readFileSync(
       path.join(process.cwd(), "src/app/docs/layout.tsx"),
       "utf8"
     );
-    expect(layout).not.toContain("requireProtectedWorkspace");
+    expect(layout).toContain("requireProtectedWorkspace");
   });
 
   it("keeps agent, settings, and developer routes protected", () => {
