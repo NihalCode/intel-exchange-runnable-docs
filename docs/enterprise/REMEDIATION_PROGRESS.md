@@ -15,7 +15,9 @@ AI agent remains credential-gated per product after login.
 - Hybrid retrieval + degraded evidence UX + LLM plan contracts
 - API runner SSRF injectable DNS + destination checks
 - Focused a11y (skip link, landmarks, live regions, focus trap)
-- Phase 17 eval corpus started; CI workflow (lint/typecheck/test/build/secret-scan)
+- Phase 17 deterministic chat-accuracy corpus expanded (routing, product scope
+  and credential denials, evidence copy, LLM contract, exact lexical ranking);
+  CI workflow (lint/typecheck/test/build/secret-scan)
 
 ## Remaining / deferred
 
