@@ -109,6 +109,33 @@ describe("resolveAgentIntent — unified workspace", () => {
     expect(r.editExistingApp).toBe(true);
   });
 
+  it("edits a specifically named project file", () => {
+    const r = resolveAgentIntent("Change app/page.tsx to add a status filter", {
+      hasProjectFiles: true,
+    });
+    expect(r.intent).toBe("app_edit");
+  });
+
+  it("keeps API troubleshooting in workflow mode despite a loaded project", () => {
+    const r = resolveAgentIntent("I get a 404 exporting indicators after the upgrade. Fix this.", {
+      hasProjectFiles: true,
+    });
+    expect(r.intent).toBe("workflow");
+    expect(r.editExistingApp).toBe(false);
+  });
+
+  it("keeps CTIX documentation questions out of app routing", () => {
+    const r = resolveAgentIntent("What does CTIX indicator export do?", {
+      hasProjectFiles: true,
+    });
+    expect(r.intent).not.toBe("app_edit");
+    expect(r.intent).not.toBe("app_build");
+  });
+
+  it("does not treat a product use case alone as an app build", () => {
+    expect(resolveAgentIntent("phishing", { hasProjectFiles: false }).intent).not.toBe("app_build");
+  });
+
   it("still plans workflow for doc questions without edit signals", () => {
     const r = resolveAgentIntent("List threat data indicators with pagination", {
       hasProjectFiles: true,

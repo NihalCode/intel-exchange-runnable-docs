@@ -117,6 +117,13 @@ describe("generateAppBlueprint", () => {
     expect(app.files.some((f) => f.path === "README.md")).toBe(true);
   });
 
+  it("keeps Next.js build quality checks enabled", () => {
+    const app = generateAppBlueprint("build ping app", "Ping App", "desc", []);
+    const nextConfig = app.files.find((f) => f.path === "next.config.ts");
+    expect(nextConfig?.code).not.toContain("ignoreDuringBuilds");
+    expect(nextConfig?.code).not.toContain("ignoreBuildErrors");
+  });
+
   it("phishing app uses documented Quick Add Intel endpoint", () => {
     const app = generateAppBlueprint(
       "Build a phishing email analyzer",
