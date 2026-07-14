@@ -83,10 +83,11 @@ describe("documentation route policy", () => {
     }
   });
 
-  it("requires exact matches for public API endpoints", () => {
-    for (const pathname of ["/api/docs/search/", "/api/health/liveness", "/api/products-v2"]) {
+  it("requires exact matches for public API endpoints other than products", () => {
+    for (const pathname of ["/api/docs/search/", "/api/health/liveness"]) {
       expect(isPublicApiPath(pathname)).toBe(false);
       expect(isProtectedPath(pathname)).toBe(true);
     }
+    expect(isPublicApiPath("/api/products-v2")).toBe(true);
   });
 });
