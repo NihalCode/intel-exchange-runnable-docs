@@ -3,37 +3,14 @@ import { NextResponse } from "next/server";
 
 import { getAuth0 } from "@/lib/auth0";
 import {
+  isProtectedPath,
+  isPublicApiPath,
+  isPublicPagePath,
+} from "@/lib/documentation-auth/route-policy";
+import {
   getMiddlewareAuthUser,
   isMiddlewareAuthEnabled,
 } from "@/lib/documentation-auth/middleware-auth";
-
-const PUBLIC_PATHS = [
-  "/auth",
-  "/sign-in",
-  "/access",
-  "/invite",
-  "/post-login",
-];
-
-const PUBLIC_API_EXACT = [
-  "/api/auth/invite-check",
-  "/api/auth/session",
-  "/api/auth/me",
-  "/api/invites/validate",
-  "/api/health/live",
-  "/api/health/ready",
-];
-
-const PUBLIC_API_PREFIXES = ["/api/products"];
-
-function isPublicPath(pathname: string): boolean {
-  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
-
-function isPublicApiPath(pathname: string): boolean {
-  if (PUBLIC_API_EXACT.includes(pathname)) return true;
-  return PUBLIC_API_PREFIXES.some((p) => pathname === p || pathname.startsWith(p));
-}
 
 export function isPublicDocumentationApiPath(pathname: string): boolean {
   return isPublicApiPath(pathname);
@@ -41,11 +18,6 @@ export function isPublicDocumentationApiPath(pathname: string): boolean {
 
 export function isProtectedDocumentationPath(pathname: string): boolean {
   return isProtectedPath(pathname);
-}
-
-function isProtectedPath(pathname: string): boolean {
-  if (isPublicPath(pathname) || isPublicApiPath(pathname)) return false;
-  return true;
 }
 
 /** Preserve Auth0 session / transaction cookies on custom responses. */
@@ -99,7 +71,7 @@ export async function runDocumentationAuthProxy(
   const authResponse = await auth0.middleware(request);
   const { pathname } = request.nextUrl;
 
-  if (isPublicPath(pathname)) {
+  if (isPublicPagePath(pathname)) {
     return mergeAuthHeaders(NextResponse.next(), authResponse);
   }
 

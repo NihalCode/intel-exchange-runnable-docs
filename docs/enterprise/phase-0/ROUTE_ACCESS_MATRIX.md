@@ -1,16 +1,16 @@
 # Route Access Matrix (as-built → target)
 
-Source of truth today: `src/lib/documentation-auth/proxy-auth.ts` (`PUBLIC_PATHS` / `PUBLIC_API_*`) plus layout/API guards.
+Source of truth today: `src/lib/documentation-auth/route-policy.ts` plus layout/API guards.
 
-**Critical product-contract gap:** Public documentation pages (`/`, `/docs/**`, `/guides`, `/changelog`) are **not** on the public allowlist. With Auth0 enabled, nearly every page redirects unauthenticated users to `/sign-in`. `.env.example` currently documents this as intentional; the enterprise prompt requires the opposite for public docs.
+**Phase 2:** The public documentation allowlist now includes `/` (exactly), `/docs/**`, `/guides/**`, and `/changelog/**`. Authenticated application, credential, agent, and admin routes remain protected.
 
 Legend: **Current** = behavior on this branch with auth enabled. **Target** = Phase 2 contract.
 
 | Route | Kind | Current | Target | Permission / notes | CSRF | Rate limit | Cache | Audit |
 |---|---|---|---|---|---|---|---|---|
-| `/` | page | protected | **public** | product landing | n/a | none | public-ok | no |
-| `/docs`, `/docs/[product]`, `/docs/...` | page | protected | **public*** | *private docs exception TBD | n/a | none | public-ok | no |
-| `/guides`, `/changelog` | page | protected | **public** | curated content | n/a | none | public-ok | no |
+| `/` | page | **public (Phase 2 fixed)** | **public** | product landing | n/a | none | public-ok | no |
+| `/docs`, `/docs/[product]`, `/docs/...` | page | **public (Phase 2 fixed)** | **public*** | *private docs exception TBD | n/a | none | public-ok | no |
+| `/guides`, `/changelog` | page | **public (Phase 2 fixed)** | **public** | curated content | n/a | none | public-ok | no |
 | `/sign-in`, `/access/**`, `/invite`, `/post-login` | page | public | public | auth UX | n/a | none | no-store | no |
 | `/auth/**` | Auth0 | public (matcher skip) | public | SDK routes | SDK | Auth0 | no-store | Auth0 |
 | `/agent` | page | protected | protected | `ask_agent` + product creds | n/a | TBD | no-store | yes |
@@ -22,7 +22,7 @@ Legend: **Current** = behavior on this branch with auth enabled. **Target** = Ph
 | `/api/auth/session`, `/me`, `invite-check` | API | public | public / session | session probe | n/a | TBD | no-store | no |
 | `/api/invites/validate` | API | public | reassess | invite legacy | n/a | TBD | no-store | limited |
 | `/api/products`, `/api/products/[id]` | API | **public** | public metadata only | expose product catalog | n/a | TBD | short cache | no |
-| `/api/docs/search` | API | protected | **public** if flag on | search | n/a | yes | short | no |
+| `/api/docs/search` | API | **public (Phase 2 fixed)** | **public** | search | n/a | yes | short | no |
 | `/api/agent`, `/api/agent/**` | API | protected | protected | agent + side effects gated | yes | yes | no-store | yes |
 | `/api/run` | API | protected | protected + flag | `ENABLE_API_EXECUTION` | yes | yes | no-store | yes |
 | `/api/authentication/credentials` | API | protected | protected | encrypted product creds | yes | yes | no-store | yes |

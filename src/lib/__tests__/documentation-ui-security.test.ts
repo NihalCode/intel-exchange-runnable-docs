@@ -30,8 +30,11 @@ describe("documentation UI credential boundaries", () => {
     expect(agentPage).toContain("listValidCredentialProductIds");
   });
 
-  it("keeps every application area behind authentication", () => {
-    for (const route of ["/", "/docs/ctix", "/agent", "/authentication", "/changelog"]) {
+  it("allows public docs while protecting application areas", () => {
+    for (const route of ["/", "/docs/ctix", "/guides", "/changelog"]) {
+      expect(isProtectedDocumentationPath(route)).toBe(false);
+    }
+    for (const route of ["/agent", "/authentication", "/settings/profile", "/admin", "/developer"]) {
       expect(isProtectedDocumentationPath(route)).toBe(true);
     }
     expect(isProtectedDocumentationPath("/sign-in")).toBe(false);
