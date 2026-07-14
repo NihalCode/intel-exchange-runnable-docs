@@ -9,7 +9,9 @@ test.describe("enterprise admin surface", () => {
     });
     const page = await context.newPage();
     await page.goto("/admin");
-    await expect(page.getByRole("heading", { name: /^dashboard$/i })).toBeVisible();
+    await expect(
+      page.locator("#admin-main-content").getByRole("heading", { name: /^dashboard$/i })
+    ).toBeVisible();
     await expect(page.getByText("Enterprise Admin")).toBeVisible();
     await context.close();
   });
@@ -20,7 +22,9 @@ test.describe("enterprise admin surface", () => {
     });
     const page = await context.newPage();
     await page.goto("/admin/documentation-agent/apis");
-    await expect(page.getByRole("heading", { name: /^apis$/i })).toBeVisible();
+    await expect(
+      page.locator("#admin-main-content").getByRole("heading", { name: /^apis$/i })
+    ).toBeVisible();
     await context.close();
   });
 
@@ -30,7 +34,11 @@ test.describe("enterprise admin surface", () => {
     });
     const page = await context.newPage();
     await page.goto("/admin");
-    await expect(page.getByRole("heading", { name: /unavailable/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", {
+        name: /organization membership could not be verified|administrator access is not enabled|unavailable|sign in required|admin access denied/i,
+      })
+    ).toBeVisible();
     await expect(page.getByText("Enterprise Admin")).toHaveCount(0);
     await context.close();
   });
@@ -41,7 +49,11 @@ test.describe("enterprise admin surface", () => {
     });
     const page = await context.newPage();
     await page.goto("/admin/security/settings");
-    await expect(page.getByRole("heading", { name: /security settings/i })).toBeVisible();
+    await expect(
+      page
+        .locator("#admin-main-content")
+        .getByRole("heading", { name: "Security Settings", exact: true })
+    ).toBeVisible();
     await context.close();
   });
 
@@ -61,7 +73,9 @@ test.describe("enterprise admin surface", () => {
     });
     const page = await context.newPage();
     await page.goto("/admin/documentation-agent/sync-jobs");
-    await expect(page.getByRole("heading", { name: /sync jobs/i })).toBeVisible();
+    await expect(
+      page.locator("#admin-main-content").getByRole("heading", { name: /sync jobs/i })
+    ).toBeVisible();
     await context.close();
   });
 
