@@ -42,27 +42,32 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const products = useMemo(() => listProducts(), []);
-  const [productId, setProductIdState] = useState(DEFAULT_PRODUCT_ID);
+  const productFromRoute = productFromPath(pathname);
+  const [savedProductId, setSavedProductId] = useState(DEFAULT_PRODUCT_ID);
+  const productId = productFromRoute ?? savedProductId;
   const [searchScope, setSearchScope] = useState<"product" | "all">("product");
 
   useEffect(() => {
-    const fromPath = productFromPath(pathname);
-    if (fromPath) {
-      setProductIdState(fromPath);
-      return;
-    }
-    try {
-      const saved = window.localStorage.getItem(STORAGE_KEY);
-      if (saved && getProduct(saved)) setProductIdState(saved);
-    } catch {
-      /* ignore */
-    }
-  }, [pathname]);
+    if (productFromRoute) return;
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved && getProduct(saved)) setSavedProductId(saved);
+      } catch {
+        /* ignore */
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [productFromRoute]);
 
   const setProductId = useCallback(
     (id: string) => {
       if (!getProduct(id) && id !== ALL_PRODUCTS_ID) return;
-      setProductIdState(id === ALL_PRODUCTS_ID ? DEFAULT_PRODUCT_ID : id);
+      setSavedProductId(id === ALL_PRODUCTS_ID ? DEFAULT_PRODUCT_ID : id);
       try {
         window.localStorage.setItem(STORAGE_KEY, id === ALL_PRODUCTS_ID ? DEFAULT_PRODUCT_ID : id);
       } catch {

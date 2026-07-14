@@ -1,4 +1,4 @@
-import type { HttpMethod, KeyValue, ParamField, RunnableRequest } from "../types";
+import type { HttpMethod, ParamField, RunnableRequest } from "../types";
 
 export type AgentLanguage = "curl" | "javascript" | "python" | "java" | "go";
 

@@ -72,7 +72,6 @@ export function ApiConnectionPanel({
     authReady,
     authStatus,
     generateAuth,
-    credentialsConfigured,
   } = useRunSettings();
 
   const connected = hasProductCredentials(product.productId, getCredential);

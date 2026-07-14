@@ -12,6 +12,7 @@ export function isPlaceholderBase(baseUrl: string): boolean {
 
 /** Live API requests are never auto-simulated by hostname. */
 export function isPlaceholderRequestUrl(_url: string): boolean {
+  void _url;
   return false;
 }
 
@@ -36,7 +37,7 @@ export function buildDemoResponse(
 ): DemoProxyResult {
   const m = method.toUpperCase();
   let path = "/";
-  let queryParams: Record<string, string> = {};
+  const queryParams: Record<string, string> = {};
   try {
     const u = new URL(url);
     path = u.pathname;

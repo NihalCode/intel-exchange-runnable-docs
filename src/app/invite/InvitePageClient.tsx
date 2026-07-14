@@ -12,13 +12,14 @@ export default function InvitePageClient() {
     valid: boolean;
     email?: string;
     reason?: string;
-  }>({ loading: true, valid: false });
+  }>(() =>
+    token
+      ? { loading: true, valid: false }
+      : { loading: false, valid: false, reason: "missing_token" }
+  );
 
   useEffect(() => {
-    if (!token) {
-      setState({ loading: false, valid: false, reason: "missing_token" });
-      return;
-    }
+    if (!token) return;
     void (async () => {
       try {
         const res = await fetch(`/api/invites/validate?token=${encodeURIComponent(token)}`);

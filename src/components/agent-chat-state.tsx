@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { resolveAgentIntent } from "@/lib/agent/intent";
-import { inferProductFromQuery, inferProductsFromQuery } from "@/lib/products/registry";
+import { inferProductsFromQuery } from "@/lib/products/registry";
 import { clampAgentProductId, useAgentProductAccess } from "@/components/AgentProductAccess";
 import { useProduct } from "./ProductContext";
 import { blueprintFromVersion, getLatestVersion, getSavedApp } from "./AgentSavedAppsBar";
@@ -250,10 +250,17 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const store = loadWorkspaceStore();
-    setSessions(store.sessions);
-    const active = store.sessions.find((s) => s.id === store.activeSessionId) ?? store.sessions[0];
-    if (active) loadSessionIntoState(active);
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      const store = loadWorkspaceStore();
+      setSessions(store.sessions);
+      const session = store.sessions.find((s) => s.id === store.activeSessionId) ?? store.sessions[0];
+      if (session) loadSessionIntoState(session);
+    });
+    return () => {
+      active = false;
+    };
   }, [loadSessionIntoState]);
 
   const projectApp = useMemo(
@@ -506,6 +513,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
       credentialedProducts,
       logPanel,
       refreshSessions,
+      setSelectedFilePath,
     ]
   );
 
@@ -579,7 +587,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         refreshSessions();
       }
     },
-    [refreshSessions]
+    [refreshSessions, setSelectedFilePath]
   );
 
   const removeAttachment = useCallback((index: number) => {

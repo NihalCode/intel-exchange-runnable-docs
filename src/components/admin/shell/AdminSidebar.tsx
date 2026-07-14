@@ -45,7 +45,13 @@ export function AdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    setCollapsed(loadCollapsed());
+    let active = true;
+    queueMicrotask(() => {
+      if (active) setCollapsed(loadCollapsed());
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   const toggleGroup = useCallback((groupId: string) => {

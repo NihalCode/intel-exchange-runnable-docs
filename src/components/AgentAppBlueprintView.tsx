@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CodeBlock } from "./CodeBlock";
-import type { AgentAppBlueprint } from "@/lib/agent/types";
+import type { AgentAppBlueprint, AppBlueprintFile } from "@/lib/agent/types";
 import type { CodeSnippet } from "@/lib/types";
 import {
   hasDeploySettings,
@@ -27,6 +27,54 @@ interface DeployResult {
   warnings?: string[];
 }
 
+function FileButton({
+  file,
+  activePath,
+  onSelect,
+}: {
+  file: AppBlueprintFile;
+  activePath: string | null;
+  onSelect: (path: string) => void;
+}) {
+  const filename = file.path.split("/").pop() ?? file.path;
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(file.path)}
+      title={file.path}
+      className={`group flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-left text-[11px] transition ${
+        activePath === file.path
+          ? "bg-indigo-600 text-white"
+          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      }`}
+    >
+      <span className="truncate font-mono">{filename}</span>
+    </button>
+  );
+}
+
+function FileGroup({
+  label,
+  files,
+  activePath,
+  onSelect,
+}: {
+  label: string;
+  files: AppBlueprintFile[];
+  activePath: string | null;
+  onSelect: (path: string) => void;
+}) {
+  if (files.length === 0) return null;
+  return (
+    <div>
+      <div className="mb-0.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{label}</div>
+      {files.map((file) => (
+        <FileButton key={file.path} file={file} activePath={activePath} onSelect={onSelect} />
+      ))}
+    </div>
+  );
+}
+
 export function AgentDeployModal({
   app,
   onClose,
@@ -41,32 +89,27 @@ export function AgentDeployModal({
   }) => void;
 }) {
   const run = useRunSettings();
-  const [form, setForm] = useState<DeployState>(() => loadDeploySettings());
+  const [form, setForm] = useState<DeployState>(() => {
+    const saved = loadDeploySettings();
+    const next = {
+      vercelToken: saved.vercelToken,
+      baseUrl: saved.baseUrl || run.baseUrl,
+      accessId: saved.accessId || run.accessId,
+      secretKey: saved.secretKey || run.secretKey,
+    };
+    if (
+      next.baseUrl !== saved.baseUrl ||
+      next.accessId !== saved.accessId ||
+      next.secretKey !== saved.secretKey
+    ) {
+      saveDeploySettings(next);
+    }
+    return next;
+  });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<DeployResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const credentialsSaved = hasDeploySettings();
-
-  // Seed from RunSettings (Auth panel) when deploy memory is still empty
-  useEffect(() => {
-    setForm((prev) => {
-      const next = {
-        vercelToken: prev.vercelToken,
-        baseUrl: prev.baseUrl || run.baseUrl,
-        accessId: prev.accessId || run.accessId,
-        secretKey: prev.secretKey || run.secretKey,
-      };
-      if (
-        next.baseUrl !== prev.baseUrl ||
-        next.accessId !== prev.accessId ||
-        next.secretKey !== prev.secretKey
-      ) {
-        saveDeploySettings(next);
-      }
-      return next;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- seed once on open
-  }, []);
 
   function patchForm(patch: Partial<DeployState>) {
     setForm((prev) => {
@@ -321,34 +364,6 @@ export function AgentAppBlueprintView({
     docs: app.files.filter((f) => f.path === "README.md"),
   };
 
-  function FileButton({ file }: { file: typeof app.files[0] }) {
-    const filename = file.path.split("/").pop() ?? file.path;
-    return (
-      <button
-        type="button"
-        onClick={() => setActivePath(file.path)}
-        title={file.path}
-        className={`group flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-left text-[11px] transition ${
-          activePath === file.path
-            ? "bg-indigo-600 text-white"
-            : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
-        }`}
-      >
-        <span className="truncate font-mono">{filename}</span>
-      </button>
-    );
-  }
-
-  function FileGroup({ label, files }: { label: string; files: typeof app.files }) {
-    if (files.length === 0) return null;
-    return (
-      <div>
-        <div className="mb-0.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-zinc-400">{label}</div>
-        {files.map((f) => <FileButton key={f.path} file={f} />)}
-      </div>
-    );
-  }
-
   return (
     <>
       {showDeploy && (
@@ -419,11 +434,11 @@ export function AgentAppBlueprintView({
 
         <div className="flex flex-col gap-4 lg:flex-row">
           <nav className="flex shrink-0 flex-row flex-wrap gap-1 lg:w-52 lg:flex-col lg:flex-nowrap lg:overflow-visible">
-            <FileGroup label="Boilerplate" files={fileGroups.boilerplate} />
-            <FileGroup label="Cyware Client" files={fileGroups.client} />
-            <FileGroup label="API Routes" files={fileGroups.routes} />
-            <FileGroup label="Frontend" files={fileGroups.frontend} />
-            <FileGroup label="Docs" files={fileGroups.docs} />
+            <FileGroup label="Boilerplate" files={fileGroups.boilerplate} activePath={activePath} onSelect={setActivePath} />
+            <FileGroup label="Cyware Client" files={fileGroups.client} activePath={activePath} onSelect={setActivePath} />
+            <FileGroup label="API Routes" files={fileGroups.routes} activePath={activePath} onSelect={setActivePath} />
+            <FileGroup label="Frontend" files={fileGroups.frontend} activePath={activePath} onSelect={setActivePath} />
+            <FileGroup label="Docs" files={fileGroups.docs} activePath={activePath} onSelect={setActivePath} />
           </nav>
 
           <div className="min-w-0 flex-1">

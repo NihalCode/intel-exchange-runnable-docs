@@ -29,6 +29,7 @@ export async function POST(req: Request) {
     }
     // Ignore any client-supplied key — OpenAI is server-configured only.
     const { llmApiKey: _ignored, ...agentRequest } = body;
+    void _ignored;
 
     let allowedProductIds: string[] | undefined;
     if (isAuthEnabled() || process.env.NODE_ENV === "production") {

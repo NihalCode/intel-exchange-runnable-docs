@@ -83,7 +83,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
   }, []);
 
   useEffect(() => {
-    void refresh();
+    void Promise.resolve().then(refresh);
   }, [refresh]);
 
   useEffect(() => {

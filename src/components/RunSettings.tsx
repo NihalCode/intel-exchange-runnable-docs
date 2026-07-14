@@ -183,8 +183,15 @@ export function RunSettingsProvider({
       accessIdsRef.current = readAccessIds();
       secretsRef.current = readSecrets();
       const initial = urls[DEFAULT_PRODUCT_ID] ?? defaultBaseUrl;
-      setBaseUrlState(initial);
-      loadProductCredentials(DEFAULT_PRODUCT_ID);
+      let active = true;
+      queueMicrotask(() => {
+        if (!active) return;
+        setBaseUrlState(initial);
+        loadProductCredentials(DEFAULT_PRODUCT_ID);
+      });
+      return () => {
+        active = false;
+      };
     } catch {
       /* ignore */
     }
@@ -355,8 +362,17 @@ export function RunSettingsProvider({
     return null;
   }, [accessId, generateAuth, getCredential]);
 
-  const authReady = isOpenApiAuthFresh(getCredential);
-  const credentialsConfigured = hasProductCredentials(activeProductId, getCredential);
+  const stateCredential = useCallback(
+    (name: string) => {
+      const key = name.toLowerCase();
+      if (key === "accessid") return accessId.trim();
+      if (key === "secretkey") return secretKey;
+      return creds[key] ?? "";
+    },
+    [accessId, creds, secretKey]
+  );
+  const authReady = isOpenApiAuthFresh(stateCredential);
+  const credentialsConfigured = hasProductCredentials(activeProductId, stateCredential);
 
   const value = useMemo<RunSettings>(
     () => ({

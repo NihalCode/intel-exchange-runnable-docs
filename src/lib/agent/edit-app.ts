@@ -125,23 +125,6 @@ interface LlmEditJson {
   files?: { path?: string; code?: string }[];
 }
 
-
-function inferLanguage(path: string): string {
-  if (path.endsWith(".tsx")) return "typescript";
-  if (path.endsWith(".ts")) return "typescript";
-  if (path.endsWith(".css")) return "css";
-  if (path.endsWith(".json")) return "json";
-  if (path.endsWith(".md")) return "markdown";
-  return "typescript";
-}
-
-function describeFile(path: string): string {
-  if (path === "app/page.tsx") return "Frontend UI";
-  if (path.startsWith("app/api/")) return "API route";
-  if (path === "lib/cyware/client.ts") return "Cyware client";
-  return path;
-}
-
 const STYLING_KEYWORDS = /style|theme|color|dark|light|beautif|design|glassmorphism|ui|ux|layout|spacing|font|css|tailwind|gradient|padding|margin|border|card|button|responsive/i;
 
 function pickFilesForPrompt(

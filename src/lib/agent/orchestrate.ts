@@ -6,7 +6,7 @@ import {
   buildProductClarificationQuestions,
 } from "../documentation-credentials/access";
 import { baseUrlForProduct } from "../products/auth";
-import { DEFAULT_PRODUCT_ID, getProductOrThrow, inferProductFromQuery } from "../products/registry";
+import { getProductOrThrow, inferProductFromQuery } from "../products/registry";
 import { loadCombinedAgentIndex } from "../products/search";
 import { loadAgentIndex } from "./load-index";
 import { resolveProductScope, productScopeForFilter } from "./product-scope";
@@ -17,7 +17,7 @@ import { attachDiff, editAppWithLlm } from "./edit-app";
 import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
 import { embedQuery, planWithLlm } from "./llm";
-import { detectAgentMode, resolveAgentRun, isExplainQuery } from "./intent";
+import { resolveAgentRun, isExplainQuery } from "./intent";
 import { enrichWorkflowWithTemplate } from "./explain-simple";
 import {
   filterClarifyingQuestions,

@@ -211,11 +211,6 @@ function detectAppFeatures(blueprint: AgentAppBlueprint): { theme: boolean; uplo
   };
 }
 
-function rebuildGlobalsCss(blueprint: AgentAppBlueprint): string {
-  const features = detectAppFeatures(blueprint);
-  return phishingGlobalsCss({ theme: features.theme, uploadList: features.upload });
-}
-
 function patchThemeLayout(code: string): string | null {
   if (code.includes('data-theme="dark"')) return null;
   const next = code.replace(
