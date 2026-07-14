@@ -10,6 +10,7 @@ import {
 } from "@/lib/enterprise/admin-access";
 import { ENTERPRISE_PERMISSIONS } from "@/lib/enterprise/types";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
+import { listDocumentationFeatures } from "@/lib/documentation-features";
 
 export { metadata } from "./metadata";
 
@@ -45,6 +46,9 @@ export default async function AdminLayout({
       organizationId: orgContext.organization.id,
     })
   );
+  const enabledFeatures = (await listDocumentationFeatures(orgContext.organization.id))
+    .filter((feature) => feature.enabled)
+    .map((feature) => feature.key);
 
   return (
     <AdminLayoutClient
@@ -59,6 +63,7 @@ export default async function AdminLayout({
         role: orgContext.principal.role,
       }}
       capabilities={capabilities}
+      enabledFeatures={enabledFeatures}
     >
       <Suspense fallback={<LoadingSkeleton rows={8} />}>{children}</Suspense>
     </AdminLayoutClient>

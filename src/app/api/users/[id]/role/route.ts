@@ -4,6 +4,7 @@ import { logDocumentationAuthEvent } from "@/lib/documentation-auth/audit";
 import { isDocumentationRole } from "@/lib/documentation-auth/permissions";
 import { requirePermission } from "@/lib/documentation-auth/session";
 import { updateUserRole } from "@/lib/db/repository";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,8 @@ export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const csrfError = requireMutationCsrf(request);
+  if (csrfError) return csrfError;
   const session = await requirePermission("manage_users", request);
   if (session instanceof NextResponse) return session;
 

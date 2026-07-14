@@ -17,11 +17,11 @@
 | Chat persistence | agent workspace | **localStorage** | n/a | `workspace-client.ts` | 5 |
 | Saved apps | agent UI | **localStorage** | n/a | `saved-apps-client.ts` | 5, 12 |
 | Admin documentation control plane | `/admin/documentation-agent/**` | MIXED REAL/MOCK | role-gated | enterprise + mock-data | 4 |
-| Admin Support Agent | `/admin/support-agent/**` | **MOCK only** | nav always visible | `SupportAgentPages.tsx` | 4, 10 |
+| Admin Support Agent | `/admin/support-agent/**` | **MOCK only** | `support_agent` OFF | `SupportAgentPages.tsx` | 4, 10 |
 | Zendesk pipeline | none end-to-end | **NOT IMPLEMENTED** | hide/default-off | — | 10 |
 | User provisioning | `/api/users`, Users panel | REAL (Auth0 Mgmt) | Management API env | `auth0-management` | 3 |
 | Invite links | `/invite`, invite APIs | LEGACY still present | Resend optional | invite-gate | cleanup |
-| Secret vault | enterprise API keys | FAIL-OPEN stub if AWS SDK missing | vault provider selection | `vault-providers.ts` | 3 |
+| Secret vault | enterprise API keys | hash-only local mode; configured vault fails closed | vault provider selection | `vault-providers.ts` | 3 |
 | Feature flags UI | `/admin/.../features` | REAL DB flags | server-evaluated | `documentation-features` | 4 |
 
 ## Admin page classification (detail)
@@ -29,7 +29,7 @@
 See explore notes; summary:
 
 - **REAL:** APIs, schemas, users, authentication, features, sync-jobs, keys, logs, environments, change-requests, audit-logs, security settings, admin overview metrics (partial).
-- **MOCK:** Support Agent (all), documentation sources/webhooks/domains, rate-limits, security roles & service-accounts; Support health on overview placeholder.
+- **MOCK:** Support Agent (all), documentation sources/webhooks/domains, rate-limits, security roles & service-accounts.
 - **GATED:** deployments page when `vercel_deployment` on.
 
 ## Feature-flag defaults
@@ -44,5 +44,7 @@ From `src/lib/documentation-features/index.ts`:
 | `public_documentation_search` | ON |
 | `app_builder` | OFF |
 | `project_workspace`, `preview`, `vercel_deployment`, `git_commit`, `project_download`, `vercel_import`, `api_testing_console` | OFF |
+| `support_agent` | OFF — hides all Support Agent routes and navigation |
+| `placeholder_admin_modules` | OFF — hides incomplete admin modules and routes |
 
-**Gap:** Support Agent has **no** feature flag — mock UI is always in admin navigation.
+The Support Agent mock health row is not shown on the main admin overview.

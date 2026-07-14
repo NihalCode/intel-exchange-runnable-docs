@@ -39,8 +39,8 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const { capabilities } = useAdmin();
-  const groups = filterNavByCapabilities(capabilities);
+  const { capabilities, enabledFeatures } = useAdmin();
+  const groups = filterNavByCapabilities(capabilities, enabledFeatures);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [mobileOpen, setMobileOpen] = useState(false);
 

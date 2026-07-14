@@ -22,4 +22,11 @@ describe("documentation feature defaults", () => {
     }
     expect(DOCUMENTATION_FEATURE_KEYS).toContain("ai_documentation_assistant");
   });
+
+  it("keeps support and placeholder admin modules disabled by default", () => {
+    expect(DOCUMENTATION_FEATURE_KEYS).toContain("support_agent");
+    expect(DOCUMENTATION_FEATURE_KEYS).toContain("placeholder_admin_modules");
+    expect(defaultDocumentationFeatureEnabled("support_agent")).toBe(false);
+    expect(defaultDocumentationFeatureEnabled("placeholder_admin_modules")).toBe(false);
+  });
 });

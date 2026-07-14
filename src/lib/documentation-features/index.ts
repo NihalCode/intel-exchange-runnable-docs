@@ -3,36 +3,17 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 
 import { db, withOrganizationTransaction } from "@/lib/db/client";
+import {
+  defaultDocumentationFeatureEnabled,
+  DOCUMENTATION_FEATURE_KEYS,
+  type DocumentationFeatureKey,
+} from "@/lib/documentation-features/keys";
 
-export const DOCUMENTATION_FEATURE_KEYS = [
-  "ai_documentation_assistant",
-  "app_builder",
-  "project_workspace",
-  "preview",
-  "vercel_deployment",
-  "git_commit",
-  "project_download",
-  "vercel_import",
-  "api_testing_console",
-  "generated_code_examples",
-  "public_changelog",
-  "public_documentation_search",
-] as const;
-
-export type DocumentationFeatureKey = (typeof DOCUMENTATION_FEATURE_KEYS)[number];
-
-const DEFAULT_ENABLED = new Set<DocumentationFeatureKey>([
-  "ai_documentation_assistant",
-  "generated_code_examples",
-  "public_changelog",
-  "public_documentation_search",
-]);
-
-export function defaultDocumentationFeatureEnabled(
-  key: DocumentationFeatureKey
-): boolean {
-  return DEFAULT_ENABLED.has(key);
-}
+export {
+  defaultDocumentationFeatureEnabled,
+  DOCUMENTATION_FEATURE_KEYS,
+  type DocumentationFeatureKey,
+} from "@/lib/documentation-features/keys";
 
 export interface DocumentationFeatureFlag {
   key: DocumentationFeatureKey;

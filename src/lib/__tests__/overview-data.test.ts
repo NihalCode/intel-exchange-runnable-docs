@@ -132,10 +132,8 @@ describe("overview-data", () => {
       latencyMs: 18,
     });
     expect(health[1].name).toBe("Background job queue");
-    expect(health[3]).toMatchObject({
-      name: "Support agent gateway",
-      placeholder: true,
-    });
+    expect(health[2].name).toBe("Documentation sync worker");
+    expect(health).toHaveLength(3);
   });
 
   it("buildOverviewActivity maps audit events", () => {

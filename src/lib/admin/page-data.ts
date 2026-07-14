@@ -21,6 +21,10 @@ import {
 import { getSecuritySettings } from "@/lib/enterprise/security-settings";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
 import { ENTERPRISE_PERMISSIONS, type EnterprisePermission } from "@/lib/enterprise/types";
+import {
+  isDocumentationFeatureEnabled,
+  type DocumentationFeatureKey,
+} from "@/lib/documentation-features";
 
 export async function requireAdminPageContext() {
   const session = await getAppSession();
@@ -44,6 +48,13 @@ export function requirePermission(
   permission: EnterprisePermission
 ) {
   if (!capabilities.includes(permission)) notFound();
+}
+
+export async function requireAdminFeature(
+  organizationId: string,
+  key: DocumentationFeatureKey
+) {
+  if (!(await isDocumentationFeatureEnabled({ organizationId, key }))) notFound();
 }
 
 export async function loadDocsAgentResources(organizationId: string) {

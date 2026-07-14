@@ -11,7 +11,6 @@ import type {
   OverviewHealthService,
   OverviewMetric,
 } from "@/lib/admin/overview-data";
-import { OVERVIEW_NOTICE } from "@/lib/admin/overview-data";
 
 interface Props {
   metrics: OverviewMetric[];
@@ -29,10 +28,6 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
         title="Dashboard"
         description="Organization overview with control-plane health and recent activity."
       />
-
-      <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
-        {OVERVIEW_NOTICE}
-      </p>
 
       <section aria-labelledby="metrics-heading">
         <h2 id="metrics-heading" className="sr-only">
@@ -53,18 +48,12 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
           <p className="mt-1 text-xs text-zinc-500">Environment: {selectedEnvironment}</p>
           <div className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
             {health.map((service) => (
-              <div key={service.name}>
-                <HealthStatusRow
-                  name={service.name}
-                  status={service.status}
-                  latencyMs={service.latencyMs ?? undefined}
-                />
-                {service.placeholder ? (
-                  <p className="pb-2 pl-8 text-xs text-amber-700 dark:text-amber-300">
-                    Placeholder — integration not deployed
-                  </p>
-                ) : null}
-              </div>
+              <HealthStatusRow
+                key={service.name}
+                name={service.name}
+                status={service.status}
+                latencyMs={service.latencyMs ?? undefined}
+              />
             ))}
           </div>
         </section>
