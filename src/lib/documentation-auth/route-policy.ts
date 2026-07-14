@@ -35,7 +35,9 @@ export function isPublicPagePath(pathname: string): boolean {
 
 export function isPublicApiPath(pathname: string): boolean {
   if (PUBLIC_API_EXACT.includes(pathname)) return true;
-  return PUBLIC_API_PREFIXES.some((path) => pathname.startsWith(path));
+  return PUBLIC_API_PREFIXES.some((path) =>
+    matchesExactOrDescendant(pathname, path)
+  );
 }
 
 export function isProtectedPath(pathname: string): boolean {
