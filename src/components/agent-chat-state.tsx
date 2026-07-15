@@ -563,6 +563,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 
         const res = await fetch("/api/agent", {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             "X-Request-Id": requestId,
@@ -582,7 +583,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         const responseRequestId = res.headers.get("x-agent-request-id");
         if (responseRequestId) logPanel(`Agent request ${responseRequestId}`);
         const bodyText = await res.text();
-        let data: AgentResponse & { error?: string | { message?: string; code?: string } };
+        let data: AgentResponse & {
+          error?: string | { message?: string; code?: string };
+          code?: string;
+          signIn?: string;
+        };
         try {
           data = JSON.parse(bodyText);
         } catch {
@@ -592,6 +597,20 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
               : `Server error (${res.status}): ${bodyText.slice(0, 200) || res.statusText}. ` +
                   "If this is a timeout, try a shorter or more specific edit request."
           );
+        }
+        if (res.status === 401) {
+          const fallbackSignIn = `/sign-in?returnTo=${encodeURIComponent(
+            typeof window !== "undefined"
+              ? window.location.pathname + window.location.search
+              : "/agent"
+          )}`;
+          const signIn =
+            typeof data.signIn === "string" && data.signIn ? data.signIn : fallbackSignIn;
+          logPanel("Session expired — redirecting to sign in.");
+          if (typeof window !== "undefined") {
+            window.location.assign(signIn);
+          }
+          throw new Error("Your session has expired. Redirecting you to sign in…");
         }
         if (!res.ok) {
           const raw = data.error;

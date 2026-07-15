@@ -37,6 +37,52 @@ function isRedirectResponse(response: NextResponse): boolean {
   return response.status >= 300 && response.status < 400;
 }
 
+/**
+ * Build the sign-in URL for a request that was blocked by the auth gate.
+ * For API requests we prefer the referring page (the human-visible route the
+ * user is actually on) so the post-login redirect lands somewhere useful
+ * rather than on a JSON API path.
+ */
+export function signInUrlFor(request: NextRequest): string {
+  const referer = request.headers.get("referer");
+  let returnTo = request.nextUrl.pathname + request.nextUrl.search;
+  if (referer) {
+    try {
+      const refUrl = new URL(referer);
+      if (refUrl.origin === request.nextUrl.origin) {
+        returnTo = refUrl.pathname + refUrl.search;
+      }
+    } catch {
+      // Ignore malformed Referer headers and fall back to the request path.
+    }
+  }
+  const login = new URL("/sign-in", request.url);
+  login.searchParams.set("returnTo", returnTo);
+  return login.pathname + login.search;
+}
+
+/**
+ * 401 for protected API routes. Crucially this MERGES the Auth0 rolling-session
+ * cookies from the middleware response so a refreshed/rotated session cookie
+ * still reaches the client (allowing an immediate retry to succeed) and returns
+ * an actionable, machine-readable body instead of a bare "Unauthorized" so the
+ * client can redirect the user to sign in.
+ */
+export function unauthorizedApiResponse(
+  request: NextRequest,
+  authResponse: NextResponse
+): NextResponse {
+  const response = NextResponse.json(
+    {
+      error: "Session expired — sign in again",
+      code: "SESSION_EXPIRED",
+      signIn: signInUrlFor(request),
+    },
+    { status: 401 }
+  );
+  return mergeAuthHeaders(response, authResponse);
+}
+
 /** Continue the request while applying Auth0 rolling-session cookies to the response. */
 export function continueWithAuthHeaders(
   request: NextRequest,
@@ -88,7 +134,7 @@ export async function runDocumentationAuthProxy(
       return mergeAuthHeaders(NextResponse.next(), authResponse);
     }
     if (!authUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return unauthorizedApiResponse(request, authResponse);
     }
     return continueWithAuthHeaders(request, authResponse);
   }

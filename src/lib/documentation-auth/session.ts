@@ -421,7 +421,14 @@ export async function requireSession(
     );
   }
 
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  return NextResponse.json(
+    {
+      error: "Session expired — sign in again",
+      code: "SESSION_EXPIRED",
+      signIn: "/sign-in",
+    },
+    { status: 401 }
+  );
 }
 
 export async function requirePermission(
