@@ -24,7 +24,9 @@
     "ingest:all": "node scripts/ingest.mjs --product=ctix && node scripts/ingest.mjs --product=csap && node scripts/ingest.mjs --product=orchestrate && node scripts/ingest.mjs --product=cftr",
     "auth:diagnose": "tsx scripts/diagnose-auth.ts",
     "security:scan-secrets": "node scripts/security/scan-secrets.mjs",
-    "archive:check": "node scripts/security/check-archive.mjs"
+    "archive:check": "node scripts/security/check-archive.mjs",
+    "health:scan": "node scripts/health/analyze.mjs",
+    "health:check": "node scripts/health/analyze.mjs --check"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.24.0",

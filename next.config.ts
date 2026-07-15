@@ -11,7 +11,24 @@ const nextConfig: NextConfig = {
     "/api/developer/postman": ["./scripts/**/*"],
   },
   async headers() {
+    // Baseline defense-in-depth applied to every response. We deliberately do
+    // NOT set default-src/script-src/style-src/connect-src here: the app loads
+    // Pyodide from a CDN and Google Fonts, and the App Router emits inline
+    // hydration + theme scripts that a nonce-less strict CSP would break under
+    // SSG. The directives below add clickjacking, <base>, and plugin/object
+    // protection with zero behavioral risk. frame-ancestors supersedes
+    // X-Frame-Options in modern browsers.
+    const baselineCsp =
+      "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'";
     return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Content-Security-Policy", value: baselineCsp },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
       {
         source: "/admin/:path*",
         headers: [
