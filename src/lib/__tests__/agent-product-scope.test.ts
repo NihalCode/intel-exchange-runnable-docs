@@ -118,16 +118,16 @@ describe("enforceListIndicatorsPlan", () => {
   const TEST_QUERY =
     "I'm not technical. In CTIX, how do I get a list of threat indicators from the last 7 days? Tell me step by step what to ask for, what settings I need, and show me example code I could give to my IT team — in plain English.";
 
-  it("uses non-technical template for CTIX last-7-days indicators", () => {
+  it("returns brief intro at plan time (essay template applied later in orchestrate)", () => {
     const plan = enforceListIndicatorsPlan(
       { workflow: "", confidence: 0.2, steps: [], citations: [] },
       TEST_QUERY,
       []
     );
     expect(plan.questions).toBeUndefined();
-    expect(plan.workflow).toMatch(/What you're trying to do/i);
+    expect(plan.workflow).toMatch(/Get Threat Data List/i);
     expect(plan.workflow).toMatch(/ingestion\/threat-data\/list/i);
-    expect(plan.workflow).toMatch(/Example cURL/i);
+    expect(plan.workflow).not.toMatch(/Example cURL/i);
     expect(plan.workflow).not.toMatch(/report id/i);
     expect(plan.workflow).not.toMatch(/recipient/i);
     expect(plan.steps[0]?.slug).toBe("threat-data/list-threat-data");

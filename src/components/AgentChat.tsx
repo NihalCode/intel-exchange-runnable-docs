@@ -11,6 +11,7 @@ import {
   quickStartsForProducts,
 } from "./AgentProductAccess";
 import { useAgentChat } from "./agent-chat-state";
+import { Markdown } from "./Markdown";
 import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
 import { degradedRetrievalNotice, evidenceLabel, progressLabel } from "@/lib/agent/answer-ux";
 import { getProduct, inferProductsFromQuery } from "@/lib/products/registry";
@@ -305,8 +306,8 @@ function AgentChatBody({
                           {retrievalNotice}
                         </p>
                       ) : null}
-                      <div className="prose prose-sm max-w-none whitespace-pre-wrap dark:prose-invert">
-                        {msg.content}
+                      <div className="prose prose-sm max-w-none dark:prose-invert">
+                        <Markdown>{msg.content}</Markdown>
                       </div>
                       <AgentMessageView
                         response={msg.response}

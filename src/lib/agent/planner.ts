@@ -1,9 +1,6 @@
 import type { AgentCitation, AgentPlan, AgentPlanStep, ScoredChunk } from "./types";
 import { parseDateRangeFromQuery } from "./date-range";
-import {
-  buildCtixListIndicatorsAnswer,
-  shouldUseCtixListIndicatorsTemplate,
-} from "./non-technical";
+import { shouldUseCtixListIndicatorsTemplate } from "./non-technical";
 import {
   apiBaseUrlHint,
   getProductOrThrow,
@@ -727,23 +724,10 @@ export function enforceListIndicatorsPlan(
     },
   };
 
-  const useTemplate =
-    shouldUseCtixListIndicatorsTemplate(query, "ctix") || /\bnot\s+technical\b/i.test(query);
-
-  const workflow = useTemplate
-    ? buildCtixListIndicatorsAnswer({
-        query,
-        productId: "ctix",
-        dateRange,
-        steps: [],
-        scripts: undefined,
-      })
-    : intro;
-
   return {
     ...plan,
     confidence: Math.max(plan.confidence, 0.92),
-    workflow,
+    workflow: intro,
     steps: [{ ...stepWithParams, order: 1 }],
     citations,
     questions: undefined,

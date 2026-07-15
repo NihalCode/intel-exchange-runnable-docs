@@ -18,13 +18,12 @@ export function isNonTechnicalQuery(query: string): boolean {
   );
 }
 
-/** User wants handoff-ready code for IT/API team. */
+/** User wants handoff-ready guidance for IT/API team (not a generic code snippet ask). */
 export function isHandoffQuery(query: string): boolean {
   return (
-    isNonTechnicalQuery(query) ||
-    /\b(it team|api team|my team|developer|dev team)\b/i.test(query) ||
-    /\bhand\s*off\b/i.test(query) ||
-    /\bgive (me )?(example )?code\b/i.test(query)
+    /\b(for my )?(it team|api team|dev(?:eloper)? team)\b/i.test(query) ||
+    /\bhand\s*(?:this\s*)?off\b/i.test(query) ||
+    /\bshare (?:this )?with (?:my )?(?:team|developer)/i.test(query)
   );
 }
 
@@ -221,9 +220,9 @@ export function buildProductContextLabel(
   return `Using: ${names} from the selected product dropdown`;
 }
 
-/** Default simple mode: non-technical phrasing or no technical jargon requested. */
+/** Plain-English UI hint — only when the user explicitly asked for non-technical wording. */
 export function defaultSimpleMode(query: string): boolean {
-  return isNonTechnicalQuery(query) || isHandoffQuery(query);
+  return isNonTechnicalQuery(query);
 }
 
 export function softenDocsModeNote(): string {

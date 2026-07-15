@@ -18,6 +18,7 @@ import { repairBlueprint } from "./repair-app";
 import { generateStepCode } from "./codegen";
 import { embedQuery, planWithLlm } from "./llm";
 import { resolveAgentRun, isExplainQuery } from "./intent";
+import { isNonTechnicalQuery } from "./non-technical";
 import { enrichWorkflowWithTemplate } from "./explain-simple";
 import {
   filterClarifyingQuestions,
@@ -26,6 +27,13 @@ import {
   buildCtixListIndicatorsAnswer,
   shouldUseCtixListIndicatorsTemplate,
 } from "./non-technical";
+import {
+  classifyResponseStyle,
+  polishWorkflowProse,
+  shouldAttachWorkflowScripts,
+  shouldUseEssayTemplates,
+  styleLanguageToAgentLanguage,
+} from "./response-style";
 import { parseDateRangeFromQuery } from "./date-range";
 import {
   planAppFromRetrieval,
@@ -325,6 +333,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   }
 
   const activeProductId = scope.primaryProductId;
+  const responseStyle = classifyResponseStyle(query);
+  const isNonTech = isNonTechnicalQuery(query);
+  const essayMode = shouldUseEssayTemplates(responseStyle, isNonTech, query);
   const simpleMode = defaultSimpleMode(query);
   const retrievalFilter = productScopeForFilter(scope);
 
@@ -355,7 +366,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     index = await loadAgentIndex();
   }
 
-  const language = req.language ?? "python";
+  const language =
+    responseStyle.snippet.requested && responseStyle.snippet.language
+      ? styleLanguageToAgentLanguage(responseStyle.snippet.language)
+      : (req.language ?? "python");
   const productManifest = (await getProductManifest(activeProductId)) ?? getManifest();
   const baseUrl = baseUrlForProduct(activeProductId);
   const productLabel = getProductOrThrow(activeProductId).displayLabel;
@@ -452,7 +466,10 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     plan = planAppFromRetrieval(query, scored, confidence);
   } else if (apiKeyConfigured && !lowConfidence) {
     try {
-      plan = await planWithLlm(query, scored, req.history, activeProductId, simpleMode);
+      plan = await planWithLlm(query, scored, req.history, activeProductId, {
+        essayMode,
+        plainEnglish: isNonTech && !essayMode,
+      });
     } catch {
       plan = planFromRetrieval(query, scored, confidence, activeProductId);
     }
@@ -576,6 +593,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       label: scope.label,
     },
     simpleMode,
+    responseStyle,
     retrievalEvidence,
     retrievalMode,
     retrievalDegraded,
@@ -591,20 +609,30 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     response.app = generateAppBlueprint(query, title, plan.workflow, stepResults);
   }
 
-  if (mode === "workflow" && stepResults.length > 0) {
+  const attachScripts =
+    mode === "workflow" &&
+    stepResults.length > 0 &&
+    (shouldAttachWorkflowScripts(responseStyle) || responseStyle.mode === "snippet");
+
+  if (attachScripts) {
+    const scriptLangs: ("python" | "javascript")[] =
+      responseStyle.snippet.language === "javascript" || responseStyle.snippet.language === "typescript"
+        ? ["javascript", "python"]
+        : ["python", "javascript"];
     response.scripts = buildWorkflowScripts(
       stepResults,
       baseUrl,
       plan.appTitle ?? appTitleFromQuery(query),
-      ["python", "javascript"],
+      scriptLangs,
       activeProductId
     );
   }
 
-  if (isExplainQuery(query) || simpleMode) {
-    response.workflow = enrichWorkflowWithTemplate(response, query);
+  if (essayMode && isExplainQuery(query)) {
+    response.workflow = enrichWorkflowWithTemplate(response, query, true);
   } else if (
     mode === "workflow" &&
+    essayMode &&
     shouldUseCtixListIndicatorsTemplate(query, activeProductId) &&
     stepResults.length > 0 &&
     !response.workflow.includes("## What you're trying to do")
@@ -616,6 +644,19 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       steps: stepResults,
       scripts: response.scripts,
     });
+  } else if (essayMode && isNonTech) {
+    response.workflow = enrichWorkflowWithTemplate(response, query, true);
+  }
+
+  const showStructuredCode =
+    attachScripts || (responseStyle.showTechnicalDetails && stepResults.length > 0);
+
+  response.workflow = polishWorkflowProse(response.workflow, responseStyle, {
+    stripCodeFences: showStructuredCode,
+  });
+
+  if (!attachScripts) {
+    delete response.scripts;
   }
 
   return response;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AgentAppBlueprintView } from "./AgentAppBlueprintView";
 import { AgentAppDiffView } from "./AgentAppDiffView";
 import { AgentWorkflowScript } from "./AgentWorkflowScript";
@@ -8,6 +8,19 @@ import { AgentWorkflowStep } from "./AgentWorkflowStep";
 import { shouldShowLowConfidenceBanner } from "@/lib/agent/answer-ux";
 import type { AgentLanguage, AgentResponse } from "@/lib/agent/types";
 import { setWorkflowTagName } from "@/lib/workflow-step-context";
+
+function shouldShowStepsByDefault(response: AgentResponse): boolean {
+  const style = response.responseStyle;
+  if (style?.showTechnicalDetails) return true;
+  if (style?.mode === "detailed" || style?.mode === "troubleshooting") return true;
+  return false;
+}
+
+function shouldShowScriptsByDefault(response: AgentResponse): boolean {
+  const style = response.responseStyle;
+  if (!style?.includeCode || !response.scripts?.length) return false;
+  return style.mode === "snippet" || style.snippet.required;
+}
 
 export function AgentMessageView({
   response,
@@ -27,6 +40,15 @@ export function AgentMessageView({
   /** Hide full file browser when the workspace project panel shows files. */
   compactAppFiles?: boolean;
 }) {
+  const [showSteps, setShowSteps] = useState(() => shouldShowStepsByDefault(response));
+  const [showScripts, setShowScripts] = useState(() => shouldShowScriptsByDefault(response));
+
+  const style = response.responseStyle;
+  const hasSteps = response.steps.length > 0;
+  const hasScripts =
+    response.mode === "workflow" && (response.scripts?.length ?? 0) > 0 && style?.includeCode !== false;
+  const allowScripts = hasScripts && (style?.includeCode || style?.mode === "snippet");
+
   const tagName = useMemo(() => {
     if (response.tagName?.trim()) return response.tagName.trim();
     for (const s of response.steps) {
@@ -91,26 +113,51 @@ export function AgentMessageView({
         <p className="text-[10px] text-zinc-400">Plain-English mode — ask to “show technical details” for more depth.</p>
       ) : null}
 
-      {response.steps.length > 1 ? (
-        <div className="rounded-lg border border-sky-300/50 bg-sky-50/40 px-3 py-2 text-xs dark:border-sky-900 dark:bg-sky-950/30">
-          <strong className="text-sky-900 dark:text-sky-200">Next steps:</strong>{" "}
-          Follow steps 1 → {response.steps.length} in order. Example code uses placeholders like{" "}
-          <code className="font-mono">&lt;BASE_URL&gt;</code> — a developer adds real credentials.
-        </div>
+      {hasSteps && !showSteps ? (
+        <button
+          type="button"
+          onClick={() => setShowSteps(true)}
+          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-sky-800 dark:hover:bg-sky-950/30"
+        >
+          Show API details
+          {response.steps.length > 1 ? ` (${response.steps.length} steps)` : ""}
+        </button>
       ) : null}
 
-      {response.steps.map((step) => (
-        <AgentWorkflowStep
-          key={`${step.order}-${step.slug}`}
-          step={step}
-          language={language}
-          totalSteps={response.steps.length}
-          workflowId={workflowId}
-        />
-      ))}
+      {showSteps && hasSteps ? (
+        <>
+          {response.steps.length > 1 ? (
+            <div className="rounded-lg border border-sky-300/50 bg-sky-50/40 px-3 py-2 text-xs dark:border-sky-900 dark:bg-sky-950/30">
+              <strong className="text-sky-900 dark:text-sky-200">Next steps:</strong>{" "}
+              Follow steps 1 → {response.steps.length} in order. Example code uses placeholders like{" "}
+              <code className="font-mono">&lt;BASE_URL&gt;</code> — a developer adds real credentials.
+            </div>
+          ) : null}
 
-      {response.mode === "workflow" && response.scripts && response.scripts.length > 0 ? (
-        <AgentWorkflowScript scripts={response.scripts} />
+          {response.steps.map((step) => (
+            <AgentWorkflowStep
+              key={`${step.order}-${step.slug}`}
+              step={step}
+              language={language}
+              totalSteps={response.steps.length}
+              workflowId={workflowId}
+            />
+          ))}
+        </>
+      ) : null}
+
+      {allowScripts && !showScripts ? (
+        <button
+          type="button"
+          onClick={() => setShowScripts(true)}
+          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-sky-800 dark:hover:bg-sky-950/30"
+        >
+          Show example code
+        </button>
+      ) : null}
+
+      {showScripts && allowScripts ? (
+        <AgentWorkflowScript scripts={response.scripts!} />
       ) : null}
 
       {response.citations.length > 0 ? (

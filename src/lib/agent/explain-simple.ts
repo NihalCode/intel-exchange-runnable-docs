@@ -56,13 +56,18 @@ export function appendSimpleExplanation(response: AgentResponse, query: string):
 }
 
 /**
- * Enrich workflow text for non-technical users.
- * CTIX list-indicators queries get the full A–G template; others get the simple-terms appendix.
+ * Enrich workflow text for non-technical users or IT handoff.
+ * CTIX list-indicators queries get the full A–G template only when essay mode applies.
  */
-export function enrichWorkflowWithTemplate(response: AgentResponse, query: string): string {
+export function enrichWorkflowWithTemplate(
+  response: AgentResponse,
+  query: string,
+  essayMode = true
+): string {
   const productId = response.productContext?.products[0]?.id ?? "ctix";
 
   if (
+    essayMode &&
     response.mode === "workflow" &&
     shouldUseCtixListIndicatorsTemplate(query, productId) &&
     response.steps.length > 0 &&
@@ -78,6 +83,10 @@ export function enrichWorkflowWithTemplate(response: AgentResponse, query: strin
   }
 
   if (response.workflow.includes("## What you're trying to do")) {
+    return response.workflow;
+  }
+
+  if (!essayMode) {
     return response.workflow;
   }
 

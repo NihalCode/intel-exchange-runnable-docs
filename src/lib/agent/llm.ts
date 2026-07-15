@@ -14,11 +14,11 @@ To create a tag, use slug tags/create-tag (POST ingestion/tags/, body name + col
 Do NOT use tag-groups, Create Tag Group, or ingestion/tags/bulk-actions for listing tags.`;
 
 const NON_TECH_RULES = `
-NON-TECHNICAL USERS (default when query says "not technical", "plain English", "step by step", or "IT team"):
+PLAIN-ENGLISH / IT HANDOFF (only when essay mode is active):
 - Structure workflow markdown with clear headings: What you're trying to do, Use this endpoint, Ask your IT team for, Step-by-step, Example code, What the result means, Common mistakes, Next steps.
 - Use simple words. Explain jargon immediately (e.g. "CQL filter" → "a filter that tells CTIX what records to return").
-- Always include at least one cURL example with placeholders: <BASE_URL>, <ACCESS_ID>, <SIGNATURE>, <EXPIRES>. Never real credentials.
-- Include JavaScript fetch when user asks for code or IT handoff.
+- Include cURL with placeholders (<BASE_URL>, <ACCESS_ID>, <SIGNATURE>, <EXPIRES>) only when the user asked for code or IT handoff.
+- Never use real credentials.
 
 CLARIFYING QUESTIONS — STRICT RULES:
 - Ask at most 2 questions, ONLY when a required parameter cannot be inferred.
@@ -35,16 +35,27 @@ LISTING CTIX INDICATORS:
 - Use slug threat-data/list-threat-data (POST ingestion/threat-data/list/) — NOT report endpoints, NOT email endpoints.
 `;
 
+const PLAIN_ENGLISH_BRIEF = `
+The user prefers plain English. Answer directly in 1–3 short paragraphs or a brief bullet list.
+Do NOT use long A–G essay sections. Do NOT include code blocks unless the user explicitly asked for a snippet or example.
+Use simple words; explain jargon in parentheses once.
+`;
+
 function docsUrlForProduct(productId: string, slug: string): string {
   return productId === "ctix" ? `/docs/${slug}` : `/docs/${productId}/${slug}`;
 }
 
-function systemPromptForProduct(productId: string, simpleMode: boolean): string {
+function systemPromptForProduct(
+  productId: string,
+  opts: { essayMode?: boolean; plainEnglish?: boolean } = {}
+): string {
   const product = getProductOrThrow(productId);
   const extra = productId === "ctix" ? `\n${CTIX_TAG_RULES}` : "";
-  const tone = simpleMode
-    ? `\nThe user wants PLAIN ENGLISH guidance.${NON_TECH_RULES}`
-    : `\nProvide technical detail when helpful, but still use placeholders in all code.`;
+  const tone = opts.essayMode
+    ? `\nThe user wants PLAIN ENGLISH / IT handoff guidance.${NON_TECH_RULES}`
+    : opts.plainEnglish
+      ? PLAIN_ENGLISH_BRIEF
+      : `\nAnswer conversationally: lead with the direct answer, then optional brief bullets. Use placeholders in any code. Do not dump long doc sections or unsolicited code examples.`;
 
   return (
     `You are a Cyware API documentation assistant for **${product.displayLabel}**.\n` +
@@ -80,11 +91,11 @@ export async function planWithLlm(
   chunks: ScoredChunk[],
   history?: { role: "user" | "assistant"; content: string }[],
   productId = "ctix",
-  simpleMode = false
+  llmStyle: { essayMode?: boolean; plainEnglish?: boolean } = {}
 ): Promise<AgentPlan> {
   const allowedSlugs = [...new Set(chunks.map((c) => c.slug))];
   const context = formatTrimmedContext(chunks, query, 8);
-  const system = systemPromptForProduct(productId, simpleMode);
+  const system = systemPromptForProduct(productId, llmStyle);
 
   const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
     { role: "system", content: system },

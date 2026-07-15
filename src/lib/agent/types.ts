@@ -221,6 +221,8 @@ export type RetrievalEvidence =
 
 export type RetrievalMode = "hybrid" | "lexical" | "degraded_lexical";
 
+import type { ResponseStyleDecision } from "./response-style";
+
 /**
  * Public response assembled from validated documentation data. Raw model JSON
  * must pass the versioned LLM plan contract before it can contribute here.
@@ -254,6 +256,8 @@ export interface AgentResponse {
   productContext?: AgentProductContext;
   /** Plain-English default formatting applied. */
   simpleMode?: boolean;
+  /** Presentation depth / snippet gating for chat UI. */
+  responseStyle?: ResponseStyleDecision;
   /** Machine-readable status for credential or feature gating. */
   code?: string;
   /** Products the user may access in the agent for this session. */
