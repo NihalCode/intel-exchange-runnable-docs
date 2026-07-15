@@ -1,5 +1,7 @@
 import "server-only";
 
+import { randomBytes } from "node:crypto";
+
 import { getAppBaseUrl } from "@/lib/documentation-auth/env";
 import {
   Auth0ProvisioningError,
@@ -128,6 +130,80 @@ async function resolveConnectionId(token: string, connectionName: string): Promi
   return match?.id ?? null;
 }
 
+function generateTemporaryPassword(): string {
+  // Satisfy typical Auth0 database connection policies; never shown to admins.
+  return `${randomBytes(24).toString("base64url")}Aa1!`;
+}
+
+async function createDatabaseUser(input: {
+  email: string;
+  displayName?: string | null;
+  token: string;
+}): Promise<{ user: Auth0User; created: boolean }> {
+  const cfg = config();
+  const createResponse = await auth0Request("/users", input.token, {
+    method: "POST",
+    body: JSON.stringify({
+      connection: cfg.connection,
+      email: input.email,
+      name: input.displayName || undefined,
+      password: generateTemporaryPassword(),
+      email_verified: false,
+      verify_email: true,
+    }),
+  });
+
+  if (createResponse.ok) {
+    return {
+      user: (await createResponse.json()) as Auth0User,
+      created: true,
+    };
+  }
+  if (createResponse.status === 409) {
+    const existing = await findByEmail(input.email, input.token);
+    if (existing?.user_id) return { user: existing, created: false };
+  }
+  throw new Auth0ProvisioningError(
+    "AUTH0_USER_PROVISIONING_FAILED",
+    await readAuth0Failure(createResponse)
+  );
+}
+
+async function sendPasswordSetupTicket(
+  userId: string,
+  token: string
+): Promise<boolean> {
+  const ticket = await auth0Request("/tickets/password-change", token, {
+    method: "POST",
+    body: JSON.stringify({
+      user_id: userId,
+      result_url: `${getAppBaseUrl()}/auth/login`,
+      mark_email_as_verified: false,
+      ttl_sec: 7 * 24 * 60 * 60,
+    }),
+  });
+  return ticket.ok;
+}
+
+async function addOrganizationMember(input: {
+  auth0OrganizationId: string;
+  userId: string;
+  token: string;
+}): Promise<void> {
+  if (isProvisionalAuth0UserId(input.userId)) return;
+  const membership = await auth0Request(
+    `/organizations/${encodeURIComponent(input.auth0OrganizationId)}/members`,
+    input.token,
+    { method: "POST", body: JSON.stringify({ members: [input.userId] }) }
+  );
+  if (!membership.ok && membership.status !== 409) {
+    throw new Auth0ProvisioningError(
+      "AUTH0_ORGANIZATION_MEMBERSHIP_FAILED",
+      await readAuth0Failure(membership)
+    );
+  }
+}
+
 async function provisionViaOrganizationInvitation(input: {
   email: string;
   displayName?: string | null;
@@ -189,84 +265,46 @@ export async function provisionAuth0User(input: {
   displayName?: string | null;
   auth0OrganizationId?: string | null;
 }): Promise<{ user: Auth0User; created: boolean; setupStatus: string }> {
-  const cfg = config();
   const token = await managementToken();
-  let user: Auth0User | null = null;
-  let created = false;
 
-  const createResponse = await auth0Request("/users", token, {
-    method: "POST",
-    body: JSON.stringify({
-      connection: cfg.connection,
-      email: input.email,
-      name: input.displayName || undefined,
-      email_verified: false,
-      verify_email: true,
-    }),
-  });
-
-  if (createResponse.ok) {
-    user = (await createResponse.json()) as Auth0User;
-    created = true;
-  } else if (createResponse.status === 409) {
-    user = await findByEmail(input.email, token);
-  } else if (input.auth0OrganizationId) {
-    return provisionViaOrganizationInvitation({
-      email: input.email,
-      displayName: input.displayName,
-      auth0OrganizationId: input.auth0OrganizationId,
-      token,
-    });
-  } else {
-    throw new Auth0ProvisioningError(
-      "AUTH0_USER_PROVISIONING_FAILED",
-      await readAuth0Failure(createResponse)
-    );
-  }
-
-  if (!user?.user_id) {
-    if (input.auth0OrganizationId) {
-      return provisionViaOrganizationInvitation({
+  if (input.auth0OrganizationId) {
+    try {
+      return await provisionViaOrganizationInvitation({
         email: input.email,
         displayName: input.displayName,
         auth0OrganizationId: input.auth0OrganizationId,
         token,
       });
+    } catch (error) {
+      if (
+        !(error instanceof Auth0ProvisioningError) ||
+        error.code === "AUTH0_MANAGEMENT_NOT_CONFIGURED"
+      ) {
+        throw error;
+      }
     }
-    throw new Auth0ProvisioningError(
-      "AUTH0_USER_PROVISIONING_FAILED",
-      "Auth0 did not return a user id for this email."
-    );
   }
 
-  if (input.auth0OrganizationId && !isProvisionalAuth0UserId(user.user_id)) {
-    const membership = await auth0Request(
-      `/organizations/${encodeURIComponent(input.auth0OrganizationId)}/members`,
+  const { user, created } = await createDatabaseUser({
+    email: input.email,
+    displayName: input.displayName,
+    token,
+  });
+
+  if (input.auth0OrganizationId) {
+    await addOrganizationMember({
+      auth0OrganizationId: input.auth0OrganizationId,
+      userId: user.user_id,
       token,
-      { method: "POST", body: JSON.stringify({ members: [user.user_id] }) }
-    );
-    if (!membership.ok && membership.status !== 409) {
-      throw new Auth0ProvisioningError(
-        "AUTH0_ORGANIZATION_MEMBERSHIP_FAILED",
-        await readAuth0Failure(membership)
-      );
-    }
+    });
   }
 
   if (!isProvisionalAuth0UserId(user.user_id)) {
-    const ticket = await auth0Request("/tickets/password-change", token, {
-      method: "POST",
-      body: JSON.stringify({
-        user_id: user.user_id,
-        result_url: `${getAppBaseUrl()}/auth/login`,
-        mark_email_as_verified: false,
-        ttl_sec: 7 * 24 * 60 * 60,
-      }),
-    });
+    const ticketSent = await sendPasswordSetupTicket(user.user_id, token);
     return {
       user,
       created,
-      setupStatus: ticket.ok ? "provider_setup_created" : "provider_setup_pending",
+      setupStatus: ticketSent ? "provider_setup_created" : "provider_setup_pending",
     };
   }
 

@@ -58,6 +58,9 @@ describe("direct Auth0 provisioning", () => {
     expect(result.user.user_id).toBe("auth0|new-user");
     expect(result.setupStatus).toBe("provider_setup_created");
     expect(JSON.stringify(result)).not.toContain("ticket");
-    expect(bodies.join("\n")).not.toMatch(/"password"\s*:/);
+    const createBody = JSON.parse(bodies[1]!) as { password?: string };
+    expect(typeof createBody.password).toBe("string");
+    expect(createBody.password!.length).toBeGreaterThan(16);
+    expect(JSON.stringify(result)).not.toContain(createBody.password);
   });
 });

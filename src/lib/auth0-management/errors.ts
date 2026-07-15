@@ -74,6 +74,14 @@ export function userFacingProvisioningMessage(
         error: "Auth0 organization invitation could not be sent.",
         hint: detail,
       };
+    case "AUTH0_USER_PROVISIONING_FAILED":
+      return {
+        status: 502,
+        error: "User provisioning failed.",
+        hint:
+          detail ??
+          "Auth0 rejected the create-user request. Confirm AUTH0_DATABASE_CONNECTION matches your username-password connection name.",
+      };
     case "USER_EMAIL_CONFLICT":
       return {
         status: 409,
