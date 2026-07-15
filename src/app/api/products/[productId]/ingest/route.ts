@@ -1,6 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { spawn } from "node:child_process";
-import path from "node:path";
 
 import { guardSyncDocs } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
@@ -8,8 +6,8 @@ import { requireDeveloperAccess } from "@/lib/developer/access";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
 import { formatIngestFailure } from "@/lib/developer/ingest-errors";
 import {
-  ingestSpawnEnv,
   isVercelRuntime,
+  runIngestScript,
   VERCEL_INGEST_ROOT,
 } from "@/lib/developer/ingest-runtime";
 import { getProductOrThrow } from "@/lib/products/registry";
@@ -43,20 +41,7 @@ export async function POST(
     );
   }
 
-  const script = path.join(process.cwd(), "scripts", "ingest.mjs");
-  const result = await new Promise<{ code: number; stdout: string; stderr: string }>(
-    (resolve) => {
-      const child = spawn(process.execPath, [script, `--product=${productId}`], {
-        cwd: process.cwd(),
-        env: ingestSpawnEnv(),
-      });
-      let stdout = "";
-      let stderr = "";
-      child.stdout.on("data", (d) => (stdout += d.toString()));
-      child.stderr.on("data", (d) => (stderr += d.toString()));
-      child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
-    }
-  );
+  const result = await runIngestScript([`--product=${productId}`]);
 
   if (result.code !== 0) {
     const { error, detail } = formatIngestFailure({

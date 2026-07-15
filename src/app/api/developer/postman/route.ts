@@ -1,6 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { spawn } from "node:child_process";
 import { NextResponse, type NextRequest } from "next/server";
 
 import {
@@ -12,10 +11,10 @@ import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
 import { formatIngestFailure } from "@/lib/developer/ingest-errors";
 import {
-  ingestSpawnEnv,
   isVercelRuntime,
   postmanImportTempDir,
   postmanIngestParser,
+  runIngestScript,
   VERCEL_INGEST_ROOT,
 } from "@/lib/developer/ingest-runtime";
 import { getProductOrThrow } from "@/lib/products/registry";
@@ -125,26 +124,11 @@ async function handlePostman(req: NextRequest) {
   await writeFile(collectionPath, JSON.stringify(body.collection), "utf8");
 
   const parser = postmanIngestParser();
-  const script = path.join(process.cwd(), "scripts", "ingest.mjs");
-  const result = await new Promise<{ code: number; stdout: string; stderr: string }>(
-    (resolve) => {
-      const child = spawn(
-        process.execPath,
-        [
-          script,
-          `--product=${productId}`,
-          `--collection-file=${collectionPath}`,
-          `--parser=${parser}`,
-        ],
-        { cwd: process.cwd(), env: ingestSpawnEnv() }
-      );
-      let stdout = "";
-      let stderr = "";
-      child.stdout.on("data", (d) => (stdout += d.toString()));
-      child.stderr.on("data", (d) => (stderr += d.toString()));
-      child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }));
-    }
-  );
+  const result = await runIngestScript([
+    `--product=${productId}`,
+    `--collection-file=${collectionPath}`,
+    `--parser=${parser}`,
+  ]);
 
   if (result.code !== 0) {
     const { error, detail } = formatIngestFailure({

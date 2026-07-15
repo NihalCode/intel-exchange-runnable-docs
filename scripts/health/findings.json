@@ -1,7 +1,7 @@
 {
   "summary": {
-    "generatedAt": "2026-07-15T06:35:42.692Z",
-    "filesScanned": 438,
+    "generatedAt": "2026-07-15T08:27:16.385Z",
+    "filesScanned": 442,
     "verified": {
       "score": 96.5,
       "penalty": 3.5,
@@ -9,7 +9,7 @@
         "complexity": 3.5
       },
       "open": 14,
-      "accepted": 18,
+      "accepted": 17,
       "openBySeverity": {
         "info": 14
       },
@@ -20,56 +20,18 @@
     "naiveBaseline": {
       "note": "Illustrative regex scanner with no AST/data-flow awareness.",
       "score": 54,
-      "rawMatches": 382,
+      "rawMatches": 367,
       "counts": {
-        "dynamicExec": 25,
-        "debug": 29,
-        "dangerousHtml": 9,
+        "dynamicExec": 17,
+        "debug": 26,
+        "dangerousHtml": 5,
         "todo": 7,
         "commonNames": 312
       }
     },
-    "falsePositivesCorrected": 368
+    "falsePositivesCorrected": 353
   },
   "findings": [
-    {
-      "id": "e30a1ebc8021",
-      "ruleId": "command-execution",
-      "title": "Shell/command execution",
-      "category": "security",
-      "severity": "low",
-      "file": "src/app/api/developer/postman/route.ts",
-      "line": 131,
-      "symbol": "spawn",
-      "evidence": "spawn(\n        process.execPath,\n        [\n          script,\n          `--product=${productId}`,\n          `--collection-file=${collectionPa",
-      "sourceClass": "app",
-      "productionReachable": true,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "intentional_safe",
-      "status": "accepted",
-      "acceptedReason": "Fixed executable + argument array + shell:false; no user input concatenated into a command string."
-    },
-    {
-      "id": "a70c70748dbb",
-      "ruleId": "command-execution",
-      "title": "Shell/command execution",
-      "category": "security",
-      "severity": "low",
-      "file": "src/app/api/products/[productId]/ingest/route.ts",
-      "line": 49,
-      "symbol": "spawn",
-      "evidence": "spawn(process.execPath, [script, `--product=${productId}`], {\n        cwd: process.cwd(),\n        env: ingestSpawnEnv(),\n      })",
-      "sourceClass": "app",
-      "productionReachable": true,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "intentional_safe",
-      "status": "accepted",
-      "acceptedReason": "Fixed executable + argument array + shell:false; no user input concatenated into a command string."
-    },
     {
       "id": "c5d1226b6baa",
       "ruleId": "xss-dangerous-html",
@@ -301,7 +263,7 @@
       "file": "src/lib/agent/planner.ts",
       "line": 1,
       "symbol": "planner.ts",
-      "evidence": "948 lines",
+      "evidence": "964 lines",
       "sourceClass": "app",
       "productionReachable": true,
       "userInputControlled": false,
@@ -327,6 +289,25 @@
       "privilegedOnly": false,
       "classification": "manual_review",
       "status": "open"
+    },
+    {
+      "id": "5283be08e1b8",
+      "ruleId": "command-execution",
+      "title": "Shell/command execution",
+      "category": "security",
+      "severity": "low",
+      "file": "src/lib/developer/ingest-runtime.ts",
+      "line": 56,
+      "symbol": "spawn",
+      "evidence": "spawn(process.execPath, [script, ...args], {\n      cwd: process.cwd(),\n      env: ingestSpawnEnv(),\n    })",
+      "sourceClass": "app",
+      "productionReachable": true,
+      "userInputControlled": false,
+      "externallyReachable": false,
+      "privilegedOnly": false,
+      "classification": "intentional_safe",
+      "status": "accepted",
+      "acceptedReason": "Fixed executable + argument array + shell:false; no user input concatenated into a command string."
     },
     {
       "id": "5770f44874c2",
@@ -420,15 +401,15 @@
       "status": "accepted"
     },
     {
-      "id": "aecbc24906b1",
-      "ruleId": "debug-console",
-      "title": "Debug console statement",
-      "category": "debug",
-      "severity": "low",
-      "file": "src/lib/__tests__/zzz-scratch2.test.ts",
-      "line": 21,
-      "symbol": "console.log",
-      "evidence": "console.log(q, \"=>\", JSON.stringify(style))",
+      "id": "b93c70753624",
+      "ruleId": "todo-comment",
+      "title": "TODO/FIXME marker",
+      "category": "todo",
+      "severity": "info",
+      "file": "src/lib/__tests__/health-analyzer.test.ts",
+      "line": 119,
+      "symbol": "TODO",
+      "evidence": "// TODO: fix this\\nconst x = 1;`);",
       "sourceClass": "test",
       "productionReachable": false,
       "userInputControlled": false,

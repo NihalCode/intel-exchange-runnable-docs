@@ -1,0 +1,49 @@
+# CODEFLOW ignore file
+# --------------------
+# Excludes non-production paths from external code-scanning (CODEFLOW and
+# similar regex/heuristic scanners) so their findings reflect the runtime app
+# surface, not documentation content, generated data, dev tooling, or the
+# security analyzer's own intentional test fixtures.
+#
+# NOTE: This file only takes effect if the scanning product supports a
+# `.codeflowignore` (or equivalent path-exclusion) config AND scans an
+# authenticated checkout of the latest `main`. See
+# docs/enterprise/CODEFLOW_VS_INTERNAL_HEALTH.md for how to re-auth + rescan and
+# for the full accepted-risk rationale behind the remaining production findings.
+#
+# We deliberately DO NOT exclude application source under src/app, src/components,
+# or src/lib — real code stays in scope. Only non-runtime artifacts are ignored.
+
+# --- Dependencies / build output ---
+node_modules/
+.next/
+coverage/
+.tmp/
+out/
+
+# --- Vendored documentation content (data, not executable app code) ---
+# ~527 JSON files ingested from the Cyware Theneo export. May contain example
+# curl/JS/Python/VBA snippets (e.g. Shell(), os.system, eval) that are docs, not
+# app behaviour.
+src/content/**
+**/*.md
+
+# --- Unit / e2e tests, including the security analyzer's own detector fixtures ---
+# These files intentionally contain sample sink call-sites (eval, Function,
+# spawn, dangerouslySetInnerHTML) as *strings* fed to the detectors under test.
+# They are never shipped or reachable at runtime.
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+e2e/
+
+# --- Dev / CI / build tooling (trusted, not on the web request path) ---
+# Includes the code-health analyzer (scripts/health/**), ingest/build scripts,
+# and secret scanners that legitimately use child_process for local automation.
+scripts/
+
+# --- Generated analyzer ledger (data, not code) ---
+scripts/health/findings.json
+scripts/health/score.json
