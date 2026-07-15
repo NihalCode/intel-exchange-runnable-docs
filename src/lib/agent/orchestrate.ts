@@ -626,6 +626,11 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       scriptLangs,
       activeProductId
     );
+    // C# has no generator in this app yet. Say so explicitly instead of silently
+    // handing back Python/curl as if it were the requested language.
+    if (responseStyle.snippet.language === "csharp") {
+      response.workflow = `${response.workflow}\n\nNote: a C# example generator isn't available yet — showing Python and JavaScript instead.`;
+    }
   }
 
   if (essayMode && isExplainQuery(query)) {

@@ -12,6 +12,15 @@ const K1 = 1.2;
 const B = 0.75;
 const LEXICAL_WEIGHT = 0.65;
 const SEMANTIC_WEIGHT = 0.35;
+// A handful of endpoint pages (e.g. CQL field-mapping reference tables, SDO
+// create/update schemas) are 10-14x longer than the ~62-token average chunk.
+// Standard BM25 length normalization treats that as "unfocused" and crushes
+// their score for every query, even when they are the single best answer
+// (e.g. "list threat data" never surfaced for "how do I list CTIX
+// indicators?" without this cap). Capping the length ratio keeps some
+// normalization (long docs are still penalized relative to average) without
+// letting it dominate the score entirely.
+const MAX_LENGTH_RATIO = 3;
 
 function idf(term: string, index: AgentIndex): number {
   const df = index.lexical.df[term] ?? 0;
@@ -27,10 +36,11 @@ function bm25Score(
   index: AgentIndex
 ): number {
   let score = 0;
+  const lengthRatio = Math.min(docLen / avgDocLen, MAX_LENGTH_RATIO);
   for (const [term, qtf] of Object.entries(queryTerms)) {
     const tf = docTerms[term] ?? 0;
     if (tf === 0) continue;
-    const denom = tf + K1 * (1 - B + B * (docLen / avgDocLen));
+    const denom = tf + K1 * (1 - B + B * lengthRatio);
     score += idf(term, index) * ((tf * (K1 + 1)) / denom) * qtf;
   }
   return score;

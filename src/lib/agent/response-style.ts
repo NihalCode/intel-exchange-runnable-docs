@@ -41,8 +41,31 @@ export interface ResponseStyleDecision {
   reasonCode: string;
 }
 
-const SNIPPET_REQUEST =
-  /\b(?:give|show|write|generate|provide)\s+(?:me\s+)?(?:a\s+|an\s+|the\s+)?(?:snippet|code|example|sample)\b|\b(?:code|snippet|curl|python|javascript|typescript|java|c#|csharp)\s+example\b|\b(?:request|payload|json)\s+example\b|\bsample\s+(?:request|response|payload)\b|\bcql\s+query\b|\bimplementation\s+example\b|\bonly\s+(?:the\s+)?(?:code|curl|python|javascript|typescript)\b|\bgive\s+me\s+(?:curl|python|javascript|typescript|java|c#)\b|\bshow\s+(?:me\s+)?(?:curl|python|javascript|typescript)\b/i;
+// A single noun list shared across alternations below. NOUN_END is used instead
+// of a trailing `\b` because `\b` does not work after a symbol like "c#" (no
+// word/non-word transition between "#" and the following punctuation/space).
+const CODE_NOUN =
+  "(?:snippet|code|example|sample|curl|python|javascript|typescript|java|c#|csharp|cql|json|payload|body)";
+const NOUN_END = "(?=[^a-zA-Z0-9]|$)";
+
+const SNIPPET_REQUEST = new RegExp(
+  [
+    // "give/show/write/generate/provide/create [me] [a/an/the] [<=2 filler words] <noun>"
+    // The filler words let a bare language name ("give me a Python snippet") or a
+    // style descriptor ("show a Postman-style example") sit between the article and
+    // the noun without requiring every phrasing to be enumerated explicitly.
+    `\\b(?:give|show|write|generate|provide|create)\\b(?:\\s+me)?\\s+(?:(?:a|an|the)\\s+)?(?:[\\w#-]+\\s+){0,2}${CODE_NOUN}${NOUN_END}`,
+    `\\b(?:code|snippet|curl|python|javascript|typescript|java|c#|csharp)\\s+example\\b`,
+    `\\b(?:request|payload|json)\\s+example\\b`,
+    `\\bsample\\s+(?:request|response|payload)\\b`,
+    `\\bcql\\s+query\\b`,
+    `\\bimplementation\\s+example\\b`,
+    `\\bonly\\s+(?:the\\s+)?${CODE_NOUN}${NOUN_END}`,
+    `\\bgive\\s+me\\s+${CODE_NOUN}${NOUN_END}`,
+    `\\bshow\\s+(?:me\\s+)?${CODE_NOUN}${NOUN_END}`,
+  ].join("|"),
+  "i"
+);
 
 const ONLY_CODE =
   /\bonly\s+(?:the\s+)?(?:code|curl|python|javascript|typescript|snippet)\b|\bno\s+explanation\b|\bjust\s+(?:the\s+)?(?:code|curl|snippet)\b/i;
@@ -51,7 +74,7 @@ const BREVITY =
   /\b(?:short\s+answer|briefly|concise|just\s+tell\s+me|only\s+the\s+endpoint|one\s+sentence)\b/i;
 
 const DETAIL =
-  /\b(?:explain\s+fully|detailed|step\s*[- ]by\s*[- ]step|deep\s+dive|production\s+ready|include\s+edge\s+cases|complete\s+workflow)\b/i;
+  /\b(?:explain\s+fully|detailed|in\s+(?:full\s+|complete\s+|great\s+)?detail|step\s*[- ]by\s*[- ]step|deep\s+dive|production\s+ready|include\s+edge\s+cases|complete\s+workflow)\b/i;
 
 const TROUBLESHOOT =
   /\b(?:404|401|403|422|429|500|error|fail(?:ed|ing)?|broken|not\s+work(?:ing)?|after\s+(?:an?\s+)?upgrade|why\s+(?:am\s+i|do\s+i)|what\s+should\s+i\s+check)\b/i;
@@ -73,7 +96,10 @@ function detectSnippetLanguage(query: string): SnippetLanguage | undefined {
   if (/\bjavascript\b|\bnode\.?js\b|\bjs\b/i.test(query)) return "javascript";
   if (/\bpython\b|\bpy\b/i.test(query)) return "python";
   if (/\bjava\b(?!script)/i.test(query)) return "java";
-  if (/\bc#\b|\bcsharp\b/i.test(query)) return "csharp";
+  // `\bc#\b` never matches when "c#" ends a sentence ("Show C#.") because `#`
+  // and the following punctuation are both non-word characters, so there is
+  // no `\w`/`\W` transition for the trailing `\b` to anchor on.
+  if (/\bc#(?=[^a-zA-Z0-9]|$)|\bcsharp\b/i.test(query)) return "csharp";
   if (/\bcql\b/i.test(query)) return "cql";
   if (/\bjson\b|\bpayload\b|\brequest\s+body\b/i.test(query)) return "json";
   return undefined;

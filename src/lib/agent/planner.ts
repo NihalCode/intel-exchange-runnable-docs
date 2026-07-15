@@ -428,15 +428,25 @@ const TAGS_LIST_PATTERN =
 const MEMBERS_PATTERN = /\b(members?|users?)\b/i;
 const APPS_INTEGRATIONS_PATTERN = /\b(apps?|integrations?)\b/i;
 const PLAYBOOKS_PATTERN = /\bplaybooks?\b/i;
+const EXECUTION_STATUS_PATTERN =
+  /\b(execution|run)\b[\s\S]{0,40}\b(status|state|log|progress)\b|\bcheck\b[\s\S]{0,40}\b(execution|run)\b/i;
+const CANCEL_EXECUTION_PATTERN =
+  /\b(cancel|terminate|stop|kill|abort)\b[\s\S]{0,40}\b(execution|run|playbook)\b/i;
 const INCIDENTS_LIST_PATTERN =
   /\bincidents?\b.*\b(list|get|show|all|fetch|view|retrieve)\b|\b(list|get|show|all|fetch|view|retrieve)\b.*\bincidents?\b/i;
 const ALERTS_PATTERN = /\b(analyst portal )?(alert|alerts)\b/i;
 const INTEL_CATEGORIES_PATTERN = /\b(intel\s*)?(categories?|category)\b/i;
 const VERSION_PATTERN = /\b(product\s*)?(release\s*)?version\b/i;
 
+// Guards against the too-broad "any mention of the noun" catch-alls below:
+// a query about bulk/update/troubleshooting/existence must not be silently
+// force-answered with an unrelated "list X" endpoint.
+const NOT_A_LIST_QUESTION =
+  /\b(?:bulk|update|updating|updated|delete|deleting|deleted|create|creating|created|comment|attachment|patch)\b|\b(?:400|401|403|404|409|422|429|500|502|503)\b|\bwhy\b|\berror\b|\bfail(?:ed|ing)?\b|\bbroken\b|\bnot\s+work(?:ing)?\b|\bis\s+there\b|\bdoes\b.*\bsupport\b|\bcan\s+i\b/i;
+
 const PRODUCT_DOC_INTENTS: Record<
   string,
-  { pattern: RegExp; slug: string; title: string; intro: string }[]
+  { pattern: RegExp; exclude?: RegExp; slug: string; title: string; intro: string }[]
 > = {
   cftr: [
     {
@@ -447,7 +457,13 @@ const PRODUCT_DOC_INTENTS: Record<
         "List CFTR incidents with **Get List of Incidents** (`GET /v1/incident/` → `/cftrapi/openapi/v1/incident/` on cftrapi.cyware.com).",
     },
     {
+      // Last-resort disambiguation for a bare "the incident endpoint" mention
+      // that didn't match the list-verb pattern above (e.g. "only give me the
+      // CFTR incident endpoint"). Guarded so it never overrides bulk/update/
+      // troubleshooting/existence questions with the wrong endpoint — those
+      // must fall through to retrieval instead of a confident wrong answer.
       pattern: /\bincidents?\b/i,
+      exclude: NOT_A_LIST_QUESTION,
       slug: "cftr-api-reference/incidents/get-list-of-incidents",
       title: "Get List of Incidents",
       intro:
@@ -499,6 +515,28 @@ const PRODUCT_DOC_INTENTS: Record<
       intro:
         "List installed Orchestrate apps and integrations with **Get Apps** (`GET v1/apps/`).",
     },
+    // Execution status/cancel must be checked before the bare playbook
+    // catch-all below, or "check my playbook execution status" would be
+    // misrouted to "list all playbooks".
+    {
+      pattern: EXECUTION_STATUS_PATTERN,
+      slug: "playbook/get-playbook-detail-run-log",
+      title: "Get Playbook Run Log Details",
+      intro:
+        "Check a playbook execution's status with **Get Playbook Run Log Details** " +
+        "(`GET v1/playbook/playbook-result/{playbook_result_unique_id}/`), using the " +
+        "`playbook_result_unique_id` returned when you started the run.",
+    },
+    {
+      pattern: CANCEL_EXECUTION_PATTERN,
+      slug: "playbook/bulk-terminate-api-view",
+      title: "Bulk Terminate Playbook Runs",
+      intro:
+        "Cancel a playbook execution with **Bulk Terminate Playbook Runs** " +
+        "(`POST v1/playbook/playbook-result/bulk-terminate/`), passing its " +
+        "`playbook_result_unique_id` in `playbook_result_unique_ids` (max 100 per call, " +
+        "and only runs that are in progress, in-queue, waiting, or on hold can be terminated).",
+    },
     {
       pattern: PLAYBOOKS_PATTERN,
       slug: "playbook/get-playbook",
@@ -527,6 +565,7 @@ export function enforceProductDocPlan(
 
   for (const intent of intents) {
     if (!intent.pattern.test(intentQuery) && !intent.pattern.test(query)) continue;
+    if (intent.exclude && (intent.exclude.test(intentQuery) || intent.exclude.test(query))) continue;
     // Do not override stronger plans from CTIX-specific enforcers (tag mgmt, list indicators).
     if (plan.steps.length > 0 && (plan.confidence ?? 0) >= 0.9) return plan;
     const chunk = chunks.find((c) => c.slug === intent.slug);
