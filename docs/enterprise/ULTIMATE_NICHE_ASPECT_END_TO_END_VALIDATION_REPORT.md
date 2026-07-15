@@ -439,10 +439,18 @@ All accepted risks have an owner and a control; none is a confirmed critical/hig
 
 ### Deployment record
 
-- Report/commit SHA: _recorded in the follow-up commit after deploy_
-- New production deployment ID: _recorded after `npx vercel --prod --yes` completes_
-- Environment: production (Vercel, region `iad1`)
-- Health after deploy: `/api/health/live` and `/api/health/ready` expected 200 (re-smoke below)
+- Report commit SHA (report first landed): `26a988d` on `main` (`340a969..26a988d`, pushed to `origin/main`).
+- This finalizing commit SHA: recorded by the follow-up commit that adds this record.
+- New production deployment ID: **`dpl_14hDv9FKjcWwuRwaoMEuu7gCdUnE`** (`readyState: READY`, `target: production`).
+- Production URL (aliased): `https://intel-exchange-runnable-docs.vercel.app`
+- Deployment build URL: `https://intel-exchange-runnable-docs-5r6bv2bdz-nihalcodes-projects.vercel.app`
+- Inspector: `https://vercel.com/nihalcodes-projects/intel-exchange-runnable-docs/14hDv9FKjcWwuRwaoMEuu7gCdUnE`
+- Environment: production (Vercel).
+- Health after deploy (re-smoked): `/api/health/live` → 200; `/api/health/ready` → 200 `{"status":"ready","checks":{"database":true,"authConfig":true}}`; gating intact (`/agent`, `/docs/ctix` → 307 sign-in).
+
+> Note: `dpl_14hDv9FKjcWwuRwaoMEuu7gCdUnE` deploys the tree at `26a988d` (this report). The
+> deployed application source is identical to `340a969` — the only delta on `main` is this
+> documentation report, so the deployed product behavior matches the validated `340a969` baseline.
 
 ---
 
