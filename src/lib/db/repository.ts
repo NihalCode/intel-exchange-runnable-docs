@@ -394,6 +394,17 @@ export async function createDirectDocumentationUser(input: {
   return user;
 }
 
+export async function linkDocumentationUserAuth0Id(
+  userId: string,
+  auth0UserId: string
+): Promise<void> {
+  ensureMigrations();
+  await runExecute(
+    `UPDATE documentation_users SET auth0_user_id = ?, updated_at = ? WHERE id = ?`,
+    [auth0UserId, nowIso(), userId]
+  );
+}
+
 export async function updateUserOnLogin(input: {
   auth0UserId: string;
   email: string;

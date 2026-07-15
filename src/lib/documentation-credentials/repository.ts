@@ -12,6 +12,9 @@ import {
   type StoredCredential,
 } from "@/lib/documentation-credentials/types";
 
+/** Placeholder when access IDs are validated but never persisted. */
+export const NOT_STORED_ACCESS_ID = "not stored";
+
 function parseArray(value: unknown): string[] {
   if (Array.isArray(value)) return value.map(String);
   try {
@@ -130,9 +133,6 @@ export async function upsertCredential(input: {
   productId: DocumentationProduct;
   baseUrl: string;
   accessIdMasked: string;
-  secretCiphertext: string;
-  secretIv: string;
-  secretTag: string;
   status: CredentialStatus;
   authorizedScopes?: string[];
   validatedAt?: string | null;
@@ -151,16 +151,13 @@ export async function upsertCredential(input: {
       if (existing) {
         await tx.execute(
           `UPDATE user_product_credentials SET base_url = ?, access_id_masked = ?,
-           secret_ciphertext = ?, secret_iv = ?, secret_tag = ?, vault_ref = NULL,
+           secret_ciphertext = NULL, secret_iv = NULL, secret_tag = NULL, vault_ref = NULL,
            status = ?, authorized_scopes_json = ?, validated_at = ?, expires_at = ?,
            validation_error_code = ?, version = version + 1, updated_at = ?
            WHERE id = ? AND organization_id = ? AND user_id = ?`,
           [
             input.baseUrl,
             input.accessIdMasked,
-            input.secretCiphertext,
-            input.secretIv,
-            input.secretTag,
             input.status,
             JSON.stringify(input.authorizedScopes ?? []),
             input.validatedAt ?? null,
@@ -178,7 +175,7 @@ export async function upsertCredential(input: {
             id, organization_id, user_id, product_id, base_url, access_id_masked,
             secret_ciphertext, secret_iv, secret_tag, status, authorized_scopes_json,
             validated_at, expires_at, validation_error_code, version, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+          ) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?, ?, ?, 1, ?, ?)`,
           [
             randomUUID(),
             input.organizationId,
@@ -186,9 +183,6 @@ export async function upsertCredential(input: {
             input.productId,
             input.baseUrl,
             input.accessIdMasked,
-            input.secretCiphertext,
-            input.secretIv,
-            input.secretTag,
             input.status,
             JSON.stringify(input.authorizedScopes ?? []),
             input.validatedAt ?? null,
@@ -239,10 +233,17 @@ export async function revokeCredential(
   const existing = await findStoredCredential(organizationId, userId, productId);
   if (!existing) return false;
   await db.execute(
-    `UPDATE user_product_credentials SET status = 'revoked', secret_ciphertext = NULL,
-     secret_iv = NULL, secret_tag = NULL, vault_ref = NULL, version = version + 1,
-     updated_at = ? WHERE organization_id = ? AND user_id = ? AND product_id = ?`,
-    [new Date().toISOString(), organizationId, userId, productId]
+    `UPDATE user_product_credentials SET status = 'revoked', access_id_masked = ?,
+     secret_ciphertext = NULL, secret_iv = NULL, secret_tag = NULL, vault_ref = NULL,
+     version = version + 1, updated_at = ?
+     WHERE organization_id = ? AND user_id = ? AND product_id = ?`,
+    [
+      NOT_STORED_ACCESS_ID,
+      new Date().toISOString(),
+      organizationId,
+      userId,
+      productId,
+    ]
   );
   return true;
 }

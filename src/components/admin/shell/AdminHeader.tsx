@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+import { AdminAppExitNav } from "@/components/admin/shell/AdminAppExitNav";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { EnvironmentSelector } from "@/components/admin/shell/ProductionBanner";
 import {
@@ -81,14 +82,9 @@ export function AdminHeader({ titleSlot }: { titleSlot?: React.ReactNode }) {
           </div>
           <p className="text-xs text-zinc-500">{organization.name}</p>
         </div>
+        <AdminAppExitNav variant="header" />
         <EnvironmentSelector />
         <ThemeToggle />
-        <Link
-          href="/"
-          className="rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-900"
-        >
-          Docs
-        </Link>
       </div>
     </header>
   );

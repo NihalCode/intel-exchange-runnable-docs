@@ -10,8 +10,8 @@ export interface ConnectionFieldDef {
   label: string;
   placeholder: string;
   inputType: "text" | "password";
-  /** Non-secret IDs may persist in localStorage; secrets in sessionStorage only. */
-  persistence: "local" | "session";
+  /** Credential values are memory-only for the current browser tab. */
+  persistence: "memory";
   required: boolean;
 }
 
@@ -39,7 +39,7 @@ const PRODUCT_UI: Record<
     authTypeLabel: "Open API (HMAC signature)",
     credentialSource: "Cyware Admin → Open API → Generate Credentials",
     footnote:
-      "Signature and Expires are generated when you run a request. Access ID is saved in this browser; Secret Key stays in this session only.",
+      "Signature and Expires are generated when you run a request. Access ID and Secret Key stay in memory for this tab only.",
   },
   csap: {
     shortLabel: "CSAP",
@@ -47,7 +47,7 @@ const PRODUCT_UI: Record<
     authTypeLabel: "Open API (HMAC signature)",
     credentialSource: "CSAP Analyst Portal → Open API settings",
     footnote:
-      "CSAP uses the same Open API pattern as CTIX: Access ID + Secret Key produce Signature and Expires on each run. Secret Key is never stored long-term.",
+      "CSAP uses the same Open API pattern as CTIX: Access ID + Secret Key produce Signature and Expires on each run. Credentials are not stored anywhere.",
   },
   orchestrate: {
     shortLabel: "Orchestrate",
@@ -83,15 +83,15 @@ function openApiFields(productId: string): ConnectionFieldDef[] {
       label: "Access ID",
       placeholder: accessPlaceholder,
       inputType: "text",
-      persistence: "local",
+      persistence: "memory",
       required: true,
     },
     {
       kind: "secret-key",
       label: "Secret Key",
-      placeholder: "Session only — never stored in localStorage",
+      placeholder: "Memory only — cleared when you close this tab",
       inputType: "password",
-      persistence: "session",
+      persistence: "memory",
       required: true,
     },
   ];
@@ -104,7 +104,7 @@ function bearerFields(): ConnectionFieldDef[] {
       label: "Bearer token",
       placeholder: "Paste your API token",
       inputType: "password",
-      persistence: "session",
+      persistence: "memory",
       required: true,
     },
   ];
@@ -117,7 +117,7 @@ function apiKeyFields(): ConnectionFieldDef[] {
       label: "API key",
       placeholder: "Paste your API key",
       inputType: "password",
-      persistence: "session",
+      persistence: "memory",
       required: true,
     },
   ];

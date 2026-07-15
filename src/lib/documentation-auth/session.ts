@@ -17,6 +17,10 @@ import type {
   DocumentationPermission,
   DocumentationRole,
 } from "@/lib/documentation-auth/types";
+import {
+  isProvisionalAuth0UserId,
+  auth0UserIdForLoginLink,
+} from "@/lib/auth0-management/errors";
 import { getAuth0 } from "@/lib/auth0";
 import {
   acceptInvite,
@@ -26,6 +30,7 @@ import {
   findUserByAuth0Id,
   findUserByEmail,
   isValidPendingInvite,
+  linkDocumentationUserAuth0Id,
   updateUserOnLogin,
 } from "@/lib/db/repository";
 
@@ -232,14 +237,26 @@ export async function getAppSessionResult(
   const existingById = await findUserByAuth0Id(authUser.sub);
   const existingByEmail = await findUserByEmail(authUser.email);
 
-  if (existingById) {
+  let activeUser = existingById;
+  if (
+    !activeUser &&
+    existingByEmail &&
+    isProvisionalAuth0UserId(existingByEmail.auth0UserId) &&
+    auth0UserIdForLoginLink(existingByEmail.auth0UserId, authUser.email, authUser.sub) ===
+      authUser.sub
+  ) {
+    await linkDocumentationUserAuth0Id(existingByEmail.id, authUser.sub);
+    activeUser = await findUserByAuth0Id(authUser.sub);
+  }
+
+  if (activeUser) {
     const pendingInvite = await findPendingInviteByEmail(authUser.email);
 
-    if (existingById.status === "disabled") {
+    if (activeUser.status === "disabled") {
       if (!pendingInvite || !isValidPendingInvite(pendingInvite)) {
         await logDocumentationAuthEvent({
           action: "auth.blocked_disabled_user",
-          userId: existingById.id,
+          userId: activeUser.id,
           actorEmail: authUser.email,
         });
         return {
@@ -250,11 +267,11 @@ export async function getAppSessionResult(
       }
     }
 
-    let sessionUser = existingById;
+    let sessionUser = activeUser;
 
     if (pendingInvite && isValidPendingInvite(pendingInvite)) {
       const upgraded = await applyInviteToExistingUser({
-        userId: existingById.id,
+        userId: activeUser.id,
         role: pendingInvite.role,
         invitedByUserId: pendingInvite.invitedByUserId,
       });
@@ -308,7 +325,11 @@ export async function getAppSessionResult(
     };
   }
 
-  if (existingByEmail && existingByEmail.auth0UserId !== authUser.sub) {
+  if (
+    existingByEmail &&
+    existingByEmail.auth0UserId !== authUser.sub &&
+    !isProvisionalAuth0UserId(existingByEmail.auth0UserId)
+  ) {
     await logDocumentationAuthEvent({
       action: "auth.wrong_email_invite_attempt",
       actorEmail: authUser.email,

@@ -196,7 +196,7 @@ All CTIX Open API calls require three query parameters: `AccessID`, `Signature`,
 
 ## Security Rules — Never Violate These
 
-1. **Never store secret keys in `localStorage`.** `AccessID` may be stored (non-secret); `SecretKey`, `Signature`, `Expires` must stay in React state only (memory-only).
+1. **Never persist Access ID, Secret Key, Signature, or Expires.** Credentials live in React state/refs only (memory-only for the current browser tab). Do not use `localStorage` or `sessionStorage` for credential values. Base URLs may remain in `localStorage` (non-secret).
 2. **Always mask secrets in output.** Use `maskText(text, secretValues)` from `security.ts` before displaying any request/response content.
 3. **All outbound API calls go through `/api/run`.** The proxy implements SSRF protection (`assertPublicHost`), a timeout, and a response size cap. Never call external URLs directly from client code.
 4. **JavaScript snippets run in a sandboxed iframe** (`sandbox="allow-scripts"` without `allow-same-origin`). Never use `eval()` or `new Function()` in the main app context.

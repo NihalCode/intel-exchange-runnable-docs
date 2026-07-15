@@ -196,10 +196,7 @@ describe("listValidCredentialProductIds", () => {
       userId,
       productId: "cftr",
       baseUrl: "https://tenant.example.com/cftrapi",
-      accessIdMasked: "ab••cd",
-      secretCiphertext: "cipher",
-      secretIv: "iv",
-      secretTag: "tag",
+      accessIdMasked: "not stored",
       status: "valid",
       expiresAt: future,
     });
@@ -208,10 +205,7 @@ describe("listValidCredentialProductIds", () => {
       userId,
       productId: "ctix",
       baseUrl: "https://tenant.example.com/ctixapi",
-      accessIdMasked: "ab••cd",
-      secretCiphertext: "cipher",
-      secretIv: "iv",
-      secretTag: "tag",
+      accessIdMasked: "not stored",
       status: "valid",
       expiresAt: null,
     });
@@ -220,10 +214,7 @@ describe("listValidCredentialProductIds", () => {
       userId,
       productId: "csap",
       baseUrl: "https://tenant.example.com/csapapi",
-      accessIdMasked: "ab••cd",
-      secretCiphertext: "cipher",
-      secretIv: "iv",
-      secretTag: "tag",
+      accessIdMasked: "not stored",
       status: "invalid",
     });
     await upsertCredential({
@@ -231,10 +222,7 @@ describe("listValidCredentialProductIds", () => {
       userId,
       productId: "orchestrate",
       baseUrl: "https://tenant.example.com/soarapi",
-      accessIdMasked: "ab••cd",
-      secretCiphertext: "cipher",
-      secretIv: "iv",
-      secretTag: "tag",
+      accessIdMasked: "not stored",
       status: "valid",
       expiresAt: past,
     });

@@ -4,11 +4,7 @@ import { createHmac } from "node:crypto";
 
 import { buildConnectivityUrl } from "@/lib/documentation-credentials/connectivity";
 import {
-  decryptSecret,
-  encryptSecret,
-} from "@/lib/documentation-credentials/encryption";
-import {
-  findStoredCredential,
+  NOT_STORED_ACCESS_ID,
   markCredentialStatus,
   upsertCredential,
 } from "@/lib/documentation-credentials/repository";
@@ -18,7 +14,6 @@ import type {
 } from "@/lib/documentation-credentials/types";
 import { isAllowedBaseUrl } from "@/lib/products/registry";
 import { assertPublicUrl, safeFetch } from "@/lib/security/public-host";
-import { maskValue } from "@/lib/security";
 
 const MAX_RESPONSE_BYTES = 64 * 1024;
 const TIMEOUT_MS = 10_000;
@@ -89,10 +84,6 @@ export async function validateAndStoreCredential(input: {
   await assertPublicUrl(target);
   target.search = authQuery(input.accessId, input.secretKey).toString();
 
-  const encrypted = encryptSecret(
-    JSON.stringify({ accessId: input.accessId, secretKey: input.secretKey }),
-    credentialAad(input.organizationId, input.userId, input.productId)
-  );
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
   let valid = false;
@@ -120,48 +111,23 @@ export async function validateAndStoreCredential(input: {
     userId: input.userId,
     productId: input.productId,
     baseUrl,
-    accessIdMasked: maskValue(input.accessId),
-    secretCiphertext: encrypted.ciphertext,
-    secretIv: encrypted.iv,
-    secretTag: encrypted.tag,
+    accessIdMasked: NOT_STORED_ACCESS_ID,
     status: valid ? "valid" : "invalid",
     validatedAt: new Date().toISOString(),
     validationErrorCode: failureCode,
   });
 }
 
-export async function loadCredentialMaterial(input: {
-  organizationId: string;
-  userId: string;
-  productId: DocumentationProduct;
-}): Promise<{ baseUrl: string; accessId: string; secretKey: string } | null> {
-  const stored = await findStoredCredential(
-    input.organizationId,
-    input.userId,
-    input.productId
-  );
-  if (
-    !stored ||
-    stored.status !== "valid" ||
-    (stored.expiresAt && new Date(stored.expiresAt) <= new Date()) ||
-    !stored.secretCiphertext ||
-    !stored.secretIv ||
-    !stored.secretTag
-  ) {
-    return null;
+/** Credentials are memory-only in the browser; server never retains Access ID or Secret Key. */
+export async function loadCredentialMaterial(
+  input: {
+    organizationId: string;
+    userId: string;
+    productId: DocumentationProduct;
   }
-  const plaintext = decryptSecret(
-    {
-      ciphertext: stored.secretCiphertext,
-      iv: stored.secretIv,
-      tag: stored.secretTag,
-    },
-    credentialAad(input.organizationId, input.userId, input.productId)
-  );
-  const material = JSON.parse(plaintext) as { accessId?: string; secretKey?: string };
-  return material.accessId && material.secretKey
-    ? { baseUrl: stored.baseUrl, accessId: material.accessId, secretKey: material.secretKey }
-    : null;
+): Promise<{ baseUrl: string; accessId: string; secretKey: string } | null> {
+  void input;
+  return null;
 }
 
 export async function invalidateRejectedCredential(input: {

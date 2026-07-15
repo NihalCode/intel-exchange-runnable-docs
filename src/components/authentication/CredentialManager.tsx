@@ -67,7 +67,7 @@ function statusLabel(status: string | undefined): string {
 }
 
 export function CredentialManager() {
-  const { applyProductCredentials } = useRunSettings();
+  const { applyProductCredentials, clearCredentials } = useRunSettings();
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<ProductId>("ctix");
   const [forms, setForms] = useState<
@@ -146,7 +146,7 @@ export function CredentialManager() {
         setMessage((value) => ({
           ...value,
           [productId]:
-            "Connected. Credentials are ready for the API playground on this product.",
+            "Connected. Credentials are in memory for this browser tab only — re-enter them after closing the tab.",
         }));
       } else {
         // Keep Secret Key on failure so the user can retry without retyping.
@@ -174,6 +174,11 @@ export function CredentialManager() {
         method: "DELETE",
         headers: { "X-CSRF-Token": token },
       });
+      clearCredentials();
+      setForms((current) => ({
+        ...current,
+        [productId]: { baseUrl: "", accessId: "", secretKey: "" },
+      }));
       await load();
     } finally {
       setBusy(null);
@@ -233,7 +238,6 @@ export function CredentialManager() {
         {credential ? (
           <div className="mt-4 space-y-1 text-xs text-zinc-600 dark:text-zinc-400">
             <p className="break-all">Base URL: {credential.baseUrl}</p>
-            <p>Access ID: {credential.accessIdMasked}</p>
             <p>
               Last validated:{" "}
               {credential.validatedAt

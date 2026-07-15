@@ -4,7 +4,8 @@ import {
   decryptSecret,
   encryptSecret,
 } from "@/lib/documentation-credentials/encryption";
-import { toCredentialMetadata } from "@/lib/documentation-credentials/repository";
+import { NOT_STORED_ACCESS_ID, toCredentialMetadata } from "@/lib/documentation-credentials/repository";
+import { loadCredentialMaterial } from "@/lib/documentation-credentials/service";
 
 describe("documentation credential encryption", () => {
   afterEach(() => {
@@ -26,10 +27,10 @@ describe("documentation credential encryption", () => {
       userId: "user",
       productId: "ctix",
       baseUrl: "https://tenant.cyware.com/ctixapi",
-      accessIdMasked: "ab••cd",
-      secretCiphertext: "ciphertext",
-      secretIv: "iv",
-      secretTag: "tag",
+      accessIdMasked: NOT_STORED_ACCESS_ID,
+      secretCiphertext: null,
+      secretIv: null,
+      secretTag: null,
       vaultRef: null,
       status: "valid",
       authorizedScopes: [],
@@ -42,5 +43,16 @@ describe("documentation credential encryption", () => {
     });
     expect(JSON.stringify(metadata)).not.toContain("ciphertext");
     expect(metadata).not.toHaveProperty("secretTag");
+    expect(metadata.accessIdMasked).toBe(NOT_STORED_ACCESS_ID);
+  });
+
+  it("never returns stored credential material from the server", async () => {
+    await expect(
+      loadCredentialMaterial({
+        organizationId: "org",
+        userId: "user",
+        productId: "ctix",
+      })
+    ).resolves.toBeNull();
   });
 });

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+import { AdminAppExitNav } from "@/components/admin/shell/AdminAppExitNav";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useFocusTrap } from "@/components/useFocusTrap";
 import {
@@ -106,6 +107,7 @@ export function AdminSidebar() {
             </Link>
             <p className="mt-0.5 text-xs text-zinc-500">Control plane</p>
           </div>
+          <AdminAppExitNav variant="sidebar" />
           <div className="flex-1 overflow-y-auto">{navContent}</div>
         </div>
       </aside>
@@ -130,6 +132,7 @@ export function AdminSidebar() {
             <div className="border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
               <p className="text-sm font-semibold">Enterprise Admin</p>
             </div>
+            <AdminAppExitNav variant="sidebar" />
             <div className="overflow-y-auto">{navContent}</div>
           </aside>
         </div>

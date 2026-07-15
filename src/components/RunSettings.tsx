@@ -60,10 +60,22 @@ const Ctx = createContext<RunSettings | null>(null);
 
 const BASE_URLS_KEY = "iedocs.baseUrls";
 const LEGACY_BASE_URL_KEY = "iedocs.baseUrl";
-const ACCESS_IDS_KEY = "iedocs.accessIds";
-const SECRETS_KEY = "iedocs.secrets";
+/** Legacy keys cleared on mount — credentials must never persist in the browser. */
+const LEGACY_ACCESS_IDS_KEY = "iedocs.accessIds";
+const LEGACY_SECRETS_KEY = "iedocs.secrets";
 const LEGACY_ACCESS_ID_KEY = "iedocs.accessId";
 const LEGACY_SECRET_KEY = "iedocs.secretKey";
+
+function clearLegacyCredentialStorage() {
+  try {
+    window.localStorage.removeItem(LEGACY_ACCESS_IDS_KEY);
+    window.localStorage.removeItem(LEGACY_ACCESS_ID_KEY);
+    window.sessionStorage.removeItem(LEGACY_SECRETS_KEY);
+    window.sessionStorage.removeItem(LEGACY_SECRET_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 function readStoredBaseUrls(defaultBaseUrl: string): Record<string, string> {
   try {
@@ -83,54 +95,6 @@ function readStoredBaseUrls(defaultBaseUrl: string): Record<string, string> {
 function writeStoredBaseUrls(urls: Record<string, string>) {
   try {
     window.localStorage.setItem(BASE_URLS_KEY, JSON.stringify(urls));
-  } catch {
-    /* ignore */
-  }
-}
-
-function readAccessIds(): Record<string, string> {
-  try {
-    const raw = window.localStorage.getItem(ACCESS_IDS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Record<string, string>;
-      if (parsed && typeof parsed === "object") return parsed;
-    }
-    const legacy = window.localStorage.getItem(LEGACY_ACCESS_ID_KEY);
-    if (legacy) return { ctix: legacy };
-  } catch {
-    /* ignore */
-  }
-  return {};
-}
-
-function writeAccessIds(ids: Record<string, string>) {
-  try {
-    window.localStorage.setItem(ACCESS_IDS_KEY, JSON.stringify(ids));
-    window.localStorage.removeItem(LEGACY_ACCESS_ID_KEY);
-  } catch {
-    /* ignore */
-  }
-}
-
-function readSecrets(): Record<string, string> {
-  try {
-    const raw = window.sessionStorage.getItem(SECRETS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Record<string, string>;
-      if (parsed && typeof parsed === "object") return parsed;
-    }
-    const legacy = window.sessionStorage.getItem(LEGACY_SECRET_KEY);
-    if (legacy) return { ctix: legacy };
-  } catch {
-    /* ignore */
-  }
-  return {};
-}
-
-function writeSecrets(secrets: Record<string, string>) {
-  try {
-    window.sessionStorage.setItem(SECRETS_KEY, JSON.stringify(secrets));
-    window.sessionStorage.removeItem(LEGACY_SECRET_KEY);
   } catch {
     /* ignore */
   }
@@ -183,10 +147,11 @@ export function RunSettingsProvider({
 
   useEffect(() => {
     try {
+      clearLegacyCredentialStorage();
       const urls = readStoredBaseUrls(defaultBaseUrl);
       baseUrlsRef.current = urls;
-      accessIdsRef.current = readAccessIds();
-      secretsRef.current = readSecrets();
+      accessIdsRef.current = {};
+      secretsRef.current = {};
       const initial = urls[DEFAULT_PRODUCT_ID] ?? defaultBaseUrl;
       let active = true;
       queueMicrotask(() => {
@@ -214,7 +179,6 @@ export function RunSettingsProvider({
       const pid = activeProductRef.current;
       setAccessIdState(v);
       accessIdsRef.current = { ...accessIdsRef.current, [pid]: v };
-      writeAccessIds(accessIdsRef.current);
       setCreds((p) => ({ ...p, accessid: v }));
       setAuthStatus("idle");
     },
@@ -226,7 +190,6 @@ export function RunSettingsProvider({
     secretKeyRef.current = v;
     setSecretKeyState(v);
     secretsRef.current = { ...secretsRef.current, [pid]: v };
-    writeSecrets(secretsRef.current);
     setAuthStatus("idle");
   }, []);
 
@@ -251,8 +214,6 @@ export function RunSettingsProvider({
 
       accessIdsRef.current = { ...accessIdsRef.current, [productId]: access };
       secretsRef.current = { ...secretsRef.current, [productId]: secret };
-      writeAccessIds(accessIdsRef.current);
-      writeSecrets(secretsRef.current);
 
       if (activeProductRef.current === productId) {
         setAccessIdState(access);
@@ -275,35 +236,9 @@ export function RunSettingsProvider({
       const pid = productId ?? activeProductRef.current;
       const localAccess = (accessIdsRef.current[pid] ?? "").trim();
       const localSecret = (secretsRef.current[pid] ?? "").trim();
-      if (localAccess && localSecret) return true;
-
-      try {
-        const context = await fetch("/api/admin/control-plane/context", { cache: "no-store" });
-        if (!context.ok) return false;
-        const { csrfToken } = (await context.json()) as { csrfToken?: string };
-        if (!csrfToken) return false;
-
-        const response = await fetch("/api/authentication/credentials/session", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": csrfToken,
-          },
-          body: JSON.stringify({ productId: pid }),
-          cache: "no-store",
-        });
-        if (!response.ok) return false;
-        const data = (await response.json()) as {
-          material?: { baseUrl: string; accessId: string; secretKey: string } | null;
-        };
-        if (!data.material?.accessId || !data.material.secretKey) return false;
-        applyProductCredentials(pid, data.material);
-        return true;
-      } catch {
-        return false;
-      }
+      return Boolean(localAccess && localSecret);
     },
-    [applyProductCredentials]
+    []
   );
 
   const syncWithProduct = useCallback(
@@ -312,8 +247,6 @@ export function RunSettingsProvider({
       if (prev !== productId) {
         accessIdsRef.current = { ...accessIdsRef.current, [prev]: accessId };
         secretsRef.current = { ...secretsRef.current, [prev]: secretKeyRef.current };
-        writeAccessIds(accessIdsRef.current);
-        writeSecrets(secretsRef.current);
         baseUrlsRef.current = { ...baseUrlsRef.current, [prev]: baseUrlRef.current };
       }
       activeProductRef.current = productId;
@@ -324,9 +257,8 @@ export function RunSettingsProvider({
       baseUrlsRef.current = { ...baseUrlsRef.current, [productId]: next };
       writeStoredBaseUrls(baseUrlsRef.current);
       loadProductCredentials(productId);
-      void hydrateFromAuthentication(productId);
     },
-    [accessId, hydrateFromAuthentication, loadProductCredentials]
+    [accessId, loadProductCredentials]
   );
 
   const getConnectionValue = useCallback(
@@ -352,11 +284,6 @@ export function RunSettingsProvider({
       }
       setCreds((prev) => ({ ...prev, [key]: value }));
       credsRef.current = { ...credsRef.current, [key]: value };
-      if (productConnectionUi(activeProductRef.current).fields.find((f) => f.kind === kind)?.persistence === "session") {
-        const pid = activeProductRef.current;
-        secretsRef.current = { ...secretsRef.current, [`${pid}:${key}`]: value };
-        writeSecrets(secretsRef.current);
-      }
       setAuthStatus("idle");
     },
     [setAccessId, setSecretKey]
@@ -386,8 +313,6 @@ export function RunSettingsProvider({
     setAccessIdState("");
     accessIdsRef.current = { ...accessIdsRef.current, [pid]: "" };
     secretsRef.current = { ...secretsRef.current, [pid]: "" };
-    writeAccessIds(accessIdsRef.current);
-    writeSecrets(secretsRef.current);
     setAuthStatus("idle");
     setAuthError("");
   }, []);
@@ -521,15 +446,11 @@ export function useRunSettings(): RunSettings {
 /** Keeps API base URL and credentials in sync with the selected product. */
 export function ProductRunSettingsSync() {
   const { productId } = useProduct();
-  const { syncWithProduct, hydrateFromAuthentication } = useRunSettings();
+  const { syncWithProduct } = useRunSettings();
 
   useEffect(() => {
     syncWithProduct(productId);
   }, [productId, syncWithProduct]);
-
-  useEffect(() => {
-    void hydrateFromAuthentication(productId);
-  }, [productId, hydrateFromAuthentication]);
 
   return null;
 }

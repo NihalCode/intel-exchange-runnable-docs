@@ -10,11 +10,20 @@ import {
 } from "@/lib/db/repository";
 import { isDocumentationRole } from "@/lib/documentation-auth/permissions";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
-import { requireMutationCsrf } from "@/lib/enterprise/http";
 import {
   canProvisionRole,
   provisionAuth0User,
 } from "@/lib/auth0-management/service";
+import {
+  CSRF_COOKIE_NAME,
+  createCsrfToken,
+  csrfCookieOptions,
+} from "@/lib/enterprise/csrf";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
+import {
+  Auth0ProvisioningError,
+  userFacingProvisioningMessage,
+} from "@/lib/auth0-management/errors";
 
 export const runtime = "nodejs";
 
@@ -23,11 +32,15 @@ export async function GET(request: NextRequest) {
   if (session instanceof NextResponse) return session;
 
   const [users, invites] = await Promise.all([listUsers(), listInvites()]);
-  return NextResponse.json({
+  const csrfToken = createCsrfToken();
+  const response = NextResponse.json({
     users,
     invites,
     roles: DOCUMENTATION_ROLES,
+    csrfToken,
   });
+  response.cookies.set(CSRF_COOKIE_NAME, csrfToken, csrfCookieOptions());
+  return response;
 }
 
 export async function POST(request: NextRequest) {
@@ -91,9 +104,20 @@ export async function POST(request: NextRequest) {
       { status: provisioned.created ? 201 : 200 }
     );
   } catch (error) {
+    if (error instanceof Auth0ProvisioningError) {
+      const mapped = userFacingProvisioningMessage(error.code, error.detail);
+      return NextResponse.json(
+        { error: mapped.error, hint: mapped.hint, code: error.code },
+        { status: mapped.status }
+      );
+    }
     const code = error instanceof Error ? error.message : "";
-    if (code === "CROSS_ORGANIZATION_USER") {
-      return NextResponse.json({ error: "User cannot be provisioned" }, { status: 409 });
+    if (code === "CROSS_ORGANIZATION_USER" || code === "USER_EMAIL_CONFLICT") {
+      const mapped = userFacingProvisioningMessage(code);
+      return NextResponse.json(
+        { error: mapped.error, code, hint: mapped.hint },
+        { status: mapped.status }
+      );
     }
     return NextResponse.json(
       { error: "User provisioning failed", code: "USER_PROVISIONING_FAILED" },

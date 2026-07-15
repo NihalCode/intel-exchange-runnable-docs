@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Auth0ProvisioningError } from "@/lib/auth0-management/errors";
 import {
   canProvisionRole,
   provisionAuth0User,
@@ -25,6 +26,12 @@ describe("direct Auth0 provisioning", () => {
     expect(canProvisionRole("admin", "owner")).toBe(false);
     expect(canProvisionRole("admin", "developer")).toBe(true);
     expect(canProvisionRole("owner", "admin")).toBe(true);
+  });
+
+  it("throws when management API is not configured", async () => {
+    await expect(provisionAuth0User({ email: "user@example.com" })).rejects.toBeInstanceOf(
+      Auth0ProvisioningError
+    );
   });
 
   it("uses provider-managed setup without accepting or returning a password", async () => {
