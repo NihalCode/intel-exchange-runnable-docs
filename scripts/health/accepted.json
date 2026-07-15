@@ -1,0 +1,26 @@
+{
+  "$schema": "Accepted-risk register for the code-health analyzer.",
+  "description": "Each entry documents a finding that has been reviewed and accepted as safe or intentional. Entries are matched by stable fingerprint (sha1 of ruleId::file::symbol::line, first 12 chars). Accepted findings are reported in a separate metric and never counted as open vulnerabilities. Keep entries narrow, justified, owned, and covered by a regression test where a safety property is relied upon.",
+  "acceptedRisks": [
+    {
+      "fingerprint": "c5d1226b6baa",
+      "ruleId": "xss-dangerous-html",
+      "file": "src/app/layout.tsx",
+      "classification": "intentional_safe",
+      "reason": "Theme-flash-prevention script is a hardcoded static string constant with no interpolation of user, connector, URL, or API input. This is the standard Next.js App Router pattern for applying the saved theme before first paint. No untrusted data can reach __html.",
+      "owner": "platform-security",
+      "reviewBy": "2026-12-31",
+      "regressionTest": "src/lib/__tests__/health-xss-safety.test.ts"
+    },
+    {
+      "fingerprint": "1dd420c7d1af",
+      "ruleId": "xss-dangerous-html",
+      "file": "src/components/CodeBlock.tsx",
+      "classification": "intentional_safe",
+      "reason": "The injected HTML is highlight.js output. hljs escapes its own input (<, >, &) before emitting markup, and the error fallback uses an explicit escapeHtml(). Code content is therefore rendered as inert text, never executed. Verified by regression test asserting <script>/onerror payloads are escaped.",
+      "owner": "platform-security",
+      "reviewBy": "2026-12-31",
+      "regressionTest": "src/lib/__tests__/health-xss-safety.test.ts"
+    }
+  ]
+}
