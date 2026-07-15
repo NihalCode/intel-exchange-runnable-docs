@@ -1,7 +1,7 @@
 {
   "summary": {
-    "generatedAt": "2026-07-15T06:30:57.895Z",
-    "filesScanned": 437,
+    "generatedAt": "2026-07-15T06:35:42.692Z",
+    "filesScanned": 438,
     "verified": {
       "score": 96.5,
       "penalty": 3.5,
@@ -9,7 +9,7 @@
         "complexity": 3.5
       },
       "open": 14,
-      "accepted": 22,
+      "accepted": 18,
       "openBySeverity": {
         "info": 14
       },
@@ -19,17 +19,17 @@
     },
     "naiveBaseline": {
       "note": "Illustrative regex scanner with no AST/data-flow awareness.",
-      "score": 0,
-      "rawMatches": 386,
+      "score": 54,
+      "rawMatches": 382,
       "counts": {
         "dynamicExec": 25,
-        "debug": 33,
+        "debug": 29,
         "dangerousHtml": 9,
         "todo": 7,
         "commonNames": 312
       }
     },
-    "falsePositivesCorrected": 372
+    "falsePositivesCorrected": 368
   },
   "findings": [
     {
@@ -283,7 +283,7 @@
       "file": "src/lib/agent/orchestrate.ts",
       "line": 1,
       "symbol": "orchestrate.ts",
-      "evidence": "664 lines",
+      "evidence": "669 lines",
       "sourceClass": "app",
       "productionReachable": true,
       "userInputControlled": false,
@@ -420,87 +420,15 @@
       "status": "accepted"
     },
     {
-      "id": "957ad3e429c3",
+      "id": "aecbc24906b1",
       "ruleId": "debug-console",
       "title": "Debug console statement",
       "category": "debug",
       "severity": "low",
-      "file": "src/lib/__tests__/zzz-explore-scratch.test.ts",
-      "line": 53,
+      "file": "src/lib/__tests__/zzz-scratch2.test.ts",
+      "line": 21,
       "symbol": "console.log",
-      "evidence": "console.log(\"=\".repeat(80))",
-      "sourceClass": "test",
-      "productionReachable": false,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "fixture",
-      "status": "accepted"
-    },
-    {
-      "id": "4c8e5b9c50ad",
-      "ruleId": "debug-console",
-      "title": "Debug console statement",
-      "category": "debug",
-      "severity": "low",
-      "file": "src/lib/__tests__/zzz-explore-scratch.test.ts",
-      "line": 54,
-      "symbol": "console.log",
-      "evidence": "console.log(\"Q:\", c.query, \"[\", c.productId, \"]\")",
-      "sourceClass": "test",
-      "productionReachable": false,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "fixture",
-      "status": "accepted"
-    },
-    {
-      "id": "7075c92f0ecd",
-      "ruleId": "debug-console",
-      "title": "Debug console statement",
-      "category": "debug",
-      "severity": "low",
-      "file": "src/lib/__tests__/zzz-explore-scratch.test.ts",
-      "line": 55,
-      "symbol": "console.log",
-      "evidence": "console.log(\n        \"mode:\", res.responseStyle?.mode,\n        \"| includeCode:\", res.responseStyle?.includeCode,\n       ",
-      "sourceClass": "test",
-      "productionReachable": false,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "fixture",
-      "status": "accepted"
-    },
-    {
-      "id": "e93595abe3a7",
-      "ruleId": "debug-console",
-      "title": "Debug console statement",
-      "category": "debug",
-      "severity": "low",
-      "file": "src/lib/__tests__/zzz-explore-scratch.test.ts",
-      "line": 61,
-      "symbol": "console.log",
-      "evidence": "console.log(\"citations:\", res.citations?.map((cc) => cc.slug))",
-      "sourceClass": "test",
-      "productionReachable": false,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "fixture",
-      "status": "accepted"
-    },
-    {
-      "id": "79edec7e6808",
-      "ruleId": "debug-console",
-      "title": "Debug console statement",
-      "category": "debug",
-      "severity": "low",
-      "file": "src/lib/__tests__/zzz-explore-scratch.test.ts",
-      "line": 62,
-      "symbol": "console.log",
-      "evidence": "console.log(\"workflow:\\n\" + res.workflow.slice(0, 600))",
+      "evidence": "console.log(q, \"=>\", JSON.stringify(style))",
       "sourceClass": "test",
       "productionReachable": false,
       "userInputControlled": false,

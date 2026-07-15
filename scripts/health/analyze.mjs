@@ -114,13 +114,16 @@ function naiveScan(fileTexts) {
       if (m) counts[key] += m.length;
     }
   }
-  // Illustrative naive weighting: every raw match treated as a "finding".
+  // Illustrative naive weighting: every raw match is treated as a "finding".
+  // Per-category caps keep any single noisy category from zeroing the score, so
+  // the number reflects a plausible naive tool rather than a degenerate 0.
+  const cap = (value, max) => Math.min(value, max);
   const naivePenalty =
-    counts.dynamicExec * 6 +
-    counts.dangerousHtml * 6 +
-    counts.debug * 1 +
-    counts.todo * 1 +
-    counts.commonNames * 1;
+    cap(counts.dynamicExec * 2, 14) +
+    cap(counts.dangerousHtml * 2, 8) +
+    cap(counts.debug * 0.6, 8) +
+    cap(counts.todo * 1, 4) +
+    cap(counts.commonNames * 0.1, 12);
   const total =
     counts.dynamicExec +
     counts.debug +
