@@ -136,6 +136,14 @@ export const PRODUCTS: ApiProduct[] = [
   },
 ];
 
+/** Canonical product identifiers for domain routing and collection scoping. */
+export const PRODUCT_KEYS = ["ctix", "cftr", "csap", "orchestrate"] as const;
+export type ProductKey = (typeof PRODUCT_KEYS)[number];
+
+export function isProductKey(value: string): value is ProductKey {
+  return PRODUCT_KEYS.includes(value as ProductKey);
+}
+
 export const DEFAULT_PRODUCT_ID =
   process.env.DEFAULT_PRODUCT_ID?.trim() || "ctix";
 

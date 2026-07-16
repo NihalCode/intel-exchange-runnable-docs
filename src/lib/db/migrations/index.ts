@@ -18,6 +18,10 @@ import {
   POSTGRES_AGENT_CONVERSATIONS_MIGRATION_SQL,
   SQLITE_AGENT_CONVERSATIONS_MIGRATION_SQL,
 } from "@/lib/db/migrations/005_agent_conversations";
+import {
+  POSTGRES_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
+  SQLITE_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
+} from "@/lib/db/migrations/006_multi_domain_analytics";
 
 export interface VersionedMigration {
   version: number;
@@ -60,6 +64,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "agent_conversations",
     sqlite: SQLITE_AGENT_CONVERSATIONS_MIGRATION_SQL,
     postgres: POSTGRES_AGENT_CONVERSATIONS_MIGRATION_SQL,
+  },
+  {
+    version: 6,
+    name: "multi_domain_analytics",
+    sqlite: SQLITE_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
+    postgres: POSTGRES_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
   },
 ] as const;
 
