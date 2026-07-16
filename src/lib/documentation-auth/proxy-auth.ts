@@ -7,10 +7,12 @@ import {
   isPublicApiPath,
   isPublicPagePath,
 } from "@/lib/documentation-auth/route-policy";
+import { applyHostRouting } from "@/lib/domains/proxy-host";
 import {
   getMiddlewareAuthUser,
   isMiddlewareAuthEnabled,
 } from "@/lib/documentation-auth/middleware-auth";
+import { buildSignInUrl } from "@/lib/documentation-auth/sign-in-url";
 
 export function isPublicDocumentationApiPath(pathname: string): boolean {
   return isPublicApiPath(pathname);
@@ -37,29 +39,7 @@ function isRedirectResponse(response: NextResponse): boolean {
   return response.status >= 300 && response.status < 400;
 }
 
-/**
- * Build the sign-in URL for a request that was blocked by the auth gate.
- * For API requests we prefer the referring page (the human-visible route the
- * user is actually on) so the post-login redirect lands somewhere useful
- * rather than on a JSON API path.
- */
-export function signInUrlFor(request: NextRequest): string {
-  const referer = request.headers.get("referer");
-  let returnTo = request.nextUrl.pathname + request.nextUrl.search;
-  if (referer) {
-    try {
-      const refUrl = new URL(referer);
-      if (refUrl.origin === request.nextUrl.origin) {
-        returnTo = refUrl.pathname + refUrl.search;
-      }
-    } catch {
-      // Ignore malformed Referer headers and fall back to the request path.
-    }
-  }
-  const login = new URL("/sign-in", request.url);
-  login.searchParams.set("returnTo", returnTo);
-  return login.pathname + login.search;
-}
+export { signInUrlFor } from "@/lib/documentation-auth/sign-in-url";
 
 /**
  * 401 for protected API routes. Crucially this MERGES the Auth0 rolling-session
@@ -68,15 +48,16 @@ export function signInUrlFor(request: NextRequest): string {
  * an actionable, machine-readable body instead of a bare "Unauthorized" so the
  * client can redirect the user to sign in.
  */
-export function unauthorizedApiResponse(
+export async function unauthorizedApiResponse(
   request: NextRequest,
   authResponse: NextResponse
-): NextResponse {
+): Promise<NextResponse> {
+  const signIn = await buildSignInUrl(request);
   const response = NextResponse.json(
     {
       error: "Session expired — sign in again",
       code: "SESSION_EXPIRED",
-      signIn: signInUrlFor(request),
+      signIn,
     },
     { status: 401 }
   );
@@ -115,6 +96,9 @@ export async function runDocumentationAuthProxy(
   }
 
   const authResponse = await auth0.middleware(request);
+  const hostRouted = await applyHostRouting(request, authResponse);
+  if (hostRouted) return hostRouted;
+
   const { pathname } = request.nextUrl;
 
   if (isPublicPagePath(pathname)) {
@@ -134,18 +118,15 @@ export async function runDocumentationAuthProxy(
       return mergeAuthHeaders(NextResponse.next(), authResponse);
     }
     if (!authUser) {
-      return unauthorizedApiResponse(request, authResponse);
+      return await unauthorizedApiResponse(request, authResponse);
     }
     return continueWithAuthHeaders(request, authResponse);
   }
 
   if (!authUser && isProtectedPath(pathname)) {
-    const login = new URL("/sign-in", request.url);
-    login.searchParams.set(
-      "returnTo",
-      pathname + request.nextUrl.search
-    );
-    return mergeAuthHeaders(NextResponse.redirect(login), authResponse);
+    const signIn = await buildSignInUrl(request);
+    const destination = signIn.startsWith("http") ? signIn : new URL(signIn, request.url).toString();
+    return mergeAuthHeaders(NextResponse.redirect(destination), authResponse);
   }
 
   return continueWithAuthHeaders(request, authResponse);
