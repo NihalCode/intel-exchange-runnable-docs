@@ -4,6 +4,7 @@ export interface PlaygroundDraft {
   queryValues?: Record<string, string>;
   bodyText?: string;
   formTextValues?: Record<string, string>;
+  customQueryParams?: Array<{ id: string; name: string; value: string; enabled: boolean }>;
 }
 
 const STORAGE_KEY = "cyware-playground-sessions";

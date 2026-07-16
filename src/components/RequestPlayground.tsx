@@ -40,6 +40,8 @@ import {
 } from "@/lib/multipart";
 import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { useRunSettings } from "./RunSettings";
+import { isCustomSnippetQueryParamsEnabledClient } from "@/lib/domains/client-gates";
+import type { CustomQueryParameter } from "@/lib/merge-query-params";
 
 /* ----------------------------- context ---------------------------------- */
 
@@ -57,6 +59,8 @@ export interface RequestPlaygroundState {
   jsonError: string | null;
   pathParams: KeyValue[];
   editableParams: KeyValue[];
+  customQueryParams: CustomQueryParameter[];
+  showCustomQueryParams: boolean;
   showBody: boolean;
   showMultipart: boolean;
   formFields: NonNullable<RunnableRequest["formFields"]>;
@@ -67,6 +71,9 @@ export interface RequestPlaygroundState {
   requiredQuery: Set<string>;
   setPathValue: (name: string, value: string) => void;
   setQueryValue: (name: string, value: string) => void;
+  setCustomQueryParam: (id: string, patch: Partial<CustomQueryParameter>) => void;
+  addCustomQueryParam: () => void;
+  removeCustomQueryParam: (id: string) => void;
   setBodyText: (text: string) => void;
   setFormText: (name: string, value: string) => void;
   setFormFile: (name: string, file: File | null) => void;
@@ -160,6 +167,8 @@ export function RequestPlaygroundProvider({
     [formFields]
   );
 
+  const showCustomQueryParams = isCustomSnippetQueryParamsEnabledClient();
+  const [customQueryParams, setCustomQueryParams] = useState<CustomQueryParameter[]>([]);
   const [pathValues, setPathValues] = useState<Record<string, string>>(defaultPathValues);
   const [queryValues, setQueryValues] = useState<Record<string, string>>(defaultQueryValues);
   const [bodyText, setBodyTextState] = useState(defaultBodyText);
@@ -182,6 +191,9 @@ export function RequestPlaygroundProvider({
       setBodyTextState(nextBody);
       setJsonError(validateJson(nextBody));
       setFormTextValues(mergeStringRecords(defaultFormTextValues, saved.formTextValues));
+      if (saved.customQueryParams?.length) {
+        setCustomQueryParams(saved.customQueryParams);
+      }
     });
     return () => {
       active = false;
@@ -203,6 +215,31 @@ export function RequestPlaygroundProvider({
 
   const setQueryValue = useCallback((name: string, value: string) => {
     setQueryValues((prev) => ({ ...prev, [name]: value }));
+  }, []);
+
+  const setCustomQueryParam = useCallback(
+    (id: string, patch: Partial<CustomQueryParameter>) => {
+      setCustomQueryParams((prev) =>
+        prev.map((row) => (row.id === id ? { ...row, ...patch } : row))
+      );
+    },
+    []
+  );
+
+  const addCustomQueryParam = useCallback(() => {
+    setCustomQueryParams((prev) => [
+      ...prev,
+      {
+        id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        name: "",
+        value: "",
+        enabled: true,
+      },
+    ]);
+  }, []);
+
+  const removeCustomQueryParam = useCallback((id: string) => {
+    setCustomQueryParams((prev) => prev.filter((row) => row.id !== id));
   }, []);
 
   const setBodyText = useCallback((text: string) => {
@@ -229,8 +266,9 @@ export function RequestPlaygroundProvider({
       queryValues,
       bodyText,
       formTextValues,
+      customQueryParams,
     });
-  }, [storageId, pathValues, queryValues, bodyText, formTextValues]);
+  }, [storageId, pathValues, queryValues, bodyText, formTextValues, customQueryParams]);
 
   const value = useMemo<RequestPlaygroundState>(() => {
     return {
@@ -241,6 +279,8 @@ export function RequestPlaygroundProvider({
       jsonError,
       pathParams,
       editableParams,
+      customQueryParams,
+      showCustomQueryParams,
       showBody,
       showMultipart,
       formFields,
@@ -251,6 +291,9 @@ export function RequestPlaygroundProvider({
       requiredQuery,
       setPathValue,
       setQueryValue,
+      setCustomQueryParam,
+      addCustomQueryParam,
+      removeCustomQueryParam,
       setBodyText,
       setFormText,
       setFormFile,
@@ -296,6 +339,8 @@ export function RequestPlaygroundProvider({
     jsonError,
     pathParams,
     editableParams,
+    customQueryParams,
+    showCustomQueryParams,
     showBody,
     showMultipart,
     formFields,
@@ -306,6 +351,9 @@ export function RequestPlaygroundProvider({
     requiredQuery,
     setPathValue,
     setQueryValue,
+    setCustomQueryParam,
+    addCustomQueryParam,
+    removeCustomQueryParam,
     setBodyText,
     setFormText,
     setFormFile,
@@ -405,6 +453,74 @@ function QueryParamEditor({
           </label>
         ))}
       </div>
+    </div>
+  );
+}
+
+function CustomQueryParamEditor({
+  rows,
+  onChange,
+  onAdd,
+  onRemove,
+}: {
+  rows: CustomQueryParameter[];
+  onChange: (id: string, patch: Partial<CustomQueryParameter>) => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <span className="text-xs font-medium opacity-70">Custom query parameters</span>
+        <button
+          type="button"
+          onClick={onAdd}
+          className="rounded border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800"
+        >
+          Add parameter
+        </button>
+      </div>
+      {rows.length === 0 ? (
+        <p className="text-[11px] opacity-60">Optional user-defined query parameters (auth params are protected).</p>
+      ) : (
+        <div className="grid gap-2">
+          {rows.map((row) => (
+            <div key={row.id} className="flex flex-wrap items-end gap-2">
+              <label className="flex min-w-[8rem] flex-1 flex-col gap-1 text-xs">
+                <span className="opacity-70">Name</span>
+                <input
+                  value={row.name}
+                  onChange={(e) => onChange(row.id, { name: e.target.value })}
+                  className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
+                />
+              </label>
+              <label className="flex min-w-[8rem] flex-[2] flex-col gap-1 text-xs">
+                <span className="opacity-70">Value</span>
+                <input
+                  value={row.value}
+                  onChange={(e) => onChange(row.id, { value: e.target.value })}
+                  className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
+                />
+              </label>
+              <label className="flex items-center gap-1 pb-1 text-xs">
+                <input
+                  type="checkbox"
+                  checked={row.enabled}
+                  onChange={(e) => onChange(row.id, { enabled: e.target.checked })}
+                />
+                Enabled
+              </label>
+              <button
+                type="button"
+                onClick={() => onRemove(row.id)}
+                className="pb-1 text-[11px] text-red-600 hover:underline dark:text-red-400"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -559,6 +675,15 @@ export function RequestPlaygroundPanel() {
         onChange={playground.setQueryValue}
       />
 
+      {playground.showCustomQueryParams ? (
+        <CustomQueryParamEditor
+          rows={playground.customQueryParams}
+          onChange={playground.setCustomQueryParam}
+          onAdd={playground.addCustomQueryParam}
+          onRemove={playground.removeCustomQueryParam}
+        />
+      ) : null}
+
       {playground.showMultipart ? (
         <MultipartFormEditor
           fields={playground.formFields}
@@ -585,6 +710,7 @@ export async function buildPlaygroundExec(
   baseUrl: string,
   getCredential: (name: string) => string
 ): Promise<ExecRequest> {
+  const customParams = playground.showCustomQueryParams ? playground.customQueryParams : undefined;
   if (playground.showMultipart) {
     const parts = buildMultipartParts(
       playground.formFields,
@@ -599,7 +725,8 @@ export async function buildPlaygroundExec(
       undefined,
       playground.queryValues,
       playground.pathValues,
-      withData
+      withData,
+      customParams
     );
   }
   return resolveStructured(
@@ -610,7 +737,9 @@ export async function buildPlaygroundExec(
       ? resolveWorkflowBodyText(playground.bodyText || "", playground.workflowId)
       : playground.bodyText || undefined,
     playground.queryValues,
-    playground.pathValues
+    playground.pathValues,
+    undefined,
+    customParams
   );
 }
 

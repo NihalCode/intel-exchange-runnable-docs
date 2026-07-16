@@ -92,6 +92,16 @@ export interface KeyValue {
   value: string;
 }
 
+export type QueryParamSource = "documented" | "embedded" | "auth" | "custom";
+
+export interface RequestQueryParam extends KeyValue {
+  source?: QueryParamSource;
+  required?: boolean;
+  allowMultiple?: boolean;
+  valueType?: string;
+  sensitive?: boolean;
+}
+
 export interface FormBodyField {
   name: string;
   kind: "file" | "text";
@@ -107,7 +117,7 @@ export interface RunnableRequest {
   path: string;
   /** Values substituted into `{name}` segments in `path`. */
   pathParams?: KeyValue[];
-  query: KeyValue[];
+  query: RequestQueryParam[];
   headers: KeyValue[];
   /** JSON (or raw) request body as a string, if any */
   body?: string;

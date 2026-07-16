@@ -3,6 +3,11 @@ import type { ExecRequest } from "./parse-request";
 import { isSensitiveName, looksLikePlaceholder } from "./security";
 import type { KeyValue, RunnableRequest } from "./types";
 import type { MultipartPart } from "./multipart";
+import {
+  mergeQueryParameters,
+  toKeyValuePairs,
+  type CustomQueryParameter,
+} from "./merge-query-params";
 
 export interface CredField {
   name: string;
@@ -129,18 +134,36 @@ export function resolveStructured(
   queryOverrides?: Record<string, string>,
   /** User-edited values for `{name}` path segments. */
   pathOverrides?: Record<string, string>,
-  multipartParts?: MultipartPart[]
+  multipartParts?: MultipartPart[],
+  customQueryParams?: CustomQueryParameter[]
 ): ExecRequest {
-  // Apply user overrides before credential substitution so cred values win.
-  const mergedQuery = (req.query || []).map((p) =>
-    queryOverrides && Object.prototype.hasOwnProperty.call(queryOverrides, p.name)
-      ? { name: p.name, value: queryOverrides[p.name] }
-      : p
-  );
-  // Drop empty/optional query params: sending `page=` makes CTIX do int('') → 400.
-  const query = applyCreds(mergedQuery, getCred).filter(
-    (p) => (p.value ?? "").trim() !== ""
-  );
+  const allQuery = req.query || [];
+  const documented = allQuery.filter((p) => !needsCredential(p.name, p.value));
+  const authParams = allQuery
+    .filter((p) => needsCredential(p.name, p.value))
+    .map((p) => ({ ...p, source: "auth" as const, sensitive: true }));
+
+  let query: KeyValue[];
+  if (customQueryParams && customQueryParams.length > 0) {
+    const merged = mergeQueryParameters({
+      documented,
+      auth: authParams,
+      custom: customQueryParams,
+      valueOverrides: queryOverrides,
+    });
+    query = applyCreds(toKeyValuePairs(merged), getCred).filter(
+      (p) => (p.value ?? "").trim() !== ""
+    );
+  } else {
+    const mergedQuery = allQuery.map((p) =>
+      queryOverrides && Object.prototype.hasOwnProperty.call(queryOverrides, p.name)
+        ? { name: p.name, value: queryOverrides[p.name] }
+        : p
+    );
+    query = applyCreds(mergedQuery, getCred).filter(
+      (p) => (p.value ?? "").trim() !== ""
+    );
+  }
   const headers = applyCreds(req.headers || [], getCred).filter(
     (h) => (h.value ?? "").trim() !== ""
   );
