@@ -6,7 +6,7 @@ import { updateUnansweredQueryReview } from "@/lib/query-analytics/repository";
 
 export const runtime = "nodejs";
 
-const STATUSES = new Set(["open", "in_review", "resolved", "dismissed"]);
+const STATUSES = new Set(["open", "triaged", "resolved", "dismissed"]);
 
 export async function PATCH(
   request: NextRequest,
@@ -25,7 +25,7 @@ export async function PATCH(
   const ok = await updateUnansweredQueryReview({
     organizationId: access.context.organization.id,
     id,
-    status: status as "open" | "in_review" | "resolved" | "dismissed",
+    status: status as "open" | "triaged" | "resolved" | "dismissed",
     notes: body.notes,
   });
   if (!ok) return NextResponse.json({ error: "Not found" }, { status: 404 });

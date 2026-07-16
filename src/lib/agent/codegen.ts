@@ -1,5 +1,7 @@
 import { buildRunnableRequest, codeForRunnableRequest } from "../snippets";
-import { applyPathParams } from "../resolve-request";
+import { applyPathParams, queryStringForRequest } from "../resolve-request";
+import { needsCredential } from "../resolve-request";
+import { mergeQueryParameters, toKeyValuePairs } from "../merge-query-params";
 import type { EndpointPage, KeyValue, RunnableRequest } from "../types";
 import type { AgentLanguage, StepParamOverrides } from "./types";
 
@@ -49,7 +51,17 @@ export function applyParamOverrides(
   }
 
   if (overrides.query) {
-    next.query = mergeKeyValues(req.query, overrides.query);
+    const documented = req.query.filter((p) => !needsCredential(p.name, p.value));
+    const auth = req.query
+      .filter((p) => needsCredential(p.name, p.value))
+      .map((p) => ({ ...p, source: "auth" as const }));
+    next.query = toKeyValuePairs(
+      mergeQueryParameters({
+        documented,
+        auth,
+        valueOverrides: overrides.query,
+      })
+    );
   }
 
   if (overrides.body) {
@@ -67,11 +79,8 @@ export function applyParamOverrides(
 }
 
 function queryParamsForCode(req: RunnableRequest): string {
-  const filled = req.query.filter((q) => (q.value ?? "").trim() !== "");
-  if (filled.length === 0) return "";
-  return filled
-    .map((q) => `${encodeURIComponent(q.name)}=${encodeURIComponent(q.value)}`)
-    .join("&");
+  const qs = queryStringForRequest(req);
+  return qs.startsWith("?") ? qs.slice(1) : qs;
 }
 
 function javaSnippet(req: RunnableRequest, baseUrl: string): string {

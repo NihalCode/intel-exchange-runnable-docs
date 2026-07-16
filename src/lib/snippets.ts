@@ -3,7 +3,7 @@ import { normalizeCftrApiPath } from "./cftr-path";
 import { normalizeCsapApiPath } from "./csap-path";
 import { authKeyValues, baseUrlForProduct } from "./products/auth";
 import { isPostmanTemplatePath, normalizePostmanEndpointPath } from "./postman-path";
-import { applyPathParams } from "./resolve-request";
+import { applyPathParams, effectiveQueryKeyValues, queryStringForRequest } from "./resolve-request";
 import {
   endpointUsesMultipart,
   formFieldsFromBody,
@@ -13,6 +13,7 @@ import type {
   EndpointPage,
   KeyValue,
   ParamField,
+  RequestQueryParam,
   RunnableRequest,
 } from "./types";
 
@@ -113,6 +114,18 @@ function fieldsToKeyValues(fields: ParamField[] | undefined): KeyValue[] {
     .map((f) => ({ name: f.name, value: kvString(f.value) }));
 }
 
+function fieldsToRequestQueryParams(fields: ParamField[] | undefined): RequestQueryParam[] {
+  if (!fields) return [];
+  return fields
+    .filter((f) => f.name)
+    .map((f) => ({
+      name: f.name,
+      value: kvString(f.value),
+      source: "documented" as const,
+      required: f.isRequired,
+    }));
+}
+
 export function buildRunnableRequest(page: EndpointPage, productId = "ctix"): RunnableRequest {
   const { query: authQuery, headers: authHeaders } = authKeyValues(productId);
 
@@ -138,10 +151,12 @@ export function buildRunnableRequest(page: EndpointPage, productId = "ctix"): Ru
     path = normalizeCsapApiPath(path);
   }
 
-  const query = [
-    ...fieldsToKeyValues(page.request?.query),
-    ...extraQuery.filter((q) => !authQuery.some((a) => a.name === q.name)),
-    ...authQuery,
+  const query: RequestQueryParam[] = [
+    ...fieldsToRequestQueryParams(page.request?.query),
+    ...extraQuery
+      .filter((q) => !authQuery.some((a) => a.name === q.name))
+      .map((q) => ({ ...q, source: "embedded" as const })),
+    ...authQuery.map((q) => ({ ...q, source: "auth" as const, sensitive: true })),
   ];
   const headers = [...fieldsToKeyValues(page.request?.header), ...authHeaders];
   const contentType = page.request?.contentType || page.contentType || "application/json";
@@ -190,7 +205,7 @@ function resolvedPath(req: RunnableRequest): string {
 }
 
 function curlSnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): string {
-  const url = `${baseUrl}${resolvedPath(req)}${queryString(req.query)}`;
+  const url = `${baseUrl}${resolvedPath(req)}${queryStringForRequest(req)}`;
   const lines = [`curl --request ${req.method} \\`, `  --url "${url}"`];
   for (const h of req.headers) {
     if (h.name.toLowerCase() === "content-type") continue;
@@ -216,7 +231,7 @@ function curlSnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): stri
 }
 
 function jsSnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): string {
-  const url = `${baseUrl}${resolvedPath(req)}${queryString(req.query)}`;
+  const url = `${baseUrl}${resolvedPath(req)}${queryStringForRequest(req)}`;
   const headerObj: Record<string, string> = {};
   for (const h of req.headers) {
     if (h.name.toLowerCase() === "content-type") continue;
@@ -275,7 +290,7 @@ function pySnippet(req: RunnableRequest, baseUrl: string = DISPLAY_BASE): string
     headerObj[h.name] = h.value;
   }
   const params: Record<string, string> = {};
-  for (const q of withValues(req.query)) params[q.name] = q.value;
+  for (const q of effectiveQueryKeyValues(req)) params[q.name] = q.value;
   const lines = [
     `import requests`,
     ``,

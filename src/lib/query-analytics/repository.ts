@@ -207,7 +207,7 @@ export async function listUnansweredQueryReviews(
 export async function updateUnansweredQueryReview(input: {
   organizationId: string;
   id: string;
-  status: "open" | "in_review" | "resolved" | "dismissed";
+  status: "open" | "triaged" | "resolved" | "dismissed";
   notes?: string | null;
 }): Promise<boolean> {
   const existing = await db.queryOne(

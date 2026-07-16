@@ -12,7 +12,7 @@ import { agentLifecycleEvent } from "@/lib/agent/events";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import { correlationIds } from "@/lib/enterprise/observability";
 import { trustedHostnameFromHeaders } from "@/lib/domains/request-host";
-import { isQueryAnalyticsEnabled } from "@/lib/domains/feature-gates";
+import { resolveQueryAnalyticsEnabled } from "@/lib/domains/feature-gates-resolve";
 import {
   ensureUnansweredReviewForEvent,
   recordQueryAnalyticsEvent,
@@ -91,7 +91,13 @@ export async function POST(req: Request) {
       ...agentRequest,
       allowedProductIds,
     });
-    if (isQueryAnalyticsEnabled() && organizationId) {
+    if (
+      (await resolveQueryAnalyticsEnabled({
+        organizationId,
+        role: session.user.role,
+      })) &&
+      organizationId
+    ) {
       const outcome = classifyQueryOutcome({
         response: result,
         errorCode: result.code,

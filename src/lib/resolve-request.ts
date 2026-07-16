@@ -125,6 +125,48 @@ export function credFieldsForExec(exec: ExecRequest): CredField[] {
   return credFieldsFromPairs(pairs);
 }
 
+function splitQuerySources(req: RunnableRequest) {
+  const allQuery = req.query || [];
+  const documented = allQuery.filter((p) => !needsCredential(p.name, p.value));
+  const authParams = allQuery
+    .filter((p) => needsCredential(p.name, p.value))
+    .map((p) => ({ ...p, source: "auth" as const, sensitive: true }));
+  return { documented, authParams };
+}
+
+/** Merged query params for snippets/runners (no credential substitution). */
+export function effectiveQueryKeyValues(
+  req: RunnableRequest,
+  queryOverrides?: Record<string, string>,
+  customQueryParams?: CustomQueryParameter[]
+): KeyValue[] {
+  const { documented, authParams } = splitQuerySources(req);
+  if (customQueryParams && customQueryParams.length > 0) {
+    return toKeyValuePairs(
+      mergeQueryParameters({
+        documented,
+        auth: authParams,
+        custom: customQueryParams,
+        valueOverrides: queryOverrides,
+      })
+    );
+  }
+  const merged = (req.query || []).map((p) =>
+    queryOverrides && Object.prototype.hasOwnProperty.call(queryOverrides, p.name)
+      ? { name: p.name, value: queryOverrides[p.name] }
+      : p
+  );
+  return merged.filter((p) => (p.value ?? "").trim() !== "");
+}
+
+export function queryStringForRequest(
+  req: RunnableRequest,
+  queryOverrides?: Record<string, string>,
+  customQueryParams?: CustomQueryParameter[]
+): string {
+  return queryString(effectiveQueryKeyValues(req, queryOverrides, customQueryParams));
+}
+
 export function resolveStructured(
   req: RunnableRequest,
   baseUrl: string,
@@ -137,11 +179,7 @@ export function resolveStructured(
   multipartParts?: MultipartPart[],
   customQueryParams?: CustomQueryParameter[]
 ): ExecRequest {
-  const allQuery = req.query || [];
-  const documented = allQuery.filter((p) => !needsCredential(p.name, p.value));
-  const authParams = allQuery
-    .filter((p) => needsCredential(p.name, p.value))
-    .map((p) => ({ ...p, source: "auth" as const, sensitive: true }));
+  const { documented, authParams } = splitQuerySources(req);
 
   let query: KeyValue[];
   if (customQueryParams && customQueryParams.length > 0) {
@@ -155,7 +193,7 @@ export function resolveStructured(
       (p) => (p.value ?? "").trim() !== ""
     );
   } else {
-    const mergedQuery = allQuery.map((p) =>
+    const mergedQuery = (req.query || []).map((p) =>
       queryOverrides && Object.prototype.hasOwnProperty.call(queryOverrides, p.name)
         ? { name: p.name, value: queryOverrides[p.name] }
         : p

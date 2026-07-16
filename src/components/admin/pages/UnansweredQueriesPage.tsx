@@ -63,7 +63,7 @@ export function UnansweredQueriesPage({
               </div>
               {canManage ? (
                 <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                  {(["in_review", "resolved", "dismissed"] as const).map((status) => (
+                  {(["triaged", "resolved", "dismissed"] as const).map((status) => (
                     <button
                       key={status}
                       type="button"
