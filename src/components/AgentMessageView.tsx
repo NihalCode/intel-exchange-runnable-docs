@@ -161,7 +161,7 @@ export function AgentMessageView({
       ) : null}
 
       {response.citations.length > 0 ? (
-        <div className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <div id="sources" className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
             Sources
           </p>

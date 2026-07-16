@@ -38,13 +38,22 @@ function productFromPath(pathname: string): string | null {
   return null;
 }
 
-export function ProductProvider({ children }: { children: React.ReactNode }) {
+export function ProductProvider({
+  children,
+  hostProductId = null,
+}: {
+  children: React.ReactNode;
+  /** Product resolved from dedicated product domain (server-injected). */
+  hostProductId?: string | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const products = useMemo(() => listProducts(), []);
   const productFromRoute = productFromPath(pathname);
   const [savedProductId, setSavedProductId] = useState(DEFAULT_PRODUCT_ID);
-  const productId = productFromRoute ?? savedProductId;
+  const hostProduct =
+    hostProductId && getProduct(hostProductId) ? hostProductId : null;
+  const productId = productFromRoute ?? hostProduct ?? savedProductId;
   const [searchScope, setSearchScope] = useState<"product" | "all">("product");
 
   useEffect(() => {

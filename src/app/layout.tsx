@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ConditionalAppShell } from "@/components/ConditionalAppShell";
-import { AgentChatSession } from "@/components/AgentChatSession";
+import { HostProductProvider } from "@/components/HostProductProvider";
 import { DocumentationAuthProvider } from "@/components/auth/DocumentationAuthProvider";
-import { ProductProvider } from "@/components/ProductContext";
+import { AgentChatSession } from "@/components/AgentChatSession";
+import { ConditionalAppShell } from "@/components/ConditionalAppShell";
 import { RunSettingsProvider } from "@/components/RunSettings";
 import { getManifest } from "@/lib/content";
 
@@ -35,13 +35,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full">
         <RunSettingsProvider defaultBaseUrl={manifest.defaultBaseUrl}>
-          <ProductProvider>
+          <HostProductProvider>
             <DocumentationAuthProvider>
               <AgentChatSession>
                 <ConditionalAppShell nav={manifest.nav}>{children}</ConditionalAppShell>
               </AgentChatSession>
             </DocumentationAuthProvider>
-          </ProductProvider>
+          </HostProductProvider>
         </RunSettingsProvider>
       </body>
     </html>

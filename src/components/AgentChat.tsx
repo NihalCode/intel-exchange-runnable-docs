@@ -306,9 +306,30 @@ function AgentChatBody({
                           {retrievalNotice}
                         </p>
                       ) : null}
-                      <div className="prose prose-sm max-w-none dark:prose-invert">
+                      {msg.content.length > 900 || msg.response.steps.length > 2 ? (
+                        <nav
+                          aria-label="Jump to sections"
+                          className="flex flex-wrap gap-2 text-[11px] text-zinc-500"
+                        >
+                          <a href={`#answer-${msg.id}`} className="underline-offset-2 hover:underline">
+                            Answer
+                          </a>
+                          {msg.response.steps.length ? (
+                            <a href={`#steps-${msg.id}`} className="underline-offset-2 hover:underline">
+                              API details
+                            </a>
+                          ) : null}
+                          {msg.response.citations.length ? (
+                            <a href={`#sources-${msg.id}`} className="underline-offset-2 hover:underline">
+                              Sources
+                            </a>
+                          ) : null}
+                        </nav>
+                      ) : null}
+                      <div id={`answer-${msg.id}`} className="prose prose-sm max-w-none dark:prose-invert">
                         <Markdown>{msg.content}</Markdown>
                       </div>
+                      <div id={`steps-${msg.id}`}>
                       <AgentMessageView
                         response={msg.response}
                         language={language}
@@ -316,6 +337,7 @@ function AgentChatBody({
                         onDeploySuccess={handleDeploySuccess}
                         compactAppFiles
                       />
+                      </div>
                     </div>
                   </div>
                 );

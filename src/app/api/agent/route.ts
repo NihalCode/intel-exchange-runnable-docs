@@ -3,6 +3,7 @@ import {
   guardAskAgent,
 } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { classifyQueryOutcome, isUnansweredOutcome } from "@/lib/agent/query-outcome";
 import { getAgentProductAccess } from "@/lib/documentation-credentials/access";
 import { completeTurnWithFinal } from "@/lib/agent/conversation-store";
 import { runAgent } from "@/lib/agent/orchestrate";
@@ -10,6 +11,14 @@ import type { AgentRequest } from "@/lib/agent/types";
 import { agentLifecycleEvent } from "@/lib/agent/events";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import { correlationIds } from "@/lib/enterprise/observability";
+import { trustedHostnameFromHeaders } from "@/lib/domains/request-host";
+import { isQueryAnalyticsEnabled } from "@/lib/domains/feature-gates";
+import {
+  ensureUnansweredReviewForEvent,
+  recordQueryAnalyticsEvent,
+} from "@/lib/query-analytics/repository";
+import { getResolvedHostContext } from "@/lib/domains/host-context";
+import { isProductKey } from "@/lib/products/registry";
 import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
 
 export const runtime = "nodejs";
@@ -50,8 +59,18 @@ export async function POST(req: Request) {
       if (featureAccess instanceof Response) return featureAccess;
     }
     // Ignore any client-supplied key — OpenAI is server-configured only.
-    const { llmApiKey: _ignored, ...agentRequest } = body;
+    const { llmApiKey: _ignored, ...agentRequestBody } = body;
     void _ignored;
+
+    const hostContext = await getResolvedHostContext();
+    let agentRequest: AgentRequest = agentRequestBody;
+    if (
+      hostContext?.productId &&
+      isProductKey(hostContext.productId) &&
+      (!agentRequest.productId || agentRequest.productId === "all")
+    ) {
+      agentRequest = { ...agentRequest, productId: hostContext.productId };
+    }
 
     let allowedProductIds: string[] | undefined;
     let organizationId: string | undefined;
@@ -67,10 +86,41 @@ export async function POST(req: Request) {
       organizationId = (await resolveOrganizationContext(session)).organization.id;
     }
 
+    const started = Date.now();
     const result = await runAgent({
       ...agentRequest,
       allowedProductIds,
     });
+    if (isQueryAnalyticsEnabled() && organizationId) {
+      const outcome = classifyQueryOutcome({
+        response: result,
+        errorCode: result.code,
+        retrievalCount: result.retrieval?.length ?? result.citations.length,
+      });
+      const eventId = await recordQueryAnalyticsEvent({
+        organizationId,
+        userId: session.user.id,
+        conversationId: body.conversationId ?? null,
+        turnId: body.turnId ?? null,
+        logicalQueryId: body.turnId ?? requestId,
+        hostname: trustedHostnameFromHeaders(req.headers),
+        productId: (() => {
+          const candidate =
+            typeof agentRequest.productId === "string"
+              ? agentRequest.productId
+              : result.productContext?.products[0]?.id;
+          return candidate && isProductKey(candidate) ? candidate : null;
+        })(),
+        outcome,
+        retrievalResultCount: result.retrieval?.length ?? null,
+        citationCount: result.citations.length,
+        latencyMs: Date.now() - started,
+        requestId,
+      });
+      if (isUnansweredOutcome(outcome)) {
+        await ensureUnansweredReviewForEvent(organizationId, eventId);
+      }
+    }
     if (hasTurnId && hasConversationId && organizationId) {
       await completeTurnWithFinal({
         turnId: body.turnId!,
