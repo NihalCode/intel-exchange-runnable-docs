@@ -21,6 +21,9 @@ const ROLE_PERMISSIONS: Record<EnterpriseRole, readonly EnterprisePermission[]> 
     "schemas.manage",
     "audit.read",
     "jobs.read",
+    "domains.read",
+    "collections.read",
+    "query_analytics.read",
   ],
 };
 
@@ -74,7 +77,11 @@ export function authorizeEnterprise(
       permission === "features.manage" ||
       permission === "schemas.review" ||
       permission === "schemas.publish" ||
-      permission === "resources.write_production"
+      permission === "resources.write_production" ||
+      permission === "domains.manage" ||
+      permission === "collections.manage" ||
+      permission === "query_analytics.read_sensitive" ||
+      permission === "unanswered_queries.manage"
     ) {
       return false;
     }

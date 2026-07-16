@@ -13,6 +13,13 @@ export const DOCUMENTATION_FEATURE_KEYS = [
   "public_documentation_search",
   "support_agent",
   "placeholder_admin_modules",
+  "host_based_product_routing",
+  "separate_admin_domain",
+  "cross_domain_sso",
+  "query_analytics",
+  "unanswered_query_review",
+  "chat_response_navigation",
+  "custom_snippet_query_parameters",
 ] as const;
 
 export type DocumentationFeatureKey = (typeof DOCUMENTATION_FEATURE_KEYS)[number];

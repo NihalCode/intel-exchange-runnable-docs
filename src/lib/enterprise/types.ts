@@ -26,6 +26,13 @@ export const ENTERPRISE_PERMISSIONS = [
   "audit.read_sensitive",
   "jobs.read",
   "jobs.manage",
+  "domains.read",
+  "domains.manage",
+  "collections.read",
+  "collections.manage",
+  "query_analytics.read",
+  "query_analytics.read_sensitive",
+  "unanswered_queries.manage",
 ] as const;
 
 export type EnterprisePermission = (typeof ENTERPRISE_PERMISSIONS)[number];

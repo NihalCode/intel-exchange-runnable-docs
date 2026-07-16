@@ -49,7 +49,7 @@ describe("unauthorized API response (agent chat regression)", () => {
     });
     const auth = NextResponse.next();
 
-    const response = unauthorizedApiResponse(request, auth);
+    const response = await unauthorizedApiResponse(request, auth);
     const body = await response.json();
 
     expect(response.status).toBe(401);
@@ -68,7 +68,7 @@ describe("unauthorized API response (agent chat regression)", () => {
     const auth = NextResponse.next();
     auth.headers.set("Set-Cookie", "appSession=rotated; Path=/; HttpOnly");
 
-    const response = unauthorizedApiResponse(request, auth);
+    const response = await unauthorizedApiResponse(request, auth);
 
     expect(response.status).toBe(401);
     expect(response.headers.get("Set-Cookie")).toContain("appSession=rotated");

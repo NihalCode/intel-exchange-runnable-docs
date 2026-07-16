@@ -108,8 +108,19 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       {
         href: "/admin/documentation-agent/domains",
         label: "Domains",
-        permission: "resources.read",
-        featureFlag: "placeholder_admin_modules",
+        permission: "domains.read",
+      },
+      {
+        href: "/admin/documentation-agent/query-analytics",
+        label: "Query analytics",
+        permission: "query_analytics.read",
+        featureFlag: "query_analytics",
+      },
+      {
+        href: "/admin/documentation-agent/unanswered",
+        label: "Unanswered queries",
+        permission: "query_analytics.read",
+        featureFlag: "unanswered_query_review",
       },
       {
         href: "/admin/documentation-agent/webhooks",

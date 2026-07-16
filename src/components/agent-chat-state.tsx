@@ -561,25 +561,44 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           credentialedProducts
         );
 
-        const res = await fetch("/api/agent", {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Request-Id": requestId,
-          },
-          signal: requestController.signal,
-          body: JSON.stringify({
-            query: q,
-            mode: resolved.mode,
-            language,
-            productId: scopedProductId,
-            history: historyForApi(priorMessages.slice(0, -1)),
-            existingApp: resolved.editExistingApp ? existingCtx : undefined,
-            conversationId: serverConversationId ?? undefined,
-            turnId: serverTurnId ?? undefined,
-          }),
-        });
+        const agentPayload = {
+          query: q,
+          mode: resolved.mode,
+          language,
+          productId: scopedProductId,
+          history: historyForApi(priorMessages.slice(0, -1)),
+          existingApp: resolved.editExistingApp ? existingCtx : undefined,
+          conversationId: serverConversationId ?? undefined,
+          turnId: serverTurnId ?? undefined,
+        };
+
+        async function postAgent(attempt: number): Promise<Response> {
+          const res = await fetch("/api/agent", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Request-Id": requestId,
+            },
+            signal: requestController.signal,
+            body: JSON.stringify(agentPayload),
+          });
+          if (res.status === 401 && attempt === 0) {
+            try {
+              const preview = await res.clone().json();
+              if (preview?.code === "SESSION_EXPIRED") {
+                logPanel("Session refreshed — retrying once.");
+                await new Promise((resolve) => setTimeout(resolve, 150));
+                return postAgent(1);
+              }
+            } catch {
+              /* fall through to normal 401 handling */
+            }
+          }
+          return res;
+        }
+
+        const res = await postAgent(0);
         const responseRequestId = res.headers.get("x-agent-request-id");
         if (responseRequestId) logPanel(`Agent request ${responseRequestId}`);
         const bodyText = await res.text();
