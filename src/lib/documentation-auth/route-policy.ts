@@ -15,6 +15,7 @@ const PUBLIC_API_EXACT = [
   "/api/invites/validate",
   "/api/health/live",
   "/api/health/ready",
+  "/api/health/auth",
 ];
 
 /** Product catalog metadata remains readable pre-login for invite/setup pages only when needed.

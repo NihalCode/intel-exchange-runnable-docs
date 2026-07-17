@@ -64,6 +64,33 @@ export async function unauthorizedApiResponse(
   return mergeAuthHeaders(response, authResponse);
 }
 
+async function authUnavailableResponse(
+  request: NextRequest,
+  code: string
+): Promise<NextResponse> {
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/api/")) {
+    return NextResponse.json(
+      {
+        error: "Authentication service unavailable",
+        code,
+      },
+      { status: 503 }
+    );
+  }
+  if (isPublicPagePath(pathname)) {
+    return NextResponse.next();
+  }
+  const signIn = await buildSignInUrl(request);
+  const destination = signIn.startsWith("http")
+    ? signIn
+    : new URL(signIn, request.url).toString();
+  const url = new URL(destination);
+  url.searchParams.set("error", "auth_config");
+  url.searchParams.set("message", `Authentication unavailable (${code}).`);
+  return NextResponse.redirect(url);
+}
+
 /** Continue the request while applying Auth0 rolling-session cookies to the response. */
 export function continueWithAuthHeaders(
   request: NextRequest,
@@ -89,6 +116,14 @@ export async function runDocumentationAuthProxy(
   try {
     return await runDocumentationAuthProxyInner(request);
   } catch {
+    // Unexpected proxy failure: fail closed on protected routes.
+    if (
+      isProtectedPath(request.nextUrl.pathname) &&
+      !isPublicPagePath(request.nextUrl.pathname) &&
+      !isPublicApiPath(request.nextUrl.pathname)
+    ) {
+      return authUnavailableResponse(request, "AUTH_MIDDLEWARE_FAILED");
+    }
     return NextResponse.next();
   }
 }
@@ -102,15 +137,22 @@ async function runDocumentationAuthProxyInner(
 
   const auth0 = getAuth0();
   if (!auth0) {
-    return NextResponse.next();
+    if (isPublicPagePath(request.nextUrl.pathname) || isPublicApiPath(request.nextUrl.pathname)) {
+      return NextResponse.next();
+    }
+    return authUnavailableResponse(request, "AUTH_ENV_INCOMPLETE");
   }
 
   let authResponse: NextResponse;
   try {
     authResponse = await auth0.middleware(request);
   } catch {
-    return NextResponse.next();
+    if (isPublicPagePath(request.nextUrl.pathname) || isPublicApiPath(request.nextUrl.pathname)) {
+      return NextResponse.next();
+    }
+    return authUnavailableResponse(request, "AUTH_MIDDLEWARE_FAILED");
   }
+
   const hostRouted = await applyHostRouting(request, authResponse);
   if (hostRouted) return hostRouted;
 

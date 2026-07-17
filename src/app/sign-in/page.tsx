@@ -4,7 +4,7 @@ import {
 } from "@/lib/documentation-auth/env";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
 import { buildAuthSetupStatus } from "@/lib/documentation-auth/setup-status";
-import { db } from "@/lib/db/client";
+import { probeDatabase } from "@/lib/db/client";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -49,14 +49,8 @@ export default async function SignInPage({
   const authReady = isAuthDisabled() || isAuthEnvComplete();
   const configIssue = authEnvValidationError();
 
-  let databaseConnected = false;
-  try {
-    await db.queryOne("SELECT 1 AS ok");
-    databaseConnected = true;
-  } catch {
-    databaseConnected = false;
-  }
-  const setup = buildAuthSetupStatus({ databaseConnected });
+  const db = await probeDatabase();
+  const setup = buildAuthSetupStatus({ databaseConnected: db.connected });
 
   const errorText =
     customMessage ||
@@ -98,6 +92,19 @@ export default async function SignInPage({
             className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-left text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
           >
             {errorText}
+          </div>
+        ) : null}
+        {authReady && db.configured && !db.connected ? (
+          <div
+            role="status"
+            data-testid="database-warning"
+            className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
+          >
+            <p className="font-medium">Database unavailable</p>
+            <p className="mt-1 text-xs leading-relaxed opacity-90">
+              {db.safeMessage ??
+                "Auth0 can start, but user/admin provisioning needs a working DATABASE_URL."}
+            </p>
           </div>
         ) : null}
         {!authReady ? (

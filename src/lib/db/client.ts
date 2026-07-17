@@ -33,8 +33,90 @@ export interface OrganizationDbContext {
 }
 
 export function isPostgresConfigured(): boolean {
-  const url = process.env.DATABASE_URL?.trim();
+  const url = normalizeDatabaseUrl(process.env.DATABASE_URL);
   return Boolean(url && (url.startsWith("postgres://") || url.startsWith("postgresql://")));
+}
+
+/**
+ * Strip wrapping quotes and ensure SSL on Vercel-hosted Postgres URLs.
+ * Never logs the connection string.
+ */
+export function normalizeDatabaseUrl(raw: string | undefined): string | null {
+  const trimmed = raw?.trim();
+  if (!trimmed) return null;
+  let value = trimmed;
+  if (
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
+    value = value.slice(1, -1).trim();
+  }
+  if (!value) return null;
+
+  const onVercel = Boolean(process.env.VERCEL);
+  const isLocal = /localhost|127\.0\.0\.1/i.test(value);
+  if (onVercel && !isLocal && !/[?&]sslmode=/i.test(value)) {
+    value += value.includes("?") ? "&sslmode=require" : "?sslmode=require";
+  }
+  return value;
+}
+
+export interface DatabaseProbeResult {
+  configured: boolean;
+  connected: boolean;
+  reasonCode?:
+    | "not_configured"
+    | "connection_failed"
+    | "migration_failed"
+    | "query_failed"
+    | "ok";
+  safeMessage?: string;
+  migrationVersion?: number;
+}
+
+/** Probe DB without exposing connection details. Prefer for health/auth diagnostics. */
+export async function probeDatabase(): Promise<DatabaseProbeResult> {
+  if (!isPostgresConfigured()) {
+    return {
+      configured: false,
+      connected: false,
+      reasonCode: "not_configured",
+      safeMessage: "DATABASE_URL is unset or not a postgres URL.",
+    };
+  }
+  try {
+    await db.queryOne("SELECT 1 AS ok");
+    let migrationVersion: number | undefined;
+    try {
+      const row = await db.queryOne<{ version: number | string }>(
+        "SELECT MAX(version) AS version FROM schema_migrations"
+      );
+      if (row?.version != null) migrationVersion = Number(row.version);
+    } catch {
+      // table may not exist yet — connection still works
+    }
+    return {
+      configured: true,
+      connected: true,
+      reasonCode: "ok",
+      migrationVersion,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "unknown";
+    const lower = message.toLowerCase();
+    const migrationFailed =
+      lower.includes("migration") ||
+      lower.includes("schema_migrations") ||
+      lower.includes("syntax error");
+    return {
+      configured: true,
+      connected: false,
+      reasonCode: migrationFailed ? "migration_failed" : "connection_failed",
+      safeMessage: migrationFailed
+        ? "Postgres connected but migrations failed. Check Vercel function logs for schema errors."
+        : "Postgres connection failed. Verify DATABASE_URL (use pooled host if Neon), include sslmode=require, redeploy, and confirm the DB allows Vercel IPs.",
+    };
+  }
 }
 
 export function getDbBackend(): DbBackend {
@@ -107,7 +189,7 @@ async function getPgPool(): Promise<Pool> {
   if (pgPool) return pgPool;
   if (pgInitialization) return pgInitialization;
   pgInitialization = (async () => {
-    const connectionString = process.env.DATABASE_URL?.trim() ?? "";
+    const connectionString = normalizeDatabaseUrl(process.env.DATABASE_URL) ?? "";
     const useSsl =
       process.env.PGSSLMODE === "require" ||
       /sslmode=require/i.test(connectionString) ||
@@ -143,7 +225,11 @@ async function getPgPool(): Promise<Pool> {
       activeBackend = "postgres";
       return pool;
     } catch (error) {
-      await client.query("ROLLBACK");
+      try {
+        await client.query("ROLLBACK");
+      } catch {
+        // ignore rollback failures after connect/migration errors
+      }
       client.release();
       await pool.end();
       pgInitialization = null;

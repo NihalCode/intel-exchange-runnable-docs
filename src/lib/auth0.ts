@@ -9,6 +9,9 @@ import { NextResponse } from "next/server";
 
 import { mapAuthCallbackError } from "@/lib/documentation-auth/auth-callback-errors";
 import {
+  authConfigFingerprint,
+} from "@/lib/documentation-auth/auth-runtime-status";
+import {
   authConfigSignInUrl,
   authEnvValidationError,
   getAuthEnv,
@@ -74,17 +77,48 @@ function createAuth0Client(): Auth0Client {
   });
 }
 
-let auth0Client: Auth0Client | null | undefined;
+let auth0Client: Auth0Client | null = null;
+let auth0Fingerprint: string | null = null;
+let lastConstructionError: string | null = null;
 
-/** Lazy Auth0 client — env vars may be unavailable at module load during build. */
+/** Lazy Auth0 client — only caches successful construction; retries after config changes. */
 export function getAuth0(): Auth0Client | null {
-  if (auth0Client !== undefined) return auth0Client;
-  try {
-    auth0Client = authConfigured() ? createAuth0Client() : null;
-  } catch {
-    auth0Client = null;
+  const fingerprint = authConfigFingerprint();
+  if (auth0Client && auth0Fingerprint === fingerprint) {
+    return auth0Client;
   }
-  return auth0Client;
+
+  auth0Client = null;
+  auth0Fingerprint = null;
+  lastConstructionError = null;
+
+  if (!authConfigured()) {
+    lastConstructionError = authEnvValidationError() ?? "AUTH_ENV_INCOMPLETE";
+    return null;
+  }
+
+  try {
+    auth0Client = createAuth0Client();
+    auth0Fingerprint = fingerprint;
+    return auth0Client;
+  } catch (error) {
+    lastConstructionError =
+      error instanceof Error ? error.message.slice(0, 200) : "AUTH_CLIENT_CONSTRUCTION_FAILED";
+    auth0Client = null;
+    auth0Fingerprint = null;
+    return null;
+  }
+}
+
+export function getAuth0ConstructionError(): string | null {
+  return lastConstructionError;
+}
+
+/** Test helper — clear cached client between cases. */
+export function resetAuth0ClientForTests(): void {
+  auth0Client = null;
+  auth0Fingerprint = null;
+  lastConstructionError = null;
 }
 
 /** @deprecated Prefer getAuth0() for runtime initialization. */
