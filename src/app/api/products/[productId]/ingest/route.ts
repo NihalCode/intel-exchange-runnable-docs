@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { guardSyncDocs } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { assertProductAccess } from "@/lib/deployment/resolve-app-product-id";
 import { requireDeveloperAccess } from "@/lib/developer/access";
 import { canRunProductIngest } from "@/lib/developer/ingest-access";
 import { formatIngestFailure } from "@/lib/developer/ingest-errors";
@@ -31,6 +32,14 @@ export async function POST(
   }
 
   const { productId } = await ctx.params;
+  try {
+    assertProductAccess(productId);
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "Product not served by this deployment." },
+      { status: 404 }
+    );
+  }
   getProductOrThrow(productId);
 
   const ingestCheck = canRunProductIngest(productId);

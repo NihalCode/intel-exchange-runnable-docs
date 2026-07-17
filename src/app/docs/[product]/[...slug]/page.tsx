@@ -3,6 +3,7 @@ import { EndpointView } from "@/components/EndpointView";
 import { Markdown } from "@/components/Markdown";
 import { ProductBadge } from "@/components/ProductContext";
 import { allSlugsForProduct, getPage, getProductManifest, normalizeDocSlug } from "@/lib/content";
+import { resolveAppProductId } from "@/lib/deployment/resolve-app-product-id";
 import { getProductOrThrow } from "@/lib/products/registry";
 import { buildEndpointSnippets } from "@/lib/snippets";
 import type { EndpointPage } from "@/lib/types";
@@ -10,7 +11,10 @@ import type { EndpointPage } from "@/lib/types";
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  const products = ["ctix", "csap", "orchestrate", "cftr"] as const;
+  const pinned = resolveAppProductId();
+  const products = pinned
+    ? ([pinned] as const)
+    : (["ctix", "csap", "orchestrate", "cftr"] as const);
   const params: { product: string; slug: string[] }[] = [];
   for (const productId of products) {
     const slugs = (await allSlugsForProduct(productId))
@@ -42,6 +46,8 @@ export default async function ProductDocPage({
   params: Promise<{ product: string; slug: string[] }>;
 }) {
   const { product: productId, slug: slugParts } = await params;
+  const pinned = resolveAppProductId();
+  if (pinned && productId !== pinned) notFound();
   const product = getProductOrThrow(productId);
   const slug = normalizeDocSlug(slugParts.join("/"));
   const manifest = await getProductManifest(productId);

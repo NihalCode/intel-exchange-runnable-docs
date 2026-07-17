@@ -31,6 +31,14 @@ describe("resolveAppProductId", () => {
     expect(assertProductAccess("ctix")).toBe("ctix");
     expect(() => assertProductAccess("cftr")).toThrow(/not served/);
   });
+
+  it("pinned deploy filters product list to one product", async () => {
+    process.env.APP_PRODUCT_ID = "ctix";
+    const { listProducts } = await import("@/lib/products/registry");
+    const pinned = resolveAppProductId();
+    const products = listProducts().filter((p) => !pinned || p.productId === pinned);
+    expect(products.map((p) => p.productId)).toEqual(["ctix"]);
+  });
 });
 
 describe("postman collection registry", () => {
