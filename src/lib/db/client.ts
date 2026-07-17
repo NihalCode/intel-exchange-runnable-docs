@@ -1,5 +1,6 @@
 import "server-only";
 
+import dns from "node:dns";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -66,6 +67,49 @@ export function databaseUrlRequiresChannelBinding(connectionString: string): boo
   return /[?&]channel_binding=require\b/i.test(connectionString);
 }
 
+/** Safe, non-secret shape of DATABASE_URL for diagnostics. */
+export function inspectDatabaseUrlShape(raw: string | undefined): {
+  present: boolean;
+  isPostgres: boolean;
+  isNeon: boolean;
+  hasPooler: boolean;
+  hasSslmodeRequire: boolean;
+  hasChannelBindingRequire: boolean;
+  hostSuffix: string | null;
+} {
+  const normalized = normalizeDatabaseUrl(raw);
+  if (!normalized) {
+    return {
+      present: false,
+      isPostgres: false,
+      isNeon: false,
+      hasPooler: false,
+      hasSslmodeRequire: false,
+      hasChannelBindingRequire: false,
+      hostSuffix: null,
+    };
+  }
+  let host = "";
+  try {
+    host = new URL(normalized).hostname.toLowerCase();
+  } catch {
+    host = "";
+  }
+  const isNeon = host.endsWith(".neon.tech");
+  const parts = host.split(".");
+  const hostSuffix =
+    parts.length >= 3 ? parts.slice(-3).join(".") : host || null;
+  return {
+    present: true,
+    isPostgres: /^postgres(ql)?:\/\//i.test(normalized),
+    isNeon,
+    hasPooler: host.includes("-pooler"),
+    hasSslmodeRequire: /[?&]sslmode=require\b/i.test(normalized),
+    hasChannelBindingRequire: databaseUrlRequiresChannelBinding(normalized),
+    hostSuffix,
+  };
+}
+
 export interface DatabaseProbeResult {
   configured: boolean;
   connected: boolean;
@@ -82,49 +126,75 @@ export interface DatabaseProbeResult {
   errorCode?: string;
   safeMessage?: string;
   migrationVersion?: number;
+  urlShape?: ReturnType<typeof inspectDatabaseUrlShape>;
+}
+
+function collectErrorTexts(error: unknown): { message: string; codes: string[] } {
+  const codes: string[] = [];
+  const parts: string[] = [];
+  const visit = (value: unknown, depth: number) => {
+    if (value == null || depth > 4) return;
+    if (typeof value === "string") {
+      parts.push(value);
+      return;
+    }
+    if (typeof value !== "object") return;
+    const obj = value as {
+      message?: unknown;
+      code?: unknown;
+      errors?: unknown;
+      cause?: unknown;
+    };
+    if (typeof obj.code === "string" && obj.code) codes.push(obj.code);
+    if (typeof obj.message === "string" && obj.message) parts.push(obj.message);
+    if (Array.isArray(obj.errors)) {
+      for (const nested of obj.errors) visit(nested, depth + 1);
+    }
+    if (obj.cause) visit(obj.cause, depth + 1);
+  };
+  visit(error, 0);
+  return { message: parts.join(" | "), codes: [...new Set(codes)] };
 }
 
 function classifyPgError(error: unknown): Pick<
   DatabaseProbeResult,
   "reasonCode" | "safeMessage"
 > & { errorCode?: string } {
-  const message = error instanceof Error ? error.message : String(error);
+  const { message, codes } = collectErrorTexts(error);
   const lower = message.toLowerCase();
-  const nodeCode =
-    error && typeof error === "object" && "code" in error
-      ? String((error as { code?: unknown }).code ?? "")
-      : "";
-  const errorCode = nodeCode || undefined;
+  const nodeCode = codes[0] || undefined;
 
   if (
     lower.includes("password authentication failed") ||
-    nodeCode === "28P01" ||
+    codes.includes("28P01") ||
     lower.includes("invalid authorization") ||
-    lower.includes("role") && lower.includes("does not exist")
+    (lower.includes("role") && lower.includes("does not exist"))
   ) {
     return {
       reasonCode: "auth_failed",
-      errorCode,
+      errorCode: nodeCode ?? "28P01",
       safeMessage:
         "Postgres rejected the credentials. Re-copy DATABASE_URL from Neon (pooled host), paste without quotes into all four Vercel projects, and redeploy.",
     };
   }
   if (
-    nodeCode === "ETIMEDOUT" ||
-    nodeCode === "ECONNREFUSED" ||
-    nodeCode === "ECONNRESET" ||
+    codes.includes("ETIMEDOUT") ||
+    codes.includes("ECONNREFUSED") ||
+    codes.includes("ECONNRESET") ||
+    codes.includes("UND_ERR_CONNECT_TIMEOUT") ||
     lower.includes("timeout") ||
     lower.includes("etimedout") ||
-    lower.includes("econnrefused")
+    lower.includes("econnrefused") ||
+    lower.includes("aggregateerror")
   ) {
     return {
       reasonCode: "timeout",
-      errorCode,
+      errorCode: nodeCode ?? "ETIMEDOUT",
       safeMessage:
-        "Postgres connection timed out. Confirm the Neon project is active (not suspended), use the -pooler hostname, and retry.",
+        "Postgres connection timed out (often Neon cold-start or IPv6 path). App forces IPv4-first for Neon; confirm the project is active and DATABASE_URL uses the -pooler host.",
     };
   }
-  if (nodeCode === "ENOTFOUND" || lower.includes("getaddrinfo") || lower.includes("enotfound")) {
+  if (codes.includes("ENOTFOUND") || lower.includes("getaddrinfo") || lower.includes("enotfound")) {
     return {
       reasonCode: "connection_failed",
       errorCode: "ENOTFOUND",
@@ -141,7 +211,7 @@ function classifyPgError(error: unknown): Pick<
   ) {
     return {
       reasonCode: "ssl_required",
-      errorCode,
+      errorCode: nodeCode,
       safeMessage:
         "Postgres TLS/SCRAM handshake failed. Keep sslmode=require (and channel_binding=require for Neon); this app enables channel binding automatically.",
     };
@@ -149,14 +219,14 @@ function classifyPgError(error: unknown): Pick<
   if (lower.includes("migration") || lower.includes("schema_migrations") || lower.includes("syntax error")) {
     return {
       reasonCode: "migration_failed",
-      errorCode,
+      errorCode: nodeCode,
       safeMessage:
         "Postgres connected but migrations failed. Check Vercel function logs for schema errors.",
     };
   }
   return {
     reasonCode: "connection_failed",
-    errorCode,
+    errorCode: nodeCode,
     safeMessage:
       "Postgres connection failed. Verify DATABASE_URL (Neon pooled host), include sslmode=require, redeploy, and confirm the DB allows Vercel egress.",
   };
@@ -164,12 +234,14 @@ function classifyPgError(error: unknown): Pick<
 
 /** Probe DB without exposing connection details. Prefer for health/auth diagnostics. */
 export async function probeDatabase(): Promise<DatabaseProbeResult> {
+  const urlShape = inspectDatabaseUrlShape(process.env.DATABASE_URL);
   if (!isPostgresConfigured()) {
     return {
       configured: false,
       connected: false,
       reasonCode: "not_configured",
       safeMessage: "DATABASE_URL is unset or not a postgres URL.",
+      urlShape,
     };
   }
   try {
@@ -188,12 +260,14 @@ export async function probeDatabase(): Promise<DatabaseProbeResult> {
       connected: true,
       reasonCode: "ok",
       migrationVersion,
+      urlShape,
     };
   } catch (error) {
     const classified = classifyPgError(error);
     return {
       configured: true,
       connected: false,
+      urlShape,
       ...classified,
     };
   }
@@ -274,14 +348,23 @@ async function getPgPool(): Promise<Pool> {
       process.env.PGSSLMODE === "require" ||
       /sslmode=require/i.test(connectionString) ||
       (Boolean(process.env.VERCEL) && !/localhost|127\.0\.0\.1/i.test(connectionString));
+    const isNeon = /\.neon\.tech\b/i.test(connectionString);
     const enableChannelBinding =
-      databaseUrlRequiresChannelBinding(connectionString) ||
-      /\.neon\.tech\b/i.test(connectionString);
+      databaseUrlRequiresChannelBinding(connectionString) || isNeon;
 
-    const poolConfig: PoolConfig & { enableChannelBinding?: boolean } = {
+    // Neon dual-stack hosts often prefer IPv6; Vercel egress is more reliable on IPv4.
+    if ((process.env.VERCEL || isNeon) && typeof dns.setDefaultResultOrder === "function") {
+      try {
+        dns.setDefaultResultOrder("ipv4first");
+      } catch {
+        // ignore older Node runtimes
+      }
+    }
+
+    const poolConfig: PoolConfig & { enableChannelBinding?: boolean; family?: number } = {
       connectionString,
       ssl: useSsl ? { rejectUnauthorized: false } : undefined,
-      connectionTimeoutMillis: 15_000,
+      connectionTimeoutMillis: 20_000,
       idleTimeoutMillis: 20_000,
       max: 5,
     };
@@ -290,6 +373,9 @@ async function getPgPool(): Promise<Pool> {
     // pg@8.22 runtime supports this; @types/pg may lag behind.
     if (enableChannelBinding) {
       poolConfig.enableChannelBinding = true;
+    }
+    if (isNeon || process.env.VERCEL) {
+      poolConfig.family = 4;
     }
 
     const pool = new Pool(poolConfig);

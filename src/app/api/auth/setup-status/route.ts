@@ -37,8 +37,10 @@ export async function GET(request: Request) {
       configured: db.configured,
       connected: db.connected,
       reasonCode: db.reasonCode,
+      errorCode: db.errorCode,
       safeMessage: db.safeMessage,
       migrationVersion: db.migrationVersion,
+      urlShape: db.urlShape,
     },
     reasonCodes: status.reasonCodes,
     issues: status.reasonCodes
