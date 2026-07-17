@@ -78,39 +78,70 @@ export interface DatabaseProbeResult {
     | "migration_failed"
     | "query_failed"
     | "ok";
+  /** Safe Postgres/Node error code only (e.g. 28P01, ENOTFOUND). Never a secret. */
+  errorCode?: string;
   safeMessage?: string;
   migrationVersion?: number;
 }
 
-function classifyPgError(error: unknown): Pick<DatabaseProbeResult, "reasonCode" | "safeMessage"> {
+function classifyPgError(error: unknown): Pick<
+  DatabaseProbeResult,
+  "reasonCode" | "safeMessage"
+> & { errorCode?: string } {
   const message = error instanceof Error ? error.message : String(error);
   const lower = message.toLowerCase();
+  const nodeCode =
+    error && typeof error === "object" && "code" in error
+      ? String((error as { code?: unknown }).code ?? "")
+      : "";
+  const errorCode = nodeCode || undefined;
+
   if (
     lower.includes("password authentication failed") ||
-    lower.includes("28p01") ||
-    lower.includes("invalid authorization")
+    nodeCode === "28P01" ||
+    lower.includes("invalid authorization") ||
+    lower.includes("role") && lower.includes("does not exist")
   ) {
     return {
       reasonCode: "auth_failed",
+      errorCode,
       safeMessage:
         "Postgres rejected the credentials. Re-copy DATABASE_URL from Neon (pooled host), paste without quotes into all four Vercel projects, and redeploy.",
     };
   }
-  if (lower.includes("timeout") || lower.includes("etimedout") || lower.includes("econnrefused")) {
+  if (
+    nodeCode === "ETIMEDOUT" ||
+    nodeCode === "ECONNREFUSED" ||
+    nodeCode === "ECONNRESET" ||
+    lower.includes("timeout") ||
+    lower.includes("etimedout") ||
+    lower.includes("econnrefused")
+  ) {
     return {
       reasonCode: "timeout",
+      errorCode,
       safeMessage:
         "Postgres connection timed out. Confirm the Neon project is active (not suspended), use the -pooler hostname, and retry.",
+    };
+  }
+  if (nodeCode === "ENOTFOUND" || lower.includes("getaddrinfo") || lower.includes("enotfound")) {
+    return {
+      reasonCode: "connection_failed",
+      errorCode: "ENOTFOUND",
+      safeMessage:
+        "Postgres hostname could not be resolved. Confirm the Neon host in DATABASE_URL (must include -pooler for pooled) and that the endpoint still exists.",
     };
   }
   if (
     lower.includes("ssl") ||
     lower.includes("certificate") ||
     lower.includes("channel binding") ||
-    lower.includes("scram")
+    lower.includes("scram") ||
+    lower.includes("insecure")
   ) {
     return {
       reasonCode: "ssl_required",
+      errorCode,
       safeMessage:
         "Postgres TLS/SCRAM handshake failed. Keep sslmode=require (and channel_binding=require for Neon); this app enables channel binding automatically.",
     };
@@ -118,12 +149,14 @@ function classifyPgError(error: unknown): Pick<DatabaseProbeResult, "reasonCode"
   if (lower.includes("migration") || lower.includes("schema_migrations") || lower.includes("syntax error")) {
     return {
       reasonCode: "migration_failed",
+      errorCode,
       safeMessage:
         "Postgres connected but migrations failed. Check Vercel function logs for schema errors.",
     };
   }
   return {
     reasonCode: "connection_failed",
+    errorCode,
     safeMessage:
       "Postgres connection failed. Verify DATABASE_URL (Neon pooled host), include sslmode=require, redeploy, and confirm the DB allows Vercel egress.",
   };
