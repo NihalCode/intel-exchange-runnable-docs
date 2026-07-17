@@ -14,7 +14,7 @@ import {
 } from "@/lib/enterprise/policy";
 import {
   OrganizationContextError,
-  resolveOrganizationContext,
+  resolveOrganizationContextOrBootstrap,
 } from "@/lib/enterprise/organization-context";
 import type {
   AuthorizationResource,
@@ -66,7 +66,7 @@ export async function guardEnterpriseApi(
   }
 
   try {
-    const context = await resolveOrganizationContext(result.session);
+    const context = await resolveOrganizationContextOrBootstrap(result.session);
     const resource = options.resource ?? {
       organizationId: context.organization.id,
     };

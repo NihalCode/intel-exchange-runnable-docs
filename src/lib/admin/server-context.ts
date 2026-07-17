@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getAppSession } from "@/lib/documentation-auth/session";
-import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { resolveOrganizationContextOrBootstrap } from "@/lib/enterprise/organization-context";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
 import { ENTERPRISE_PERMISSIONS, type EnterprisePermission } from "@/lib/enterprise/types";
 
@@ -16,7 +16,7 @@ export async function loadAdminServerContext(): Promise<AdminServerContext | nul
   if (!session) return null;
   let context;
   try {
-    context = await resolveOrganizationContext(session);
+    context = await resolveOrganizationContextOrBootstrap(session);
   } catch {
     return null;
   }

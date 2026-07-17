@@ -7,14 +7,14 @@ import {
 } from "@/lib/enterprise/admin-access";
 import type { OrganizationContext } from "@/lib/enterprise/types";
 
-const resolveOrganizationContext = vi.fn();
+const resolveOrganizationContextOrBootstrap = vi.fn();
 
 vi.mock("@/lib/enterprise/organization-context", () => ({
   OrganizationContextError: class OrganizationContextError extends Error {
     status = 403;
   },
-  resolveOrganizationContext: (...args: unknown[]) =>
-    resolveOrganizationContext(...args),
+  resolveOrganizationContextOrBootstrap: (...args: unknown[]) =>
+    resolveOrganizationContextOrBootstrap(...args),
 }));
 
 function session(overrides: Partial<AppSession> = {}): AppSession {
@@ -88,7 +88,7 @@ describe("evaluateAdminAccess", () => {
   const originalMfaEnv = process.env.ADMIN_REQUIRE_MFA;
 
   beforeEach(() => {
-    resolveOrganizationContext.mockReset();
+    resolveOrganizationContextOrBootstrap.mockReset();
     delete process.env.ADMIN_REQUIRE_MFA;
   });
 
@@ -104,7 +104,7 @@ describe("evaluateAdminAccess", () => {
   });
 
   it("allows owner without MFA claims by default", async () => {
-    resolveOrganizationContext.mockResolvedValue(organizationContext());
+    resolveOrganizationContextOrBootstrap.mockResolvedValue(organizationContext());
     const result = await evaluateAdminAccess(session());
     expect(result.allowed).toBe(true);
     expect(result.organizationContext?.organization.id).toBe("org-1");
@@ -112,7 +112,7 @@ describe("evaluateAdminAccess", () => {
 
   it("denies owner without MFA when ADMIN_REQUIRE_MFA=true", async () => {
     process.env.ADMIN_REQUIRE_MFA = "true";
-    resolveOrganizationContext.mockResolvedValue(organizationContext());
+    resolveOrganizationContextOrBootstrap.mockResolvedValue(organizationContext());
     const result = await evaluateAdminAccess(session());
     expect(result.allowed).toBe(false);
     expect(result.reason).toBe("mfa_required");
@@ -120,7 +120,7 @@ describe("evaluateAdminAccess", () => {
 
   it("allows owner with MFA when ADMIN_REQUIRE_MFA=true", async () => {
     process.env.ADMIN_REQUIRE_MFA = "true";
-    resolveOrganizationContext.mockResolvedValue(organizationContext());
+    resolveOrganizationContextOrBootstrap.mockResolvedValue(organizationContext());
     const result = await evaluateAdminAccess(
       session({
         claims: {
@@ -134,7 +134,7 @@ describe("evaluateAdminAccess", () => {
   });
 
   it("denies inactive principals", async () => {
-    resolveOrganizationContext.mockResolvedValue(
+    resolveOrganizationContextOrBootstrap.mockResolvedValue(
       organizationContext({
         principal: {
           userId: "user-1",
@@ -159,7 +159,7 @@ describe("evaluateAdminAccess", () => {
   });
 
   it("denies viewers even without MFA enforcement", async () => {
-    resolveOrganizationContext.mockResolvedValue(
+    resolveOrganizationContextOrBootstrap.mockResolvedValue(
       organizationContext({
         principal: {
           userId: "user-1",

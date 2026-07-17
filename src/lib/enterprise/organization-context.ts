@@ -15,6 +15,7 @@ import {
   findMembership,
   findOrganizationByAuth0Id,
   findOrganizationById,
+  listActiveMembershipsForUser,
   listOrganizations,
 } from "@/lib/enterprise/repository";
 import type { OrganizationContext } from "@/lib/enterprise/types";
@@ -167,6 +168,13 @@ export async function resolveOrganizationContext(
   }
 
   if (organizations.length > 1) {
+    const memberships = await listActiveMembershipsForUser(persisted.user.id);
+    if (memberships.length === 1) {
+      const organization = await findOrganizationById(memberships[0]!.organizationId);
+      if (organization) {
+        return contextFrom(persisted, organization, memberships[0]!);
+      }
+    }
     // Auth0 org_id is required when organization choice would be ambiguous.
     throw new OrganizationContextError();
   }
@@ -198,4 +206,83 @@ export async function resolveOrganizationContext(
 
   if (!created) throw new OrganizationContextError();
   return contextFrom(persisted, created.organization, created.membership);
+}
+
+async function recoverOrganizationContext(session: AppSession): Promise<OrganizationContext> {
+  const persisted = await ensurePersistedSessionUser(session);
+  if (persisted.user.status !== "active") throw new OrganizationContextError();
+
+  const memberships = await listActiveMembershipsForUser(persisted.user.id);
+  if (memberships.length === 1) {
+    const organization = await findOrganizationById(memberships[0]!.organizationId);
+    if (organization) {
+      return contextFrom(persisted, organization, memberships[0]!);
+    }
+  }
+
+  const enterpriseRole = mapEnterpriseRole(persisted.user.role);
+  if (!enterpriseRole || !canBootstrapEnterpriseOrganization(persisted.user.role)) {
+    throw new OrganizationContextError();
+  }
+
+  const organizations = await listOrganizations();
+  if (organizations.length === 1) {
+    const existing = await findMembership(organizations[0]!.id, persisted.user.id);
+    if (existing?.status === "active") {
+      return contextFrom(persisted, organizations[0]!, existing);
+    }
+    const membership = await withTransaction((transaction) =>
+      createMembership(
+        {
+          organizationId: organizations[0]!.id,
+          userId: persisted.user.id,
+          role: enterpriseRole,
+        },
+        transaction
+      )
+    );
+    return contextFrom(persisted, organizations[0]!, membership);
+  }
+
+  if (organizations.length === 0) {
+    const created = await withTransaction(async (transaction) => {
+      if ((await countOrganizations(transaction)) !== 0) return null;
+      const organization = await createOrganization(
+        {
+          name: "Default Organization",
+          slug: `default-${persisted.user.id.slice(0, 8).toLowerCase()}`,
+        },
+        transaction
+      );
+      const membership = await createMembership(
+        {
+          organizationId: organization.id,
+          userId: persisted.user.id,
+          role: enterpriseRole,
+        },
+        transaction
+      );
+      return { organization, membership };
+    });
+    if (created) {
+      return contextFrom(persisted, created.organization, created.membership);
+    }
+  }
+
+  throw new OrganizationContextError();
+}
+
+/**
+ * Resolves organization context and, for owner/admin cold starts, bootstraps
+ * the default organization membership when the strict resolver fails.
+ */
+export async function resolveOrganizationContextOrBootstrap(
+  session: AppSession
+): Promise<OrganizationContext> {
+  try {
+    return await resolveOrganizationContext(session);
+  } catch (error) {
+    if (!(error instanceof OrganizationContextError)) throw error;
+    return recoverOrganizationContext(session);
+  }
 }

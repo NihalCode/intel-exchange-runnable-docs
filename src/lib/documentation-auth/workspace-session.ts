@@ -9,7 +9,7 @@ import {
 } from "@/lib/documentation-auth/session";
 import { permissionsForRole } from "@/lib/documentation-auth/permissions";
 import type { DocumentationPermission } from "@/lib/documentation-auth/types";
-import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { resolveOrganizationContextOrBootstrap } from "@/lib/enterprise/organization-context";
 import type { OrganizationContext } from "@/lib/enterprise/types";
 import { authorizeEnterprise, enterprisePermissionsForPrincipal } from "@/lib/enterprise/policy";
 import { ENTERPRISE_PERMISSIONS, type EnterprisePermission } from "@/lib/enterprise/types";
@@ -29,7 +29,7 @@ export async function resolveWorkspaceSession(
     return { ok: false, result };
   }
   try {
-    const organization = await resolveOrganizationContext(result.session);
+    const organization = await resolveOrganizationContextOrBootstrap(result.session);
     const permissions = permissionsForRole(result.session.user.role);
     const enterpriseCapabilities = ENTERPRISE_PERMISSIONS.filter((permission) =>
       authorizeEnterprise(organization.principal, permission, {
@@ -46,7 +46,13 @@ export async function resolveWorkspaceSession(
       },
     };
   } catch {
-    return { ok: false, result: { session: null, auth0Authenticated: true } };
+    return {
+      ok: false,
+      result: {
+        session: result.session,
+        auth0Authenticated: true,
+      },
+    };
   }
 }
 

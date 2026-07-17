@@ -11,7 +11,7 @@ import { db } from "@/lib/db/client";
 import { getAppSession } from "@/lib/documentation-auth/session";
 import { listApiKeyMetadata } from "@/lib/enterprise/api-keys";
 import { listEnterpriseAuditEvents } from "@/lib/enterprise/audit";
-import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { resolveOrganizationContextOrBootstrap } from "@/lib/enterprise/organization-context";
 import {
   listChangeRequests,
   listConfigVersions,
@@ -31,7 +31,7 @@ export async function requireAdminPageContext() {
   if (!session) redirect("/sign-in?returnTo=/admin");
   let context;
   try {
-    context = await resolveOrganizationContext(session);
+    context = await resolveOrganizationContextOrBootstrap(session);
   } catch {
     redirect("/sign-in?returnTo=/admin");
   }

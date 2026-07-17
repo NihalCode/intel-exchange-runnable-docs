@@ -4,7 +4,7 @@ import type { AppSession } from "@/lib/documentation-auth/session";
 import { checkStepUpAuthentication } from "@/lib/enterprise/auth-assurance";
 import {
   OrganizationContextError,
-  resolveOrganizationContext,
+  resolveOrganizationContextOrBootstrap,
 } from "@/lib/enterprise/organization-context";
 import { authorizeEnterprise, mapEnterpriseRole } from "@/lib/enterprise/policy";
 import type { OrganizationContext } from "@/lib/enterprise/types";
@@ -40,7 +40,7 @@ export async function evaluateAdminAccess(
 
   let organizationContext: OrganizationContext;
   try {
-    organizationContext = await resolveOrganizationContext(session);
+    organizationContext = await resolveOrganizationContextOrBootstrap(session);
   } catch (error) {
     if (error instanceof OrganizationContextError) {
       return {
