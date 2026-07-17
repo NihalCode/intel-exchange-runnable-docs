@@ -47,26 +47,31 @@ describe("queryPinecone", () => {
   });
 
   it("returns matches when host + query succeed", async () => {
-    const fetchMock = vi.fn(async (url: string) => {
+    const fetchMock = vi.fn(async (url: string, init?: RequestInit) => {
       if (url.includes("api.pinecone.io/indexes/")) {
         return new Response(JSON.stringify({ host: "h.example.com", status: { ready: true } }), {
           status: 200,
         });
       }
+      const body = JSON.parse(String(init?.body ?? "{}")) as { namespace?: string };
+      expect(body.namespace).toBe("product-ctix");
       return new Response(
         JSON.stringify({ matches: [{ id: "tags/list-tags::endpoint", score: 0.91 }] }),
         { status: 200 }
       );
     });
     vi.stubGlobal("fetch", fetchMock);
+    process.env.APP_PRODUCT_ID = "ctix";
     const matches = await queryPinecone([0.1, 0.2], 5, {
       apiKey: "k",
       indexName: "query-success-test",
       cloud: "aws",
       region: "us-east-1",
+      namespace: "product-ctix",
     });
     expect(matches[0]?.id).toBe("tags/list-tags::endpoint");
     expect(matches[0]?.score).toBeCloseTo(0.91);
+    delete process.env.APP_PRODUCT_ID;
   });
 });
 

@@ -6,6 +6,9 @@
  * (tests, SSG build, dev without creds).
  */
 
+import { resolveVectorNamespace } from "./vector-namespace";
+import type { ProductKey } from "@/lib/products/registry";
+
 const CONTROL_PLANE = "https://api.pinecone.io";
 
 export interface PineconeConfig {
@@ -13,6 +16,7 @@ export interface PineconeConfig {
   indexName: string;
   cloud: string;
   region: string;
+  namespace?: string;
 }
 
 export interface PineconeMatch {
@@ -28,7 +32,7 @@ export interface PineconeQueryResult {
 }
 
 /** Read Pinecone config from env. Returns null when creds are absent. */
-export function getPineconeConfig(): PineconeConfig | null {
+export function getPineconeConfig(productId?: ProductKey | null): PineconeConfig | null {
   const apiKey = process.env.PINECONE_API_KEY?.trim();
   if (!apiKey) return null;
   return {
@@ -36,6 +40,7 @@ export function getPineconeConfig(): PineconeConfig | null {
     indexName: process.env.PINECONE_INDEX?.trim() || "intel-exchange-docs",
     cloud: process.env.PINECONE_CLOUD?.trim() || "aws",
     region: process.env.PINECONE_REGION?.trim() || "us-east-1",
+    namespace: resolveVectorNamespace(productId ?? undefined),
   };
 }
 
@@ -102,6 +107,7 @@ export async function queryPineconeWithStatus(
         topK,
         includeMetadata: true,
         includeValues: false,
+        ...(cfg.namespace ? { namespace: cfg.namespace } : {}),
         ...(filter ? { filter } : {}),
       }),
     });

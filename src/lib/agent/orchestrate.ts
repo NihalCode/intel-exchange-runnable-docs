@@ -6,7 +6,7 @@ import {
   buildProductClarificationQuestions,
 } from "../documentation-credentials/access";
 import { baseUrlForProduct } from "../products/auth";
-import { getProductOrThrow, inferProductFromQuery } from "../products/registry";
+import { getProductOrThrow, inferProductFromQuery, isProductKey } from "../products/registry";
 import { loadCombinedAgentIndex } from "../products/search";
 import { loadAgentIndex } from "./load-index";
 import { resolveProductScope, productScopeForFilter } from "./product-scope";
@@ -67,6 +67,7 @@ import {
   boostEndpointMatches,
 } from "./retrieve";
 import { getPineconeConfig, queryPineconeWithStatus } from "./pinecone";
+import { assertVectorNamespaceAccess } from "./vector-namespace";
 import { canonicalizeIntent, expandQueryForRetrieval, isVagueQuery } from "./normalize-query";
 import { buildWorkflowScripts, applyScriptPlanToSteps } from "./script-builder";
 import {
@@ -416,13 +417,18 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       if (embedding.length === 0) {
         vectorFailed = true;
       }
-      const pineconeCfg = getPineconeConfig();
+      const retrievalProduct =
+        retrievalFilter !== "all" && isProductKey(retrievalFilter)
+          ? retrievalFilter
+          : undefined;
+      assertVectorNamespaceAccess(retrievalProduct);
+      const pineconeCfg = getPineconeConfig(retrievalProduct);
       if (embedding.length > 0 && pineconeCfg) {
         const vectorResult = await queryPineconeWithStatus(
           embedding,
           topK,
           pineconeCfg,
-          retrievalFilter === "all" ? undefined : retrievalFilter
+          retrievalProduct
         );
         if (vectorResult.failed) vectorFailed = true;
         const fromPinecone = filterByProductScope(

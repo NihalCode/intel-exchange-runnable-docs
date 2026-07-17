@@ -76,6 +76,8 @@ export async function guardEnterpriseApi(
     const sensitive =
       SENSITIVE_PERMISSIONS.has(permission) ||
       (permission === "resources.write" &&
+        resource.environment === "production") ||
+      (permission === "deployments.manage" &&
         resource.environment === "production");
     const assurance = checkStepUpAuthentication(result.session, {
       requireMfa: sensitive || options.requireMfa,

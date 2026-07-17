@@ -40,6 +40,8 @@ function fromDeploymentRow(row: Record<string, unknown>): ProductDeploymentConfi
     additionalDomains: parseJsonArray(row.additional_domains_json),
     enabled: Boolean(row.enabled),
     status: row.status as ProductDeploymentConfiguration["status"],
+    controlPlaneResourceId:
+      row.control_plane_resource_id == null ? null : String(row.control_plane_resource_id),
     version: Number(row.version),
     createdByUserId: String(row.created_by_user_id),
     updatedByUserId: String(row.updated_by_user_id),

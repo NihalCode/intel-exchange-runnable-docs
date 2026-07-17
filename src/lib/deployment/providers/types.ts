@@ -44,6 +44,8 @@ export interface VercelProvider {
   getRequiredDnsRecords(projectId: string, domain: string): Promise<VercelDnsRequirement[]>;
   removeDomain(projectId: string, domain: string): Promise<void>;
   listDeployments(projectId: string): Promise<VercelDeploymentSummary[]>;
+  promoteDeployment(deploymentId: string): Promise<VercelDeploymentSummary>;
+  rollbackDeployment(projectId: string): Promise<VercelDeploymentSummary>;
 }
 
 export class VercelProviderError extends Error {

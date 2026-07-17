@@ -36,6 +36,7 @@ export interface ProductDeploymentConfiguration {
   additionalDomains: string[];
   enabled: boolean;
   status: ProductDeploymentStatus;
+  controlPlaneResourceId: string | null;
   version: number;
   createdByUserId: string;
   updatedByUserId: string;

@@ -31,6 +31,12 @@ type DeploymentRow = {
     state: string;
     meta?: { githubCommitSha?: string };
   } | null;
+  recentDeployments: Array<{
+    id: string;
+    url: string;
+    state: string;
+    meta?: { githubCommitSha?: string };
+  }>;
 };
 
 export function DocumentationAgentDeploymentsPage({
@@ -63,11 +69,28 @@ export function DocumentationAgentDeploymentsPage({
     setProjectName("");
   }
 
-  async function domainAction(deploymentId: string, domain: string, action?: string) {
+  async function domainAction(
+    deploymentId: string,
+    domain: string,
+    action?: string,
+    changeRequestId?: string
+  ) {
     await mutate(
       `/api/admin/deployments/${deploymentId}/domains`,
-      { domain, action },
+      { domain, action, changeRequestId },
       { successMessage: `Domain ${action ?? "add"} completed` }
+    );
+  }
+
+  async function deploymentAction(
+    deploymentId: string,
+    action: "promote" | "rollback",
+    vercelDeploymentId?: string
+  ) {
+    await mutate(
+      `/api/admin/deployments/${deploymentId}/promote`,
+      { action, vercelDeploymentId },
+      { successMessage: action === "rollback" ? "Rollback initiated" : "Deployment promoted" }
     );
   }
 
@@ -161,6 +184,46 @@ export function DocumentationAgentDeploymentsPage({
                 </dd>
               </div>
             </dl>
+
+            {d.environment === "production" ? (
+              <p className="text-xs text-amber-700 dark:text-amber-400">
+                Production domain add/remove/verify requires step-up MFA and an approved change
+                request. Submitting without changeRequestId creates a pending change request.
+              </p>
+            ) : null}
+
+            {canManage && d.recentDeployments.length > 0 ? (
+              <section className="space-y-2">
+                <h3 className="text-xs font-semibold">Deployment promote / rollback</h3>
+                <ul className="space-y-1 text-xs">
+                  {d.recentDeployments.map((dep) => (
+                    <li key={dep.id} className="flex flex-wrap items-center gap-2">
+                      <span className="font-mono">{dep.id.slice(0, 12)}…</span>
+                      <span>{dep.state}</span>
+                      <span className="text-zinc-500">
+                        {dep.meta?.githubCommitSha?.slice(0, 7) ?? "—"}
+                      </span>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void deploymentAction(d.id, "promote", dep.id)}
+                        className="rounded border px-2 py-0.5 dark:border-zinc-600"
+                      >
+                        Promote
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  disabled={busy || d.recentDeployments.length < 2}
+                  onClick={() => void deploymentAction(d.id, "rollback")}
+                  className="rounded border border-amber-400 px-2 py-1 text-xs text-amber-800 dark:border-amber-700 dark:text-amber-300"
+                >
+                  Rollback to previous READY deployment
+                </button>
+              </section>
+            ) : null}
 
             {canManage ? (
               <div className="flex flex-wrap items-end gap-2">

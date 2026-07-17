@@ -5,7 +5,12 @@ import { useState } from "react";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
+import { UNANSWERED_QUERY_REVIEW_STATUSES } from "@/lib/domains/types";
 import type { UnansweredQueryReviewRow } from "@/lib/query-analytics/repository";
+
+const WORKFLOW_STATUSES = UNANSWERED_QUERY_REVIEW_STATUSES.filter(
+  (status) => status !== "NEW"
+);
 
 export function UnansweredQueriesPage({
   initialRows,
@@ -38,7 +43,7 @@ export function UnansweredQueriesPage({
       <PageHeader
         eyebrow={organization.name}
         title="Unanswered queries"
-        description="Review Ask AI turns classified as unanswered or partially answered."
+        description="Triage Ask AI gaps using Phase 10 review statuses (documentation, retrieval, product, connector, access)."
       />
       {!canManage ? (
         <p className="text-xs text-zinc-500">Read-only view.</p>
@@ -63,7 +68,7 @@ export function UnansweredQueriesPage({
               </div>
               {canManage ? (
                 <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                  {(["triaged", "resolved", "dismissed"] as const).map((status) => (
+                  {WORKFLOW_STATUSES.map((status) => (
                     <button
                       key={status}
                       type="button"
@@ -71,7 +76,7 @@ export function UnansweredQueriesPage({
                       onClick={() => void updateStatus(row.id, status)}
                       className="rounded border border-zinc-300 px-2 py-0.5 disabled:opacity-50 dark:border-zinc-600"
                     >
-                      Mark {status.replace("_", " ")}
+                      {status.replace(/_/g, " ")}
                     </button>
                   ))}
                 </div>

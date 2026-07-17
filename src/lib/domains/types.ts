@@ -9,10 +9,27 @@ export type VerificationStatus = "pending" | "verified" | "failed" | "disabled";
 export type TlsStatus = "pending" | "active" | "failed" | "expired";
 
 export type UnansweredQueryReviewStatus =
-  | "open"
-  | "triaged"
-  | "resolved"
-  | "dismissed";
+  | "NEW"
+  | "REVIEWED"
+  | "DOCUMENTATION_GAP"
+  | "RETRIEVAL_GAP"
+  | "PRODUCT_BUG"
+  | "CONNECTOR_ISSUE"
+  | "ACCESS_ISSUE"
+  | "FIXED"
+  | "ACCEPTED_LIMITATION";
+
+export const UNANSWERED_QUERY_REVIEW_STATUSES: readonly UnansweredQueryReviewStatus[] = [
+  "NEW",
+  "REVIEWED",
+  "DOCUMENTATION_GAP",
+  "RETRIEVAL_GAP",
+  "PRODUCT_BUG",
+  "CONNECTOR_ISSUE",
+  "ACCESS_ISSUE",
+  "FIXED",
+  "ACCEPTED_LIMITATION",
+] as const;
 
 export interface DomainCollectionMapping {
   id: string;

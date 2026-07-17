@@ -2,7 +2,12 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { hostContextRequestHeaders } from "@/lib/domains/host-headers";
-import { isDomainRoutingEnabled, isSeparateAdminDomainEnabled } from "@/lib/domains/feature-gates";
+import {
+  hasConfiguredAdminDomain,
+  isDomainRoutingEnabled,
+  isSeparateAdminDomainEnabled,
+} from "@/lib/domains/feature-gates";
+import { isSingleProductDeployment } from "@/lib/deployment/resolve-app-product-id";
 import { trustedRequestHostname } from "@/lib/domains/request-host";
 import {
   crossProductPathMismatch,
@@ -40,7 +45,8 @@ export async function applyHostRouting(
   request: NextRequest,
   authResponse: NextResponse
 ): Promise<NextResponse | null> {
-  if (!isDomainRoutingEnabled()) return null;
+  const routingActive = isDomainRoutingEnabled() || isSingleProductDeployment();
+  if (!routingActive) return null;
 
   const hostname = trustedRequestHostname(request);
   const { pathname } = request.nextUrl;
@@ -85,9 +91,14 @@ export async function applyHostRouting(
 
   if (hostContext.domainKind === "product") {
     if (isAdminPathOnProductHost(pathname)) {
-      const adminUrl = isSeparateAdminDomainEnabled() ? adminDashboardUrl() : null;
-      if (adminUrl) return NextResponse.redirect(adminUrl);
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+      const redirectAdminElsewhere =
+        isSeparateAdminDomainEnabled() && hasConfiguredAdminDomain();
+      if (redirectAdminElsewhere) {
+        return NextResponse.redirect(
+          adminDashboardUrl(pathname + request.nextUrl.search)
+        );
+      }
+      return attachHostHeaders(request, authResponse, contextHeaders);
     }
     if (crossProductPathMismatch(pathname, hostContext)) {
       const target = hostContext.productId ? productOriginUrl(hostContext.productId) : null;

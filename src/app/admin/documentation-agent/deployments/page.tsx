@@ -25,10 +25,18 @@ export default async function Page() {
   const enriched = await Promise.all(
     deployments.map(async (d) => {
       const domains = await listDomainAutomationRecords(context.organization.id, d.id);
+      let recentDeployments: Array<{
+        id: string;
+        url: string;
+        state: string;
+        meta?: { githubCommitSha?: string };
+      }> = [];
       let latestDeployment = null;
       try {
-        latestDeployment = (await provider.listDeployments(d.vercelProjectId))[0] ?? null;
+        recentDeployments = await provider.listDeployments(d.vercelProjectId);
+        latestDeployment = recentDeployments[0] ?? null;
       } catch {
+        recentDeployments = [];
         latestDeployment = null;
       }
       return {
@@ -42,6 +50,7 @@ export default async function Page() {
         approvedCollectionId: approvedCollectionIdForProduct(d.product),
         domains,
         latestDeployment,
+        recentDeployments,
       };
     })
   );

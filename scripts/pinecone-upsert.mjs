@@ -138,10 +138,13 @@ async function ensureIndex(cfg) {
   throw new Error("Index did not become ready in time.");
 }
 
-async function upsertBatch(host, apiKey, vectors) {
+async function upsertBatch(host, apiKey, vectors, namespace) {
   const res = await pc(`https://${host}/vectors/upsert`, apiKey, {
     method: "POST",
-    body: JSON.stringify({ vectors }),
+    body: JSON.stringify({
+      vectors,
+      ...(namespace ? { namespace } : {}),
+    }),
   });
   if (!res.ok) {
     throw new Error(`Upsert ${res.status}: ${(await res.text()).slice(0, 300)}`);
@@ -172,6 +175,9 @@ async function main() {
   console.log(`Total: ${chunks.length} chunks across ${productFilter ?? "all products"}`);
 
   const host = await ensureIndex(cfg);
+  const namespace =
+    process.env.VECTOR_NAMESPACE?.trim() ||
+    (productFilter ? `product-${productFilter}` : undefined);
 
   const batchSize = 64;
   let upserted = 0;
@@ -193,11 +199,11 @@ async function main() {
         ...(c.path ? { path: c.path } : {}),
       },
     }));
-    await upsertBatch(host, cfg.apiKey, vectors);
+    await upsertBatch(host, cfg.apiKey, vectors, namespace);
     upserted += vectors.length;
     process.stdout.write(`  upserted ${upserted}/${chunks.length}\r`);
   }
-  console.log(`\nDone. Upserted ${upserted} vectors into "${cfg.indexName}".`);
+  console.log(`\nDone. Upserted ${upserted} vectors into "${cfg.indexName}"${namespace ? ` (namespace: ${namespace})` : ""}.`);
 }
 
 main().catch((err) => {

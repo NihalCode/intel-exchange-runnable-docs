@@ -4,21 +4,46 @@ import {
   requireAdminPageContext,
   requirePermission,
 } from "@/lib/admin/page-data";
+import { isProductKey } from "@/lib/products/registry";
 import {
-  listRecentQueryAnalytics,
-  summarizeQueryAnalytics,
+  listQueryAnalyticsEvents,
+  summarizeQueryAnalyticsFiltered,
 } from "@/lib/query-analytics/repository";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ since?: string; until?: string; productId?: string }>;
+}) {
   const { capabilities, context } = await requireAdminPageContext();
   requirePermission(capabilities, "query_analytics.read");
   await requireAdminFeature(context.organization.id, "query_analytics");
-  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const params = await searchParams;
+  const untilIso = params.until
+    ? new Date(params.until).toISOString()
+    : new Date().toISOString();
+  const sinceIso = params.since
+    ? new Date(params.since).toISOString()
+    : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const productId =
+    params.productId && isProductKey(params.productId) ? params.productId : undefined;
+
+  const filters = { sinceIso, untilIso, productId };
   const [summary, recent] = await Promise.all([
-    summarizeQueryAnalytics(context.organization.id, since),
-    listRecentQueryAnalytics(context.organization.id, 25),
+    summarizeQueryAnalyticsFiltered(context.organization.id, filters),
+    listQueryAnalyticsEvents(context.organization.id, filters, 25),
   ]);
-  return <QueryAnalyticsPage summary={summary} recent={recent} />;
+
+  return (
+    <QueryAnalyticsPage
+      summary={summary}
+      recent={recent}
+      initialSince={sinceIso}
+      initialUntil={untilIso}
+      initialProductId={productId}
+    />
+  );
 }

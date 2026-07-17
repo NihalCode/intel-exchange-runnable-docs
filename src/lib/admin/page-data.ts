@@ -1,6 +1,6 @@
 import "server-only";
 
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import {
   buildOverviewActivity,
@@ -28,12 +28,12 @@ import {
 
 export async function requireAdminPageContext() {
   const session = await getAppSession();
-  if (!session) notFound();
+  if (!session) redirect("/sign-in?returnTo=/admin");
   let context;
   try {
     context = await resolveOrganizationContext(session);
   } catch {
-    notFound();
+    redirect("/sign-in?returnTo=/admin");
   }
   const capabilities = ENTERPRISE_PERMISSIONS.filter((permission) =>
     authorizeEnterprise(context.principal, permission, {

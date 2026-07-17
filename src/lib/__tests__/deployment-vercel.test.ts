@@ -49,4 +49,13 @@ describe("fake Vercel provider", () => {
     expect(verified.verified).toBe(true);
     expect(verified.ssl?.status).toBe("active");
   });
+
+  it("promotes and rollbacks deployments", async () => {
+    const provider = createFakeVercelProvider();
+    const deployments = await provider.listDeployments("prj_ctix");
+    const promoted = await provider.promoteDeployment(deployments[0]!.id);
+    expect(promoted.state).toBe("READY");
+    const rolledBack = await provider.rollbackDeployment("prj_ctix");
+    expect(rolledBack.id).toBe(deployments[1]!.id);
+  });
 });

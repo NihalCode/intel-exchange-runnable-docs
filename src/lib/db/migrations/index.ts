@@ -27,6 +27,11 @@ import {
   SQLITE_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
 } from "@/lib/db/migrations/007_product_deployments";
 
+import {
+  POSTGRES_DEFERRED_FEATURES_MIGRATION_SQL,
+  SQLITE_DEFERRED_FEATURES_MIGRATION_SQL,
+} from "@/lib/db/migrations/008_deferred_features";
+
 export interface VersionedMigration {
   version: number;
   name: string;
@@ -80,6 +85,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "product_deployments",
     sqlite: SQLITE_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
     postgres: POSTGRES_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
+  },
+  {
+    version: 8,
+    name: "deferred_features",
+    sqlite: SQLITE_DEFERRED_FEATURES_MIGRATION_SQL,
+    postgres: POSTGRES_DEFERRED_FEATURES_MIGRATION_SQL,
   },
 ] as const;
 

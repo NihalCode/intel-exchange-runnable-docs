@@ -1,4 +1,5 @@
 import { cleanEnvValue } from "@/lib/documentation-auth/env";
+import { resolveAppProductId } from "@/lib/deployment/resolve-app-product-id";
 import type { DomainKind } from "@/lib/domains/types";
 import { isProductKey, PRODUCT_KEYS, type ProductKey } from "@/lib/products/registry";
 
@@ -40,6 +41,31 @@ export interface StaticHostnameMatch {
 export function matchStaticDomainHostname(hostname: string): StaticHostnameMatch | null {
   const normalized = hostname.toLowerCase();
   const config = getStaticDomainConfig();
+
+  const pinned = resolveAppProductId();
+  if (pinned) {
+    const deploymentHosts = [
+      cleanEnvValue(process.env.APP_CANONICAL_DOMAIN),
+      cleanEnvValue(process.env.VERCEL_URL),
+      config[PRODUCT_ENV_KEYS[pinned]],
+    ];
+    for (const host of deploymentHosts) {
+      if (host && host.toLowerCase() === normalized) {
+        return { kind: "product", productId: pinned, envKey: PRODUCT_ENV_KEYS[pinned] };
+      }
+    }
+    try {
+      const base = cleanEnvValue(process.env.APP_BASE_URL) ?? cleanEnvValue(process.env.AUTH0_BASE_URL);
+      if (base) {
+        const baseHost = new URL(base.startsWith("http") ? base : `https://${base}`).hostname.toLowerCase();
+        if (baseHost === normalized) {
+          return { kind: "product", productId: pinned, envKey: PRODUCT_ENV_KEYS[pinned] };
+        }
+      }
+    } catch {
+      // ignore malformed APP_BASE_URL
+    }
+  }
 
   for (const productId of PRODUCT_KEYS) {
     const configured = config[PRODUCT_ENV_KEYS[productId]];

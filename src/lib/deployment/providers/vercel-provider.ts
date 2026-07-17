@@ -175,6 +175,29 @@ export function createHttpVercelProvider(allowedTeamId?: string): VercelProvider
         })
       );
     },
+
+    async promoteDeployment(deploymentId) {
+      const data = await vercelFetch<Record<string, unknown>>(
+        `/v13/deployments/${encodeURIComponent(deploymentId)}/promote${teamQuery()}`,
+        { method: "POST" }
+      );
+      return {
+        id: String(data.uid ?? data.id ?? deploymentId),
+        url: String(data.url ?? ""),
+        state: String(data.state ?? data.readyState ?? "READY"),
+        createdAt: String(data.createdAt ?? data.created ?? ""),
+        meta: data.meta as VercelDeploymentSummary["meta"],
+      };
+    },
+
+    async rollbackDeployment(projectId) {
+      const deployments = await this.listDeployments(projectId);
+      const previous = deployments.find((d) => d.state === "READY") ?? deployments[1];
+      if (!previous) {
+        throw new VercelProviderError("No prior deployment to rollback", "NOT_FOUND", 404);
+      }
+      return this.promoteDeployment(previous.id);
+    },
   };
 }
 

@@ -86,13 +86,33 @@ export function createFakeVercelProvider(seed?: {
     async listDeployments(projectId) {
       return [
         {
-          id: `dpl_${projectId}`,
+          id: `dpl_${projectId}_current`,
           url: `${projectId}.vercel.app`,
           state: "READY",
           createdAt: new Date().toISOString(),
           meta: { githubCommitSha: "abc123" },
         },
+        {
+          id: `dpl_${projectId}_previous`,
+          url: `${projectId}-prev.vercel.app`,
+          state: "READY",
+          createdAt: new Date(Date.now() - 86_400_000).toISOString(),
+          meta: { githubCommitSha: "def456" },
+        },
       ] satisfies VercelDeploymentSummary[];
+    },
+    async promoteDeployment(deploymentId) {
+      return {
+        id: deploymentId,
+        url: `${deploymentId}.vercel.app`,
+        state: "READY",
+        createdAt: new Date().toISOString(),
+        meta: { githubCommitSha: "promoted" },
+      };
+    },
+    async rollbackDeployment(projectId) {
+      const deployments = await this.listDeployments(projectId);
+      return this.promoteDeployment(deployments[1]?.id ?? deployments[0]!.id);
     },
   };
 }
