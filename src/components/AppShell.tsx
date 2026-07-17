@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { NavNode } from "@/lib/types";
+import { authReturnToFromPath } from "@/lib/documentation-auth/auth-return-to-path";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { ProductSelector, useProduct } from "./ProductContext";
 import { ProductRunSettingsSync } from "./RunSettings";
@@ -104,16 +105,42 @@ function ThemeToggle() {
   );
 }
 
-function ProfileControl() {
+/** Signed-out: Sign in link matching header nav. Signed-in: avatar → logout. */
+function AuthHeaderControl() {
+  const pathname = usePathname();
   const { state } = useDocumentationAuth();
-  if (state.loading || !state.user) return null;
+
+  if (state.loading) {
+    return (
+      <span
+        className="inline-block h-8 w-14 shrink-0"
+        aria-hidden="true"
+        data-testid="auth-header-loading"
+      />
+    );
+  }
+
+  if (!state.authenticated || !state.user) {
+    const returnTo = encodeURIComponent(authReturnToFromPath(pathname));
+    return (
+      <Link
+        href={`/sign-in?returnTo=${returnTo}`}
+        data-testid="auth-header-sign-in"
+        className="rounded-md px-2 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      >
+        Sign in
+      </Link>
+    );
+  }
+
   const label = state.user.name || state.user.email;
   return (
     <Link
       href="/auth/logout"
+      data-testid="auth-header-profile"
       title={`${label} — sign out`}
       aria-label={`${label} — sign out`}
-      className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200"
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700"
     >
       {label.slice(0, 1).toUpperCase()}
     </Link>
@@ -228,7 +255,7 @@ export function AppShell({
 
         <HeaderBar />
         <ThemeToggle />
-        <ProfileControl />
+        <AuthHeaderControl />
       </header>
 
       <div className="flex flex-1">
