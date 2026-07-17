@@ -66,3 +66,8 @@ export function permissionsForRole(role: DocumentationRole): readonly Documentat
 export function canManageUsers(role: DocumentationRole): boolean {
   return hasPermission(role, "manage_users");
 }
+
+/** Workspace roles that may open the enterprise admin dashboard. */
+export function canAccessEnterpriseAdminNav(role: DocumentationRole | string): boolean {
+  return role === "owner" || role === "admin" || role === "developer";
+}

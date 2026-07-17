@@ -56,17 +56,20 @@ function WorkspaceContentLink() {
 function EnterpriseAdminLink() {
   const pathname = usePathname();
   const { state } = useDocumentationAuth();
-  if (
-    state.loading ||
-    !state.enterpriseCapabilities.includes("admin_dashboard.access")
-  ) {
-    return null;
-  }
+  const showAdmin =
+    !state.loading &&
+    state.authenticated &&
+    state.user &&
+    (state.enterpriseCapabilities.includes("admin_dashboard.access") ||
+      state.user.role === "owner" ||
+      state.user.role === "admin" ||
+      state.user.role === "developer");
+  if (!showAdmin) return null;
   const active = pathname.startsWith("/admin");
   return (
     <Link
       href="/admin"
-      className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
+      className={`rounded-md px-2 py-1 text-xs font-medium ${
         active
           ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
           : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
