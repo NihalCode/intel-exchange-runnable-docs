@@ -4,6 +4,11 @@ import Link from "next/link";
 import { AdminLayoutClient } from "@/components/admin/shell/AdminLayoutClient";
 import { LoadingSkeleton } from "@/components/admin/ui/EmptyState";
 import { getAppSessionResult } from "@/lib/documentation-auth/session";
+import { isAuthDisabled } from "@/lib/documentation-auth/config";
+import {
+  authEnvValidationError,
+  isAuthEnvComplete,
+} from "@/lib/documentation-auth/env";
 import {
   evaluateAdminAccess,
   type AdminAccessDenialReason,
@@ -19,6 +24,17 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  if (!isAuthDisabled() && !isAuthEnvComplete()) {
+    return (
+      <AuthConfigRequired
+        issue={
+          authEnvValidationError() ??
+          "Auth0 is not configured. Add Auth0 environment variables in Vercel for this project."
+        }
+      />
+    );
+  }
+
   const result = await getAppSessionResult();
   if (!result.session) {
     if (!result.auth0Authenticated && !result.accessDenied) {
@@ -68,6 +84,43 @@ export default async function AdminLayout({
     >
       <Suspense fallback={<LoadingSkeleton rows={8} />}>{children}</Suspense>
     </AdminLayoutClient>
+  );
+}
+
+function AuthConfigRequired({ issue }: { issue: string }) {
+  return (
+    <main className="mx-auto max-w-2xl px-4 py-16" aria-labelledby="auth-config-heading">
+      <h1 id="auth-config-heading" className="text-2xl font-semibold">
+        Sign-in is not configured for this deployment
+      </h1>
+      <p className="mt-3 text-zinc-600 dark:text-zinc-300">{issue}</p>
+      <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+        <li>
+          In Vercel → this project → Settings → Environment Variables, set{" "}
+          <code className="text-xs">AUTH0_ISSUER_BASE_URL</code>,{" "}
+          <code className="text-xs">AUTH0_CLIENT_ID</code>,{" "}
+          <code className="text-xs">AUTH0_CLIENT_SECRET</code>, and{" "}
+          <code className="text-xs">AUTH0_SECRET</code> (32+ chars).
+        </li>
+        <li>
+          Set <code className="text-xs">APP_BASE_URL</code> to this site&apos;s URL, e.g.{" "}
+          <code className="text-xs">https://cyware-docs-csap.vercel.app</code> (or rely on{" "}
+          <code className="text-xs">VERCEL_URL</code> after redeploy).
+        </li>
+        <li>Add this URL to Auth0 Allowed Callback URLs as{" "}
+          <code className="text-xs">{'{APP_BASE_URL}'}/auth/callback</code>.
+        </li>
+        <li>Redeploy after saving env vars.</li>
+      </ul>
+      <div className="mt-6">
+        <Link
+          href="/"
+          className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+        >
+          Back to documentation
+        </Link>
+      </div>
+    </main>
   );
 }
 

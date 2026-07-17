@@ -42,15 +42,21 @@ export interface AuthEnv {
   appBaseUrl: string | null;
 }
 
+export function resolveAppBaseUrlForAuth(): string | null {
+  return (
+    normalizeAppBaseUrl(process.env.APP_BASE_URL) ??
+    normalizeAppBaseUrl(process.env.AUTH0_BASE_URL) ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
+  );
+}
+
 export function getAuthEnv(): AuthEnv {
   return {
     domain: auth0DomainFromEnv(),
     clientId: cleanEnvValue(process.env.AUTH0_CLIENT_ID),
     clientSecret: cleanEnvValue(process.env.AUTH0_CLIENT_SECRET),
     secret: cleanEnvValue(process.env.AUTH0_SECRET),
-    appBaseUrl:
-      normalizeAppBaseUrl(process.env.APP_BASE_URL) ??
-      normalizeAppBaseUrl(process.env.AUTH0_BASE_URL),
+    appBaseUrl: resolveAppBaseUrlForAuth(),
   };
 }
 
@@ -69,7 +75,7 @@ export function validateAuthSecret(secret: string): string | null {
 
 export function authEnvValidationError(env: AuthEnv = getAuthEnv()): string | null {
   if (!isAuthEnvComplete(env)) {
-    return "Auth0 requires AUTH0_ISSUER_BASE_URL (or AUTH0_DOMAIN), AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, and APP_BASE_URL (or AUTH0_BASE_URL).";
+    return "Auth0 requires AUTH0_ISSUER_BASE_URL (or AUTH0_DOMAIN), AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, and APP_BASE_URL (or AUTH0_BASE_URL, or VERCEL_URL on Vercel).";
   }
   return validateAuthSecret(env.secret!);
 }
@@ -116,9 +122,13 @@ export function isBootstrapOwnerEmail(email: string): boolean {
 }
 
 export function getAppBaseUrl(): string {
-  return (
-    normalizeAppBaseUrl(process.env.APP_BASE_URL) ??
-    normalizeAppBaseUrl(process.env.AUTH0_BASE_URL) ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
-  );
+  return resolveAppBaseUrlForAuth() ?? "http://localhost:3000";
+}
+
+/** Redirect target when Auth0 env is incomplete (browser login flows). */
+export function authConfigSignInUrl(message?: string): string {
+  const url = new URL("/sign-in", getAppBaseUrl());
+  url.searchParams.set("error", "auth_config");
+  if (message) url.searchParams.set("message", message.slice(0, 500));
+  return url.toString();
 }

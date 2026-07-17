@@ -19,6 +19,13 @@ export function isSingleProductDeployment(): boolean {
   return resolveAppProductId() !== null;
 }
 
+/** True on per-product Vercel projects (pinned product, Vercel token, or explicit flag). */
+export function isMultiProjectDeployment(): boolean {
+  if (isSingleProductDeployment()) return true;
+  if (process.env.VERCEL_TOKEN?.trim()) return true;
+  return process.env.MULTI_PROJECT_DEPLOYMENT === "true";
+}
+
 export function assertProductAccess(requestedProduct: string): ProductKey {
   const pinned = resolveAppProductId();
   if (pinned && requestedProduct !== pinned && requestedProduct !== "all") {

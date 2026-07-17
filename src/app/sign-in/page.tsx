@@ -1,10 +1,16 @@
+import {
+  authEnvValidationError,
+  isAuthEnvComplete,
+} from "@/lib/documentation-auth/env";
+import { isAuthDisabled } from "@/lib/documentation-auth/config";
+
 const ERROR_COPY: Record<string, string> = {
   invalid_state:
     "Sign-in could not be verified. Click a sign-in option below and complete login in this same tab.",
   auth_failed: "Sign-in could not be completed. Choose a sign-in option below to try again.",
   auth_denied: "Sign-in was cancelled or denied.",
   auth_config:
-    "Sign-in is misconfigured on the server. Ask an administrator to verify Auth0 settings, DATABASE_URL, and AUTH0_ACTION_SHARED_SECRET for this site.",
+    "Sign-in is misconfigured on this deployment. Verify Auth0 env vars and APP_BASE_URL in Vercel, then redeploy.",
   invite_required:
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
   expired_invite:
@@ -35,9 +41,12 @@ export default async function SignInPage({
   const errorCode = params.error?.trim();
   const customMessage = params.message?.trim();
   const returnTo = params.returnTo?.trim();
+  const authReady = isAuthDisabled() || isAuthEnvComplete();
+  const configIssue = authEnvValidationError();
   const errorText =
     customMessage ||
-    (errorCode ? (ERROR_COPY[errorCode] ?? ERROR_COPY.auth_failed) : null);
+    (errorCode ? (ERROR_COPY[errorCode] ?? ERROR_COPY.auth_failed) : null) ||
+    (!authReady && configIssue ? configIssue : null);
 
   const googleConnection = process.env.AUTH0_GOOGLE_CONNECTION?.trim();
   const emailConnection = process.env.AUTH0_EMAIL_CONNECTION?.trim();
@@ -73,22 +82,29 @@ export default async function SignInPage({
             {errorText}
           </div>
         ) : null}
-        <div className="mt-6 flex flex-col gap-3">
-          <a
-            href={auth0LoginUrl(googleConnection || "google-oauth2", returnTo)}
-            data-testid="login-continue-google"
-            className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
-          >
-            Continue with Google
-          </a>
-          <a
-            href={auth0LoginUrl(emailConnection, returnTo)}
-            data-testid="login-continue-email"
-            className="inline-flex items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
-          >
-            Continue with company email
-          </a>
-        </div>
+        {authReady ? (
+          <div className="mt-6 flex flex-col gap-3">
+            <a
+              href={auth0LoginUrl(googleConnection || "google-oauth2", returnTo)}
+              data-testid="login-continue-google"
+              className="inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+            >
+              Continue with Google
+            </a>
+            <a
+              href={auth0LoginUrl(emailConnection, returnTo)}
+              data-testid="login-continue-email"
+              className="inline-flex items-center justify-center rounded-md border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-900 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+            >
+              Continue with company email
+            </a>
+          </div>
+        ) : (
+          <p className="mt-6 text-left text-xs text-zinc-500 dark:text-zinc-400">
+            Sign-in buttons are hidden until Auth0 environment variables are configured on this
+            Vercel project.
+          </p>
+        )}
         <p
           className="mt-6 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400"
           data-testid="login-invite-note"

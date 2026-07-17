@@ -1,7 +1,6 @@
 import "server-only";
 
-import { isVercelProviderConfigured } from "@/lib/deployment/providers/vercel-provider";
-import { isSingleProductDeployment } from "@/lib/deployment/resolve-app-product-id";
+import { isMultiProjectDeployment } from "@/lib/deployment/resolve-app-product-id";
 import {
   isDocumentationFeatureEnabled,
   type DocumentationFeatureKey,
@@ -25,10 +24,10 @@ export interface ResolveDocumentationFeatureInput {
 export async function resolveDocumentationFeatureEnabled(
   input: ResolveDocumentationFeatureInput
 ): Promise<boolean> {
-  const pinned = isSingleProductDeployment();
+  const multiProject = isMultiProjectDeployment();
 
   if (input.key === "host_based_product_routing") {
-    if (isDomainRoutingEnabled() || pinned) return true;
+    if (isDomainRoutingEnabled() || multiProject) return true;
   }
   if (input.key === "separate_admin_domain") {
     if (isSeparateAdminDomainEnabled()) return true;
@@ -41,13 +40,13 @@ export async function resolveDocumentationFeatureEnabled(
     input.key === "production_query_metrics" ||
     input.key === "unanswered_query_review"
   ) {
-    if (isQueryAnalyticsEnabled() || pinned) return true;
+    if (isQueryAnalyticsEnabled() || multiProject) return true;
   }
   if (input.key === "multi_project_deployment" || input.key === "admin_deployment_management") {
-    if (pinned) return true;
+    if (multiProject) return true;
   }
   if (input.key === "vercel_domain_automation") {
-    if (pinned && isVercelProviderConfigured()) return true;
+    if (multiProject) return true;
   }
 
   return isDocumentationFeatureEnabled(input);

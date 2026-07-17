@@ -8,9 +8,20 @@ import {
   isAuthLoginPath,
   persistTransactionFromAuthResponse,
 } from "@/lib/documentation-auth/oauth-route-handlers";
+import {
+  authConfigSignInUrl,
+  authEnvValidationError,
+} from "@/lib/documentation-auth/env";
 import { getAuth0 } from "@/lib/auth0";
 
 export const runtime = "nodejs";
+
+function authConfigRedirect(): NextResponse {
+  const message =
+    authEnvValidationError() ??
+    "Auth0 is not configured for this deployment. Set Auth0 env vars in Vercel.";
+  return NextResponse.redirect(authConfigSignInUrl(message));
+}
 
 /**
  * Auth0 OAuth routes run on Node.js so transaction cookies and DB fallback
@@ -19,7 +30,7 @@ export const runtime = "nodejs";
 async function handleAuth(request: NextRequest): Promise<NextResponse> {
   const auth0 = getAuth0();
   if (!auth0) {
-    return NextResponse.json({ error: "Auth0 is not configured." }, { status: 503 });
+    return authConfigRedirect();
   }
 
   const req = await injectTransactionCookieIfMissing(request);

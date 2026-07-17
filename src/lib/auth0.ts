@@ -9,6 +9,7 @@ import { NextResponse } from "next/server";
 
 import { mapAuthCallbackError } from "@/lib/documentation-auth/auth-callback-errors";
 import {
+  authConfigSignInUrl,
   authEnvValidationError,
   getAuthEnv,
   isAuthEnvComplete,
@@ -91,7 +92,12 @@ export const auth0 = {
   get middleware() {
     const client = getAuth0();
     if (!client) {
-      return () => NextResponse.json({ error: "Auth0 is not configured." }, { status: 503 });
+      return () =>
+        NextResponse.redirect(
+          authConfigSignInUrl(
+            authEnvValidationError() ?? "Auth0 is not configured for this deployment."
+          )
+        );
     }
     return client.middleware.bind(client);
   },
