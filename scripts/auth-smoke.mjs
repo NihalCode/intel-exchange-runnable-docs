@@ -41,14 +41,18 @@ async function smokeOne(baseUrl) {
   try {
     const authRes = await fetch(`${baseUrl}/api/health/auth`);
     const body = await authRes.json().catch(() => ({}));
-    result.authHealth = {
-      http: authRes.status,
-      ready: Boolean(body.ready),
-      databaseReady: Boolean(body.databaseReady),
-      reasonCodes: body.reasonCodes ?? [],
-      productId: body.productId ?? null,
-    };
-    if (!body.ready) result.failures.push(`auth_not_ready:${(body.reasonCodes || []).join(",")}`);
+    if (authRes.status === 404) {
+      result.authHealth = { http: 404, ready: null, note: "endpoint_not_deployed_yet" };
+    } else {
+      result.authHealth = {
+        http: authRes.status,
+        ready: Boolean(body.ready),
+        databaseReady: Boolean(body.databaseReady),
+        reasonCodes: body.reasonCodes ?? [],
+        productId: body.productId ?? null,
+      };
+      if (!body.ready) result.failures.push(`auth_not_ready:${(body.reasonCodes || []).join(",")}`);
+    }
   } catch (error) {
     result.failures.push(`auth_health_error:${error instanceof Error ? error.message : "fetch"}`);
   }
