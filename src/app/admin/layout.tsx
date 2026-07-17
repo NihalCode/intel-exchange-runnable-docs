@@ -10,7 +10,7 @@ import {
 } from "@/lib/enterprise/admin-access";
 import { ENTERPRISE_PERMISSIONS } from "@/lib/enterprise/types";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
-import { listDocumentationFeatures } from "@/lib/documentation-features";
+import { listResolvedEnabledFeatureKeys } from "@/lib/documentation-features/resolve-enabled";
 
 export { metadata } from "./metadata";
 
@@ -46,9 +46,10 @@ export default async function AdminLayout({
       organizationId: orgContext.organization.id,
     })
   );
-  const enabledFeatures = (await listDocumentationFeatures(orgContext.organization.id))
-    .filter((feature) => feature.enabled)
-    .map((feature) => feature.key);
+  const enabledFeatures = await listResolvedEnabledFeatureKeys(
+    orgContext.organization.id,
+    orgContext.principal.role
+  );
 
   return (
     <AdminLayoutClient
