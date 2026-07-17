@@ -20,11 +20,15 @@ export async function GET() {
   }
 
   const auth = validateAuthConfig();
-  checks.authConfig = auth.ok;
+  checks.authConfig = auth.checks.auth0EnvComplete && auth.checks.auth0SecretValid;
 
-  const ready = checks.database;
+  const ready = checks.database && checks.authConfig;
   return NextResponse.json(
-    { status: ready ? "ready" : "degraded", checks },
+    {
+      status: ready ? "ready" : "degraded",
+      checks,
+      authIssues: auth.issues.slice(0, 5),
+    },
     { status: ready ? 200 : 503 }
   );
 }

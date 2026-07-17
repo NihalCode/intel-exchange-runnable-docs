@@ -1,25 +1,12 @@
 import "server-only";
 
-/** Trim env values and strip accidental wrapping quotes from Vercel/`.env` files. */
-export function cleanEnvValue(value: string | undefined): string | null {
-  const trimmed = value?.trim();
-  if (!trimmed) return null;
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    const unquoted = trimmed.slice(1, -1).trim();
-    return unquoted || null;
-  }
-  return trimmed;
-}
+import {
+  cleanEnvValue,
+  normalizeAppBaseUrl,
+} from "@/lib/documentation-auth/auth-config-public";
+import { resolveAppBaseUrlFromEnv } from "@/lib/documentation-auth/base-url";
 
-/** Canonical app origin — no trailing slash (Auth0 callback URLs must match exactly). */
-export function normalizeAppBaseUrl(value: string | undefined): string | null {
-  const clean = cleanEnvValue(value);
-  if (!clean) return null;
-  return clean.replace(/\/+$/, "");
-}
+export { cleanEnvValue, normalizeAppBaseUrl } from "@/lib/documentation-auth/auth-config-public";
 
 function auth0DomainFromEnv(): string | null {
   const issuer = cleanEnvValue(process.env.AUTH0_ISSUER_BASE_URL);
@@ -43,11 +30,7 @@ export interface AuthEnv {
 }
 
 export function resolveAppBaseUrlForAuth(): string | null {
-  return (
-    normalizeAppBaseUrl(process.env.APP_BASE_URL) ??
-    normalizeAppBaseUrl(process.env.AUTH0_BASE_URL) ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
-  );
+  return resolveAppBaseUrlFromEnv();
 }
 
 export function getAuthEnv(): AuthEnv {

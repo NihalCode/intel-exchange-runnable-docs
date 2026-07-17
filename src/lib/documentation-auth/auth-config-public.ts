@@ -41,6 +41,8 @@ export function initialOwnerEmail(): string | null {
   return null;
 }
 
+import { resolveAppBaseUrlFromEnv } from "@/lib/documentation-auth/base-url";
+
 function auth0DomainFromEnv(): string | null {
   const issuer = cleanEnvValue(process.env.AUTH0_ISSUER_BASE_URL);
   if (issuer) {
@@ -82,9 +84,7 @@ export function validateAuthConfigPublic(): AuthConfigValidation {
   const clientId = cleanEnvValue(process.env.AUTH0_CLIENT_ID);
   const clientSecret = cleanEnvValue(process.env.AUTH0_CLIENT_SECRET);
   const secret = cleanEnvValue(process.env.AUTH0_SECRET);
-  const appBaseUrl =
-    normalizeAppBaseUrl(process.env.APP_BASE_URL) ??
-    normalizeAppBaseUrl(process.env.AUTH0_BASE_URL);
+  const appBaseUrl = resolveAppBaseUrlFromEnv();
 
   const auth0EnvComplete = Boolean(domain && clientId && clientSecret && secret && appBaseUrl);
   const auth0SecretValid = !secret || secret.length >= 32;
@@ -112,7 +112,9 @@ export function validateAuthConfigPublic(): AuthConfigValidation {
   }
 
   if (!appBaseUrlSet) {
-    issues.push("APP_BASE_URL (or AUTH0_BASE_URL) is unset — OAuth callbacks and invite-check will fail.");
+    issues.push(
+      "APP_BASE_URL is unset — set it to this deployment URL, or rely on VERCEL_URL after redeploy."
+    );
   }
 
   if (vercelWithoutDatabase) {

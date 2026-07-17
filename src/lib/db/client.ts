@@ -107,7 +107,16 @@ async function getPgPool(): Promise<Pool> {
   if (pgPool) return pgPool;
   if (pgInitialization) return pgInitialization;
   pgInitialization = (async () => {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const connectionString = process.env.DATABASE_URL?.trim() ?? "";
+    const useSsl =
+      process.env.PGSSLMODE === "require" ||
+      /sslmode=require/i.test(connectionString) ||
+      (Boolean(process.env.VERCEL) && !/localhost|127\.0\.0\.1/i.test(connectionString));
+
+    const pool = new Pool({
+      connectionString,
+      ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+    });
     const client = await pool.connect();
     try {
       await client.query("BEGIN");

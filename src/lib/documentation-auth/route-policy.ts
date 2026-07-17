@@ -11,6 +11,7 @@ const PUBLIC_API_EXACT = [
   "/api/auth/invite-check",
   "/api/auth/session",
   "/api/auth/me",
+  "/api/auth/setup-status",
   "/api/invites/validate",
   "/api/health/live",
   "/api/health/ready",

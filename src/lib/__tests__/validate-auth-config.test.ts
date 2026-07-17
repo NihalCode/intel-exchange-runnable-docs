@@ -73,4 +73,18 @@ describe("validateAuthConfig", () => {
     expect(result.issues).toEqual([]);
     expect(result.checks.initialOwnerEmailSource).toBe("INITIAL_OWNER_EMAIL");
   });
+
+  it("accepts VERCEL_URL when APP_BASE_URL is unset", () => {
+    process.env.AUTH0_ISSUER_BASE_URL = "https://tenant.auth0.com";
+    process.env.AUTH0_CLIENT_ID = "client";
+    process.env.AUTH0_CLIENT_SECRET = "secret";
+    process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.VERCEL_URL = "cyware-docs-ctix.vercel.app";
+    process.env.AUTH0_ACTION_SHARED_SECRET = "action-secret-at-least-32-characters-long";
+    process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/docs";
+
+    const result = validateAuthConfig();
+    expect(result.checks.auth0EnvComplete).toBe(true);
+    expect(result.checks.appBaseUrlSet).toBe(true);
+  });
 });

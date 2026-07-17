@@ -3,6 +3,11 @@ import {
   isAuthEnvComplete,
 } from "@/lib/documentation-auth/env";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
+import { buildAuthSetupStatus } from "@/lib/documentation-auth/setup-status";
+import { db } from "@/lib/db/client";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const ERROR_COPY: Record<string, string> = {
   invalid_state:
@@ -43,6 +48,16 @@ export default async function SignInPage({
   const returnTo = params.returnTo?.trim();
   const authReady = isAuthDisabled() || isAuthEnvComplete();
   const configIssue = authEnvValidationError();
+
+  let databaseConnected = false;
+  try {
+    await db.queryOne("SELECT 1 AS ok");
+    databaseConnected = true;
+  } catch {
+    databaseConnected = false;
+  }
+  const setup = buildAuthSetupStatus({ databaseConnected });
+
   const errorText =
     customMessage ||
     (errorCode ? (ERROR_COPY[errorCode] ?? ERROR_COPY.auth_failed) : null) ||
@@ -65,6 +80,9 @@ export default async function SignInPage({
           />
           <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
             Cyware API Docs
+            {setup.deployment.productId ? (
+              <span className="ml-1 font-normal text-zinc-500">({setup.deployment.productId})</span>
+            ) : null}
           </span>
         </div>
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
@@ -80,6 +98,54 @@ export default async function SignInPage({
             className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-left text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
           >
             {errorText}
+          </div>
+        ) : null}
+        {!authReady ? (
+          <div
+            className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
+            data-testid="auth-setup-checklist"
+          >
+            <p className="font-medium">This Vercel project is missing required configuration.</p>
+            {setup.deployment.resolvedAppBaseUrl ? (
+              <p className="mt-2 text-xs opacity-90">
+                Deployment URL: <code>{setup.deployment.resolvedAppBaseUrl}</code>
+              </p>
+            ) : null}
+            {setup.missingForSignIn.length > 0 ? (
+              <>
+                <p className="mt-3 text-xs font-medium uppercase tracking-wide opacity-80">
+                  Required for sign-in (set on this project, then redeploy)
+                </p>
+                <ul className="mt-1 list-disc space-y-1 pl-5 text-xs">
+                  {setup.missingForSignIn.map((item) => (
+                    <li key={item}>
+                      <code>{item}</code>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            {setup.missingRecommended.length > 0 ? (
+              <>
+                <p className="mt-3 text-xs font-medium uppercase tracking-wide opacity-80">
+                  Required for admin + deployments
+                </p>
+                <ul className="mt-1 list-disc space-y-1 pl-5 text-xs">
+                  {setup.missingRecommended.map((item) => (
+                    <li key={item}>
+                      <code>{item}</code>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            <p className="mt-3 text-xs leading-relaxed opacity-90">
+              Copy the same Auth0 and database variables from your main docs project to{" "}
+              <strong>each</strong> product Vercel project ({`cyware-docs-ctix`},{" "}
+              {`cyware-docs-csap`}, {`cyware-docs-cftr`}, {`cyware-docs-orchestrate`}), or run{" "}
+              <code>npm run vercel:sync-product-env</code> locally with{" "}
+              <code>VERCEL_TOKEN</code>.
+            </p>
           </div>
         ) : null}
         {authReady ? (
@@ -101,8 +167,8 @@ export default async function SignInPage({
           </div>
         ) : (
           <p className="mt-6 text-left text-xs text-zinc-500 dark:text-zinc-400">
-            Sign-in buttons are hidden until Auth0 environment variables are configured on this
-            Vercel project.
+            Sign-in buttons appear after Auth0 environment variables are configured on this Vercel
+            project and you redeploy.
           </p>
         )}
         <p
