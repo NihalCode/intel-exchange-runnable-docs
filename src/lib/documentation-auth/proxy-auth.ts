@@ -86,6 +86,16 @@ export function continueWithAuthHeaders(
 export async function runDocumentationAuthProxy(
   request: NextRequest
 ): Promise<NextResponse> {
+  try {
+    return await runDocumentationAuthProxyInner(request);
+  } catch {
+    return NextResponse.next();
+  }
+}
+
+async function runDocumentationAuthProxyInner(
+  request: NextRequest
+): Promise<NextResponse> {
   if (!isMiddlewareAuthEnabled()) {
     return NextResponse.next();
   }
@@ -95,7 +105,12 @@ export async function runDocumentationAuthProxy(
     return NextResponse.next();
   }
 
-  const authResponse = await auth0.middleware(request);
+  let authResponse: NextResponse;
+  try {
+    authResponse = await auth0.middleware(request);
+  } catch {
+    return NextResponse.next();
+  }
   const hostRouted = await applyHostRouting(request, authResponse);
   if (hostRouted) return hostRouted;
 

@@ -73,6 +73,10 @@ export async function resolveHost(
   const resolvedHostname = normalized.hostname;
   const orgId = organizationId?.trim() ?? "";
 
+  // Fast path: pinned Vercel deployment / CTIX_DOMAIN env hosts — no DB round-trip.
+  const staticEnvContext = resolveFromStaticConfig(resolvedHostname, orgId);
+  if (staticEnvContext) return staticEnvContext;
+
   if (orgId) {
     const orgMapping = await findDomainMappingByHostname(orgId, resolvedHostname);
     const orgContext = mappingToContext(orgMapping);
@@ -83,9 +87,6 @@ export async function resolveHost(
   if (globalMapping) {
     return toResolvedHostContextFromMapping(globalMapping);
   }
-
-  const envContext = resolveFromStaticConfig(resolvedHostname, orgId);
-  if (envContext) return envContext;
 
   return null;
 }

@@ -28,6 +28,15 @@ describe("matchStaticDomainHostname (pinned deployment)", () => {
     const match = matchStaticDomainHostname("cyware-docs-cftr.vercel.app");
     expect(match?.productId).toBe("cftr");
   });
+
+  it("maps Vercel preview deployment hostnames to pinned product", () => {
+    process.env.APP_PRODUCT_ID = "cftr";
+    process.env.APP_BASE_URL = "https://cyware-docs-cftr.vercel.app";
+    const match = matchStaticDomainHostname(
+      "cyware-docs-cftr-a3jnxazn3-nihalcodes-projects.vercel.app"
+    );
+    expect(match?.productId).toBe("cftr");
+  });
 });
 
 describe("admin on product hosts", () => {

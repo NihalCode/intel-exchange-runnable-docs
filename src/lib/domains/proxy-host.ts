@@ -64,10 +64,14 @@ export async function applyHostRouting(
       }
       return NextResponse.rewrite(new URL("/access/disabled", request.url));
     }
-    throw error;
+    // DB unavailable in proxy — skip host routing instead of failing the request.
+    return attachHostHeaders(request, authResponse, {});
   }
 
   if (!hostContext) {
+    if (isSingleProductDeployment() && hostname.endsWith(".vercel.app")) {
+      return null;
+    }
     if (pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unknown host", code: "UNKNOWN_HOST" }, { status: 404 });
     }

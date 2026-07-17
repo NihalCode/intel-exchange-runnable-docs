@@ -65,6 +65,14 @@ export function matchStaticDomainHostname(hostname: string): StaticHostnameMatch
     } catch {
       // ignore malformed APP_BASE_URL
     }
+    const vercelPrefix = `cyware-docs-${pinned}`;
+    if (
+      normalized.endsWith(".vercel.app") &&
+      (normalized === `${vercelPrefix}.vercel.app` ||
+        normalized.startsWith(`${vercelPrefix}-`))
+    ) {
+      return { kind: "product", productId: pinned, envKey: PRODUCT_ENV_KEYS[pinned] };
+    }
   }
 
   for (const productId of PRODUCT_KEYS) {
