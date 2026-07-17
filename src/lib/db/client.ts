@@ -4,7 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import Database from "better-sqlite3";
-import { Pool, type PoolClient } from "pg";
+import { Pool, type PoolClient, type PoolConfig } from "pg";
 
 import {
   DB_MIGRATIONS,
@@ -61,17 +61,72 @@ export function normalizeDatabaseUrl(raw: string | undefined): string | null {
   return value;
 }
 
+/** True when the URL asks for SCRAM channel binding (common on Neon). */
+export function databaseUrlRequiresChannelBinding(connectionString: string): boolean {
+  return /[?&]channel_binding=require\b/i.test(connectionString);
+}
+
 export interface DatabaseProbeResult {
   configured: boolean;
   connected: boolean;
   reasonCode?:
     | "not_configured"
     | "connection_failed"
+    | "auth_failed"
+    | "timeout"
+    | "ssl_required"
     | "migration_failed"
     | "query_failed"
     | "ok";
   safeMessage?: string;
   migrationVersion?: number;
+}
+
+function classifyPgError(error: unknown): Pick<DatabaseProbeResult, "reasonCode" | "safeMessage"> {
+  const message = error instanceof Error ? error.message : String(error);
+  const lower = message.toLowerCase();
+  if (
+    lower.includes("password authentication failed") ||
+    lower.includes("28p01") ||
+    lower.includes("invalid authorization")
+  ) {
+    return {
+      reasonCode: "auth_failed",
+      safeMessage:
+        "Postgres rejected the credentials. Re-copy DATABASE_URL from Neon (pooled host), paste without quotes into all four Vercel projects, and redeploy.",
+    };
+  }
+  if (lower.includes("timeout") || lower.includes("etimedout") || lower.includes("econnrefused")) {
+    return {
+      reasonCode: "timeout",
+      safeMessage:
+        "Postgres connection timed out. Confirm the Neon project is active (not suspended), use the -pooler hostname, and retry.",
+    };
+  }
+  if (
+    lower.includes("ssl") ||
+    lower.includes("certificate") ||
+    lower.includes("channel binding") ||
+    lower.includes("scram")
+  ) {
+    return {
+      reasonCode: "ssl_required",
+      safeMessage:
+        "Postgres TLS/SCRAM handshake failed. Keep sslmode=require (and channel_binding=require for Neon); this app enables channel binding automatically.",
+    };
+  }
+  if (lower.includes("migration") || lower.includes("schema_migrations") || lower.includes("syntax error")) {
+    return {
+      reasonCode: "migration_failed",
+      safeMessage:
+        "Postgres connected but migrations failed. Check Vercel function logs for schema errors.",
+    };
+  }
+  return {
+    reasonCode: "connection_failed",
+    safeMessage:
+      "Postgres connection failed. Verify DATABASE_URL (Neon pooled host), include sslmode=require, redeploy, and confirm the DB allows Vercel egress.",
+  };
 }
 
 /** Probe DB without exposing connection details. Prefer for health/auth diagnostics. */
@@ -102,19 +157,11 @@ export async function probeDatabase(): Promise<DatabaseProbeResult> {
       migrationVersion,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "unknown";
-    const lower = message.toLowerCase();
-    const migrationFailed =
-      lower.includes("migration") ||
-      lower.includes("schema_migrations") ||
-      lower.includes("syntax error");
+    const classified = classifyPgError(error);
     return {
       configured: true,
       connected: false,
-      reasonCode: migrationFailed ? "migration_failed" : "connection_failed",
-      safeMessage: migrationFailed
-        ? "Postgres connected but migrations failed. Check Vercel function logs for schema errors."
-        : "Postgres connection failed. Verify DATABASE_URL (use pooled host if Neon), include sslmode=require, redeploy, and confirm the DB allows Vercel IPs.",
+      ...classified,
     };
   }
 }
@@ -194,14 +241,25 @@ async function getPgPool(): Promise<Pool> {
       process.env.PGSSLMODE === "require" ||
       /sslmode=require/i.test(connectionString) ||
       (Boolean(process.env.VERCEL) && !/localhost|127\.0\.0\.1/i.test(connectionString));
+    const enableChannelBinding =
+      databaseUrlRequiresChannelBinding(connectionString) ||
+      /\.neon\.tech\b/i.test(connectionString);
 
-    const pool = new Pool({
+    const poolConfig: PoolConfig & { enableChannelBinding?: boolean } = {
       connectionString,
       ssl: useSsl ? { rejectUnauthorized: false } : undefined,
-      connectionTimeoutMillis: 10_000,
+      connectionTimeoutMillis: 15_000,
       idleTimeoutMillis: 20_000,
       max: 5,
-    });
+    };
+    // Neon connection strings include channel_binding=require; node-pg ignores
+    // that query param unless enableChannelBinding is set explicitly.
+    // pg@8.22 runtime supports this; @types/pg may lag behind.
+    if (enableChannelBinding) {
+      poolConfig.enableChannelBinding = true;
+    }
+
+    const pool = new Pool(poolConfig);
     const client = await pool.connect();
     try {
       await client.query("BEGIN");

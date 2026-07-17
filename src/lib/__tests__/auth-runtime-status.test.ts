@@ -89,4 +89,18 @@ describe("normalizeDatabaseUrl", () => {
       "postgresql://u:p@host/db?sslmode=require"
     );
   });
+
+  it("detects Neon channel_binding=require", async () => {
+    const { databaseUrlRequiresChannelBinding } = await import("@/lib/db/client");
+    expect(
+      databaseUrlRequiresChannelBinding(
+        "postgresql://u:p@ep-x-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+      )
+    ).toBe(true);
+    expect(
+      databaseUrlRequiresChannelBinding(
+        "postgresql://u:p@ep-x-pooler.c-9.us-east-1.aws.neon.tech/neondb?sslmode=require"
+      )
+    ).toBe(false);
+  });
 });
