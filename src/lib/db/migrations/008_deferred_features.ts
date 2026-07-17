@@ -62,14 +62,14 @@ CREATE INDEX IF NOT EXISTS idx_unanswered_query_reviews_event
 
 export const POSTGRES_DEFERRED_FEATURES_MIGRATION_SQL = `
 ALTER TABLE product_deployments
-  ADD COLUMN IF NOT EXISTS control_plane_resource_id UUID
+  ADD COLUMN IF NOT EXISTS control_plane_resource_id TEXT
   REFERENCES control_plane_resources(id) ON DELETE SET NULL;
 
 CREATE TABLE IF NOT EXISTS deployment_domain_change_requests (
-  id UUID PRIMARY KEY,
-  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
-  deployment_id UUID NOT NULL REFERENCES product_deployments(id) ON DELETE CASCADE,
-  change_request_id UUID NOT NULL REFERENCES change_requests(id) ON DELETE CASCADE,
+  id TEXT PRIMARY KEY,
+  organization_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  deployment_id TEXT NOT NULL REFERENCES product_deployments(id) ON DELETE CASCADE,
+  change_request_id TEXT NOT NULL REFERENCES change_requests(id) ON DELETE CASCADE,
   domain TEXT NOT NULL,
   action TEXT NOT NULL CHECK (action IN ('add','remove','verify')),
   status TEXT NOT NULL DEFAULT 'pending'

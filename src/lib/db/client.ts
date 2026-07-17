@@ -216,6 +216,14 @@ function classifyPgError(error: unknown): Pick<
         "Postgres TLS/SCRAM handshake failed. Keep sslmode=require (and channel_binding=require for Neon); this app enables channel binding automatically.",
     };
   }
+  if (codes.includes("42804") || lower.includes("datatype mismatch")) {
+    return {
+      reasonCode: "migration_failed",
+      errorCode: "42804",
+      safeMessage:
+        "Postgres schema migration failed (type mismatch). Redeploy after the latest migration fix; if this persists, reset the Neon database or contact support.",
+    };
+  }
   if (lower.includes("migration") || lower.includes("schema_migrations") || lower.includes("syntax error")) {
     return {
       reasonCode: "migration_failed",
