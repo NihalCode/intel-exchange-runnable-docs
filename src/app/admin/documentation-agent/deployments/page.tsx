@@ -1,5 +1,13 @@
-import { getDocumentationFeature } from "@/lib/documentation-features";
+import { DocumentationAgentDeploymentsPage } from "@/components/admin/pages/DocumentationAgentDeploymentsPage";
 import {
+  listDomainAutomationRecords,
+  listProductDeployments,
+  maskProjectId,
+} from "@/lib/deployment/repository";
+import { getVercelProvider } from "@/lib/deployment/providers";
+import { approvedCollectionIdForProduct } from "@/lib/deployment/postman-collection-registry";
+import {
+  requireAdminFeature,
   requireAdminPageContext,
   requirePermission,
 } from "@/lib/admin/page-data";
@@ -7,23 +15,36 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const { context, capabilities } = await requireAdminPageContext();
-  requirePermission(capabilities, "jobs.read");
-  const feature = await getDocumentationFeature(
-    context.organization.id,
-    "vercel_deployment"
+  const { capabilities, context } = await requireAdminPageContext();
+  requirePermission(capabilities, "deployments.read");
+  await requireAdminFeature(context.organization.id, "admin_deployment_management");
+
+  const deployments = await listProductDeployments(context.organization.id);
+  const provider = getVercelProvider();
+
+  const enriched = await Promise.all(
+    deployments.map(async (d) => {
+      const domains = await listDomainAutomationRecords(context.organization.id, d.id);
+      let latestDeployment = null;
+      try {
+        latestDeployment = (await provider.listDeployments(d.vercelProjectId))[0] ?? null;
+      } catch {
+        latestDeployment = null;
+      }
+      return {
+        id: d.id,
+        product: d.product,
+        vercelProjectName: d.vercelProjectName,
+        vercelProjectIdMasked: maskProjectId(d.vercelProjectId),
+        environment: d.environment,
+        status: d.status,
+        primaryDomain: d.primaryDomain,
+        approvedCollectionId: approvedCollectionIdForProduct(d.product),
+        domains,
+        latestDeployment,
+      };
+    })
   );
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold">Deployments</h1>
-      {!feature.enabled ? (
-        <div className="mt-6 rounded-xl border border-zinc-200 p-6 dark:border-zinc-800">
-          <h2 className="font-semibold">Deployments are disabled</h2>
-          <p className="mt-2 text-sm text-zinc-500">Enable vercel_deployment in Documentation Features before deployment controls or APIs become available.</p>
-        </div>
-      ) : (
-        <p className="mt-4 text-sm text-zinc-500">Deployment is enabled. Production actions remain permission and approval gated.</p>
-      )}
-    </div>
-  );
+
+  return <DocumentationAgentDeploymentsPage initialDeployments={enriched} />;
 }

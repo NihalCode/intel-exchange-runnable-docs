@@ -22,6 +22,10 @@ import {
   POSTGRES_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
   SQLITE_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
 } from "@/lib/db/migrations/006_multi_domain_analytics";
+import {
+  POSTGRES_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
+  SQLITE_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
+} from "@/lib/db/migrations/007_product_deployments";
 
 export interface VersionedMigration {
   version: number;
@@ -70,6 +74,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "multi_domain_analytics",
     sqlite: SQLITE_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
     postgres: POSTGRES_MULTI_DOMAIN_ANALYTICS_MIGRATION_SQL,
+  },
+  {
+    version: 7,
+    name: "product_deployments",
+    sqlite: SQLITE_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
+    postgres: POSTGRES_PRODUCT_DEPLOYMENTS_MIGRATION_SQL,
   },
 ] as const;
 

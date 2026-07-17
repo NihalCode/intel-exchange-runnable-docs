@@ -41,19 +41,32 @@ function productFromPath(pathname: string): string | null {
 export function ProductProvider({
   children,
   hostProductId = null,
+  deploymentProductId = null,
 }: {
   children: React.ReactNode;
-  /** Product resolved from dedicated product domain (server-injected). */
   hostProductId?: string | null;
+  deploymentProductId?: string | null;
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const products = useMemo(() => listProducts(), []);
+  const allProducts = useMemo(() => listProducts(), []);
+  const pinnedProduct =
+    deploymentProductId && getProduct(deploymentProductId)
+      ? deploymentProductId
+      : null;
+  const products = useMemo(
+    () =>
+      pinnedProduct
+        ? allProducts.filter((p) => p.productId === pinnedProduct)
+        : allProducts,
+    [allProducts, pinnedProduct]
+  );
   const productFromRoute = productFromPath(pathname);
   const [savedProductId, setSavedProductId] = useState(DEFAULT_PRODUCT_ID);
   const hostProduct =
     hostProductId && getProduct(hostProductId) ? hostProductId : null;
-  const productId = productFromRoute ?? hostProduct ?? savedProductId;
+  const productId =
+    pinnedProduct ?? productFromRoute ?? hostProduct ?? savedProductId;
   const [searchScope, setSearchScope] = useState<"product" | "all">("product");
 
   useEffect(() => {
@@ -75,6 +88,7 @@ export function ProductProvider({
 
   const setProductId = useCallback(
     (id: string) => {
+      if (pinnedProduct && id !== pinnedProduct && id !== ALL_PRODUCTS_ID) return;
       if (!getProduct(id) && id !== ALL_PRODUCTS_ID) return;
       setSavedProductId(id === ALL_PRODUCTS_ID ? DEFAULT_PRODUCT_ID : id);
       try {
@@ -86,7 +100,7 @@ export function ProductProvider({
         router.push(`/docs/${id}`);
       }
     },
-    [router]
+    [router, pinnedProduct]
   );
 
   const product = getProduct(productId) ?? getProduct(DEFAULT_PRODUCT_ID)!;

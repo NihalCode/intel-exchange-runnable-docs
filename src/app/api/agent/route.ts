@@ -11,13 +11,14 @@ import type { AgentRequest } from "@/lib/agent/types";
 import { agentLifecycleEvent } from "@/lib/agent/events";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import { correlationIds } from "@/lib/enterprise/observability";
+import { getResolvedHostContext } from "@/lib/domains/host-context";
 import { trustedHostnameFromHeaders } from "@/lib/domains/request-host";
 import { resolveQueryAnalyticsEnabled } from "@/lib/domains/feature-gates-resolve";
 import {
   ensureUnansweredReviewForEvent,
   recordQueryAnalyticsEvent,
 } from "@/lib/query-analytics/repository";
-import { getResolvedHostContext } from "@/lib/domains/host-context";
+import { resolveAppProductId, assertProductAccess } from "@/lib/deployment/resolve-app-product-id";
 import { isProductKey } from "@/lib/products/registry";
 import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
 
@@ -64,7 +65,23 @@ export async function POST(req: Request) {
 
     const hostContext = await getResolvedHostContext();
     let agentRequest: AgentRequest = agentRequestBody;
-    if (
+
+    const pinnedProduct = resolveAppProductId();
+    if (pinnedProduct) {
+      try {
+        const requested =
+          typeof agentRequest.productId === "string" ? agentRequest.productId : pinnedProduct;
+        agentRequest = {
+          ...agentRequest,
+          productId: assertProductAccess(requested === "all" ? pinnedProduct : requested),
+        };
+      } catch {
+        return Response.json(
+          { error: "Product not available on this deployment", code: "PRODUCT_ISOLATION" },
+          { status: 403, headers: responseHeaders }
+        );
+      }
+    } else if (
       hostContext?.productId &&
       isProductKey(hostContext.productId) &&
       (!agentRequest.productId || agentRequest.productId === "all")

@@ -22,6 +22,7 @@ const ROLE_PERMISSIONS: Record<EnterpriseRole, readonly EnterprisePermission[]> 
     "audit.read",
     "jobs.read",
     "domains.read",
+    "deployments.read",
     "collections.read",
     "query_analytics.read",
   ],
@@ -79,6 +80,7 @@ export function authorizeEnterprise(
       permission === "schemas.publish" ||
       permission === "resources.write_production" ||
       permission === "domains.manage" ||
+      permission === "deployments.manage" ||
       permission === "collections.manage" ||
       permission === "query_analytics.read_sensitive" ||
       permission === "unanswered_queries.manage"

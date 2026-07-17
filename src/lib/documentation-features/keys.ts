@@ -20,6 +20,10 @@ export const DOCUMENTATION_FEATURE_KEYS = [
   "unanswered_query_review",
   "chat_response_navigation",
   "custom_snippet_query_parameters",
+  "multi_project_deployment",
+  "vercel_domain_automation",
+  "production_query_metrics",
+  "admin_deployment_management",
 ] as const;
 
 export type DocumentationFeatureKey = (typeof DOCUMENTATION_FEATURE_KEYS)[number];

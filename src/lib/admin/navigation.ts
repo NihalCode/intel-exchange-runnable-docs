@@ -62,7 +62,8 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       {
         href: "/admin/documentation-agent/deployments",
         label: "Deployments",
-        permission: "jobs.read",
+        permission: "deployments.read",
+        featureFlag: "admin_deployment_management",
       },
       {
         href: "/admin/documentation-agent/environments",
