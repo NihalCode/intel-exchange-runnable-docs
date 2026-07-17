@@ -116,6 +116,9 @@ async function getPgPool(): Promise<Pool> {
     const pool = new Pool({
       connectionString,
       ssl: useSsl ? { rejectUnauthorized: false } : undefined,
+      connectionTimeoutMillis: 10_000,
+      idleTimeoutMillis: 20_000,
+      max: 5,
     });
     const client = await pool.connect();
     try {

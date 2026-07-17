@@ -17,11 +17,17 @@ export interface OAuthTransactionRecord {
 }
 
 const TTL_MS = 2 * 60 * 60 * 1000;
-const FILE_PATH = path.join(process.cwd(), ".data", "oauth-transactions.json");
 
 function fileStorePath(): string {
-  mkdirSync(path.dirname(FILE_PATH), { recursive: true });
-  return FILE_PATH;
+  const base =
+    process.env.VERCEL && !process.env.DATABASE_URL?.trim()
+      ? "/tmp"
+      : process.env.VERCEL
+        ? "/tmp"
+        : path.join(process.cwd(), ".data");
+  const filePath = path.join(base, "oauth-transactions.json");
+  mkdirSync(path.dirname(filePath), { recursive: true });
+  return filePath;
 }
 
 function readFileStore(): OAuthTransactionRecord[] {
@@ -41,6 +47,12 @@ function writeFileStore(records: OAuthTransactionRecord[]): void {
 function prune(records: OAuthTransactionRecord[]): OAuthTransactionRecord[] {
   const now = Date.now();
   return records.filter((r) => Date.parse(r.expiresAt) > now);
+}
+
+function saveToFile(record: OAuthTransactionRecord): void {
+  const next = prune(readFileStore()).filter((r) => r.state !== record.state);
+  next.push(record);
+  writeFileStore(next);
 }
 
 async function savePostgres(record: OAuthTransactionRecord): Promise<void> {
@@ -78,10 +90,13 @@ async function loadPostgres(state: string): Promise<OAuthTransactionRecord | nul
 }
 
 async function deletePostgres(state: string): Promise<void> {
-  if (!isPostgresConfigured()) return;
   await runExecute(`DELETE FROM oauth_transactions WHERE state = ?`, [state]);
 }
 
+/**
+ * Persist OAuth transaction state. Prefer Postgres when configured; if the DB
+ * is unreachable, fall back to a local/tmp file so /auth/login never 500s.
+ */
 export async function saveOAuthTransaction(input: {
   state: string;
   cookieName: string;
@@ -95,27 +110,44 @@ export async function saveOAuthTransaction(input: {
   };
 
   if (isPostgresConfigured()) {
-    await savePostgres(record);
-    return;
+    try {
+      await savePostgres(record);
+      return;
+    } catch {
+      // Continue to file fallback — login must not fail because of DB outage.
+    }
   }
 
-  const next = prune(readFileStore()).filter((r) => r.state !== record.state);
-  next.push(record);
-  writeFileStore(next);
+  try {
+    saveToFile(record);
+  } catch {
+    // Cookie on the Auth0 response is still enough for same-browser callback.
+  }
 }
 
 export async function loadOAuthTransaction(state: string): Promise<OAuthTransactionRecord | null> {
   if (isPostgresConfigured()) {
-    return loadPostgres(state);
+    try {
+      const fromDb = await loadPostgres(state);
+      if (fromDb) return fromDb;
+    } catch {
+      // Fall through to file store.
+    }
   }
-  const match = prune(readFileStore()).find((r) => r.state === state);
-  return match ?? null;
+  return prune(readFileStore()).find((r) => r.state === state) ?? null;
 }
 
 export async function deleteOAuthTransaction(state: string): Promise<void> {
   if (isPostgresConfigured()) {
-    await deletePostgres(state);
-    return;
+    try {
+      await deletePostgres(state);
+    } catch {
+      // ignore
+    }
   }
-  writeFileStore(prune(readFileStore()).filter((r) => r.state !== state));
+  try {
+    writeFileStore(prune(readFileStore()).filter((r) => r.state !== state));
+  } catch {
+    // ignore
+  }
 }

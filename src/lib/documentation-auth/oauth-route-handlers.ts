@@ -62,8 +62,12 @@ export function buildLoginBridgeResponse(authResponse: NextResponse, authorizeUr
     },
   });
 
-  for (const cookie of authResponse.cookies.getAll()) {
-    bridge.cookies.set(cookie);
+  try {
+    for (const cookie of authResponse.cookies.getAll()) {
+      bridge.cookies.set(cookie);
+    }
+  } catch {
+    // Auth0 SDK response may not expose cookies the same way — still redirect.
   }
 
   return bridge;

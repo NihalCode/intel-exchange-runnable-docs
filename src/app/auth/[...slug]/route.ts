@@ -23,34 +23,67 @@ function authConfigRedirect(): NextResponse {
   return NextResponse.redirect(authConfigSignInUrl(message));
 }
 
+function authFailureRedirect(error: unknown): NextResponse {
+  const detail =
+    error instanceof Error ? error.message.slice(0, 300) : "Sign-in failed unexpectedly.";
+  return NextResponse.redirect(
+    authConfigSignInUrl(`Auth login failed: ${detail}`)
+  );
+}
+
 /**
  * Auth0 OAuth routes run on Node.js so transaction cookies and DB fallback
  * survive the redirect chain to Auth0/Google and back.
  */
 async function handleAuth(request: NextRequest): Promise<NextResponse> {
-  const auth0 = getAuth0();
-  if (!auth0) {
-    return authConfigRedirect();
-  }
-
-  const req = await injectTransactionCookieIfMissing(request);
-  const authResponse = await auth0.middleware(req);
-
-  if (isAuthLoginPath(request.nextUrl.pathname)) {
-    const authorizeUrl = authResponse.headers.get("location");
-    const isRedirectToAuth0 =
-      authResponse.status >= 300 &&
-      authResponse.status < 400 &&
-      Boolean(authorizeUrl?.includes("auth0.com"));
-
-    if (isRedirectToAuth0 && authorizeUrl) {
-      await persistTransactionFromAuthResponse(authResponse);
-      return buildLoginBridgeResponse(authResponse, authorizeUrl);
+  try {
+    const auth0 = getAuth0();
+    if (!auth0) {
+      return authConfigRedirect();
     }
-  }
 
-  await cleanupTransactionAfterCallback(request, authResponse);
-  return authResponse;
+    const req = await injectTransactionCookieIfMissing(request);
+    const authResponse = await auth0.middleware(req);
+
+    if (isAuthLoginPath(request.nextUrl.pathname)) {
+      const authorizeUrl = authResponse.headers.get("location");
+      const isRedirectToAuth0 =
+        authResponse.status >= 300 &&
+        authResponse.status < 400 &&
+        Boolean(
+          authorizeUrl &&
+            (authorizeUrl.includes("auth0.com") ||
+              authorizeUrl.includes("/authorize"))
+        );
+
+      if (isRedirectToAuth0 && authorizeUrl) {
+        try {
+          await persistTransactionFromAuthResponse(authResponse);
+        } catch {
+          // Cookie on the bridge response is sufficient for most browsers.
+        }
+        return buildLoginBridgeResponse(authResponse, authorizeUrl);
+      }
+
+      // Auth0 SDK returned an error page / unexpected response — surface it.
+      if (authResponse.status >= 400) {
+        return NextResponse.redirect(
+          authConfigSignInUrl(
+            `Auth0 login returned HTTP ${authResponse.status}. Check AUTH0_CLIENT_ID/SECRET and APP_BASE_URL.`
+          )
+        );
+      }
+    }
+
+    try {
+      await cleanupTransactionAfterCallback(request, authResponse);
+    } catch {
+      // ignore cleanup failures
+    }
+    return authResponse;
+  } catch (error) {
+    return authFailureRedirect(error);
+  }
 }
 
 export async function GET(request: NextRequest) {
