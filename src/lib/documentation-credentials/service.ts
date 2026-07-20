@@ -38,8 +38,11 @@ export function credentialAad(
 
 export { buildConnectivityUrl };
 
+/** Match Postman / client auth-gen (+20). Cyware caps Expires at now+30s; +30 fails under mild clock skew. */
+const EXPIRES_OFFSET_SECONDS = 20;
+
 function authQuery(accessId: string, secretKey: string): URLSearchParams {
-  const expires = Math.floor(Date.now() / 1000) + 30;
+  const expires = Math.floor(Date.now() / 1000) + EXPIRES_OFFSET_SECONDS;
   const signature = createHmac("sha1", secretKey)
     .update(`${accessId}\n${expires}`)
     .digest("base64");
@@ -73,7 +76,13 @@ export async function validateAndStoreCredential(input: {
   accessId: string;
   secretKey: string;
 }): Promise<CredentialMetadata> {
-  const baseUrl = input.baseUrl.trim().replace(/\/+$/, "");
+  const accessId = input.accessId.trim();
+  const secretKey = input.secretKey.trim();
+  let baseUrl = input.baseUrl.trim().replace(/\/+$/, "");
+  // http→https redirects drop the auth query; probe HTTPS directly.
+  if (baseUrl.startsWith("http://")) {
+    baseUrl = `https://${baseUrl.slice("http://".length)}`;
+  }
   if (!isAllowedBaseUrl(input.productId, baseUrl)) {
     throw new CredentialValidationError(
       "BASE_URL_NOT_ALLOWED",
@@ -82,21 +91,39 @@ export async function validateAndStoreCredential(input: {
   }
   const target = buildConnectivityUrl(input.productId, baseUrl);
   await assertPublicUrl(target);
-  target.search = authQuery(input.accessId, input.secretKey).toString();
+  target.search = authQuery(accessId, secretKey).toString();
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
   let valid = false;
   let failureCode: string | null = null;
   try {
-    const response = await safeFetch(target.toString(), {
-      signal: controller.signal,
-      maxRedirects: 3,
-      headers: { Accept: "application/json" },
-    });
-    await consumeLimited(response);
-    valid = response.status >= 200 && response.status < 300;
-    if (!valid) failureCode = "PROVIDER_REJECTED";
+    // Preserve AccessID/Signature/Expires across same-host redirects (Location often omits them).
+    let current = target;
+    let response: Response | null = null;
+    for (let hop = 0; hop < 4; hop += 1) {
+      await assertPublicUrl(current);
+      response = await safeFetch(current.toString(), {
+        signal: controller.signal,
+        maxRedirects: 0,
+        headers: { Accept: "application/json" },
+      });
+      if (response.status < 300 || response.status >= 400) break;
+      const location = response.headers.get("location");
+      if (!location) break;
+      const next = new URL(location, current);
+      if (next.hostname.toLowerCase() !== current.hostname.toLowerCase()) break;
+      if (!next.search) next.search = current.search;
+      current = next;
+      response = null;
+    }
+    if (!response) {
+      failureCode = "CONNECTIVITY_FAILED";
+    } else {
+      await consumeLimited(response);
+      valid = response.status >= 200 && response.status < 300;
+      if (!valid) failureCode = "PROVIDER_REJECTED";
+    }
   } catch (error) {
     failureCode =
       error instanceof Error && error.name === "AbortError"

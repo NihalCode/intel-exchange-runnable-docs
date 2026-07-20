@@ -159,7 +159,9 @@ export async function safeFetch(
       const location = response.headers.get("location");
       if (!location) return response;
       if (hop === maxRedirects) {
-        throw new PublicHostError("Too many redirects.");
+        // Caller asked not to follow further (or budget exhausted) — return the
+        // redirect so auth probes can re-attach query params onto Location.
+        return response;
       }
       current = new URL(location, current);
       continue;

@@ -13,6 +13,12 @@ describe("buildConnectivityUrl", () => {
     ).toBe("https://cs-testv2.cyware.com/ctixapi/ping/");
   });
 
+  it("strips extra CTIX path segments after /ctixapi", () => {
+    expect(
+      buildConnectivityUrl("ctix", "https://cs-testv2.cyware.com/ctixapi/v3").href
+    ).toBe("https://cs-testv2.cyware.com/ctixapi/ping/");
+  });
+
   it("builds CFTR connectivity for tenant and docs-host bases", () => {
     expect(
       buildConnectivityUrl("cftr", "https://tenant.cyware.com/cftrapi").href

@@ -38,7 +38,12 @@ export function buildConnectivityUrl(
 
   switch (productId) {
     case "ctix": {
-      const ctixRoot = root.endsWith("/ctixapi") ? root : root || "/ctixapi";
+      // Prefer …/ctixapi even if the user pasted …/ctixapi/v3 or similar.
+      const ctixIdx = root.toLowerCase().lastIndexOf("/ctixapi");
+      const ctixRoot =
+        ctixIdx >= 0
+          ? root.slice(0, ctixIdx + "/ctixapi".length)
+          : root || "/ctixapi";
       pathname = joinPath(ctixRoot, CONNECTIVITY_SUFFIX.ctix);
       break;
     }
