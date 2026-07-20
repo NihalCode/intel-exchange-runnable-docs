@@ -20,6 +20,7 @@ import {
   csrfCookieOptions,
 } from "@/lib/enterprise/csrf";
 import { requireMutationCsrf } from "@/lib/enterprise/http";
+import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import {
   Auth0ProvisioningError,
   userFacingProvisioningMessage,
@@ -48,6 +49,9 @@ export async function POST(request: NextRequest) {
   if (session instanceof NextResponse) return session;
   const csrfFailure = requireMutationCsrf(request);
   if (csrfFailure) return csrfFailure;
+  if (!checkRateLimit(`users-create:${session.user.id}`, 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   let body: { email?: string; name?: string; role?: string; expiresAt?: string | null };
   try {

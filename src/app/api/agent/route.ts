@@ -3,6 +3,8 @@ import {
   guardAskAgent,
 } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 import { classifyQueryOutcome, isUnansweredOutcome } from "@/lib/agent/query-outcome";
 import { getAgentProductAccess } from "@/lib/documentation-credentials/access";
 import { completeTurnWithFinal } from "@/lib/agent/conversation-store";
@@ -32,6 +34,15 @@ export async function POST(req: Request) {
   const responseHeaders = { "x-agent-request-id": requestId };
   const session = await guardAskAgent(req as import("next/server").NextRequest);
   if (session instanceof Response) return session;
+
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(req as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
+
+  if (!checkRateLimit(`agent:${session.user.id}`, 30, 60_000)) {
+    return Response.json({ error: "Too many requests" }, { status: 429, headers: responseHeaders });
+  }
 
   try {
     const body = (await req.json()) as AgentRequest & { llmApiKey?: string };

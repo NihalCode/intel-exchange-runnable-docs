@@ -54,9 +54,17 @@ function createAuth0Client(): Auth0Client {
     secret: env.secret!,
     appBaseUrl: env.appBaseUrl!,
     enableParallelTransactions: false,
+    session: {
+      cookie: {
+        secure: env.appBaseUrl!.startsWith("https://"),
+        sameSite: "lax",
+        path: "/",
+      },
+    },
     transactionCookie: {
       maxAge: 60 * 60 * 2,
       sameSite: "lax",
+      secure: env.appBaseUrl!.startsWith("https://"),
     },
     authorizationParameters: {
       scope: "openid profile email",

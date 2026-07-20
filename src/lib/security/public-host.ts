@@ -53,7 +53,21 @@ export function isPrivateIp(ip: string): boolean {
   if (lower.startsWith("fc") || lower.startsWith("fd")) return true;
   if (lower.startsWith("fe80")) return true;
   if (lower.startsWith("ff")) return true;
-  if (lower.startsWith("::ffff:")) return isPrivateIp(lower.slice(7));
+  // IPv4-mapped IPv6: ::ffff:127.0.0.1 or ::ffff:7f00:1
+  if (lower.startsWith("::ffff:")) {
+    const mapped = lower.slice("::ffff:".length);
+    if (net.isIPv4(mapped)) return isPrivateIp(mapped);
+    const hexParts = mapped.split(":");
+    if (hexParts.length === 2) {
+      const hi = Number.parseInt(hexParts[0]!, 16);
+      const lo = Number.parseInt(hexParts[1]!, 16);
+      if (Number.isFinite(hi) && Number.isFinite(lo)) {
+        const dotted = `${(hi >> 8) & 255}.${hi & 255}.${(lo >> 8) & 255}.${lo & 255}`;
+        return isPrivateIp(dotted);
+      }
+    }
+    return true; // unparseable mapped form — fail closed
+  }
   return false;
 }
 

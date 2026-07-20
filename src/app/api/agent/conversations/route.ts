@@ -5,7 +5,9 @@ import {
   listConversations,
 } from "@/lib/agent/conversation-store";
 import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 
 export const runtime = "nodejs";
 
@@ -27,6 +29,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const session = await guardAskAgent(request as import("next/server").NextRequest);
   if (session instanceof Response) return session;
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(request as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
   try {
     const body = (await request.json()) as { title?: unknown };
     const title =

@@ -28,6 +28,7 @@ import {
   type AgentAttachment,
 } from "@/lib/agent/file-extract-client";
 import { createAgentRequestId } from "@/lib/agent/events";
+import { withCsrfHeaders } from "@/lib/csrf-client";
 import {
   appendSessionLog,
   createSession as createWorkspaceSession,
@@ -306,7 +307,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
 
         const response = await fetch("/api/agent/conversations", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
           body: JSON.stringify({ title: session.title }),
         });
         if (!response.ok) return null;
@@ -337,11 +338,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
         const idempotencyKey = `${sessionId}:${messageId}`;
         const response = await fetch(`/api/agent/conversations/${conversationId}/turns`, {
           method: "POST",
-          headers: {
+          headers: await withCsrfHeaders({
             "Content-Type": "application/json",
             "Idempotency-Key": idempotencyKey,
             "X-Request-Id": requestId,
-          },
+          }),
           body: JSON.stringify({ userText, idempotencyKey }),
         });
         if (!response.ok) return null;
@@ -539,9 +540,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
             }
             if (requestController.signal.aborted) {
               if (serverTurnId) {
-                void fetch(
-                  `/api/agent/conversations/${serverConversationId}/turns/${serverTurnId}/cancel`,
-                  { method: "POST" }
+                void withCsrfHeaders().then((headers) =>
+                  fetch(
+                    `/api/agent/conversations/${serverConversationId}/turns/${serverTurnId}/cancel`,
+                    { method: "POST", headers }
+                  )
                 );
               }
               return;
@@ -576,10 +579,10 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           const res = await fetch("/api/agent", {
             method: "POST",
             credentials: "include",
-            headers: {
+            headers: await withCsrfHeaders({
               "Content-Type": "application/json",
               "X-Request-Id": requestId,
-            },
+            }),
             signal: requestController.signal,
             body: JSON.stringify(agentPayload),
           });
@@ -705,9 +708,11 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     controller.abort();
     const activeTurn = activeServerTurnRef.current;
     if (activeTurn) {
-      void fetch(
-        `/api/agent/conversations/${activeTurn.conversationId}/turns/${activeTurn.turnId}/cancel`,
-        { method: "POST" }
+      void withCsrfHeaders().then((headers) =>
+        fetch(
+          `/api/agent/conversations/${activeTurn.conversationId}/turns/${activeTurn.turnId}/cancel`,
+          { method: "POST", headers }
+        )
       );
     }
     setStatusMessage("Request stopped.");
@@ -817,7 +822,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     try {
       const res = await fetch("/api/agent/commit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           title: projectApp.title,
           summary: `Update ${projectApp.title}`,
@@ -882,7 +887,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
     logPanel("Downloading project zip…");
     const res = await fetch("/api/agent/zip", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify({
         files: projectApp.files.map((f) => ({ path: f.path, code: f.code })),
         appName: projectApp.title,

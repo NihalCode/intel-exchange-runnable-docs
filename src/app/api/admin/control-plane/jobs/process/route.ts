@@ -10,6 +10,7 @@ import {
   errorResponse,
   requireMutationCsrf,
 } from "@/lib/enterprise/http";
+import { secretsEqual } from "@/lib/security/secrets-equal";
 
 export const runtime = "nodejs";
 
@@ -27,7 +28,7 @@ async function authorizeProcessRequest(
   if (
     configuredSecret &&
     suppliedSecret &&
-    suppliedSecret === configuredSecret
+    secretsEqual(suppliedSecret, configuredSecret)
   ) {
     return { mode: "cron" };
   }
@@ -49,11 +50,25 @@ export async function POST(request: NextRequest) {
 
   try {
     const limit = Number(request.nextUrl.searchParams.get("limit") ?? "25");
+    let organizationId: string | undefined;
+    if (auth.mode === "session") {
+      organizationId = auth.access.context.organization.id;
+    } else if (process.env.ORG_CRON_MODE === "all") {
+      organizationId = undefined;
+    } else {
+      organizationId = request.nextUrl.searchParams.get("organizationId")?.trim() || undefined;
+      if (!organizationId) {
+        return controlPlaneJson(
+          {
+            error:
+              "Cron job processing requires organizationId (or set ORG_CRON_MODE=all).",
+          },
+          { status: 400 }
+        );
+      }
+    }
     const result = await processControlPlaneJobs({
-      organizationId:
-        auth.mode === "session"
-          ? auth.access.context.organization.id
-          : undefined,
+      organizationId,
       limit: Number.isFinite(limit) ? limit : 25,
     });
 

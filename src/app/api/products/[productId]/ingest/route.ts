@@ -62,7 +62,7 @@ export async function POST(
       productId,
     });
     return NextResponse.json(
-      { ok: false, error, detail, stdout: result.stdout, stderr: result.stderr },
+      { ok: false, error, detail },
       { status: 502 }
     );
   }
@@ -71,7 +71,6 @@ export async function POST(
     ok: true,
     productId,
     message: `Ingestion complete for ${productId}`,
-    stdout: result.stdout.slice(-2000),
     ...(isVercelRuntime()
       ? {
           ephemeral: true,

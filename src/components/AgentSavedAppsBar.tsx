@@ -16,6 +16,7 @@ import {
   loadSavedApps,
   setActiveAppId,
 } from "@/lib/agent/saved-apps-client";
+import { withCsrfHeaders } from "@/lib/csrf-client";
 
 export function ImportVercelModal({
   onClose,
@@ -41,7 +42,7 @@ export function ImportVercelModal({
     try {
       const res = await fetch("/api/agent/vercel/pull", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ deploymentUrl: url.trim(), vercelToken: token.trim() }),
       });
       const data = (await res.json()) as {

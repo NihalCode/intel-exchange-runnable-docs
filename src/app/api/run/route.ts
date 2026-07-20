@@ -9,8 +9,11 @@ import { PRODUCTS } from "@/lib/products/registry";
 import {
   assertPublicUrl,
   PublicHostError,
-  safeFetch,
 } from "@/lib/security/public-host";
+import { safeFetchAllowlisted } from "@/lib/security/safe-fetch-allowlisted";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
+import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,6 +60,16 @@ export async function POST(request: Request) {
     "test_snippets"
   );
   if (session instanceof NextResponse) return session;
+
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(request as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
+
+  const rateKey = `api-run:${session.user.id}`;
+  if (!checkRateLimit(rateKey, 60, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   let payload: RunBody;
   try {
@@ -128,11 +141,12 @@ export async function POST(request: Request) {
 
   try {
     const outboundBody = await buildOutboundBody(method, payload);
-    const res = await safeFetch(target.toString(), {
+    const res = await safeFetchAllowlisted(target.toString(), {
       method,
       headers: outboundBody.headers,
       body: outboundBody.body,
       signal: controller.signal,
+      assertDestination: isApprovedApiDestination,
     });
 
     const reader = res.body?.getReader();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { withCsrfHeaders } from "@/lib/csrf-client";
 import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 
 const TOKEN_KEY = "iedocs.developerToken";
@@ -70,9 +71,12 @@ export function DeveloperConsole() {
     setLastResult("");
     try {
       const collection = JSON.parse(collectionText);
+      const headers = write
+        ? await withCsrfHeaders(authHeaders(token.trim()))
+        : authHeaders(token.trim());
       const res = await fetch("/api/developer/postman", {
         method: "POST",
-        headers: authHeaders(token.trim()),
+        headers,
         body: JSON.stringify({ productId, collection, write }),
       });
       const data = await res.json();

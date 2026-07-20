@@ -14,9 +14,11 @@ describe("formatIngestFailure", () => {
     expect(r.detail).toMatch(/npm run ingest/);
   });
 
-  it("falls back to stderr snippet", () => {
-    const r = formatIngestFailure({ stderr: "Something else broke" });
+  it("does not echo raw stderr to the client", () => {
+    const r = formatIngestFailure({ stderr: "Something else broke with /secret/path" });
     expect(r.error).toBe("Ingestion failed.");
-    expect(r.detail).toContain("Something else broke");
+    expect(r.detail).not.toContain("Something else broke");
+    expect(r.detail).not.toContain("/secret/path");
+    expect(r.detail).toMatch(/server logs/i);
   });
 });

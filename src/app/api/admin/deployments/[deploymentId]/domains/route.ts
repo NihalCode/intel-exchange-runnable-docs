@@ -21,6 +21,7 @@ import { guardEnterpriseApi, type EnterpriseAccess } from "@/lib/enterprise/guar
 import {
   controlPlaneJson,
   errorResponse,
+  requireEnterpriseMutationRateLimit,
   requireMutationCsrf,
   workflowContext,
 } from "@/lib/enterprise/http";
@@ -72,6 +73,8 @@ export async function POST(
     const initialAccess = await guardEnterpriseApi(request, "deployments.manage");
     if (initialAccess instanceof NextResponse) return initialAccess;
     access = initialAccess;
+    const rateLimited = requireEnterpriseMutationRateLimit(access);
+    if (rateLimited) return rateLimited;
 
     const body = (await request.json()) as {
       domain?: string;

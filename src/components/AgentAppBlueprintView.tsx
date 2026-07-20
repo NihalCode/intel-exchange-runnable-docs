@@ -9,6 +9,7 @@ import {
   loadDeploySettings,
   saveDeploySettings,
 } from "@/lib/agent/deploy-settings-client";
+import { withCsrfHeaders } from "@/lib/csrf-client";
 import { useRunSettings } from "./RunSettings";
 import { useFocusTrap } from "./useFocusTrap";
 
@@ -134,7 +135,7 @@ export function AgentDeployModal({
     try {
       const res = await fetch("/api/agent/deploy", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           files: app.files.map((f) => ({ path: f.path, code: f.code })),
           appName: app.title,
@@ -339,7 +340,7 @@ export function AgentAppBlueprintView({
     try {
       const res = await fetch("/api/agent/zip", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           files: app.files.map((f) => ({ path: f.path, code: f.code })),
           appName: app.title,

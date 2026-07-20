@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
+import { withCsrfHeaders } from "@/lib/csrf-client";
 import {
   POSTMAN_PASTE_INSTRUCTIONS,
   SAMPLE_POSTMAN_COLLECTION_JSON,
@@ -34,7 +35,10 @@ export function ContentManagementPanel() {
     setError(null);
     setLastResult("");
     try {
-      const res = await fetch(`/api/products/${productId}/ingest`, { method: "POST" });
+      const res = await fetch(`/api/products/${productId}/ingest`, {
+        method: "POST",
+        headers: await withCsrfHeaders(),
+      });
       const text = await res.text();
       let data: { error?: string; detail?: string };
       try {
@@ -70,7 +74,7 @@ export function ContentManagementPanel() {
       }
       const res = await fetch("/api/developer/postman", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ productId, collection, write }),
       });
       const text = await res.text();

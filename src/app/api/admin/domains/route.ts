@@ -8,7 +8,7 @@ import {
   DomainMappingVersionConflictError,
 } from "@/lib/domains/repository";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
-import { requireMutationCsrf } from "@/lib/enterprise/http";
+import { requireEnterpriseMutationRateLimit, requireMutationCsrf } from "@/lib/enterprise/http";
 import { isProductKey } from "@/lib/products/registry";
 
 export const runtime = "nodejs";
@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
   if (csrfFailure) return csrfFailure;
   const access = await guardEnterpriseApi(request, "domains.manage");
   if (access instanceof NextResponse) return access;
+  const rateLimited = requireEnterpriseMutationRateLimit(access);
+  if (rateLimited) return rateLimited;
 
   const body = (await request.json()) as {
     hostname?: string;
@@ -72,6 +74,8 @@ export async function PATCH(request: NextRequest) {
   if (csrfFailure) return csrfFailure;
   const access = await guardEnterpriseApi(request, "domains.manage");
   if (access instanceof NextResponse) return access;
+  const rateLimited = requireEnterpriseMutationRateLimit(access);
+  if (rateLimited) return rateLimited;
 
   const body = (await request.json()) as {
     id?: string;

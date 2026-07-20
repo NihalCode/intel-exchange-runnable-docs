@@ -1,4 +1,8 @@
 import { guardAgentFeature } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
+import { safeZipEntryPath } from "@/lib/security/safe-zip-path";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +21,14 @@ export async function POST(req: Request) {
   );
   if (session instanceof Response) return session;
 
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(req as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
+  if (!checkRateLimit(`agent-commit:${session.user.id}`, 10, 60_000)) {
+    return Response.json({ ok: false, error: "Too many requests" }, { status: 429 });
+  }
+
   let body: CommitBody;
   try {
     body = (await req.json()) as CommitBody;
@@ -27,6 +39,11 @@ export async function POST(req: Request) {
   const files = body.files ?? [];
   if (files.length === 0) {
     return Response.json({ ok: false, error: "No files to commit." }, { status: 400 });
+  }
+  for (const file of files) {
+    if (!safeZipEntryPath(String(file.path ?? ""))) {
+      return Response.json({ ok: false, error: "Invalid file path." }, { status: 400 });
+    }
   }
 
   const suggestedMessage =

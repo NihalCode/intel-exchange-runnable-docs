@@ -19,6 +19,7 @@ import {
 } from "@/lib/developer/ingest-runtime";
 import { getProductOrThrow } from "@/lib/products/registry";
 import { parsePostmanCollection, parsedEndpointsToPageRecords } from "@/lib/postman";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -57,6 +58,8 @@ async function handlePostman(req: NextRequest) {
     if (write) {
       const sync = await guardSyncDocs(request);
       if (sync instanceof NextResponse) return sync;
+      const csrfFailure = requireMutationCsrf(request);
+      if (csrfFailure) return csrfFailure;
     }
   } else {
     const session = await guardDeveloperDiagnostics(request);
@@ -141,8 +144,6 @@ async function handlePostman(req: NextRequest) {
         ok: false,
         error,
         detail,
-        stdout: result.stdout.slice(-3000),
-        stderr: result.stderr.slice(-1000),
         parsedSummary: {
           endpointCount: parsed.endpoints.length,
           records: parsedEndpointsToPageRecords(parsed).length,
@@ -158,7 +159,6 @@ async function handlePostman(req: NextRequest) {
     message: `Imported ${parsed.endpoints.length} endpoints from Postman collection.`,
     collectionName: parsed.collectionName,
     credentialPlaceholders: parsed.credentialPlaceholders,
-    stdout: result.stdout.slice(-2000),
     parser,
     ...(isVercelRuntime()
       ? {

@@ -1,4 +1,5 @@
 import type { ExecRequest } from "./parse-request";
+import { withCsrfHeaders } from "./csrf-client";
 
 export interface HttpProxyResult {
   ok: boolean;
@@ -16,7 +17,7 @@ export async function proxyHttpRequest(
 ): Promise<HttpProxyResult> {
   const res = await fetch("/api/run", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await withCsrfHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({
       method: exec.method,
       url: exec.url,

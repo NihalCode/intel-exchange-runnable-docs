@@ -7,6 +7,7 @@
 
 import { injectOpenApiAuthIntoUrl } from "./credential-placeholders";
 import { DISPLAY_BASE } from "./constants";
+import { withCsrfHeaders } from "./csrf-client";
 import { rewriteUrlWithRuntimeBase } from "./snippet-base-url";
 
 export interface SandboxResult {
@@ -188,47 +189,49 @@ export function runJsInSandbox(
           proxiedUrl = injectOpenApiAuthIntoUrl(proxiedUrl, getCredential);
         }
 
-        fetch("/api/run", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            method: data.payload?.method ?? "GET",
-            url: proxiedUrl,
-            headers: data.payload?.headers ?? [],
-            body: data.payload?.body,
-          }),
-        })
-          .then((r) => r.json())
-          .then((result: Record<string, unknown>) => {
-            // Proxy error responses have {error, durationMs} — surface as fetch rejection.
-            if (result.error && !result.status) {
+        void withCsrfHeaders({ "Content-Type": "application/json" }).then((headers) =>
+          fetch("/api/run", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              method: data.payload?.method ?? "GET",
+              url: proxiedUrl,
+              headers: data.payload?.headers ?? [],
+              body: data.payload?.body,
+            }),
+          })
+            .then((r) => r.json())
+            .then((result: Record<string, unknown>) => {
+              // Proxy error responses have {error, durationMs} — surface as fetch rejection.
+              if (result.error && !result.status) {
+                iframe.contentWindow?.postMessage(
+                  {
+                    __sbx: nonce,
+                    type: "fetchResp",
+                    id: data.payload?.id,
+                    err: String(result.error),
+                  },
+                  "*"
+                );
+              } else {
+                iframe.contentWindow?.postMessage(
+                  { __sbx: nonce, type: "fetchResp", id: data.payload?.id, ...result },
+                  "*"
+                );
+              }
+            })
+            .catch((err: Error) => {
               iframe.contentWindow?.postMessage(
                 {
                   __sbx: nonce,
                   type: "fetchResp",
                   id: data.payload?.id,
-                  err: String(result.error),
+                  err: err.message,
                 },
                 "*"
               );
-            } else {
-              iframe.contentWindow?.postMessage(
-                { __sbx: nonce, type: "fetchResp", id: data.payload?.id, ...result },
-                "*"
-              );
-            }
-          })
-          .catch((err: Error) => {
-            iframe.contentWindow?.postMessage(
-              {
-                __sbx: nonce,
-                type: "fetchResp",
-                id: data.payload?.id,
-                err: err.message,
-              },
-              "*"
-            );
-          });
+            })
+        );
         return;
       }
 

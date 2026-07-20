@@ -1,4 +1,7 @@
 import { guardAgentFeature } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 import { safeZipEntryPath } from "@/lib/security/safe-zip-path";
 import JSZip from "jszip";
 
@@ -15,6 +18,14 @@ export async function POST(req: Request) {
     "project_download"
   );
   if (session instanceof Response) return session;
+
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(req as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
+  if (!checkRateLimit(`agent-zip:${session.user.id}`, 20, 60_000)) {
+    return Response.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   try {
     const { files, appName } = (await req.json()) as ZipRequest;

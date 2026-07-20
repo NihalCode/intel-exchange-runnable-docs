@@ -4,6 +4,8 @@ import {
   timingSafeEqual,
 } from "node:crypto";
 
+import { normalizeAppBaseUrl } from "@/lib/documentation-auth/env-values";
+
 export const CSRF_COOKIE_NAME = "__Host-enterprise-csrf";
 export const CSRF_HEADER_NAME = "x-csrf-token";
 const TOKEN_VERSION = "v1";
@@ -29,10 +31,18 @@ export function createCsrfToken(nowSeconds = Math.floor(Date.now() / 1000)): str
   return `${payload}.${signature(payload)}`;
 }
 
+function cookieShouldBeSecure(): boolean {
+  if (process.env.NODE_ENV === "production") return true;
+  const base =
+    normalizeAppBaseUrl(process.env.APP_BASE_URL) ??
+    normalizeAppBaseUrl(process.env.AUTH0_BASE_URL);
+  return Boolean(base?.startsWith("https://"));
+}
+
 export function csrfCookieOptions(maxAge = DEFAULT_MAX_AGE_SECONDS) {
   return {
     httpOnly: false,
-    secure: process.env.NODE_ENV === "production",
+    secure: cookieShouldBeSecure(),
     sameSite: "lax" as const,
     path: "/",
     maxAge,
@@ -69,15 +79,35 @@ export function verifyCsrfToken(
   return equal(parts[3]!, signature(payload));
 }
 
-function expectedOrigin(request: Request): string | null {
-  const host =
-    request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() ||
-    request.headers.get("host")?.trim();
-  if (!host) return null;
-  const protocol =
-    request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() ||
-    new URL(request.url).protocol.replace(":", "");
-  return `${protocol}://${host}`;
+/**
+ * Trusted origins for CSRF — never derive solely from client-controlled
+ * X-Forwarded-Host. Prefer configured APP_BASE_URL / AUTH0_BASE_URL / Vercel
+ * production URL, plus the Request URL origin constructed by the runtime.
+ */
+export function trustedCsrfOrigins(request: Request): string[] {
+  const origins = new Set<string>();
+  try {
+    origins.add(new URL(request.url).origin);
+  } catch {
+    /* ignore */
+  }
+  for (const raw of [
+    process.env.APP_BASE_URL,
+    process.env.AUTH0_BASE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL.replace(/^https?:\/\//, "")}`
+      : undefined,
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL.replace(/^https?:\/\//, "")}` : undefined,
+  ]) {
+    const normalized = normalizeAppBaseUrl(raw);
+    if (!normalized) continue;
+    try {
+      origins.add(new URL(normalized).origin);
+    } catch {
+      /* ignore */
+    }
+  }
+  return [...origins];
 }
 
 export function validateMutationCsrf(request: Request): boolean {
@@ -85,8 +115,9 @@ export function validateMutationCsrf(request: Request): boolean {
     return true;
   }
   const origin = request.headers.get("origin");
-  const expected = expectedOrigin(request);
-  if (!origin || !expected || origin !== expected) return false;
+  if (!origin) return false;
+  const trusted = trustedCsrfOrigins(request);
+  if (!trusted.includes(origin)) return false;
 
   const headerToken = request.headers.get(CSRF_HEADER_NAME);
   const cookieToken = cookieValue(

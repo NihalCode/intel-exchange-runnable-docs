@@ -1,4 +1,8 @@
 import { guardAgentFeature } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
+import { safeZipEntryPath } from "@/lib/security/safe-zip-path";
 import { formatProblems, validateAppFiles } from "@/lib/agent/validate-app";
 import { repairAppFiles } from "@/lib/agent/repair-app";
 import { syncProjectEnvVars, validateCywareEnvVars } from "@/lib/agent/vercel-env";
@@ -96,16 +100,24 @@ async function clearProjectRootDirectory(
 function normalizeFilePaths(
   files: { path: string; code: string }[]
 ): { path: string; code: string }[] {
-  const hasRootPkg = files.some((f) => f.path === "package.json");
-  if (hasRootPkg) return files;
+  const sanitized = files
+    .map((f) => {
+      const entry = safeZipEntryPath(String(f.path ?? ""));
+      if (!entry) return null;
+      return { path: entry, code: f.code };
+    })
+    .filter((f): f is { path: string; code: string } => f != null);
 
-  const wrapped = files.find((f) => /^[^/]+\/package\.json$/.test(f.path));
-  if (!wrapped) return files;
+  const hasRootPkg = sanitized.some((f) => f.path === "package.json");
+  if (hasRootPkg) return sanitized;
 
-  const prefix = wrapped.path.slice(0, -"package.json".length); // e.g. "src/"
-  if (!files.every((f) => f.path.startsWith(prefix))) return files;
+  const wrapped = sanitized.find((f) => /^[^/]+\/package\.json$/.test(f.path));
+  if (!wrapped) return sanitized;
 
-  return files.map((f) => ({ ...f, path: f.path.slice(prefix.length) }));
+  const prefix = wrapped.path.slice(0, -"package.json".length);
+  if (!sanitized.every((f) => f.path.startsWith(prefix))) return sanitized;
+
+  return sanitized.map((f) => ({ ...f, path: f.path.slice(prefix.length) }));
 }
 
 /** Fix known-bad dependency pins in apps saved before the eslint fix. */
@@ -154,6 +166,15 @@ export async function POST(req: Request) {
     "vercel_deployment"
   );
   if (session instanceof Response) return session;
+
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(req as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
+
+  if (!checkRateLimit(`agent-deploy:${session.user.id}`, 10, 60_000)) {
+    return Response.json({ error: "Too many requests" }, { status: 429 });
+  }
 
   try {
     const { files, appName, vercelToken, projectName, envVars } =

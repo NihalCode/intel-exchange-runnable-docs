@@ -1,4 +1,6 @@
 import { guardAgentFeature } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -159,6 +161,11 @@ export async function POST(req: Request) {
     "vercel_import"
   );
   if (session instanceof Response) return session;
+
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(req as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
 
   try {
     const { deploymentUrl, vercelToken } = (await req.json()) as PullRequest;

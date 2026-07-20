@@ -1,4 +1,4 @@
-/** Map ingest stderr/stdout to a user-facing message. */
+/** Map ingest stderr/stdout to a user-facing message (never echo raw process output). */
 export function formatIngestFailure(payload: {
   stderr?: string;
   stdout?: string;
@@ -36,8 +36,16 @@ export function formatIngestFailure(payload: {
     };
   }
 
+  if (combined.trim()) {
+    console.error(
+      "[ingest] failure output redacted from client response",
+      combined.slice(-2000)
+    );
+  }
+
   return {
     error: "Ingestion failed.",
-    detail: stderr.slice(-500) || stdout.slice(-500) || "No error output captured.",
+    detail:
+      "The ingest process exited with an error. Check server logs for details, or run ingest locally.",
   };
 }

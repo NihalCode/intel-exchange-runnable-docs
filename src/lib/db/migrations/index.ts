@@ -31,6 +31,10 @@ import {
   POSTGRES_DEFERRED_FEATURES_MIGRATION_SQL,
   SQLITE_DEFERRED_FEATURES_MIGRATION_SQL,
 } from "@/lib/db/migrations/008_deferred_features";
+import {
+  POSTGRES_FORCE_RLS_MIGRATION_SQL,
+  SQLITE_FORCE_RLS_MIGRATION_SQL,
+} from "@/lib/db/migrations/009_force_rls";
 
 export interface VersionedMigration {
   version: number;
@@ -91,6 +95,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "deferred_features",
     sqlite: SQLITE_DEFERRED_FEATURES_MIGRATION_SQL,
     postgres: POSTGRES_DEFERRED_FEATURES_MIGRATION_SQL,
+  },
+  {
+    version: 9,
+    name: "force_row_level_security",
+    sqlite: SQLITE_FORCE_RLS_MIGRATION_SQL,
+    postgres: POSTGRES_FORCE_RLS_MIGRATION_SQL,
   },
 ] as const;
 

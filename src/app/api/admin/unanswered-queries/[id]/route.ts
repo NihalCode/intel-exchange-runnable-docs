@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { UNANSWERED_QUERY_REVIEW_STATUSES } from "@/lib/domains/types";
 import type { UnansweredQueryReviewStatus } from "@/lib/domains/types";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
-import { requireMutationCsrf } from "@/lib/enterprise/http";
+import { requireEnterpriseMutationRateLimit, requireMutationCsrf } from "@/lib/enterprise/http";
 import { updateUnansweredQueryReview } from "@/lib/query-analytics/repository";
 
 export const runtime = "nodejs";
@@ -20,6 +20,8 @@ export async function PATCH(
 
   const access = await guardEnterpriseApi(request, "unanswered_queries.manage");
   if (access instanceof NextResponse) return access;
+  const rateLimited = requireEnterpriseMutationRateLimit(access);
+  if (rateLimited) return rateLimited;
 
   const { id } = await context.params;
   const body = (await request.json()) as { status?: string; notes?: string | null };

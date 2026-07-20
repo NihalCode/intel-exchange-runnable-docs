@@ -6,6 +6,7 @@ import { checkEmailAccess } from "@/lib/documentation-auth/invite-gate";
 import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import type { InviteCheckResponse } from "@/lib/documentation-auth/types";
 import { validateAuthConfig } from "@/lib/documentation-auth/validate-auth-config";
+import { secretsEqual } from "@/lib/security/secrets-equal";
 
 export const runtime = "nodejs";
 
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
   const headerSecret = request.headers.get("x-auth0-action-secret")?.trim();
   const provided = bearer ?? headerSecret;
 
-  if (!provided || provided !== secret) {
+  if (!provided || !secretsEqual(provided, secret)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

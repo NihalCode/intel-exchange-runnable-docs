@@ -5,8 +5,10 @@ import {
   startTurn,
 } from "@/lib/agent/conversation-store";
 import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
+import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { correlationIds } from "@/lib/enterprise/observability";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 
 const MAX_USER_TEXT_LENGTH = 32 * 1024;
 
@@ -18,6 +20,10 @@ export async function POST(
 ) {
   const session = await guardAskAgent(request as import("next/server").NextRequest);
   if (session instanceof Response) return session;
+  if (isAuthEnabled()) {
+    const csrfFailure = requireMutationCsrf(request as import("next/server").NextRequest);
+    if (csrfFailure) return csrfFailure;
+  }
   try {
     const body = (await request.json()) as {
       userText?: unknown;
