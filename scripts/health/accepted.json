@@ -7,7 +7,7 @@
       "ruleId": "command-execution",
       "file": "src/lib/developer/ingest-runtime.ts",
       "classification": "intentional_safe",
-      "reason": "Single app-runtime child_process site. Executable pinned to process.execPath; argv array only; shell not enabled; productId validated at callers; auth-guarded routes.",
+      "reason": "Single app-runtime child_process site (intentional-safe). Executable pinned to process.execPath; argv array only; shell:false; allowlisted flags; timeout + output caps; scrubbed child env; productId validated at callers; auth-guarded routes.",
       "owner": "platform-security",
       "reviewBy": "2026-12-31",
       "regressionTest": "src/lib/__tests__/ingest-runtime-safety.test.ts"

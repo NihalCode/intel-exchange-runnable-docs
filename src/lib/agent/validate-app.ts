@@ -1,6 +1,8 @@
 import postcss from "postcss";
 import ts from "typescript";
 
+import { detectDangerousAppCode } from "@/lib/agent/generated-code-policy";
+
 export interface AppFileProblem {
   path: string;
   error: string;
@@ -69,23 +71,7 @@ export function validateAppFiles(
   return problems;
 }
 
-/** Block obvious dynamic-exec / secret-exfil patterns in generated apps. */
-export function detectDangerousAppCode(code: string): string | null {
-  if (/\beval\s*\(/.test(code)) return "eval() is not allowed in generated apps";
-  if (/\bnew\s+Function\s*\(/.test(code)) {
-    return "Function constructor is not allowed in generated apps";
-  }
-  if (/\bFunction\s*\(\s*['"`]/.test(code)) {
-    return "Function constructor is not allowed in generated apps";
-  }
-  if (/child_process|node:child_process/.test(code)) {
-    return "child_process is not allowed in generated apps";
-  }
-  if (/process\.env\.(AUTH0_|DATABASE_URL|OPENAI_|PINECONE_|VERCEL_TOKEN|SECRET)/i.test(code)) {
-    return "reading privileged process.env secrets is not allowed in generated apps";
-  }
-  return null;
-}
+export { detectDangerousAppCode } from "@/lib/agent/generated-code-policy";
 
 export function formatProblems(problems: AppFileProblem[]): string {
   return problems

@@ -82,6 +82,18 @@ describe("detectDynamicExecution — false positives are NOT flagged", () => {
     expect(out.filter((f) => f.ruleId === "command-execution")).toHaveLength(0);
   });
 
+  it("ignores expandQueryForRetrieval / planAppFromRetrieval / normal functions", () => {
+    const src = `
+export function expandQueryForRetrieval(q: string) { return q + " retrieval"; }
+export function planAppFromRetrieval() { return null; }
+function normalFunction() { return 1; }
+const retrievalQuery = "tags";
+`;
+    const out = detectDynamicExecution("normalize-query.ts", src);
+    expect(out.filter((f) => f.ruleId === "dynamic-eval")).toHaveLength(0);
+    expect(out.filter((f) => f.ruleId === "dynamic-function-constructor")).toHaveLength(0);
+  });
+
   it("ignores console.log written inside a template literal (generated code)", () => {
     const src = "const tpl = `console." + "log(response.status);`;";
     const out = detectDebugStatements("a.ts", src);
@@ -132,6 +144,7 @@ describe("classifySourceFile", () => {
     expect(classifySourceFile("src/lib/__tests__/x.test.ts")).toBe("test");
     expect(classifySourceFile("src/lib/snippets.ts")).toBe("codegen");
     expect(classifySourceFile("src/lib/agent/script-builder.ts")).toBe("codegen");
+    expect(classifySourceFile("src/lib/agent/app-builder.ts")).toBe("codegen");
     expect(classifySourceFile("scripts/health/analyze.mjs")).toBe("analyzer");
     expect(classifySourceFile("scripts/ingest.mjs")).toBe("script");
     expect(classifySourceFile("src/app/api/run/route.ts")).toBe("app");

@@ -21,7 +21,10 @@ describe("ingest-runtime", () => {
     expect(isVercelRuntime()).toBe(false);
     expect(postmanImportTempDir()).toMatch(/\.tmp[\\/]postman-import$/);
     expect(postmanIngestParser()).toBe("ts");
-    expect(ingestSpawnEnv()).toBe(process.env);
+    const env = ingestSpawnEnv();
+    expect(env).not.toBe(process.env);
+    expect(env.AUTH0_CLIENT_SECRET).toBeUndefined();
+    expect(env.PATH).toBe(process.env.PATH);
   });
 
   it("uses /tmp on Vercel and sets INGEST_OUTPUT_ROOT", () => {

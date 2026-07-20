@@ -1,35 +1,35 @@
 {
   "summary": {
-    "generatedAt": "2026-07-20T17:23:36.396Z",
-    "filesScanned": 537,
+    "generatedAt": "2026-07-20T18:04:43.718Z",
+    "filesScanned": 544,
     "verified": {
-      "score": 96.5,
-      "penalty": 3.5,
+      "score": 96.8,
+      "penalty": 3.3,
       "byCategory": {
-        "complexity": 3.5
+        "complexity": 3.25
       },
-      "open": 14,
+      "open": 13,
       "accepted": 15,
       "openBySeverity": {
-        "info": 14
+        "info": 13
       },
       "openByCategory": {
-        "complexity": 14
+        "complexity": 13
       }
     },
     "naiveBaseline": {
       "note": "Illustrative regex scanner with no AST/data-flow awareness.",
       "score": 54,
-      "rawMatches": 405,
+      "rawMatches": 407,
       "counts": {
-        "dynamicExec": 34,
+        "dynamicExec": 36,
         "debug": 26,
         "dangerousHtml": 4,
         "todo": 7,
         "commonNames": 334
       }
     },
-    "falsePositivesCorrected": 391
+    "falsePositivesCorrected": 394
   },
   "findings": [
     {
@@ -114,24 +114,6 @@
       "line": 1,
       "symbol": "mock-data.ts",
       "evidence": "557 lines",
-      "sourceClass": "app",
-      "productionReachable": true,
-      "userInputControlled": false,
-      "externallyReachable": false,
-      "privilegedOnly": false,
-      "classification": "manual_review",
-      "status": "open"
-    },
-    {
-      "id": "b161061a87e1",
-      "ruleId": "long-file",
-      "title": "Long file (>500 lines)",
-      "category": "complexity",
-      "severity": "info",
-      "file": "src/lib/agent/app-builder.ts",
-      "line": 1,
-      "symbol": "app-builder.ts",
-      "evidence": "1357 lines",
       "sourceClass": "app",
       "productionReachable": true,
       "userInputControlled": false,
@@ -231,15 +213,15 @@
       "status": "open"
     },
     {
-      "id": "b28962083790",
+      "id": "3b87c142a0f4",
       "ruleId": "command-execution",
       "title": "Shell/command execution",
       "category": "security",
       "severity": "low",
       "file": "src/lib/developer/ingest-runtime.ts",
-      "line": 66,
+      "line": 116,
       "symbol": "spawn",
-      "evidence": "spawn(process.execPath, [script, ...args], {\r\n      cwd: process.cwd(),\r\n      env: ingestSpawnEnv(),\r\n      windowsHide: true,\r\n    })",
+      "evidence": "spawn(process.execPath, [script, ...args], {\r\n      cwd: process.cwd(),\r\n      env: ingestSpawnEnv(),\r\n      windowsHide: true,\r\n      shell",
       "sourceClass": "app",
       "productionReachable": true,
       "userInputControlled": false,
@@ -359,13 +341,13 @@
       "status": "accepted"
     },
     {
-      "id": "b93c70753624",
+      "id": "4bab0ced18f3",
       "ruleId": "todo-comment",
       "title": "TODO/FIXME marker",
       "category": "todo",
       "severity": "info",
       "file": "src/lib/__tests__/health-analyzer.test.ts",
-      "line": 119,
+      "line": 131,
       "symbol": "TODO",
       "evidence": "// TODO: fix this\\nconst x = 1;`);",
       "sourceClass": "test",

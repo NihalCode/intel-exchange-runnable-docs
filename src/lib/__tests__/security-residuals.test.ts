@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { detectDangerousAppCode } from "@/lib/agent/validate-app";
+import {
+  DANGEROUS_CODE_SAMPLES,
+  SAFE_IDENTIFIER_SAMPLES,
+} from "@/lib/__tests__/fixtures/dangerous-code-samples";
 import { trustedCsrfOrigins } from "@/lib/enterprise/csrf";
 import { isPrivateIp } from "@/lib/security/public-host";
 import { safeFetchAllowlisted } from "@/lib/security/safe-fetch-allowlisted";
@@ -94,10 +98,21 @@ describe("residuals — secretsEqual", () => {
 
 describe("residuals — detectDangerousAppCode", () => {
   it("bans eval, Function, child_process, and privileged env reads", () => {
-    expect(detectDangerousAppCode("eval(x)")).toMatch(/eval/i);
-    expect(detectDangerousAppCode("new Function('return 1')")).toMatch(/Function/i);
-    expect(detectDangerousAppCode("require('child_process')")).toMatch(/child_process/i);
-    expect(detectDangerousAppCode("process.env.OPENAI_API_KEY")).toMatch(/process\.env/i);
+    expect(detectDangerousAppCode(DANGEROUS_CODE_SAMPLES.directEvalCall)).toMatch(/eval/i);
+    expect(detectDangerousAppCode(DANGEROUS_CODE_SAMPLES.functionConstructor)).toMatch(
+      /Function/i
+    );
+    expect(detectDangerousAppCode(DANGEROUS_CODE_SAMPLES.childProcessRequire)).toMatch(
+      /child_process/i
+    );
+    expect(detectDangerousAppCode(DANGEROUS_CODE_SAMPLES.privilegedEnv)).toMatch(/process\.env/i);
     expect(detectDangerousAppCode("const x = 1")).toBeNull();
+  });
+
+  it("does not flag retrieval helpers or normal functions", () => {
+    expect(detectDangerousAppCode(SAFE_IDENTIFIER_SAMPLES.expandQueryForRetrieval)).toBeNull();
+    expect(detectDangerousAppCode(SAFE_IDENTIFIER_SAMPLES.planAppFromRetrieval)).toBeNull();
+    expect(detectDangerousAppCode(SAFE_IDENTIFIER_SAMPLES.retrievalQuery)).toBeNull();
+    expect(detectDangerousAppCode(SAFE_IDENTIFIER_SAMPLES.normalFunction)).toBeNull();
   });
 });

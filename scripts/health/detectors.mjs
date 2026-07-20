@@ -29,6 +29,7 @@ export function classifySourceFile(relPath) {
   // Files that emit source code as template strings for the user to download.
   if (
     p.endsWith("src/lib/agent/script-builder.ts") ||
+    p.includes("src/lib/agent/app-builder") ||
     p.endsWith("src/lib/snippets.ts")
   ) {
     return "codegen";
