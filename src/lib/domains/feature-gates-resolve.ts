@@ -1,9 +1,7 @@
 import "server-only";
 
-import {
-  isDocumentationFeatureEnabled,
-  type DocumentationFeatureKey,
-} from "@/lib/documentation-features";
+import { resolveDocumentationFeatureEnabled } from "@/lib/documentation-features/resolve-enabled";
+import type { DocumentationFeatureKey } from "@/lib/documentation-features";
 import {
   isChatResponseNavigationEnabled,
   isCrossDomainSsoEnabled,
@@ -26,7 +24,9 @@ function envOrOrg(
 ): Promise<boolean> {
   if (envEnabled) return Promise.resolve(true);
   if (!orgInput.organizationId) return Promise.resolve(false);
-  return isDocumentationFeatureEnabled({
+  // Use resolveDocumentationFeatureEnabled so multi-project / env topology
+  // auto-enables (e.g. query_analytics) match admin UI feature resolution.
+  return resolveDocumentationFeatureEnabled({
     organizationId: orgInput.organizationId,
     key: featureKey,
     role: orgInput.role,

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-vi.mock("@/lib/documentation-features", () => ({
-  isDocumentationFeatureEnabled: vi.fn(),
+vi.mock("@/lib/documentation-features/resolve-enabled", () => ({
+  resolveDocumentationFeatureEnabled: vi.fn(),
 }));
 
-import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
+import { resolveDocumentationFeatureEnabled } from "@/lib/documentation-features/resolve-enabled";
 import {
   resolveQueryAnalyticsEnabled,
   resolveDomainRoutingEnabled,
@@ -12,7 +12,7 @@ import {
 
 describe("feature-gates-resolve", () => {
   beforeEach(() => {
-    vi.mocked(isDocumentationFeatureEnabled).mockReset();
+    vi.mocked(resolveDocumentationFeatureEnabled).mockReset();
     delete process.env.QUERY_ANALYTICS_ENABLED;
     delete process.env.DOMAIN_ROUTING_ENABLED;
   });
@@ -22,15 +22,15 @@ describe("feature-gates-resolve", () => {
     await expect(
       resolveQueryAnalyticsEnabled({ organizationId: "org-1" })
     ).resolves.toBe(true);
-    expect(isDocumentationFeatureEnabled).not.toHaveBeenCalled();
+    expect(resolveDocumentationFeatureEnabled).not.toHaveBeenCalled();
   });
 
-  it("falls back to org feature flag", async () => {
-    vi.mocked(isDocumentationFeatureEnabled).mockResolvedValue(true);
+  it("falls back to resolved org/topology feature flag", async () => {
+    vi.mocked(resolveDocumentationFeatureEnabled).mockResolvedValue(true);
     await expect(
       resolveQueryAnalyticsEnabled({ organizationId: "org-1", role: "admin" })
     ).resolves.toBe(true);
-    expect(isDocumentationFeatureEnabled).toHaveBeenCalledWith({
+    expect(resolveDocumentationFeatureEnabled).toHaveBeenCalledWith({
       organizationId: "org-1",
       key: "query_analytics",
       role: "admin",
