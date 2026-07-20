@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { HostProductProvider } from "@/components/HostProductProvider";
 import { DocumentationAuthProvider } from "@/components/auth/DocumentationAuthProvider";
@@ -17,9 +18,6 @@ export const metadata: Metadata = {
     "Runnable API documentation for Cyware CTIX, CSAP, Orchestrate, and CFTR. Every code snippet can be executed in the browser.",
 };
 
-// Avoid theme flash by applying the saved/preferred theme before paint.
-const themeScript = `(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -31,7 +29,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
       </head>
       <body className="min-h-full">
         <RunSettingsProvider defaultBaseUrl={manifest.defaultBaseUrl}>

@@ -553,4 +553,4 @@ export const MOCK_SUPPORT_LOGS: MockSupportLog[] = [
 ];
 
 export const PLACEHOLDER_NOTICE =
-  "Overview metrics and service health are illustrative. Documentation Agent APIs, schemas, audit logs, and change requests use live control-plane data.";
+  "Support Agent and some overview metrics are illustrative placeholders — not production Zendesk/automation. Documentation Agent APIs, schemas, audit logs, deployments, and change requests use live control-plane data.";

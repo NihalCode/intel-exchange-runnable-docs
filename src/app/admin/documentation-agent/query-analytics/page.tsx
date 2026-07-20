@@ -22,12 +22,11 @@ export default async function Page({
   await requireAdminFeature(context.organization.id, "query_analytics");
 
   const params = await searchParams;
-  const untilIso = params.until
-    ? new Date(params.until).toISOString()
-    : new Date().toISOString();
+  const nowMs = Date.parse(new Date().toISOString());
+  const untilIso = params.until ? new Date(params.until).toISOString() : new Date(nowMs).toISOString();
   const sinceIso = params.since
     ? new Date(params.since).toISOString()
-    : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    : new Date(nowMs - 30 * 24 * 60 * 60 * 1000).toISOString();
   const productId =
     params.productId && isProductKey(params.productId) ? params.productId : undefined;
 

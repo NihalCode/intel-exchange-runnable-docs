@@ -4,6 +4,7 @@ import hljs from "highlight.js/lib/common";
 import "highlight.js/styles/github-dark.css";
 import { useMemo, useState } from "react";
 import type { CodeSnippet } from "@/lib/types";
+import { renderHljsHtml } from "@/lib/highlight-react";
 import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import { isPostmanPreRequestScript } from "@/lib/parse-request";
 import { SnippetRunner } from "./runners";
@@ -60,9 +61,9 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
     () => ({ ...snippet, code: displayCode }),
     [snippet, displayCode]
   );
-  // hljs escapes its input, so the produced markup is safe to inject.
-  const html = useMemo(
-    () => highlight(displayCode, snippet.lang),
+  // hljs escapes its input; we convert spans to React nodes (no HTML sink).
+  const highlighted = useMemo(
+    () => renderHljsHtml(highlight(displayCode, snippet.lang)),
     [displayCode, snippet.lang]
   );
 
@@ -94,10 +95,7 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
       </div>
       <div className="overflow-x-auto">
         <pre className="px-4 py-3 text-[13px] leading-relaxed">
-          <code
-            className={`hljs language-${snippet.lang}`}
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
+          <code className={`hljs language-${snippet.lang}`}>{highlighted}</code>
         </pre>
       </div>
       {snippet.runKind !== "none" ||

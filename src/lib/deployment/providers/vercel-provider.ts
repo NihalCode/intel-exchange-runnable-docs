@@ -6,7 +6,6 @@ import {
   type VercelDomainStatus,
   type VercelDnsRequirement,
   type VercelDomainSummary,
-  type VercelProjectSummary,
   type VercelProvider,
 } from "@/lib/deployment/providers/types";
 

@@ -16,7 +16,7 @@ import type {
   TlsStatus,
   VerificationStatus,
 } from "@/lib/domains/types";
-import { isProductKey, type ProductKey } from "@/lib/products/registry";
+import { isProductKey } from "@/lib/products/registry";
 
 /** Placeholder when a value is intentionally not persisted (mirrors credentials repository). */
 export const NOT_STORED = "not stored";

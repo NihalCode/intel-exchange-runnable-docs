@@ -91,22 +91,6 @@ function normalizePath(path: string): string {
   return path.startsWith("/") ? path : `/${path}`;
 }
 
-/** Keep only params with a non-empty value (optional params are omitted). */
-function withValues(pairs: KeyValue[]): KeyValue[] {
-  return pairs.filter((p) => kvString(p.value).trim() !== "");
-}
-
-function queryString(pairs: KeyValue[]): string {
-  const filled = withValues(pairs);
-  if (filled.length === 0) return "";
-  return (
-    "?" +
-    filled
-      .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(p.value)}`)
-      .join("&")
-  );
-}
-
 function fieldsToKeyValues(fields: ParamField[] | undefined): KeyValue[] {
   if (!fields) return [];
   return fields

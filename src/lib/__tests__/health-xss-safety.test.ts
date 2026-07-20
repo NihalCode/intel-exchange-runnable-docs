@@ -2,25 +2,22 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, it, expect } from "vitest";
 import hljs from "highlight.js/lib/common";
+import { renderToStaticMarkup } from "react-dom/server";
+import { createElement } from "react";
+
+import { renderHljsHtml } from "@/lib/highlight-react";
 
 const ROOT = process.cwd();
 
 /**
- * Regression tests backing the two accepted `dangerouslySetInnerHTML` findings
- * in the code-health register (scripts/health/accepted.json). They assert the
- * safety property each acceptance relies on, so a future change that breaks the
- * property fails CI instead of silently introducing XSS.
- *
- * As with the analyzer fixtures, the XSS attack payloads and the injected-
- * attribute name are assembled from fragments at runtime so this NON-PRODUCTION
- * test file does not itself carry literal markup/attribute "bait" that naive
- * external scanners mis-report. Runtime values are identical to the real tokens.
- * See docs/enterprise/CODEFLOW_VS_INTERNAL_HEALTH.md.
+ * Regression tests for highlight/theme XSS safety.
+ * Attack payloads are assembled from fragments so this NON-PRODUCTION test
+ * file does not carry literal markup bait for naive external scanners.
  */
 const LT = "<";
 const DSI_ATTR = "dangerously" + "SetInnerHTML";
 
-describe("CodeBlock highlight.js output is inert (accepted XSS finding 1dd420c7d1af)", () => {
+describe("CodeBlock highlight.js output is inert", () => {
   const payloads = [
     `${LT}script>alert(1)${LT}/script>`,
     `${LT}img src=x onerror=alert(1)>`,
@@ -31,12 +28,10 @@ describe("CodeBlock highlight.js output is inert (accepted XSS finding 1dd420c7d
   for (const payload of payloads) {
     it(`escapes angle brackets for payload: ${payload.slice(0, 24)}`, () => {
       const out = hljs.highlight(payload, { language: "javascript" }).value;
-      // The dangerous opening tag must never survive as executable markup.
       expect(out).not.toContain(`${LT}script`);
       expect(out).not.toContain(`${LT}img`);
       expect(out).not.toContain(`${LT}svg`);
       expect(out).not.toContain(`${LT}a `);
-      // Angle brackets are HTML-escaped by hljs.
       expect(out).not.toMatch(/<(?!\/?span)/);
     });
   }
@@ -46,24 +41,43 @@ describe("CodeBlock highlight.js output is inert (accepted XSS finding 1dd420c7d
     expect(out).not.toContain(`${LT}script>`);
     expect(out).toContain("&lt;");
   });
+
+  it("renderHljsHtml never emits script/event tags as elements", () => {
+    const out = hljs.highlight(`${LT}script>alert(1)${LT}/script>`, {
+      language: "javascript",
+    }).value;
+    const markup = renderToStaticMarkup(createElement("code", null, renderHljsHtml(out)));
+    expect(markup).not.toMatch(/<script/i);
+    expect(markup).not.toMatch(/\son\w+=/i);
+    expect(markup).toContain("&lt;script&gt;");
+  });
 });
 
-describe("layout theme script is a static constant (accepted XSS finding c5d1226b6baa)", () => {
-  const source = readFileSync(path.join(ROOT, "src/app/layout.tsx"), "utf8");
+describe("layout theme bootstrap has no raw HTML sink", () => {
+  const layoutSource = readFileSync(path.join(ROOT, "src/app/layout.tsx"), "utf8");
+  const themeSource = readFileSync(path.join(ROOT, "public/theme-init.js"), "utf8");
 
-  it("declares themeScript with no template interpolation", () => {
-    const match = source.match(/const themeScript = `([^`]*)`/);
-    expect(match, "themeScript must be a single backtick literal").toBeTruthy();
-    const body = match![1];
-    // No `${...}` interpolation => no runtime/user data can enter the script.
-    expect(body).not.toContain("${");
+  it("layout does not use dangerouslySetInnerHTML", () => {
+    expect(layoutSource).not.toContain(DSI_ATTR);
   });
 
-  it("only injects the themeScript constant into dangerouslySetInnerHTML", () => {
-    // The single dangerous-HTML sink in layout must reference the constant,
-    // never an expression that could carry external input.
-    expect(source).toContain(`${DSI_ATTR}={{ __html: themeScript }}`);
-    const occurrences = source.match(new RegExp(DSI_ATTR, "g")) || [];
-    expect(occurrences.length).toBe(1);
+  it("loads static theme-init.js via next/script", () => {
+    expect(layoutSource).toContain('src="/theme-init.js"');
+    expect(layoutSource).toContain("beforeInteractive");
+  });
+
+  it("theme-init.js is static with no template interpolation", () => {
+    expect(themeSource).not.toContain("${");
+    expect(themeSource).toContain("localStorage.getItem");
+    expect(themeSource).toContain("classList.add(\"dark\")");
+  });
+});
+
+describe("CodeBlock source has no dangerouslySetInnerHTML", () => {
+  const source = readFileSync(path.join(ROOT, "src/components/CodeBlock.tsx"), "utf8");
+
+  it("renders via renderHljsHtml", () => {
+    expect(source).not.toContain(DSI_ATTR);
+    expect(source).toContain("renderHljsHtml");
   });
 });

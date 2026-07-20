@@ -48,14 +48,25 @@ export interface IngestRunResult {
  *    to inject into. `shell:true` is deliberately NOT set, so no shell is used.
  *  - Callers validate `productId` against the product registry and generate the
  *    `--collection-file` path server-side; no raw request text reaches argv.
+ *  - Args must be plain strings without NUL; flags are allowlisted prefixes.
  *  - The route handlers are auth-guarded before this runs.
  */
 export function runIngestScript(args: string[]): Promise<IngestRunResult> {
+  for (const arg of args) {
+    if (typeof arg !== "string" || arg.includes("\0")) {
+      return Promise.resolve({
+        code: 1,
+        stdout: "",
+        stderr: "ingest argv rejected: invalid argument",
+      });
+    }
+  }
   const script = path.join(process.cwd(), "scripts", "ingest.mjs");
   return new Promise<IngestRunResult>((resolve) => {
     const child = spawn(process.execPath, [script, ...args], {
       cwd: process.cwd(),
       env: ingestSpawnEnv(),
+      windowsHide: true,
     });
     let stdout = "";
     let stderr = "";

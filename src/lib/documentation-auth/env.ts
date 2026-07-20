@@ -1,9 +1,6 @@
 import "server-only";
 
-import {
-  cleanEnvValue,
-  normalizeAppBaseUrl,
-} from "@/lib/documentation-auth/auth-config-public";
+import { cleanEnvValue } from "@/lib/documentation-auth/auth-config-public";
 import { resolveAppBaseUrlFromEnv } from "@/lib/documentation-auth/base-url";
 
 export { cleanEnvValue, normalizeAppBaseUrl } from "@/lib/documentation-auth/auth-config-public";

@@ -1,23 +1,9 @@
 /** Auth config validation safe for CLI scripts (no server-only imports). */
 
-export function cleanEnvValue(value: string | undefined): string | null {
-  const trimmed = value?.trim();
-  if (!trimmed) return null;
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    const unquoted = trimmed.slice(1, -1).trim();
-    return unquoted || null;
-  }
-  return trimmed;
-}
+import { resolveAppBaseUrlFromEnv } from "@/lib/documentation-auth/base-url";
+import { cleanEnvValue, normalizeAppBaseUrl } from "@/lib/documentation-auth/env-values";
 
-export function normalizeAppBaseUrl(value: string | undefined): string | null {
-  const clean = cleanEnvValue(value);
-  if (!clean) return null;
-  return clean.replace(/\/+$/, "");
-}
+export { cleanEnvValue, normalizeAppBaseUrl };
 
 const INITIAL_OWNER_ENV_KEYS = [
   "INITIAL_OWNER_EMAIL",
@@ -40,8 +26,6 @@ export function initialOwnerEmail(): string | null {
   }
   return null;
 }
-
-import { resolveAppBaseUrlFromEnv } from "@/lib/documentation-auth/base-url";
 
 function auth0DomainFromEnv(): string | null {
   const issuer = cleanEnvValue(process.env.AUTH0_ISSUER_BASE_URL);

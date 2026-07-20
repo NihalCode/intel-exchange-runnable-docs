@@ -1,4 +1,6 @@
-import { cleanEnvValue, normalizeAppBaseUrl } from "@/lib/documentation-auth/auth-config-public";
+import { cleanEnvValue, normalizeAppBaseUrl } from "@/lib/documentation-auth/env-values";
+
+export { cleanEnvValue, normalizeAppBaseUrl };
 
 /** Resolve canonical app origin from env (works in CLI scripts and on Vercel). */
 export function resolveAppBaseUrlFromEnv(): string | null {

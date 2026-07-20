@@ -2,7 +2,7 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 
-import { db, withOrganizationTransaction } from "@/lib/db/client";
+import { db } from "@/lib/db/client";
 import {
   createChangeRequest,
   markChangeDeploying,
@@ -14,7 +14,6 @@ import type { WorkflowRequestContext } from "@/lib/enterprise/change-workflow";
 import {
   createControlPlaneResource,
   findChangeRequest,
-  findControlPlaneResourceByDeploymentKey,
   getConfigVersionDetail,
 } from "@/lib/enterprise/repository";
 import type { ChangeRequestRecord, EnterprisePrincipal } from "@/lib/enterprise/types";

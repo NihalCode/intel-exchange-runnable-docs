@@ -38,6 +38,9 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      - name: Code health gate
+        run: npm run health:check
+
       # AUTH_DISABLED makes the build independent of live Auth0 credentials.
       # No DATABASE_URL is provided: the app uses its local SQLite fallback.
       - name: Build
