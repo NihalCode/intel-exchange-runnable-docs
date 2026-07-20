@@ -11,6 +11,7 @@ import {
   runIngestScript,
   VERCEL_INGEST_ROOT,
 } from "@/lib/developer/ingest-runtime";
+import { requireMutationCsrf } from "@/lib/enterprise/http";
 import { getProductOrThrow } from "@/lib/products/registry";
 
 export const runtime = "nodejs";
@@ -26,6 +27,8 @@ export async function POST(
   if (isAuthEnabled()) {
     const session = await guardSyncDocs(request);
     if (session instanceof NextResponse) return session;
+    const csrfFailure = requireMutationCsrf(request);
+    if (csrfFailure) return csrfFailure;
   } else {
     const denied = requireDeveloperAccess(req);
     if (denied) return denied;

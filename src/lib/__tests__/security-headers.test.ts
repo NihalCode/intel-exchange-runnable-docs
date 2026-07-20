@@ -17,8 +17,10 @@ describe("next.config security headers", () => {
     expect(csp).toContain("base-uri 'self'");
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("frame-ancestors 'self'");
+    expect(csp).toContain("upgrade-insecure-requests");
     expect(keys.get("X-Content-Type-Options")).toBe("nosniff");
     expect(keys.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
+    expect(keys.get("Permissions-Policy")).toContain("camera=()");
   });
 
   it("keeps stricter no-store + noindex headers on admin routes", async () => {

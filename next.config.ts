@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
     // protection with zero behavioral risk. frame-ancestors supersedes
     // X-Frame-Options in modern browsers.
     const baselineCsp =
-      "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'";
+      "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests";
     return [
       {
         source: "/:path*",
@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: baselineCsp },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
         ],
       },
       {

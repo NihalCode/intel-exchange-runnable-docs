@@ -8,6 +8,7 @@ import {
   auditApiEvent,
   controlPlaneJson,
   errorResponse,
+  requireMutationCsrf,
 } from "@/lib/enterprise/http";
 
 export const runtime = "nodejs";
@@ -33,6 +34,8 @@ async function authorizeProcessRequest(
 
   const access = await guardEnterpriseApi(request, "jobs.manage");
   if (access instanceof NextResponse) return access;
+  const csrfFailure = requireMutationCsrf(request);
+  if (csrfFailure) return csrfFailure;
   const role = mapEnterpriseRole(access.context.principal.role);
   if (role !== "owner" && role !== "admin") {
     return controlPlaneJson({ error: "Forbidden" }, { status: 403 });

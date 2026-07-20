@@ -17,7 +17,7 @@ export function UnansweredQueriesPage({
 }: {
   initialRows: UnansweredQueryReviewRow[];
 }) {
-  const { organization, hasPermission } = useAdmin();
+  const { organization, hasPermission, csrfToken } = useAdmin();
   const canManage = hasPermission("unanswered_queries.manage");
   const [rows, setRows] = useState(initialRows);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -28,7 +28,10 @@ export function UnansweredQueriesPage({
     try {
       const res = await fetch(`/api/admin/unanswered-queries/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfToken ? { "X-CSRF-Token": csrfToken } : {}),
+        },
         body: JSON.stringify({ status }),
       });
       if (!res.ok) throw new Error("Update failed");
