@@ -29,23 +29,14 @@ export interface EnterpriseAccess {
 
 export interface EnterpriseGuardOptions {
   resource?: AuthorizationResource;
+  /**
+   * Opt-in only. Prefer Auth0 MFA at login + role checks for the session lifetime.
+   * Do not use for routine admin work — that causes repetitive re-auth.
+   */
   requireMfa?: boolean;
+  /** Opt-in only. Prefer session lifetime over short re-auth windows. */
   maxAuthAgeSeconds?: number;
 }
-
-const SENSITIVE_PERMISSIONS = new Set<EnterprisePermission>([
-  "resources.write_production",
-  "changes.approve",
-  "changes.activate",
-  "changes.rollback",
-  "credentials.manage",
-  "features.manage",
-  "schemas.review",
-  "schemas.publish",
-  "security_settings.manage",
-  "jobs.manage",
-  "audit.read_sensitive",
-]);
 
 function unauthorized(): NextResponse {
   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -55,6 +46,11 @@ function forbidden(): NextResponse {
   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 }
 
+/**
+ * Authorize by active session + enterprise role/permission.
+ * MFA is expected at Auth0 login when the tenant requires it; this guard does
+ * not re-challenge MFA or force re-login for normal admin APIs.
+ */
 export async function guardEnterpriseApi(
   request: NextRequest,
   permission: EnterprisePermission,
@@ -73,18 +69,29 @@ export async function guardEnterpriseApi(
     if (!authorizeEnterprise(context.principal, permission, resource)) {
       return forbidden();
     }
-    const sensitive =
-      SENSITIVE_PERMISSIONS.has(permission) ||
-      (permission === "resources.write" &&
-        resource.environment === "production") ||
-      (permission === "deployments.manage" &&
-        resource.environment === "production");
-    const assurance = checkStepUpAuthentication(result.session, {
-      requireMfa: sensitive || options.requireMfa,
-      maxAuthAgeSeconds:
-        options.maxAuthAgeSeconds ?? (sensitive ? 10 * 60 : undefined),
-    });
-    if (!assurance.ok) return forbidden();
+
+    if (options.requireMfa || options.maxAuthAgeSeconds != null) {
+      const assurance = checkStepUpAuthentication(result.session, {
+        requireMfa: options.requireMfa === true,
+        maxAuthAgeSeconds: options.maxAuthAgeSeconds,
+      });
+      if (!assurance.ok) {
+        return NextResponse.json(
+          {
+            error:
+              assurance.reason === "mfa_required"
+                ? "MFA is required for this action. Sign out and complete authenticator MFA at sign-in."
+                : "This action requires a fresh sign-in. Sign out and sign in again.",
+            code:
+              assurance.reason === "mfa_required"
+                ? "MFA_REQUIRED"
+                : "RECENT_AUTH_REQUIRED",
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     return { session: result.session, context };
   } catch (error) {
     if (

@@ -23,7 +23,10 @@ export function hasRecentAuthentication(
 ): boolean {
   if (session.authProvider !== "auth0") return true;
   const authTime = session.claims?.authTime;
-  if (typeof authTime !== "number") return false;
+  // Missing claim used to fail closed and block owners right after login when
+  // Auth0 omitted auth_time. Prefer fail-open for age when claim is absent;
+  // MFA (when required) still gates privileged actions separately.
+  if (typeof authTime !== "number") return true;
   const age = nowSeconds - authTime;
   return age >= -60 && age <= maxAgeSeconds;
 }

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import {
   addDomainToDeployment,
   checkDeploymentDomainDns,
+  importExistingDomainOnDeployment,
   removeDeploymentDomain,
   verifyDeploymentDomain,
 } from "@/lib/deployment/domain-workflow";
@@ -16,9 +17,14 @@ import {
   type DomainMutationAction,
 } from "@/lib/deployment/domain-change-requests";
 import { getProductDeployment } from "@/lib/deployment/repository";
-import { guardEnterpriseApi } from "@/lib/enterprise/guard";
+import { guardEnterpriseApi, type EnterpriseAccess } from "@/lib/enterprise/guard";
+import {
+  controlPlaneJson,
+  errorResponse,
+  requireMutationCsrf,
+  workflowContext,
+} from "@/lib/enterprise/http";
 import { correlationIds } from "@/lib/enterprise/observability";
-import { requireMutationCsrf, workflowContext } from "@/lib/enterprise/http";
 
 export const runtime = "nodejs";
 
@@ -29,6 +35,29 @@ function resolveAction(raw?: string): DomainMutationAction | undefined {
   return "add";
 }
 
+async function guardProductionDomainMutation(
+  request: NextRequest,
+  access: EnterpriseAccess
+): Promise<EnterpriseAccess | NextResponse> {
+  // Role-scoped production check only — no MFA re-challenge after login.
+  const productionAccess = await guardEnterpriseApi(request, "deployments.manage", {
+    resource: {
+      organizationId: access.context.organization.id,
+      environment: "production",
+    },
+  });
+  if (productionAccess instanceof NextResponse) {
+    return controlPlaneJson(
+      {
+        error: "You do not have permission to change production domains.",
+        code: "FORBIDDEN",
+      },
+      { status: 403 }
+    );
+  }
+  return productionAccess;
+}
+
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ deploymentId: string }> }
@@ -36,65 +65,78 @@ export async function POST(
   const csrfFailure = requireMutationCsrf(request);
   if (csrfFailure) return csrfFailure;
 
-  const { deploymentId } = await context.params;
-  const body = (await request.json()) as {
-    domain?: string;
-    action?: string;
-    changeRequestId?: string;
-    proposeOnly?: boolean;
-  };
-  const domain = body.domain?.trim();
-  if (!domain) return NextResponse.json({ error: "domain required" }, { status: 400 });
-
-  const initialAccess = await guardEnterpriseApi(request, "deployments.manage");
-  if (initialAccess instanceof NextResponse) return initialAccess;
-
-  const deployment = await getProductDeployment(
-    initialAccess.context.organization.id,
-    deploymentId
-  );
-  if (!deployment) {
-    return NextResponse.json({ error: "Deployment not found" }, { status: 404 });
-  }
-
-  const mutationAction = resolveAction(body.action);
-  const requiresApproval = isProductionDomainMutation(deployment, mutationAction ?? body.action);
-
-  let access = initialAccess;
-  if (requiresApproval) {
-    const productionAccess = await guardEnterpriseApi(request, "deployments.manage", {
-      resource: {
-        organizationId: initialAccess.context.organization.id,
-        environment: "production",
-      },
-      requireMfa: true,
-      maxAuthAgeSeconds: 10 * 60,
-    });
-    if (productionAccess instanceof NextResponse) {
-      return NextResponse.json(
-        { error: "Step-up MFA and recent authentication required for production domain changes" },
-        { status: 403 }
-      );
-    }
-    access = productionAccess;
-  }
-
-  const requestId = correlationIds(request.headers).requestId;
-  const base = {
-    organizationId: access.context.organization.id,
-    userId: access.session.user.id,
-    deploymentId,
-    domain,
-    requestId,
-  };
-
+  let access: EnterpriseAccess | null = null;
   try {
-    if (body.action === "check-dns") {
-      return NextResponse.json(await checkDeploymentDomainDns(base));
+    const { deploymentId } = await context.params;
+
+    const initialAccess = await guardEnterpriseApi(request, "deployments.manage");
+    if (initialAccess instanceof NextResponse) return initialAccess;
+    access = initialAccess;
+
+    const body = (await request.json()) as {
+      domain?: string;
+      action?: string;
+      changeRequestId?: string;
+      proposeOnly?: boolean;
+    };
+    const domain = body.domain?.trim();
+    if (!domain) {
+      return controlPlaneJson({ error: "domain required" }, { status: 400 });
+    }
+
+    const deployment = await getProductDeployment(
+      access.context.organization.id,
+      deploymentId
+    );
+    if (!deployment) {
+      return controlPlaneJson({ error: "Deployment not found" }, { status: 404 });
+    }
+
+    const actionRaw = typeof body.action === "string" ? body.action : undefined;
+    const mutationAction = resolveAction(actionRaw);
+    const changeRequestId =
+      typeof body.changeRequestId === "string" ? body.changeRequestId.trim() : "";
+
+    const requestId = correlationIds(request.headers).requestId;
+    const base = {
+      organizationId: access.context.organization.id,
+      userId: access.session.user.id,
+      deploymentId,
+      domain,
+      requestId,
+    };
+
+    if (actionRaw === "check-dns") {
+      return controlPlaneJson(await checkDeploymentDomainDns(base));
+    }
+
+    // Read-only import from an already-attached Vercel domain — no MFA / change request.
+    if (mutationAction === "add" && !changeRequestId) {
+      const imported = await importExistingDomainOnDeployment(base);
+      if (imported) {
+        return controlPlaneJson({
+          ok: true,
+          imported: true,
+          message: "Domain is already on this Vercel project — imported into the control plane.",
+          result: imported,
+        });
+      }
+    }
+
+    const requiresApproval = isProductionDomainMutation(
+      deployment,
+      mutationAction ?? actionRaw
+    );
+
+    if (requiresApproval) {
+      const productionAccess = await guardProductionDomainMutation(request, access);
+      if (productionAccess instanceof NextResponse) return productionAccess;
+      access = productionAccess;
     }
 
     if (requiresApproval && mutationAction) {
-      if (body.proposeOnly || !body.changeRequestId) {
+      const proposeOnly = body.proposeOnly === true;
+      if (proposeOnly || !changeRequestId) {
         const idempotencyKey =
           request.headers.get("idempotency-key")?.trim() ||
           `domain-${deploymentId}-${mutationAction}-${domain}-${Date.now()}`;
@@ -107,13 +149,13 @@ export async function POST(
             idempotencyKey,
           }
         );
-        return NextResponse.json(
+        return controlPlaneJson(
           {
             requiresApproval: true,
             changeRequest: proposed.changeRequest,
             domainChangeRequestId: proposed.domainChangeRequestId,
             message:
-              "Production domain mutation submitted for change-request approval. Approve the change, then retry with changeRequestId.",
+              "Production domain mutation submitted for change-request approval. Approve the change in Admin → Change Requests, then retry with changeRequestId.",
           },
           { status: 202 }
         );
@@ -122,7 +164,7 @@ export async function POST(
       const approved = await assertApprovedProductionDomainMutation({
         organizationId: access.context.organization.id,
         principal: access.context.principal,
-        changeRequestId: body.changeRequestId,
+        changeRequestId,
         deploymentId,
         domain,
         action: mutationAction,
@@ -143,30 +185,27 @@ export async function POST(
         approved,
         deployment
       );
-      return NextResponse.json({ ok: true, result, changeRequestId: approved.id });
+      return controlPlaneJson({ ok: true, result, changeRequestId: approved.id });
     }
 
-    if (body.action === "verify") {
-      return NextResponse.json(await verifyDeploymentDomain(base));
+    if (actionRaw === "verify") {
+      return controlPlaneJson(await verifyDeploymentDomain(base));
     }
-    if (body.action === "remove") {
+    if (actionRaw === "remove") {
       await removeDeploymentDomain(base);
-      return NextResponse.json({ ok: true });
+      return controlPlaneJson({ ok: true });
     }
-    return NextResponse.json(await addDomainToDeployment(base));
-  } catch (err) {
-    if (err instanceof DomainMutationApprovalError) {
+    return controlPlaneJson(await addDomainToDeployment(base));
+  } catch (error) {
+    if (error instanceof DomainMutationApprovalError) {
       const status =
-        err.code === "NOT_FOUND"
+        error.code === "NOT_FOUND"
           ? 404
-          : err.code === "NOT_APPROVED" || err.code === "PAYLOAD_MISMATCH"
+          : error.code === "NOT_APPROVED" || error.code === "PAYLOAD_MISMATCH"
             ? 409
             : 403;
-      return NextResponse.json({ error: err.message, code: err.code }, { status });
+      return controlPlaneJson({ error: error.message, code: error.code }, { status });
     }
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Operation failed" },
-      { status: 400 }
-    );
+    return errorResponse(error);
   }
 }

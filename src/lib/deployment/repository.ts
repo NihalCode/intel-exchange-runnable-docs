@@ -126,7 +126,7 @@ export async function createProductDeployment(input: {
           input.config.environment,
           input.config.primaryDomain ?? null,
           JSON.stringify(input.config.additionalDomains ?? []),
-          input.config.enabled === false ? 0 : 1,
+          input.config.enabled !== false,
           input.config.status ?? "configuring",
           input.userId,
           input.userId,
@@ -189,7 +189,7 @@ export async function upsertDomainAutomationRecord(input: {
         input.lastDnsCheckJson ? now : null,
         input.tlsStatus ?? null,
         input.lastProviderError ?? null,
-        input.isPrimary == null ? null : input.isPrimary ? 1 : 0,
+        input.isPrimary == null ? null : Boolean(input.isPrimary),
         now,
         existing.id,
       ]
@@ -206,7 +206,7 @@ export async function upsertDomainAutomationRecord(input: {
       id, organization_id, deployment_id, domain, workflow_state,
       dns_requirements_json, last_dns_check_json, last_dns_check_at,
       tls_status, last_provider_error, is_primary, enabled, version, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
     [
       id,
       input.organizationId,
@@ -218,7 +218,8 @@ export async function upsertDomainAutomationRecord(input: {
       input.lastDnsCheckJson ? now : null,
       input.tlsStatus ?? "pending",
       input.lastProviderError ?? null,
-      input.isPrimary ? 1 : 0,
+      Boolean(input.isPrimary),
+      true,
       now,
       now,
     ]

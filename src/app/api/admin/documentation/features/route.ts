@@ -5,6 +5,7 @@ import {
   listDocumentationFeatures,
   updateDocumentationFeature,
 } from "@/lib/documentation-features";
+import { resolveDocumentationFeatureEnabled } from "@/lib/documentation-features/resolve-enabled";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
 import {
   ApiInputError,
@@ -20,9 +21,21 @@ import {
 export async function GET(request: NextRequest) {
   const access = await guardEnterpriseApi(request, "features.read");
   if (access instanceof NextResponse) return access;
-  return controlPlaneJson({
-    features: await listDocumentationFeatures(access.context.organization.id),
-  });
+  const features = await listDocumentationFeatures(access.context.organization.id);
+  const withEffective = await Promise.all(
+    features.map(async (feature) => {
+      const effectiveEnabled = await resolveDocumentationFeatureEnabled({
+        organizationId: access.context.organization.id,
+        key: feature.key,
+      });
+      return {
+        ...feature,
+        effectiveEnabled,
+        autoEnabledByDeployment: effectiveEnabled && !feature.enabled,
+      };
+    })
+  );
+  return controlPlaneJson({ features: withEffective });
 }
 
 export async function PATCH(request: NextRequest) {

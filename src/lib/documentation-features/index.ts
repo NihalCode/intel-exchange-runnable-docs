@@ -12,6 +12,8 @@ import {
 export {
   defaultDocumentationFeatureEnabled,
   DOCUMENTATION_FEATURE_KEYS,
+  ADMIN_FEATURE_SECTIONS,
+  ADMIN_VISIBLE_FEATURE_KEYS,
   type DocumentationFeatureKey,
 } from "@/lib/documentation-features/keys";
 

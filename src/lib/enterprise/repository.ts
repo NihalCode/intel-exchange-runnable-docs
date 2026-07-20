@@ -241,6 +241,24 @@ export async function findControlPlaneResource(
   return row ? rowToResource(row) : null;
 }
 
+export async function findControlPlaneResourceByDeploymentKey(
+  organizationId: string,
+  input: {
+    resourceType: string;
+    name: string;
+    environment: EnterpriseEnvironment;
+  },
+  executor: DbExecutor = db
+): Promise<ControlPlaneResourceRecord | null> {
+  const row = await executor.queryOne(
+    `SELECT * FROM control_plane_resources
+     WHERE organization_id = ? AND resource_type = ? AND name = ? AND environment = ?
+     LIMIT 1`,
+    [organizationId, input.resourceType, input.name, input.environment]
+  );
+  return row ? rowToResource(row) : null;
+}
+
 export async function listControlPlaneResources(
   organizationId: string,
   executor: DbExecutor = db

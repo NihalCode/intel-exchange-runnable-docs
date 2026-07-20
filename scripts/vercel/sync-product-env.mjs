@@ -16,7 +16,7 @@ const PRODUCTS = [
   {
     productId: "ctix",
     project: "cyware-docs-ctix",
-    appBaseUrl: "https://cyware-docs-ctix.vercel.app",
+    appBaseUrl: "https://apitest1.cyninjadev.com",
   },
   {
     productId: "csap",

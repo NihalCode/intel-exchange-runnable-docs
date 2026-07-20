@@ -8,6 +8,7 @@ import { validateMutationCsrf } from "@/lib/enterprise/csrf";
 import { appendEnterpriseAuditEvent } from "@/lib/enterprise/audit";
 import { correlationIds } from "@/lib/enterprise/observability";
 import { checkEnterpriseMutationRateLimit } from "@/lib/enterprise/rate-limit";
+import { VercelProviderError } from "@/lib/deployment/providers/types";
 import {
   ChangeWorkflowError,
 } from "@/lib/enterprise/change-workflow";
@@ -145,8 +146,31 @@ export function errorResponse(error: unknown): NextResponse {
       { status: error.code === "SELF_APPROVAL" ? 403 : 409 }
     );
   }
+  if (error instanceof VercelProviderError) {
+    const status =
+      error.code === "NOT_CONFIGURED"
+        ? 503
+        : error.code === "NOT_FOUND"
+          ? 404
+          : error.code === "RATE_LIMIT"
+            ? 429
+            : error.status && error.status >= 400 && error.status < 600
+              ? error.status
+              : 502;
+    return controlPlaneJson(
+      {
+        error:
+          error.code === "NOT_CONFIGURED"
+            ? "VERCEL_TOKEN is not configured on this deployment."
+            : error.message,
+        code: error.code,
+      },
+      { status }
+    );
+  }
   console.error("Enterprise control-plane request failed", error);
-  return controlPlaneJson({ error: "Request failed" }, { status: 500 });
+  const message = error instanceof Error ? error.message : "Request failed";
+  return controlPlaneJson({ error: message }, { status: 500 });
 }
 
 export async function auditApiEvent(

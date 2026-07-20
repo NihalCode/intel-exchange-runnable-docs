@@ -1,10 +1,11 @@
-import type {
-  VercelDeploymentSummary,
-  VercelDomainStatus,
-  VercelDnsRequirement,
-  VercelDomainSummary,
-  VercelProjectSummary,
-  VercelProvider,
+import {
+  VercelProviderError,
+  type VercelDeploymentSummary,
+  type VercelDomainStatus,
+  type VercelDnsRequirement,
+  type VercelDomainSummary,
+  type VercelProjectSummary,
+  type VercelProvider,
 } from "@/lib/deployment/providers/types";
 
 /** In-memory fake for CI — no live Vercel API calls. */
@@ -64,7 +65,9 @@ export function createFakeVercelProvider(seed?: {
     },
     async getDomainStatus(projectId, domain) {
       const status = domainsByProject.get(projectId)?.get(domain);
-      if (!status) throw new Error("Domain not found");
+      if (!status) {
+        throw new VercelProviderError("Domain not found", "NOT_FOUND", 404);
+      }
       return status;
     },
     async verifyDomain(projectId, domain) {

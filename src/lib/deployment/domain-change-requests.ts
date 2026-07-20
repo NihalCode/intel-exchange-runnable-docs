@@ -14,6 +14,7 @@ import type { WorkflowRequestContext } from "@/lib/enterprise/change-workflow";
 import {
   createControlPlaneResource,
   findChangeRequest,
+  findControlPlaneResourceByDeploymentKey,
   getConfigVersionDetail,
 } from "@/lib/enterprise/repository";
 import type { ChangeRequestRecord, EnterprisePrincipal } from "@/lib/enterprise/types";

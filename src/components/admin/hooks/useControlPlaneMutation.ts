@@ -38,13 +38,42 @@ export function useControlPlaneMutation() {
           },
           body: JSON.stringify(body),
         });
-        const result = (await response.json()) as {
+        let raw = "";
+        try {
+          raw = await response.text();
+        } catch {
+          throw new Error(`Operation failed (HTTP ${response.status})`);
+        }
+        let result: {
           error?: string;
+          message?: string;
+          requiresApproval?: boolean;
           plaintext?: string;
           oneTime?: boolean;
-        };
-        if (!response.ok) throw new Error(result.error ?? "Operation failed");
-        setStatus(options?.successMessage ?? "Operation completed successfully");
+        } = {};
+        if (raw) {
+          try {
+            result = JSON.parse(raw) as typeof result;
+          } catch {
+            throw new Error(
+              `Server returned an invalid response (HTTP ${response.status})`
+            );
+          }
+        }
+        if (!response.ok) {
+          throw new Error(
+            result.error ??
+              result.message ??
+              `Operation failed (HTTP ${response.status})`
+          );
+        }
+        setStatus(
+          result.message ??
+            options?.successMessage ??
+            (result.requiresApproval
+              ? "Change request created — approve it in Admin → Change Requests."
+              : "Operation completed successfully")
+        );
         router.refresh();
         return result;
       } catch (error) {
@@ -75,8 +104,20 @@ export function useControlPlaneMutation() {
           },
           body: JSON.stringify(body),
         });
-        const result = (await response.json()) as { error?: string };
-        if (!response.ok) throw new Error(result.error ?? "Save failed");
+        const raw = await response.text();
+        let result: { error?: string; message?: string } = {};
+        if (raw) {
+          try {
+            result = JSON.parse(raw) as typeof result;
+          } catch {
+            throw new Error(`Save failed — invalid server response (HTTP ${response.status})`);
+          }
+        }
+        if (!response.ok) {
+          throw new Error(
+            result.error ?? result.message ?? `Save failed (HTTP ${response.status})`
+          );
+        }
         setStatus(successMessage ?? "Saved successfully");
         router.refresh();
         return result;

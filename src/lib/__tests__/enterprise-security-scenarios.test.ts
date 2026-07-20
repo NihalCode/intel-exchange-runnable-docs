@@ -174,6 +174,19 @@ describe("enterprise security scenarios", () => {
       ).toBe(false);
     });
 
+    it("treats missing authTime as recent so Auth0 sessions without auth_time still work", () => {
+      const missing = session({
+        claims: { amr: ["pwd", "mfa"] },
+      });
+      expect(hasRecentAuthentication(missing, 600)).toBe(true);
+      expect(
+        checkStepUpAuthentication(missing, {
+          requireMfa: true,
+          maxAuthAgeSeconds: 600,
+        }).ok
+      ).toBe(true);
+    });
+
     it("allows disabled-auth dev sessions without MFA enforcement", () => {
       const dev = session({ authProvider: "disabled", claims: undefined });
       expect(checkStepUpAuthentication(dev, { requireMfa: true }).ok).toBe(

@@ -160,12 +160,10 @@ async function resolveAuth0User(request?: NextRequest) {
         : typeof idTokenClaims?.org_id === "string"
           ? idTokenClaims.org_id
           : undefined,
-    authTime:
-      typeof authUser.auth_time === "number"
-        ? authUser.auth_time
-        : typeof idTokenClaims?.auth_time === "number"
-          ? idTokenClaims.auth_time
-          : undefined,
+    authTime: resolveAuthTime(
+      authUser as { auth_time?: unknown },
+      idTokenClaims
+    ),
     amr: amrFromUser?.length ? amrFromUser : amrFromToken,
     acr:
       typeof authUser.acr === "string"
@@ -174,6 +172,17 @@ async function resolveAuth0User(request?: NextRequest) {
           ? idTokenClaims.acr
           : undefined,
   };
+}
+
+/** Prefer OIDC auth_time; fall back to ID token iat so step-up checks work after login. */
+function resolveAuthTime(
+  authUser: { auth_time?: unknown },
+  idTokenClaims: Record<string, unknown> | null
+): number | undefined {
+  if (typeof authUser.auth_time === "number") return authUser.auth_time;
+  if (typeof idTokenClaims?.auth_time === "number") return idTokenClaims.auth_time;
+  if (typeof idTokenClaims?.iat === "number") return idTokenClaims.iat;
+  return undefined;
 }
 
 function extractIdTokenClaims(

@@ -187,8 +187,8 @@ export function DocumentationAgentDeploymentsPage({
 
             {d.environment === "production" ? (
               <p className="text-xs text-amber-700 dark:text-amber-400">
-                Production domain add/remove/verify requires step-up MFA and an approved change
-                request. Submitting without changeRequestId creates a pending change request.
+                Production domain add/remove/verify may create an approval change request. Access is
+                based on your signed-in role (owner/admin) for this session.
               </p>
             ) : null}
 
@@ -239,15 +239,15 @@ export function DocumentationAgentDeploymentsPage({
                   />
                 </label>
                 <button
-                  type="button"
-                  disabled={busy || !(newDomain[d.id] ?? "").trim()}
-                  onClick={() =>
-                    void domainAction(d.id, newDomain[d.id]!.trim())
-                  }
-                  className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-600"
-                >
-                  Add to Vercel
-                </button>
+            type="button"
+            disabled={busy || !(newDomain[d.id] ?? "").trim()}
+            onClick={() =>
+              void domainAction(d.id, newDomain[d.id]!.trim())
+            }
+            className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-600"
+          >
+            Import / add domain
+          </button>
               </div>
             ) : null}
 
