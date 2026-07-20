@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 
 import type { NavNode } from "@/lib/types";
-import { AppShell } from "@/components/AppShell";
+import { AppFrame } from "@/components/AppFrame";
 
 const BARE_LAYOUT_PREFIXES = ["/sign-in", "/access", "/invite", "/post-login", "/auth"];
 
@@ -17,7 +17,7 @@ function usesAdminLayout(pathname: string): boolean {
   return pathname === "/admin" || pathname.startsWith("/admin/");
 }
 
-export function ConditionalAppShell({
+export function ConditionalAppFrame({
   nav,
   children,
 }: {
@@ -31,5 +31,5 @@ export function ConditionalAppShell({
   if (usesAdminLayout(pathname)) {
     return <>{children}</>;
   }
-  return <AppShell nav={nav}>{children}</AppShell>;
+  return <AppFrame nav={nav}>{children}</AppFrame>;
 }

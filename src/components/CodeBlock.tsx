@@ -1,54 +1,13 @@
 "use client";
 
-import hljs from "highlight.js/lib/common";
 import "highlight.js/styles/github-dark.css";
 import { useMemo, useState } from "react";
 import type { CodeSnippet } from "@/lib/types";
-import { renderHljsHtml } from "@/lib/highlight-react";
+import { highlightToReact } from "@/lib/highlight-react";
 import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import { isPostmanPreRequestScript } from "@/lib/parse-request";
 import { SnippetRunner } from "./runners";
 import { useRunSettings } from "./RunSettings";
-
-const LANG_MAP: Record<string, string> = {
-  bash: "bash",
-  sh: "bash",
-  shell: "bash",
-  zsh: "bash",
-  curl: "bash",
-  json: "json",
-  javascript: "javascript",
-  js: "javascript",
-  typescript: "typescript",
-  ts: "typescript",
-  python: "python",
-  py: "python",
-  http: "http",
-  text: "plaintext",
-};
-
-function highlight(code: string, lang: string): string {
-  const mapped = LANG_MAP[lang.toLowerCase()] || lang.toLowerCase();
-  try {
-    if (mapped && hljs.getLanguage(mapped)) {
-      return hljs.highlight(code, { language: mapped }).value;
-    }
-  } catch {
-    /* fall through */
-  }
-  try {
-    return hljs.highlightAuto(code).value;
-  } catch {
-    return escapeHtml(code);
-  }
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
 
 export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
   const [copied, setCopied] = useState(false);
@@ -61,9 +20,8 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
     () => ({ ...snippet, code: displayCode }),
     [snippet, displayCode]
   );
-  // hljs escapes its input; we convert spans to React nodes (no HTML sink).
   const highlighted = useMemo(
-    () => renderHljsHtml(highlight(displayCode, snippet.lang)),
+    () => highlightToReact(displayCode, snippet.lang),
     [displayCode, snippet.lang]
   );
 

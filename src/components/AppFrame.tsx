@@ -105,7 +105,7 @@ function ThemeToggle() {
   );
 }
 
-/** Signed-out: Sign in link matching header nav. Signed-in: avatar → logout. */
+/** Signed-out: Sign in link matching header nav. Signed-in: avatar â†’ logout. */
 function AuthHeaderControl() {
   const pathname = usePathname();
   const { state } = useDocumentationAuth();
@@ -138,8 +138,8 @@ function AuthHeaderControl() {
     <Link
       href="/auth/logout"
       data-testid="auth-header-profile"
-      title={`${label} — sign out`}
-      aria-label={`${label} — sign out`}
+      title={`${label} â€” sign out`}
+      aria-label={`${label} â€” sign out`}
       className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 text-xs font-semibold text-zinc-700 ring-1 ring-zinc-200/80 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 dark:hover:bg-zinc-700"
     >
       {label.slice(0, 1).toUpperCase()}
@@ -176,7 +176,7 @@ function HeaderBar() {
   );
 }
 
-export function AppShell({
+export function AppFrame({
   nav: initialNav,
   children,
 }: {

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 
-import { AdminLayoutClient } from "@/components/admin/shell/AdminLayoutClient";
+import { AdminLayoutClient } from "@/components/admin/layout/AdminLayoutClient";
 import { LoadingSkeleton } from "@/components/admin/ui/EmptyState";
 import { getAppSessionResult } from "@/lib/documentation-auth/session";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { AdminAppExitNav } from "@/components/admin/shell/AdminAppExitNav";
+import { AdminAppExitNav } from "@/components/admin/layout/AdminAppExitNav";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useFocusTrap } from "@/components/useFocusTrap";
 import {

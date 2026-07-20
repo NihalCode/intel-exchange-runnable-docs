@@ -1,10 +1,10 @@
 "use client";
 
-import { AdminHeader } from "@/components/admin/shell/AdminHeader";
-import { AdminSidebar } from "@/components/admin/shell/AdminSidebar";
-import { ProductionBanner } from "@/components/admin/shell/ProductionBanner";
+import { AdminHeader } from "@/components/admin/layout/AdminHeader";
+import { AdminSidebar } from "@/components/admin/layout/AdminSidebar";
+import { ProductionBanner } from "@/components/admin/layout/ProductionBanner";
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminFrame({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-zinc-950">
       <ProductionBanner />

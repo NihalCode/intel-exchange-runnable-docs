@@ -3,10 +3,9 @@ import { describe, expect, it } from "vitest";
 import { safeZipEntryPath } from "@/lib/security/safe-zip-path";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
 import { ENTERPRISE_PERMISSIONS, type EnterprisePrincipal } from "@/lib/enterprise/types";
-import { renderHljsHtml } from "@/lib/highlight-react";
+import { highlightToReact } from "@/lib/highlight-react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import hljs from "highlight.js/lib/common";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
@@ -38,10 +37,9 @@ describe("security suite — XSS sinks removed from layout/CodeBlock", () => {
 
   it("hljs react renderer does not emit script elements", () => {
     const LT = "<";
-    const out = hljs.highlight(`${LT}script>alert(1)${LT}/script>`, {
-      language: "javascript",
-    }).value;
-    const markup = renderToStaticMarkup(createElement("code", null, renderHljsHtml(out)));
+    const markup = renderToStaticMarkup(
+      createElement("code", null, highlightToReact(`${LT}script>alert(1)${LT}/script>`, "javascript"))
+    );
     expect(markup).not.toMatch(/<script/i);
   });
 });

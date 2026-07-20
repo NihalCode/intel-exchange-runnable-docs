@@ -5,7 +5,7 @@ import "./globals.css";
 import { HostProductProvider } from "@/components/HostProductProvider";
 import { DocumentationAuthProvider } from "@/components/auth/DocumentationAuthProvider";
 import { AgentChatSession } from "@/components/AgentChatSession";
-import { ConditionalAppShell } from "@/components/ConditionalAppShell";
+import { ConditionalAppFrame } from "@/components/ConditionalAppFrame";
 import { RunSettingsProvider } from "@/components/RunSettings";
 import { getManifest } from "@/lib/content";
 
@@ -36,7 +36,7 @@ export default function RootLayout({
           <HostProductProvider>
             <DocumentationAuthProvider>
               <AgentChatSession>
-                <ConditionalAppShell nav={manifest.nav}>{children}</ConditionalAppShell>
+                <ConditionalAppFrame nav={manifest.nav}>{children}</ConditionalAppFrame>
               </AgentChatSession>
             </DocumentationAuthProvider>
           </HostProductProvider>

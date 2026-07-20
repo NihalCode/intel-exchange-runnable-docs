@@ -9,10 +9,10 @@ function source(relative: string): string {
 
 describe("documentation UI credential boundaries", () => {
   it("keeps credential and base URL controls out of the application header", () => {
-    const appShell = source("src/components/AppShell.tsx");
-    expect(appShell).not.toContain("ApiConnectionPanel");
-    expect(appShell).not.toContain("credentialsConfigured");
-    expect(appShell).not.toContain("Connect CTIX");
+    const appFrame = source("src/components/AppFrame.tsx");
+    expect(appFrame).not.toContain("ApiConnectionPanel");
+    expect(appFrame).not.toContain("credentialsConfigured");
+    expect(appFrame).not.toContain("Connect CTIX");
   });
 
   it("renders a credential-locked agent state", () => {

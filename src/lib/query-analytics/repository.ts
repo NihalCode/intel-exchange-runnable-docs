@@ -5,7 +5,144 @@ import { randomUUID } from "node:crypto";
 import { db } from "@/lib/db/client";
 import type { QueryOutcome } from "@/lib/agent/query-outcome";
 import type { ProductKey } from "@/lib/products/registry";
-import type { UnansweredQueryReviewStatus } from "@/lib/domains/types";
+import {
+  UNANSWERED_QUERY_REVIEW_STATUSES,
+  type UnansweredQueryReviewStatus,
+} from "@/lib/domains/types";
+
+/** Static INSERT — all values bound. */
+const INSERT_ANALYTICS_EVENT_SQL = `
+INSERT INTO query_analytics_events (
+  id, organization_id, user_id, conversation_id, turn_id, logical_query_id, attempt_id,
+  hostname, product_id, collection_id, intent, outcome, retrieval_result_count,
+  citation_count, latency_ms, request_id, trace_id, model_version, prompt_version,
+  index_version, metadata_json, created_at
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
+const SUMMARIZE_ANALYTICS_SQL = `
+SELECT outcome,
+  COUNT(DISTINCT logical_query_id) AS logical_count,
+  COUNT(*) AS attempt_count
+FROM query_analytics_events
+WHERE organization_id = ? AND created_at >= ?
+GROUP BY outcome
+`;
+
+const LIST_RECENT_ANALYTICS_SQL = `
+SELECT id, logical_query_id, attempt_id, hostname, product_id, outcome, latency_ms, created_at
+FROM query_analytics_events
+WHERE organization_id = ?
+ORDER BY created_at DESC
+LIMIT ?
+`;
+
+const SELECT_REVIEW_BY_EVENT_SQL = `
+SELECT id FROM unanswered_query_reviews
+WHERE organization_id = ? AND analytics_event_id = ?
+`;
+
+const INSERT_REVIEW_SQL = `
+INSERT INTO unanswered_query_reviews (
+  id, organization_id, analytics_event_id, status, version, created_at, updated_at
+) VALUES (?, ?, ?, 'NEW', 1, ?, ?)
+`;
+
+const LIST_REVIEWS_SQL = `
+SELECT r.id, r.analytics_event_id, r.status, r.internal_note, r.created_at, r.updated_at,
+       e.outcome, e.hostname, e.product_id
+FROM unanswered_query_reviews r
+LEFT JOIN query_analytics_events e ON e.id = r.analytics_event_id
+WHERE r.organization_id = ?
+ORDER BY r.updated_at DESC
+LIMIT ?
+`;
+
+const SELECT_REVIEW_FOR_UPDATE_SQL = `
+SELECT id, version FROM unanswered_query_reviews
+WHERE organization_id = ? AND id = ?
+`;
+
+const UPDATE_REVIEW_SQL = `
+UPDATE unanswered_query_reviews
+SET status = ?, internal_note = ?, updated_at = ?, version = version + 1
+WHERE organization_id = ? AND id = ? AND version = ?
+`;
+
+/**
+ * Filtered analytics WHERE — fully static. Optional filters use
+ * `? IS NULL OR col = ?` so no clause strings are interpolated.
+ */
+const FILTERED_ANALYTICS_WHERE_SQL = `
+organization_id = ?
+AND created_at >= ?
+AND (? IS NULL OR created_at <= ?)
+AND (? IS NULL OR product_id = ?)
+AND (? IS NULL OR hostname = ?)
+AND (? IS NULL OR outcome = ?)
+`;
+
+const SUMMARIZE_FILTERED_SQL =
+  "SELECT outcome,\n" +
+  "  COUNT(DISTINCT logical_query_id) AS logical_count,\n" +
+  "  COUNT(*) AS attempt_count\n" +
+  "FROM query_analytics_events\n" +
+  "WHERE " +
+  FILTERED_ANALYTICS_WHERE_SQL +
+  "\nGROUP BY outcome";
+
+const LATENCY_FILTERED_SQL =
+  "SELECT latency_ms FROM query_analytics_events\n" +
+  "WHERE " +
+  FILTERED_ANALYTICS_WHERE_SQL +
+  " AND latency_ms IS NOT NULL\n" +
+  "ORDER BY latency_ms ASC";
+
+const LIST_FILTERED_SQL =
+  "SELECT id, logical_query_id, attempt_id, hostname, product_id, outcome, latency_ms, created_at\n" +
+  "FROM query_analytics_events\n" +
+  "WHERE " +
+  FILTERED_ANALYTICS_WHERE_SQL +
+  "\nORDER BY created_at DESC\n" +
+  "LIMIT ?";
+
+const EXPORT_FILTERED_SQL =
+  "SELECT logical_query_id, attempt_id, hostname, product_id, outcome, latency_ms, created_at\n" +
+  "FROM query_analytics_events\n" +
+  "WHERE " +
+  FILTERED_ANALYTICS_WHERE_SQL +
+  "\nORDER BY created_at DESC";
+
+const REVIEW_STATUS_SET = new Set<string>(UNANSWERED_QUERY_REVIEW_STATUSES);
+
+function assertReviewStatus(status: string): UnansweredQueryReviewStatus {
+  if (!REVIEW_STATUS_SET.has(status)) {
+    throw new Error("Invalid unanswered query review status");
+  }
+  return status as UnansweredQueryReviewStatus;
+}
+
+function filteredParams(
+  organizationId: string,
+  filters: QueryAnalyticsFilters
+): unknown[] {
+  const until = filters.untilIso ?? null;
+  const productId = filters.productId ?? null;
+  const hostname = filters.hostname ?? null;
+  const outcome = filters.outcome ?? null;
+  return [
+    organizationId,
+    filters.sinceIso,
+    until,
+    until,
+    productId,
+    productId,
+    hostname,
+    hostname,
+    outcome,
+    outcome,
+  ];
+}
 
 export interface QueryAnalyticsEventInput {
   organizationId: string;
@@ -36,38 +173,30 @@ export async function recordQueryAnalyticsEvent(
   const id = randomUUID();
   const attemptId = input.attemptId ?? randomUUID();
   const now = new Date().toISOString();
-  await db.execute(
-    `INSERT INTO query_analytics_events (
-      id, organization_id, user_id, conversation_id, turn_id, logical_query_id, attempt_id,
-      hostname, product_id, collection_id, intent, outcome, retrieval_result_count,
-      citation_count, latency_ms, request_id, trace_id, model_version, prompt_version,
-      index_version, metadata_json, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      id,
-      input.organizationId,
-      input.userId ?? null,
-      input.conversationId ?? null,
-      input.turnId ?? null,
-      input.logicalQueryId,
-      attemptId,
-      input.hostname,
-      input.productId ?? null,
-      input.collectionId ?? null,
-      input.intent ?? null,
-      input.outcome,
-      input.retrievalResultCount ?? null,
-      input.citationCount ?? null,
-      input.latencyMs ?? null,
-      input.requestId ?? null,
-      input.traceId ?? null,
-      input.modelVersion ?? null,
-      input.promptVersion ?? null,
-      input.indexVersion ?? null,
-      JSON.stringify(input.metadata ?? {}),
-      now,
-    ]
-  );
+  await db.execute(INSERT_ANALYTICS_EVENT_SQL, [
+    id,
+    input.organizationId,
+    input.userId ?? null,
+    input.conversationId ?? null,
+    input.turnId ?? null,
+    input.logicalQueryId,
+    attemptId,
+    input.hostname,
+    input.productId ?? null,
+    input.collectionId ?? null,
+    input.intent ?? null,
+    input.outcome,
+    input.retrievalResultCount ?? null,
+    input.citationCount ?? null,
+    input.latencyMs ?? null,
+    input.requestId ?? null,
+    input.traceId ?? null,
+    input.modelVersion ?? null,
+    input.promptVersion ?? null,
+    input.indexVersion ?? null,
+    JSON.stringify(input.metadata ?? {}),
+    now,
+  ]);
   return id;
 }
 
@@ -81,25 +210,8 @@ export interface QueryAnalyticsSummary {
   providerError: number;
 }
 
-export async function summarizeQueryAnalytics(
-  organizationId: string,
-  sinceIso: string
-): Promise<QueryAnalyticsSummary> {
-  const rows = await db.query<{
-    outcome: string;
-    logical_count: number;
-    attempt_count: number;
-  }>(
-    `SELECT outcome,
-      COUNT(DISTINCT logical_query_id) AS logical_count,
-      COUNT(*) AS attempt_count
-     FROM query_analytics_events
-     WHERE organization_id = ? AND created_at >= ?
-     GROUP BY outcome`,
-    [organizationId, sinceIso]
-  );
-
-  const summary: QueryAnalyticsSummary = {
+function emptySummary(): QueryAnalyticsSummary {
+  return {
     totalLogicalQueries: 0,
     totalAttempts: 0,
     answered: 0,
@@ -108,29 +220,52 @@ export async function summarizeQueryAnalytics(
     credentialBlocked: 0,
     providerError: 0,
   };
+}
 
-  for (const row of rows) {
-    summary.totalLogicalQueries += Number(row.logical_count);
-    summary.totalAttempts += Number(row.attempt_count);
-    if (row.outcome === "answered" || row.outcome === "partially_answered") {
-      summary.answered += Number(row.logical_count);
-    }
-    if (
-      row.outcome === "no_verified_solution" ||
-      row.outcome === "no_results" ||
-      row.outcome === "partially_answered"
-    ) {
-      summary.unanswered += Number(row.logical_count);
-    }
-    if (row.outcome === "access_blocked") summary.accessBlocked += Number(row.logical_count);
-    if (row.outcome === "credential_blocked") {
-      summary.credentialBlocked += Number(row.logical_count);
-    }
-    if (row.outcome === "provider_error" || row.outcome === "system_error") {
-      summary.providerError += Number(row.logical_count);
-    }
+function accumulateOutcome(
+  summary: QueryAnalyticsSummary,
+  outcome: string,
+  logicalCount: number,
+  attemptCount: number
+): void {
+  summary.totalLogicalQueries += logicalCount;
+  summary.totalAttempts += attemptCount;
+  if (outcome === "answered" || outcome === "partially_answered") {
+    summary.answered += logicalCount;
   }
+  if (
+    outcome === "no_verified_solution" ||
+    outcome === "no_results" ||
+    outcome === "partially_answered"
+  ) {
+    summary.unanswered += logicalCount;
+  }
+  if (outcome === "access_blocked") summary.accessBlocked += logicalCount;
+  if (outcome === "credential_blocked") summary.credentialBlocked += logicalCount;
+  if (outcome === "provider_error" || outcome === "system_error") {
+    summary.providerError += logicalCount;
+  }
+}
 
+export async function summarizeQueryAnalytics(
+  organizationId: string,
+  sinceIso: string
+): Promise<QueryAnalyticsSummary> {
+  const rows = await db.query<{
+    outcome: string;
+    logical_count: number;
+    attempt_count: number;
+  }>(SUMMARIZE_ANALYTICS_SQL, [organizationId, sinceIso]);
+
+  const summary = emptySummary();
+  for (const row of rows) {
+    accumulateOutcome(
+      summary,
+      row.outcome,
+      Number(row.logical_count),
+      Number(row.attempt_count)
+    );
+  }
   return summary;
 }
 
@@ -138,32 +273,26 @@ export async function listRecentQueryAnalytics(
   organizationId: string,
   limit = 50
 ): Promise<Record<string, unknown>[]> {
-  return db.query(
-    `SELECT id, logical_query_id, attempt_id, hostname, product_id, outcome, latency_ms, created_at
-     FROM query_analytics_events
-     WHERE organization_id = ?
-     ORDER BY created_at DESC
-     LIMIT ?`,
-    [organizationId, limit]
-  );
+  return db.query(LIST_RECENT_ANALYTICS_SQL, [organizationId, limit]);
 }
 
 export async function ensureUnansweredReviewForEvent(
   organizationId: string,
   analyticsEventId: string
 ): Promise<void> {
-  const existing = await db.queryOne(
-    `SELECT id FROM unanswered_query_reviews WHERE organization_id = ? AND analytics_event_id = ?`,
-    [organizationId, analyticsEventId]
-  );
+  const existing = await db.queryOne(SELECT_REVIEW_BY_EVENT_SQL, [
+    organizationId,
+    analyticsEventId,
+  ]);
   if (existing) return;
   const now = new Date().toISOString();
-  await db.execute(
-    `INSERT INTO unanswered_query_reviews (
-      id, organization_id, analytics_event_id, status, version, created_at, updated_at
-    ) VALUES (?, ?, ?, 'NEW', 1, ?, ?)`,
-    [randomUUID(), organizationId, analyticsEventId, now, now]
-  );
+  await db.execute(INSERT_REVIEW_SQL, [
+    randomUUID(),
+    organizationId,
+    analyticsEventId,
+    now,
+    now,
+  ]);
 }
 
 export interface UnansweredQueryReviewRow {
@@ -182,16 +311,10 @@ export async function listUnansweredQueryReviews(
   organizationId: string,
   limit = 50
 ): Promise<UnansweredQueryReviewRow[]> {
-  const rows = await db.query<Record<string, unknown>>(
-    `SELECT r.id, r.analytics_event_id, r.status, r.internal_note, r.created_at, r.updated_at,
-            e.outcome, e.hostname, e.product_id
-     FROM unanswered_query_reviews r
-     LEFT JOIN query_analytics_events e ON e.id = r.analytics_event_id
-     WHERE r.organization_id = ?
-     ORDER BY r.updated_at DESC
-     LIMIT ?`,
-    [organizationId, limit]
-  );
+  const rows = await db.query<Record<string, unknown>>(LIST_REVIEWS_SQL, [
+    organizationId,
+    limit,
+  ]);
   return rows.map((row) => ({
     id: String(row.id),
     analyticsEventId: String(row.analytics_event_id),
@@ -211,18 +334,21 @@ export async function updateUnansweredQueryReview(input: {
   status: UnansweredQueryReviewStatus;
   notes?: string | null;
 }): Promise<boolean> {
-  const existing = await db.queryOne(
-    `SELECT id FROM unanswered_query_reviews WHERE organization_id = ? AND id = ?`,
+  const status = assertReviewStatus(input.status);
+  const existing = await db.queryOne<{ id: string; version: number }>(
+    SELECT_REVIEW_FOR_UPDATE_SQL,
     [input.organizationId, input.id]
   );
   if (!existing) return false;
   const now = new Date().toISOString();
-  await db.execute(
-    `UPDATE unanswered_query_reviews
-     SET status = ?, internal_note = ?, updated_at = ?, version = version + 1
-     WHERE organization_id = ? AND id = ?`,
-    [input.status, input.notes ?? null, now, input.organizationId, input.id]
-  );
+  await db.execute(UPDATE_REVIEW_SQL, [
+    status,
+    input.notes ?? null,
+    now,
+    input.organizationId,
+    input.id,
+    Number(existing.version),
+  ]);
   return true;
 }
 
@@ -246,89 +372,35 @@ function percentile(sorted: number[], p: number): number | null {
   return sorted[Math.max(0, Math.min(sorted.length - 1, index))] ?? null;
 }
 
-function buildAnalyticsWhere(
-  organizationId: string,
-  filters: QueryAnalyticsFilters
-): { clause: string; params: unknown[] } {
-  const params: unknown[] = [organizationId, filters.sinceIso];
-  let clause = `organization_id = ? AND created_at >= ?`;
-  if (filters.untilIso) {
-    clause += ` AND created_at <= ?`;
-    params.push(filters.untilIso);
-  }
-  if (filters.productId) {
-    clause += ` AND product_id = ?`;
-    params.push(filters.productId);
-  }
-  if (filters.hostname) {
-    clause += ` AND hostname = ?`;
-    params.push(filters.hostname);
-  }
-  if (filters.outcome) {
-    clause += ` AND outcome = ?`;
-    params.push(filters.outcome);
-  }
-  return { clause, params };
-}
-
 export async function summarizeQueryAnalyticsFiltered(
   organizationId: string,
   filters: QueryAnalyticsFilters
 ): Promise<QueryAnalyticsMetrics> {
-  const { clause, params } = buildAnalyticsWhere(organizationId, filters);
+  const params = filteredParams(organizationId, filters);
   const rows = await db.query<{
     outcome: string;
     logical_count: number;
     attempt_count: number;
-  }>(
-    `SELECT outcome,
-      COUNT(DISTINCT logical_query_id) AS logical_count,
-      COUNT(*) AS attempt_count
-     FROM query_analytics_events
-     WHERE ${clause}
-     GROUP BY outcome`,
-    params
-  );
+  }>(SUMMARIZE_FILTERED_SQL, params);
 
   const summary: QueryAnalyticsMetrics = {
-    totalLogicalQueries: 0,
-    totalAttempts: 0,
-    answered: 0,
-    unanswered: 0,
-    accessBlocked: 0,
-    credentialBlocked: 0,
-    providerError: 0,
+    ...emptySummary(),
     p50LatencyMs: null,
     p95LatencyMs: null,
     avgLatencyMs: null,
   };
 
   for (const row of rows) {
-    summary.totalLogicalQueries += Number(row.logical_count);
-    summary.totalAttempts += Number(row.attempt_count);
-    if (row.outcome === "answered" || row.outcome === "partially_answered") {
-      summary.answered += Number(row.logical_count);
-    }
-    if (
-      row.outcome === "no_verified_solution" ||
-      row.outcome === "no_results" ||
-      row.outcome === "partially_answered"
-    ) {
-      summary.unanswered += Number(row.logical_count);
-    }
-    if (row.outcome === "access_blocked") summary.accessBlocked += Number(row.logical_count);
-    if (row.outcome === "credential_blocked") {
-      summary.credentialBlocked += Number(row.logical_count);
-    }
-    if (row.outcome === "provider_error" || row.outcome === "system_error") {
-      summary.providerError += Number(row.logical_count);
-    }
+    accumulateOutcome(
+      summary,
+      row.outcome,
+      Number(row.logical_count),
+      Number(row.attempt_count)
+    );
   }
 
   const latencyRows = await db.query<{ latency_ms: number | null }>(
-    `SELECT latency_ms FROM query_analytics_events
-     WHERE ${clause} AND latency_ms IS NOT NULL
-     ORDER BY latency_ms ASC`,
+    LATENCY_FILTERED_SQL,
     params
   );
   const latencies = latencyRows
@@ -349,15 +421,10 @@ export async function listQueryAnalyticsEvents(
   filters: QueryAnalyticsFilters,
   limit = 100
 ): Promise<Record<string, unknown>[]> {
-  const { clause, params } = buildAnalyticsWhere(organizationId, filters);
-  return db.query(
-    `SELECT id, logical_query_id, attempt_id, hostname, product_id, outcome, latency_ms, created_at
-     FROM query_analytics_events
-     WHERE ${clause}
-     ORDER BY created_at DESC
-     LIMIT ?`,
-    [...params, limit]
-  );
+  return db.query(LIST_FILTERED_SQL, [
+    ...filteredParams(organizationId, filters),
+    limit,
+  ]);
 }
 
 export async function exportQueryAnalyticsCsv(
@@ -365,11 +432,8 @@ export async function exportQueryAnalyticsCsv(
   filters: QueryAnalyticsFilters
 ): Promise<string> {
   const rows = await db.query<Record<string, unknown>>(
-    `SELECT logical_query_id, attempt_id, hostname, product_id, outcome, latency_ms, created_at
-     FROM query_analytics_events
-     WHERE ${buildAnalyticsWhere(organizationId, filters).clause}
-     ORDER BY created_at DESC`,
-    buildAnalyticsWhere(organizationId, filters).params
+    EXPORT_FILTERED_SQL,
+    filteredParams(organizationId, filters)
   );
   const header = "logical_query_id,attempt_id,hostname,product_id,outcome,latency_ms,created_at";
   const lines = rows.map((row) =>

@@ -47,13 +47,13 @@ npm test             # Run Vitest unit tests
 ```
 src/
   app/
-    layout.tsx                  Root layout: providers, AppShell, theme flash prevention
+    layout.tsx                  Root layout: providers, AppFrame, theme flash prevention
     page.tsx                    Homepage: hero + root overview page content
     globals.css                 Tailwind config, dark mode via .dark class
     api/run/route.ts            Server-side proxy for API calls (SSRF-protected)
     docs/[...slug]/page.tsx     Dynamic doc page: SSG for all 530 pages
   components/
-    AppShell.tsx                Header, sidebar drawer, theme toggle, AuthPanel
+    AppFrame.tsx                Header, sidebar drawer, theme toggle, AuthPanel
     CodeBlock.tsx               Renders a single code snippet with hljs + runner
     EndpointView.tsx            Layout for API endpoint pages (method badge, param tables, snippets)
     Markdown.tsx                react-markdown wrapper; overrides pre/code → CodeBlock
@@ -163,7 +163,7 @@ Markdown → CodeBlock → detectLanguage / classifyRunKind / parseHttpSnippet
 
 ### Authentication
 
-All CTIX Open API calls require three query parameters: `AccessID`, `Signature`, `Expires`. The `AuthPanel` in `AppShell` lets users input `AccessID` + `SecretKey`; `generateAuth()` computes an HMAC-SHA1 signature via the Web Crypto API and stores the result in memory via `RunSettingsProvider`. These values are injected at run time by `resolveStructured` / `resolveExec`.
+All CTIX Open API calls require three query parameters: `AccessID`, `Signature`, `Expires`. The `AuthPanel` in `AppFrame` lets users input `AccessID` + `SecretKey`; `generateAuth()` computes an HMAC-SHA1 signature via the Web Crypto API and stores the result in memory via `RunSettingsProvider`. These values are injected at run time by `resolveStructured` / `resolveExec`.
 
 ---
 

@@ -79,7 +79,7 @@ post-login/page.tsx:
 | Registry | `src/lib/products/registry.ts` | `ctix`, `cftr`, `csap`, `orchestrate` |
 | URL parse | `ProductContext.tsx` `productFromPath()` | `/docs/{product}` → productId |
 | Fallback | `ProductContext.tsx` | `localStorage` `iedocs.productId` when not on `/docs/{product}` |
-| Shell | `AppShell.tsx` | Reads pathname for `/docs/{product}` |
+| Frame | `AppFrame.tsx` | Reads pathname for `/docs/{product}` |
 | Sidebar | `Sidebar.tsx` | Links `/docs/{product}/{slug}` |
 | Routes | `src/app/docs/[product]/[...slug]/page.tsx` | SSG per product slug |
 | Run settings | `RunSettings.tsx` | Per-product credentials in memory |

@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 
 import { AdminProvider } from "@/components/admin/context/AdminContext";
-import { AdminShell } from "@/components/admin/shell/AdminShell";
+import { AdminFrame } from "@/components/admin/layout/AdminFrame";
 import { LoadingSkeleton } from "@/components/admin/ui/EmptyState";
 import type { EnterprisePermission } from "@/lib/enterprise/types";
 
@@ -28,7 +28,7 @@ export function AdminLayoutClient({
         capabilities={capabilities}
         enabledFeatures={enabledFeatures}
       >
-        <AdminShell>{children}</AdminShell>
+        <AdminFrame>{children}</AdminFrame>
       </AdminProvider>
     </Suspense>
   );

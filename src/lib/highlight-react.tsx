@@ -1,109 +1,109 @@
 /**
- * Convert highlight.js HTML (escaped text + span tokens) into React nodes
- * without using dangerouslySetInnerHTML.
- *
- * Only `span` elements with a safe `class` attribute and text nodes are allowed.
+ * Syntax-highlight source into React text/span nodes without any raw-HTML sink.
+ * Walks highlight.js's token tree (`_emitter` root) — never parses or injects HTML.
  */
 
 import { createElement, type ReactNode } from "react";
+import hljs from "highlight.js/lib/common";
 
+const CLASS_PREFIX = "hljs-";
 const CLASS_RE = /^[a-zA-Z0-9_\- ]+$/;
 
-type Token =
-  | { kind: "text"; value: string }
-  | { kind: "open"; className: string }
-  | { kind: "close" };
+const LANG_MAP: Record<string, string> = {
+  bash: "bash",
+  sh: "bash",
+  shell: "bash",
+  zsh: "bash",
+  curl: "bash",
+  json: "json",
+  javascript: "javascript",
+  js: "javascript",
+  typescript: "typescript",
+  ts: "typescript",
+  python: "python",
+  py: "python",
+  http: "http",
+  text: "plaintext",
+  plaintext: "plaintext",
+};
 
-function decodeBasicEntities(s: string): string {
-  return s
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'");
+type TokenNode = string | { scope?: string; language?: string; children: TokenNode[] };
+
+type EmitterRoot = {
+  root?: TokenNode;
+  rootNode?: TokenNode;
+};
+
+function scopeToSafeClass(scope: string): string | undefined {
+  let className: string;
+  if (scope.startsWith("language:")) {
+    className = scope.replace("language:", "language-");
+  } else if (scope.includes(".")) {
+    const pieces = scope.split(".");
+    const head = pieces.shift()!;
+    className = [
+      `${CLASS_PREFIX}${head}`,
+      ...pieces.map((x, i) => `${x}${"_".repeat(i + 1)}`),
+    ].join(" ");
+  } else {
+    className = `${CLASS_PREFIX}${scope}`;
+  }
+  if (!CLASS_RE.test(className)) return undefined;
+  return className;
 }
 
-function tokenizeHljsHtml(html: string): Token[] {
-  const tokens: Token[] = [];
-  let i = 0;
-  while (i < html.length) {
-    if (html.startsWith("</span>", i)) {
-      tokens.push({ kind: "close" });
-      i += 7;
-      continue;
-    }
-    if (html.startsWith("<span", i)) {
-      const close = html.indexOf(">", i);
-      if (close === -1) {
-        tokens.push({ kind: "text", value: html.slice(i) });
-        break;
-      }
-      const tag = html.slice(i, close + 1);
-      const classMatch = /\bclass="([^"]*)"/.exec(tag);
-      const className = classMatch?.[1] ?? "";
-      if (className && !CLASS_RE.test(className)) {
-        tokens.push({ kind: "text", value: tag });
-      } else {
-        tokens.push({ kind: "open", className });
-      }
-      i = close + 1;
-      continue;
-    }
-    const next = html.indexOf("<", i);
-    if (next === -1) {
-      tokens.push({ kind: "text", value: decodeBasicEntities(html.slice(i)) });
-      break;
-    }
-    if (next > i) {
-      tokens.push({ kind: "text", value: decodeBasicEntities(html.slice(i, next)) });
-    }
-    if (next === i) {
-      const close = html.indexOf(">", i);
-      if (close === -1) {
-        tokens.push({ kind: "text", value: html.slice(i) });
-        break;
-      }
-      tokens.push({ kind: "text", value: html.slice(i, close + 1) });
-      i = close + 1;
-    } else {
-      i = next;
-    }
+function renderTokenNode(node: TokenNode, keyBase: { n: number }): ReactNode {
+  if (typeof node === "string") {
+    return node;
   }
-  return tokens;
+  const childNodes: ReactNode[] = [];
+  for (const child of node.children ?? []) {
+    const rendered = renderTokenNode(child, keyBase);
+    if (rendered === null || rendered === undefined || rendered === "") continue;
+    childNodes.push(rendered);
+  }
+  if (!node.scope) {
+    return childNodes.length === 1 ? childNodes[0] : childNodes;
+  }
+  const className = scopeToSafeClass(node.scope);
+  const key = `t${keyBase.n++}`;
+  return createElement(
+    "span",
+    { key, className },
+    childNodes.length === 1 ? childNodes[0] : childNodes
+  );
 }
 
-/** Render highlight.js HTML as React children (no raw HTML sink). */
-export function renderHljsHtml(html: string): ReactNode {
-  const tokens = tokenizeHljsHtml(html);
-  let key = 0;
+function emitterRoot(result: { _emitter?: unknown }): TokenNode | null {
+  const emitter = result._emitter as EmitterRoot | undefined;
+  if (!emitter) return null;
+  return emitter.root ?? emitter.rootNode ?? null;
+}
 
-  function build(start: number): { nodes: ReactNode[]; next: number } {
-    const nodes: ReactNode[] = [];
-    let i = start;
-    while (i < tokens.length) {
-      const t = tokens[i]!;
-      if (t.kind === "text") {
-        if (t.value) nodes.push(t.value);
-        i += 1;
-        continue;
-      }
-      if (t.kind === "close") {
-        return { nodes, next: i + 1 };
-      }
-      const child = build(i + 1);
-      nodes.push(
-        createElement(
-          "span",
-          { key: `h${key++}`, className: t.className || undefined },
-          child.nodes.length === 1 ? child.nodes[0] : child.nodes
-        )
-      );
-      i = child.next;
-    }
-    return { nodes, next: i };
+function resolveLanguage(lang: string): string | null {
+  const mapped = LANG_MAP[lang.toLowerCase()] || lang.toLowerCase();
+  if (mapped && hljs.getLanguage(mapped)) return mapped;
+  return null;
+}
+
+/** Flatten token tree back to the original source text (for copy/equality checks). */
+export function flattenHighlightText(node: TokenNode): string {
+  if (typeof node === "string") return node;
+  return (node.children ?? []).map(flattenHighlightText).join("");
+}
+
+/** Highlight source code into React nodes (text + safe span tokens only). */
+export function highlightToReact(code: string, lang: string): ReactNode {
+  try {
+    const language = resolveLanguage(lang);
+    const result = language
+      ? hljs.highlight(code, { language })
+      : hljs.highlightAuto(code);
+    const root = emitterRoot(result);
+    if (!root) return code;
+    if (typeof root === "string") return root;
+    return renderTokenNode(root, { n: 0 });
+  } catch {
+    return code;
   }
-
-  const { nodes } = build(0);
-  return nodes.length === 1 ? nodes[0] : nodes;
 }

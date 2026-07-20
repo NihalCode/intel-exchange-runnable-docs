@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { AdminAppExitNav } from "@/components/admin/shell/AdminAppExitNav";
+import { AdminAppExitNav } from "@/components/admin/layout/AdminAppExitNav";
 import { useAdmin } from "@/components/admin/context/AdminContext";
-import { EnvironmentSelector } from "@/components/admin/shell/ProductionBanner";
+import { EnvironmentSelector } from "@/components/admin/layout/ProductionBanner";
 import {
   breadcrumbsForPath,
   pageTitleForPath,
