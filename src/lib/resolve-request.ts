@@ -64,7 +64,19 @@ export function missingAuthCredentials(
 
 function joinBase(base: string, path: string): string {
   const b = (base || "").replace(/\/+$/, "");
-  const p = path.startsWith("/") ? path : `/${path}`;
+  let p = path.startsWith("/") ? path : `/${path}`;
+  if (!b) return p;
+  try {
+    const baseUrl = new URL(b);
+    const basePath = baseUrl.pathname.replace(/\/+$/, "") || "";
+    // Absolute API paths like /csap/v1/… or /cftrapi/openapi/… must not be
+    // appended onto a base that already ends with /csap or /cftrapi.
+    if (basePath && basePath !== "/" && (p === basePath || p.startsWith(`${basePath}/`))) {
+      return `${baseUrl.origin}${p}`;
+    }
+  } catch {
+    /* non-absolute base — fall through */
+  }
   return `${b}${p}`;
 }
 

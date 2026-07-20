@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { buildConnectivityUrl } from "@/lib/documentation-credentials/connectivity";
+import {
+  buildConnectivityUrl,
+  listConnectivityProbeUrls,
+} from "@/lib/documentation-credentials/connectivity";
 import { isAllowedBaseUrl } from "@/lib/products/registry";
 
 describe("buildConnectivityUrl", () => {
@@ -19,13 +22,13 @@ describe("buildConnectivityUrl", () => {
     ).toBe("https://cs-testv2.cyware.com/ctixapi/ping/");
   });
 
-  it("builds CFTR connectivity for tenant and docs-host bases", () => {
+  it("builds CFTR connectivity for tenant /cftrapi without doubling", () => {
     expect(
       buildConnectivityUrl("cftr", "https://tenant.cyware.com/cftrapi").href
     ).toBe("https://tenant.cyware.com/cftrapi/openapi/test-connectivity/");
-    expect(buildConnectivityUrl("cftr", "https://cftrapi.cyware.com").href).toBe(
-      "https://cftrapi.cyware.com/cftrapi/openapi/test-connectivity/"
-    );
+    expect(
+      buildConnectivityUrl("cftr", "https://tenant.cyware.com/cftrapi/openapi").href
+    ).toBe("https://tenant.cyware.com/cftrapi/openapi/test-connectivity/");
   });
 
   it("builds CSAP connectivity without doubling /csap", () => {
@@ -62,7 +65,31 @@ describe("buildConnectivityUrl", () => {
   });
 });
 
-describe("isAllowedBaseUrl Orchestrate soarapi", () => {
+describe("listConnectivityProbeUrls", () => {
+  it("includes alternate Orchestrate path shapes for soarapi", () => {
+    const urls = listConnectivityProbeUrls(
+      "orchestrate",
+      "https://cs-test.cyware.com/soarapi"
+    ).map((u) => u.pathname);
+    expect(urls).toContain("/soarapi/openapi/v1/test_connectivity/");
+    expect(urls).toContain("/soarapi/v1/test_connectivity/");
+  });
+
+  it("does not double CSAP or CFTR product prefixes", () => {
+    expect(
+      listConnectivityProbeUrls("csap", "https://tenant.cyware.com/csap").map(
+        (u) => u.href
+      )
+    ).toEqual(["https://tenant.cyware.com/csap/v1/test_connectivity/"]);
+    expect(
+      listConnectivityProbeUrls("cftr", "https://tenant.cyware.com/cftrapi").map(
+        (u) => u.href
+      )
+    ).toEqual(["https://tenant.cyware.com/cftrapi/openapi/test-connectivity/"]);
+  });
+});
+
+describe("isAllowedBaseUrl product bases", () => {
   it("allows soarapi and co tenant Open API bases", () => {
     expect(
       isAllowedBaseUrl("orchestrate", "https://cs-test.cyware.com/soarapi/openapi")
@@ -82,5 +109,10 @@ describe("isAllowedBaseUrl Orchestrate soarapi", () => {
   it("allows CSAP tenant and docs-host bases", () => {
     expect(isAllowedBaseUrl("csap", "https://tenant.cyware.com/csap")).toBe(true);
     expect(isAllowedBaseUrl("csap", "https://csapapi.cyware.com")).toBe(true);
+  });
+
+  it("rejects CFTR docs host — tenant /cftrapi only", () => {
+    expect(isAllowedBaseUrl("cftr", "https://cftrapi.cyware.com")).toBe(false);
+    expect(isAllowedBaseUrl("cftr", "https://tenant.cyware.com/cftrapi")).toBe(true);
   });
 });

@@ -128,6 +128,44 @@ describe("resolveStructured — URL construction", () => {
     expect(exec.url).toContain("https://tenant.com/ctixapi/v3/intel/");
   });
 
+  it("does not double /csap or /cftrapi when path already includes the product prefix", () => {
+    const csap = resolveStructured(
+      {
+        method: "GET",
+        path: "/csap/v1/test_connectivity/",
+        query: [
+          { name: "AccessID", value: "<your access id>" },
+          { name: "Signature", value: "<generated signature>" },
+          { name: "Expires", value: "<unix expiry>" },
+        ],
+        headers: [],
+      },
+      "https://tenant.cyware.com/csap",
+      getCred
+    );
+    expect(csap.url).toMatch(/^https:\/\/tenant\.cyware\.com\/csap\/v1\/test_connectivity\/\?/);
+    expect(csap.url).not.toContain("/csap/csap/");
+
+    const cftr = resolveStructured(
+      {
+        method: "GET",
+        path: "/cftrapi/openapi/test-connectivity/",
+        query: [
+          { name: "AccessID", value: "<your access id>" },
+          { name: "Signature", value: "<generated signature>" },
+          { name: "Expires", value: "<unix expiry>" },
+        ],
+        headers: [],
+      },
+      "https://tenant.cyware.com/cftrapi",
+      getCred
+    );
+    expect(cftr.url).toMatch(
+      /^https:\/\/tenant\.cyware\.com\/cftrapi\/openapi\/test-connectivity\/\?/
+    );
+    expect(cftr.url).not.toContain("/cftrapi/cftrapi/");
+  });
+
   it("appends non-credential query params to URL", () => {
     const exec = resolveStructured(SAMPLE_REQUEST, "https://tenant.com/ctixapi", getCred);
     expect(exec.url).toContain("page=1");

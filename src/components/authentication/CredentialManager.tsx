@@ -17,7 +17,11 @@ type Credential = {
 
 const PRODUCTS: Array<{ id: ProductId; label: string; hint: string }> = [
   { id: "ctix", label: "CTIX / Intel Exchange", hint: "Tenant URL ending in /ctixapi" },
-  { id: "cftr", label: "CFTR", hint: "CFTR tenant Open API URL (…/cftrapi)" },
+  {
+    id: "cftr",
+    label: "CFTR",
+    hint: "Tenant Open API URL ending in /cftrapi — not cftrapi.cyware.com (docs only)",
+  },
   {
     id: "orchestrate",
     label: "Cyware Orchestrate",
@@ -26,7 +30,7 @@ const PRODUCTS: Array<{ id: ProductId; label: string; hint: string }> = [
   {
     id: "csap",
     label: "CSAP",
-    hint: "Tenant URL ending in /csap, or https://csapapi.cyware.com",
+    hint: "Tenant URL ending in /csap (preferred), or https://csapapi.cyware.com",
   },
 ];
 
@@ -34,6 +38,12 @@ function connectFailureMessage(
   status: number,
   data: { error?: string; code?: string; credential?: Credential }
 ): string {
+  if (data.code === "DOCS_HOST_NOT_ALLOWED" || data.error?.includes("docs site")) {
+    return (
+      data.error ??
+      "That host is docs-only. Use your live tenant Open API base URL."
+    );
+  }
   if (data.code === "BASE_URL_NOT_ALLOWED" || data.error?.includes("not allowed")) {
     return (
       data.error ??
@@ -41,8 +51,14 @@ function connectFailureMessage(
     );
   }
   const code = data.credential?.validationErrorCode;
+  if (code === "CLOUDFLARE_BLOCKED") {
+    return (
+      "Cloudflare blocked the server-side connectivity check (not a credential typo). " +
+      "Try from a network your tenant allows, or ask your admin to permit Open API paths."
+    );
+  }
   if (code === "PROVIDER_REJECTED") {
-    return "Connection could not be validated. Check the Access ID and Secret Key.";
+    return "Connection could not be validated. Check the Access ID, Secret Key, and that the Base URL matches that key’s tenant.";
   }
   if (code === "VALIDATION_TIMEOUT") {
     return "Connection timed out. Check the Base URL and try again.";

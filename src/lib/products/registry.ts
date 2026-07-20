@@ -130,7 +130,7 @@ export const PRODUCTS: ApiProduct[] = [
     docsSourceType: "postman",
     docsOrigin: "https://cftrapi.cyware.com",
     docsProject: "cftr-api",
-    allowedBaseUrlPatterns: [/https:\/\/[^/]*\.cyware\.com\/cftrapi/i, /^https:\/\/cftrapi\.cyware\.com/i],
+    allowedBaseUrlPatterns: [/https:\/\/[^/]*\.cyware\.com\/cftrapi/i],
     indexed: true,
     pageCount: 209,
   },
@@ -187,8 +187,8 @@ export function apiBaseUrlHint(productId: string): string {
   switch (productId) {
     case "cftr":
       return (
-        "https://cftrapi.cyware.com — CFTR API base for now (confirm tenant URL with your admin). " +
-        "Paths use /cftrapi/openapi/… (e.g. test-connectivity)."
+        "https://YOUR-TENANT.cyware.com/cftrapi — live Open API root (not cftrapi.cyware.com, which is docs-only). " +
+        "Paths use /openapi/… (e.g. test-connectivity)."
       );
     case "csap":
       return "https://csapapi.cyware.com or your tenant URL https://YOUR_TENANT.cyware.com/csap";
