@@ -69,3 +69,24 @@ export function isUnansweredOutcome(outcome: QueryOutcome): boolean {
     outcome === "partially_answered"
   );
 }
+
+/**
+ * One user turn → one logical query for analytics. Prefer the persisted turn id
+ * so cancel/retry attempts share a single logical_query_id; fall back to the
+ * request correlation id when persistence is unavailable.
+ */
+export function logicalQueryIdForAnalytics(
+  turnId: string | null | undefined,
+  requestId: string
+): string {
+  if (typeof turnId === "string" && turnId.trim()) return turnId.trim();
+  return requestId;
+}
+
+/**
+ * Cancelled attempts are transient; counting them as distinct logical queries
+ * would double-count a cancel → retry of the same user turn.
+ */
+export function countsTowardLogicalQueryMetrics(outcome: QueryOutcome | string): boolean {
+  return outcome !== "cancelled";
+}

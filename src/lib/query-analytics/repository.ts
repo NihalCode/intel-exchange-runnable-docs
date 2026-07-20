@@ -3,7 +3,10 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 
 import { db } from "@/lib/db/client";
-import type { QueryOutcome } from "@/lib/agent/query-outcome";
+import {
+  countsTowardLogicalQueryMetrics,
+  type QueryOutcome,
+} from "@/lib/agent/query-outcome";
 import type { ProductKey } from "@/lib/products/registry";
 import {
   UNANSWERED_QUERY_REVIEW_STATUSES,
@@ -228,7 +231,9 @@ function accumulateOutcome(
   logicalCount: number,
   attemptCount: number
 ): void {
-  summary.totalLogicalQueries += logicalCount;
+  if (countsTowardLogicalQueryMetrics(outcome)) {
+    summary.totalLogicalQueries += logicalCount;
+  }
   summary.totalAttempts += attemptCount;
   if (outcome === "answered" || outcome === "partially_answered") {
     summary.answered += logicalCount;

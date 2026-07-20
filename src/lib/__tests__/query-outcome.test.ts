@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { classifyQueryOutcome } from "@/lib/agent/query-outcome";
+import {
+  classifyQueryOutcome,
+  countsTowardLogicalQueryMetrics,
+  logicalQueryIdForAnalytics,
+} from "@/lib/agent/query-outcome";
 
 describe("classifyQueryOutcome", () => {
   it("maps credential gate to credential_blocked", () => {
@@ -39,5 +43,17 @@ describe("classifyQueryOutcome", () => {
         },
       })
     ).toBe("clarification_required");
+  });
+});
+
+describe("logical query analytics helpers", () => {
+  it("maps one turn to one logical query id", () => {
+    expect(logicalQueryIdForAnalytics("turn-1", "req-9")).toBe("turn-1");
+    expect(logicalQueryIdForAnalytics(undefined, "req-9")).toBe("req-9");
+  });
+
+  it("excludes cancelled from logical query metrics", () => {
+    expect(countsTowardLogicalQueryMetrics("cancelled")).toBe(false);
+    expect(countsTowardLogicalQueryMetrics("answered")).toBe(true);
   });
 });

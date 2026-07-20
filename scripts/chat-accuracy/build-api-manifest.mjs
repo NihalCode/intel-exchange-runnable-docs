@@ -4,6 +4,7 @@
  * This deliberately reads local source only; it never contacts API providers.
  */
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PRODUCTS, contentDirForProduct } from "../products-config.mjs";
@@ -98,6 +99,10 @@ async function buildManifest() {
     version: 1,
     generatedAt: new Date().toISOString(),
     endpointCount: entries.length,
+    contentHash: createHash("sha256")
+      .update(JSON.stringify(entries))
+      .digest("hex")
+      .slice(0, 16),
     counts,
     entries,
   };

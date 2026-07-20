@@ -15,5 +15,26 @@
     "fallbackIntent": ["workflow", "explain"],
     "expectedProducts": ["cftr"],
     "productSelector": "cftr"
+  },
+  {
+    "id": "cftr-auth-no-secret-in-url",
+    "prompt": "Show CFTR auth query params — never put SecretKey in the URL",
+    "expectedIntent": "explain",
+    "fallbackIntent": ["explain", "workflow", "snippet"],
+    "expectedProducts": ["cftr"],
+    "productSelector": "cftr",
+    "mustContain": ["access", "signature"],
+    "mustNotContain": ["SecretKey="]
+  },
+  {
+    "id": "cftr-connectivity",
+    "prompt": "How do I test CFTR API connectivity?",
+    "expectedIntent": "workflow",
+    "fallbackIntent": ["workflow", "explain"],
+    "expectedProducts": ["cftr"],
+    "productSelector": "cftr",
+    "expectedSlug": "cftr-api-reference/authentication/test-connectivity",
+    "rankExpected": false,
+    "mustContain": ["connect"]
   }
 ]

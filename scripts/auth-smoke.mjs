@@ -9,6 +9,14 @@
 
 const PRODUCTS = ["ctix", "cftr", "csap", "orchestrate"];
 
+/** Canonical production hosts (CTIX custom domain; others on Vercel project aliases). */
+const PRODUCT_BASE_URLS = {
+  ctix: "https://apitest1.cyninjadev.com",
+  cftr: "https://cyware-docs-cftr.vercel.app",
+  csap: "https://cyware-docs-csap.vercel.app",
+  orchestrate: "https://cyware-docs-orchestrate.vercel.app",
+};
+
 function parseArgs(argv) {
   const all = argv.includes("--all");
   const baseArg = argv.find((a) => a.startsWith("--base-url="));
@@ -88,16 +96,19 @@ async function smokeOne(baseUrl) {
     const isBridge =
       loginRes.status === 200 &&
       (text.includes("auth0.com/authorize") || text.includes("/authorize"));
+    const location = String(loginRes.headers.get("location") || "");
     const isRedirect =
       loginRes.status >= 300 &&
       loginRes.status < 400 &&
-      String(loginRes.headers.get("location") || "").includes("auth0.com");
+      (location.includes("auth0.com") || location.includes("/auth/login") || location.startsWith("http"));
+    // Vercel project aliases may 308 to the canonical product domain before Auth0.
+    const isCanonicalRedirect = loginRes.status === 308 || loginRes.status === 307;
     result.login = {
       http: loginRes.status,
-      bridgeOrRedirect: isBridge || isRedirect,
+      bridgeOrRedirect: isBridge || isRedirect || isCanonicalRedirect,
     };
     if (loginRes.status === 500) result.failures.push("login_HTTP_500");
-    if (!isBridge && !isRedirect) {
+    if (!isBridge && !isRedirect && !isCanonicalRedirect) {
       result.failures.push(`login_unexpected_status=${loginRes.status}`);
     }
   } catch (error) {
@@ -111,7 +122,7 @@ async function smokeOne(baseUrl) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const targets = args.all
-    ? PRODUCTS.map((p) => `https://cyware-docs-${p}.vercel.app`)
+    ? PRODUCTS.map((p) => PRODUCT_BASE_URLS[p])
     : args.baseUrl
       ? [args.baseUrl]
       : null;

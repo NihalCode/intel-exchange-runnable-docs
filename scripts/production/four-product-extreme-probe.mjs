@@ -12,7 +12,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 const PRODUCTS = [
-  { product: "ctix", baseUrl: "https://cyware-docs-ctix.vercel.app" },
+  { product: "ctix", baseUrl: "https://apitest1.cyninjadev.com" },
   { product: "cftr", baseUrl: "https://cyware-docs-cftr.vercel.app" },
   { product: "csap", baseUrl: "https://cyware-docs-csap.vercel.app" },
   { product: "orchestrate", baseUrl: "https://cyware-docs-orchestrate.vercel.app" },

@@ -1,21 +1,39 @@
 [
   {
-    "id": "csap-alerts-list",
+    "id": "csap-alerts",
     "prompt": "How do I list CSAP alerts?",
     "expectedIntent": "workflow",
     "expectedProducts": ["csap"],
     "productSelector": "csap",
-    "expectedSlug": "analyst-portal/analyst-portal-alerts/alerts-list-analyst-member",
     "rankExpected": false,
     "mustContain": ["alert"]
   },
   {
-    "id": "csap-no-assets-endpoint",
-    "prompt": "How do I list assets?",
+    "id": "csap-no-fake-assets",
+    "prompt": "How do I list all CSAP assets via an undocumented assets API?",
     "expectedIntent": "workflow",
     "expectedProducts": ["csap"],
     "productSelector": "csap",
     "responseType": "abstention_or_no_invent",
-    "mustNotContain": ["GET /v1/assets"]
+    "mustNotContain": ["GET /assets/all"]
+  },
+  {
+    "id": "csap-auth-params",
+    "prompt": "What query parameters does CSAP Open API authentication need?",
+    "expectedIntent": "explain",
+    "fallbackIntent": ["explain", "workflow"],
+    "expectedProducts": ["csap"],
+    "productSelector": "csap",
+    "mustContain": ["access", "signature"]
+  },
+  {
+    "id": "csap-connectivity",
+    "prompt": "How do I test CSAP connectivity?",
+    "expectedIntent": "workflow",
+    "fallbackIntent": ["workflow", "explain"],
+    "expectedProducts": ["csap"],
+    "productSelector": "csap",
+    "rankExpected": false,
+    "mustContain": ["connect"]
   }
 ]

@@ -1,0 +1,293 @@
+[
+  {
+    "id": "ctix-build-dashboard",
+    "product": "ctix",
+    "prompt": "Build me a dashboard to search CTIX indicators",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env", ".env.local"],
+    "notes": "Blueprint path only — no live preview worker"
+  },
+  {
+    "id": "ctix-explain-not-build",
+    "product": "ctix",
+    "prompt": "Explain how to build an app that lists threat data — do not generate one",
+    "expectedIntent": "explain_only",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": [],
+    "notes": "Intent collision: explain vs build"
+  },
+  {
+    "id": "ctix-snippet-not-build",
+    "product": "ctix",
+    "prompt": "Show me curl code for listing indicators — do not build an app",
+    "expectedIntent": "snippet",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "ctix-build-cql",
+    "product": "ctix",
+    "prompt": "Create an app with a CQL query builder for threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "ctix-build-ping",
+    "product": "ctix",
+    "prompt": "Build a small app that pings the CTIX API",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "ctix-edit-loading",
+    "product": "ctix",
+    "prompt": "Add a loading state to the app",
+    "expectedIntent": "edit_app",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": [],
+    "notes": "edit requires existingApp; intent only"
+  },
+  {
+    "id": "ctix-build-table",
+    "product": "ctix",
+    "prompt": "Generate a web app to show a threat-data table",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "ctix-build-explorer",
+    "product": "ctix",
+    "prompt": "Scaffold a frontend tool to explore recent indicators",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["ctix"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "cftr-build-incidents",
+    "product": "cftr",
+    "prompt": "Build me a CFTR incident dashboard app",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "cftr-explain-not-build",
+    "product": "cftr",
+    "prompt": "Explain how I would build an incident viewer app",
+    "expectedIntent": "explain_only",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "cftr-snippet-not-build",
+    "product": "cftr",
+    "prompt": "Give me a Python snippet for CFTR test connectivity — no app",
+    "expectedIntent": "snippet",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "cftr-build-feed",
+    "product": "cftr",
+    "prompt": "Create an application to browse CFTR feeds and reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "cftr-build-filter",
+    "product": "cftr",
+    "prompt": "Make a dashboard app with an incident filter form",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "cftr-build-pagination",
+    "product": "cftr",
+    "prompt": "Build a web app that explores CFTR pagination",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "cftr-edit-header",
+    "product": "cftr",
+    "prompt": "Only change the header in the app",
+    "expectedIntent": "edit_app",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "cftr-build-detail",
+    "product": "cftr",
+    "prompt": "Develop a portal app for CFTR report detail viewing",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["cftr"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "csap-build-alerts",
+    "product": "csap",
+    "prompt": "Build a CSAP alert explorer dashboard app",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "csap-explain-not-build",
+    "product": "csap",
+    "prompt": "Explain how to build a CSAP vulnerability viewer — don't generate files",
+    "expectedIntent": "explain_only",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "csap-snippet-not-build",
+    "product": "csap",
+    "prompt": "Show TypeScript example for CSAP test connectivity without building an app",
+    "expectedIntent": "snippet",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "csap-build-filter",
+    "product": "csap",
+    "prompt": "Create an app with filtering and pagination UI for CSAP alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "csap-build-summary",
+    "product": "csap",
+    "prompt": "Generate a web application for CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "csap-build-detail",
+    "product": "csap",
+    "prompt": "Make a dashboard app with an alert detail pane",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "csap-edit-mobile",
+    "product": "csap",
+    "prompt": "Fix the mobile layout in the app",
+    "expectedIntent": "edit_app",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "csap-build-inventory",
+    "product": "csap",
+    "prompt": "Build an application for CSAP alert inventory browsing",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["csap"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "orchestrate-build-launcher",
+    "product": "orchestrate",
+    "prompt": "Build an Orchestrate workflow launcher app",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "orchestrate-explain-not-build",
+    "product": "orchestrate",
+    "prompt": "Explain how to build an execution status dashboard app",
+    "expectedIntent": "explain_only",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "orchestrate-snippet-not-build",
+    "product": "orchestrate",
+    "prompt": "Show a TypeScript snippet to start an execution — do not build an app",
+    "expectedIntent": "snippet",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "orchestrate-build-status",
+    "product": "orchestrate",
+    "prompt": "Create a web app dashboard for execution status polling",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "orchestrate-build-history",
+    "product": "orchestrate",
+    "prompt": "Generate an application to view execution history",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "orchestrate-build-form",
+    "product": "orchestrate",
+    "prompt": "Make a portal app with an idempotent run form",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  },
+  {
+    "id": "orchestrate-edit-revert",
+    "product": "orchestrate",
+    "prompt": "Revert the last change in the app",
+    "expectedIntent": "edit_app",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": false,
+    "forbiddenFiles": []
+  },
+  {
+    "id": "orchestrate-build-io",
+    "product": "orchestrate",
+    "prompt": "Build a frontend tool to inspect playbook inputs and outputs",
+    "expectedIntent": "build_app",
+    "expectedProductScope": ["orchestrate"],
+    "buildMustSucceed": true,
+    "forbiddenFiles": [".env"]
+  }
+]

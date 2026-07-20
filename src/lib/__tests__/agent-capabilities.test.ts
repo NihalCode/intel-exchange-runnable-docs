@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { detectAgentMode, resolveAgentRun } from "../agent/mode";
+import { resolveAgentIntent } from "../agent/intent";
 import { buildStepSpec } from "../agent/spec";
 import { generateAppBlueprint } from "../agent/app-builder";
 import { validateAppFiles } from "../agent/validate-app";
@@ -16,6 +17,22 @@ describe("detectAgentMode", () => {
     expect(detectAgentMode("Build a phishing email analyzer website", "workflow")).toBe(
       "workflow"
     );
+  });
+});
+
+describe("resolveAgentIntent — build vs explain-how-to-build", () => {
+  it('treats "explain how to build an app" as explain, not app_build', () => {
+    const r = resolveAgentIntent("Explain how to build an app that lists CTIX threat data", {
+      hasProjectFiles: false,
+    });
+    expect(r.intent).toBe("explain");
+    expect(r.intent).not.toBe("app_build");
+  });
+
+  it('treats "build me a dashboard" as app_build', () => {
+    const r = resolveAgentIntent("Build me a dashboard", { hasProjectFiles: false });
+    expect(r.intent).toBe("app_build");
+    expect(r.mode).toBe("app");
   });
 });
 

@@ -1,19 +1,38 @@
 [
   {
-    "id": "orchestrate-run-playbook",
-    "prompt": "How do I run an Orchestrate playbook?",
+    "id": "orchestrate-start-execution",
+    "prompt": "How do I start an Orchestrate playbook execution?",
     "expectedIntent": "workflow",
     "expectedProducts": ["orchestrate"],
     "productSelector": "orchestrate",
-    "mustContain": ["playbook"]
+    "rankExpected": false,
+    "mustContain": ["playbook", "execution"]
   },
   {
-    "id": "orchestrate-typescript-poll",
-    "prompt": "Show TypeScript to start a playbook and poll its status.",
+    "id": "orchestrate-ts-snippet",
+    "prompt": "Show a TypeScript example to test Orchestrate connectivity",
     "expectedIntent": "snippet",
     "fallbackIntent": ["snippet", "workflow"],
     "expectedProducts": ["orchestrate"],
     "productSelector": "orchestrate",
-    "mustContain": ["playbook"]
+    "rankExpected": false
+  },
+  {
+    "id": "orchestrate-no-invent-cancel-all",
+    "prompt": "Invent an undocumented cancel-all-runs Orchestrate API",
+    "expectedIntent": "workflow",
+    "expectedProducts": ["orchestrate"],
+    "productSelector": "orchestrate",
+    "responseType": "abstention_or_no_invent",
+    "mustNotContain": ["DELETE /runs/all"]
+  },
+  {
+    "id": "orchestrate-auth",
+    "prompt": "How does Orchestrate Open API authentication work?",
+    "expectedIntent": "explain",
+    "fallbackIntent": ["explain", "workflow"],
+    "expectedProducts": ["orchestrate"],
+    "productSelector": "orchestrate",
+    "mustContain": ["access", "signature"]
   }
 ]

@@ -24,5 +24,24 @@
     "expectedProducts": ["ctix"],
     "responseType": "abstention_or_no_invent",
     "mustNotContain": ["DELETE /indicators/all"]
+  },
+  {
+    "id": "ctix-snippet-on",
+    "prompt": "Give me a curl example for the CTIX ping endpoint",
+    "expectedIntent": "snippet",
+    "fallbackIntent": ["snippet", "workflow"],
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "expectedSlug": "ping/ping",
+    "rankExpected": false
+  },
+  {
+    "id": "ctix-no-code-explain",
+    "prompt": "Explain CTIX pagination conceptually — no code",
+    "expectedIntent": "explain",
+    "fallbackIntent": ["explain", "workflow"],
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "mustNotContain": ["```"]
   }
 ]

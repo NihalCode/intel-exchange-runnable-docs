@@ -5,7 +5,11 @@ import {
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import { requireMutationCsrf } from "@/lib/enterprise/http";
-import { classifyQueryOutcome, isUnansweredOutcome } from "@/lib/agent/query-outcome";
+import {
+  classifyQueryOutcome,
+  isUnansweredOutcome,
+  logicalQueryIdForAnalytics,
+} from "@/lib/agent/query-outcome";
 import { getAgentProductAccess } from "@/lib/documentation-credentials/access";
 import { completeTurnWithFinal } from "@/lib/agent/conversation-store";
 import { runAgent } from "@/lib/agent/orchestrate";
@@ -136,7 +140,7 @@ export async function POST(req: Request) {
         userId: session.user.id,
         conversationId: body.conversationId ?? null,
         turnId: body.turnId ?? null,
-        logicalQueryId: body.turnId ?? requestId,
+        logicalQueryId: logicalQueryIdForAnalytics(body.turnId, requestId),
         hostname: trustedHostnameFromHeaders(req.headers),
         productId: (() => {
           const candidate =

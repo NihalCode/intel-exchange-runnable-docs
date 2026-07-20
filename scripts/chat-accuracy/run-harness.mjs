@@ -17,5 +17,6 @@ function run(args) {
 }
 
 run(["run", "chat:manifest"]);
+run(["run", "chat:generate-suites"]);
 run(["test", "--", "chat-accuracy"]);
 run(["run", "chat:report"]);
