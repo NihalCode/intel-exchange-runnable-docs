@@ -32,7 +32,11 @@
     "security:scan-secrets": "node scripts/security/scan-secrets.mjs",
     "archive:check": "node scripts/security/check-archive.mjs",
     "health:scan": "node scripts/health/analyze.mjs",
-    "health:check": "node scripts/health/analyze.mjs --check"
+    "health:check": "node scripts/health/analyze.mjs --check",
+    "analytics:reconcile": "tsx --require ./scripts/shims/register-server-only.cjs scripts/analytics-reconcile.ts",
+    "analytics:repair": "tsx --require ./scripts/shims/register-server-only.cjs scripts/analytics-repair.ts",
+    "analytics:outbox": "tsx --require ./scripts/shims/register-server-only.cjs scripts/analytics-repair.ts -- --process-outbox",
+    "analytics:weekly-unanswered": "tsx --require ./scripts/shims/register-server-only.cjs scripts/analytics-weekly-unanswered.ts"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.24.0",

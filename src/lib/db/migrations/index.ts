@@ -35,6 +35,14 @@ import {
   POSTGRES_FORCE_RLS_MIGRATION_SQL,
   SQLITE_FORCE_RLS_MIGRATION_SQL,
 } from "@/lib/db/migrations/009_force_rls";
+import {
+  POSTGRES_QUERY_ANALYTICS_AUTHORITATIVE_MIGRATION_SQL,
+  SQLITE_QUERY_ANALYTICS_AUTHORITATIVE_MIGRATION_SQL,
+} from "@/lib/db/migrations/010_query_analytics_authoritative";
+import {
+  POSTGRES_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
+  SQLITE_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
+} from "@/lib/db/migrations/011_feedback_unanswered_weekly";
 
 export interface VersionedMigration {
   version: number;
@@ -101,6 +109,18 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "force_row_level_security",
     sqlite: SQLITE_FORCE_RLS_MIGRATION_SQL,
     postgres: POSTGRES_FORCE_RLS_MIGRATION_SQL,
+  },
+  {
+    version: 10,
+    name: "query_analytics_authoritative",
+    sqlite: SQLITE_QUERY_ANALYTICS_AUTHORITATIVE_MIGRATION_SQL,
+    postgres: POSTGRES_QUERY_ANALYTICS_AUTHORITATIVE_MIGRATION_SQL,
+  },
+  {
+    version: 11,
+    name: "feedback_unanswered_weekly",
+    sqlite: SQLITE_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
+    postgres: POSTGRES_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
   },
 ] as const;
 

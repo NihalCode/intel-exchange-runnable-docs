@@ -11,6 +11,30 @@ import { ProductRunSettingsSync } from "./RunSettings";
 import { Sidebar } from "./Sidebar";
 import { useFocusTrap } from "./useFocusTrap";
 
+function AskAiNavLink({ pathname }: { pathname: string }) {
+  const { state, hasPermission } = useDocumentationAuth();
+  if (state.loading) return null;
+  const allowed =
+    state.canAskAi ||
+    (state.authenticated &&
+      hasPermission("ask_agent") &&
+      state.user?.role !== "viewer");
+  if (!allowed) return null;
+
+  return (
+    <Link
+      href="/agent"
+      className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
+        pathname === "/agent"
+          ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+      }`}
+    >
+      Ask AI
+    </Link>
+  );
+}
+
 function WorkspaceSettingsLink() {
   const pathname = usePathname();
   const { state, hasPermission } = useDocumentationAuth();
@@ -185,34 +209,48 @@ export function AppFrame({
 }) {
   const pathname = usePathname();
   const { productId } = useProduct();
-  const [nav, setNav] = useState<NavNode[]>(() =>
-    productId === "ctix" ? initialNav : []
-  );
+  // Keep last successful fetch keyed by product so product switches do not
+  // require synchronous setState inside an effect (derived fallback instead).
+  const [remoteNav, setRemoteNav] = useState<{
+    productId: string;
+    nav: NavNode[];
+  } | null>(null);
+  const nav =
+    remoteNav?.productId === productId
+      ? remoteNav.nav
+      : productId === "ctix"
+        ? initialNav
+        : [];
 
   useEffect(() => {
     let cancelled = false;
-    // Drop CTIX SSR nav immediately when the active product is not CTIX.
-    if (productId !== "ctix") {
-      setNav([]);
-    } else {
-      setNav(initialNav);
-    }
     async function loadNav() {
       try {
         const res = await fetch(`/api/products/${productId}`);
         if (!res.ok) {
-          if (!cancelled && productId === "ctix") setNav(initialNav);
-          else if (!cancelled) setNav([]);
+          if (cancelled) return;
+          setRemoteNav({
+            productId,
+            nav: productId === "ctix" ? initialNav : [],
+          });
           return;
         }
         const data = await res.json();
         if (cancelled) return;
-        if (data.manifest?.nav) setNav(data.manifest.nav);
-        else if (productId === "ctix") setNav(initialNav);
-        else setNav([]);
+        if (data.manifest?.nav) {
+          setRemoteNav({ productId, nav: data.manifest.nav });
+        } else {
+          setRemoteNav({
+            productId,
+            nav: productId === "ctix" ? initialNav : [],
+          });
+        }
       } catch {
-        if (!cancelled && productId === "ctix") setNav(initialNav);
-        else if (!cancelled) setNav([]);
+        if (cancelled) return;
+        setRemoteNav({
+          productId,
+          nav: productId === "ctix" ? initialNav : [],
+        });
       }
     }
     void loadNav();
@@ -221,6 +259,7 @@ export function AppFrame({
     };
     // Intentionally omit initialNav: a new array identity from the layout would
     // cancel in-flight product nav fetches and leave the CTIX SSR tree stuck.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- productId is the intentional trigger
   }, [productId]);
 
   const { currentSlug, activeProductId } = parseDocsPath(pathname);
@@ -252,16 +291,7 @@ export function AppFrame({
 
         <ProductSelector className="hidden md:flex" />
 
-        <Link
-          href="/agent"
-          className={`hidden rounded-md px-2 py-1 text-xs font-medium sm:inline ${
-            pathname === "/agent"
-              ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
-              : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
-          }`}
-        >
-          Ask AI
-        </Link>
+        <AskAiNavLink pathname={pathname} />
 
         <WorkspaceSettingsLink />
 

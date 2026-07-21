@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { obtainRecaptchaToken } from "@/lib/recaptcha/client";
+
 export default function InvitePageClient() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token")?.trim() ?? "";
@@ -22,7 +24,15 @@ export default function InvitePageClient() {
     if (!token) return;
     void (async () => {
       try {
-        const res = await fetch(`/api/invites/validate?token=${encodeURIComponent(token)}`);
+        const headers: Record<string, string> = {};
+        const recaptchaToken = await obtainRecaptchaToken("public_invite");
+        if (recaptchaToken) {
+          headers["x-recaptcha-token"] = recaptchaToken;
+        }
+        const res = await fetch(
+          `/api/invites/validate?token=${encodeURIComponent(token)}`,
+          { headers }
+        );
         const data = (await res.json()) as {
           valid?: boolean;
           email?: string;

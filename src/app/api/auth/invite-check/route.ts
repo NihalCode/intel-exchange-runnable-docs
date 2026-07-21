@@ -7,6 +7,7 @@ import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import type { InviteCheckResponse } from "@/lib/documentation-auth/types";
 import { validateAuthConfig } from "@/lib/documentation-auth/validate-auth-config";
 import { secretsEqual } from "@/lib/security/secrets-equal";
+import { resolveTrustedClientIp } from "@/lib/security/client-ip";
 
 export const runtime = "nodejs";
 
@@ -44,10 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const clientIp =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown";
+  const clientIp = resolveTrustedClientIp(request.headers) ?? "unknown";
 
   if (!checkRateLimit(`invite-check:${clientIp}`)) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });

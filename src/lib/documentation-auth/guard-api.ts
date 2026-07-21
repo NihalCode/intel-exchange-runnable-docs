@@ -13,6 +13,23 @@ import { canUseAgentWithoutStoredProductSecrets } from "@/lib/documentation-cred
 import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
 import type { DocumentationFeatureKey } from "@/lib/documentation-features";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { resolveViewerAskAiAccessEnabled } from "@/lib/domains/feature-gates-resolve";
+import type { DocumentationRole } from "@/lib/documentation-auth/types";
+
+function testRoleFromRequest(request: NextRequest): DocumentationRole | null {
+  const header = request.headers.get("x-test-role")?.trim();
+  const roles: DocumentationRole[] = [
+    "owner",
+    "admin",
+    "documentation_manager",
+    "developer",
+    "viewer",
+  ];
+  if (header && roles.includes(header as DocumentationRole)) {
+    return header as DocumentationRole;
+  }
+  return null;
+}
 
 /** Guard documentation API routes with invite-only session + optional permission. */
 export async function guardDocumentationApi(
@@ -20,6 +37,20 @@ export async function guardDocumentationApi(
   permission?: DocumentationPermission
 ): Promise<AppSession | NextResponse> {
   if (!isAuthEnabled()) {
+    const testRole = testRoleFromRequest(request);
+    if (testRole) {
+      return {
+        user: {
+          id: `local-dev-${testRole}`,
+          auth0UserId: `auth0|local-dev-${testRole}`,
+          email: `${testRole}@dev.local`,
+          name: `Local ${testRole}`,
+          role: testRole,
+          status: "active",
+        },
+        authProvider: "disabled",
+      };
+    }
     const dev = verifyDeveloperRequest(request);
     if (!dev.ok) {
       return NextResponse.json({ ok: false, error: dev.error }, { status: dev.status });
@@ -50,9 +81,37 @@ export async function guardReadDocs(request: NextRequest): Promise<AppSession | 
 export async function guardAskAgent(request: NextRequest): Promise<AppSession | NextResponse> {
   const session = await guardDocumentationApi(request, "ask_agent");
   if (session instanceof NextResponse) return session;
-  // Disabling Auth0 is itself an explicit local-development mode. It never
-  // applies in production because production configuration requires Auth0.
-  if (!isAuthEnabled() && process.env.NODE_ENV !== "production") return session;
+
+  // Local AUTH_DISABLED: still honor x-test-role Viewer gate for parity with production.
+  if (!isAuthEnabled() && process.env.NODE_ENV !== "production") {
+    if (session.user.role === "viewer") {
+      try {
+        const context = await resolveOrganizationContext(session);
+        const viewerAllowed = await resolveViewerAskAiAccessEnabled({
+          organizationId: context.organization.id,
+          role: "viewer",
+        });
+        if (!viewerAllowed) {
+          return NextResponse.json(
+            {
+              error: "Ask AI is not enabled for Viewer accounts",
+              code: "VIEWER_ASK_AI_DISABLED",
+            },
+            { status: 403 }
+          );
+        }
+      } catch {
+        return NextResponse.json(
+          {
+            error: "Ask AI is not enabled for Viewer accounts",
+            code: "VIEWER_ASK_AI_DISABLED",
+          },
+          { status: 403 }
+        );
+      }
+    }
+    return session;
+  }
   try {
     const context = await resolveOrganizationContext(session);
     const enabled = await isDocumentationFeatureEnabled({
@@ -66,6 +125,26 @@ export async function guardAskAgent(request: NextRequest): Promise<AppSession | 
         { status: 403 }
       );
     }
+
+    // Viewer Ask AI is opt-in via feature flag (default OFF).
+    if (context.principal.role === "viewer" || session.user.role === "viewer") {
+      const viewerAllowed = await resolveViewerAskAiAccessEnabled({
+        organizationId: context.organization.id,
+        role: "viewer",
+      });
+      if (!viewerAllowed) {
+        return NextResponse.json(
+          {
+            error: "Ask AI is not enabled for Viewer accounts",
+            code: "VIEWER_ASK_AI_DISABLED",
+          },
+          { status: 403 }
+        );
+      }
+      // Viewers never manage credentials — allow Ask AI without stored product secrets.
+      return session;
+    }
+
     const access = await canUseAgentWithoutStoredProductSecrets({
       organizationId: context.organization.id,
       userId: session.user.id,

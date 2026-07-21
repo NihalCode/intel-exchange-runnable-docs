@@ -1,3 +1,10 @@
+import "server-only";
+
+/**
+ * Query outcome classification — structured inputs only.
+ * Never parse English phrases from workflow text.
+ */
+
 import type { AgentResponse } from "@/lib/agent/types";
 
 export type QueryOutcome =
@@ -13,6 +20,24 @@ export type QueryOutcome =
   | "system_error"
   | "cancelled";
 
+/** Outcomes that enter the unanswered review queue. */
+export const UNANSWERED_OUTCOMES: readonly QueryOutcome[] = [
+  "no_verified_solution",
+  "no_results",
+  "clarification_required",
+  "provider_error",
+  "system_error",
+] as const;
+
+/** Outcomes that contribute to answer-quality denominator. */
+export const ANSWER_QUALITY_OUTCOMES: readonly QueryOutcome[] = [
+  "answered",
+  "partially_answered",
+  "no_verified_solution",
+  "no_results",
+  "clarification_required",
+] as const;
+
 export interface QueryOutcomeInput {
   response?: AgentResponse | null;
   httpStatus?: number;
@@ -23,18 +48,38 @@ export interface QueryOutcomeInput {
 
 export function classifyQueryOutcome(input: QueryOutcomeInput): QueryOutcome {
   if (input.cancelled) return "cancelled";
-  if (input.errorCode === "PRODUCT_AUTH_REQUIRED" || input.errorCode === "credential_blocked") {
+
+  const code = input.errorCode;
+  if (code === "PRODUCT_AUTH_REQUIRED" || code === "credential_blocked") {
     return "credential_blocked";
   }
-  if (input.httpStatus === 401 || input.httpStatus === 403 || input.errorCode === "FEATURE_DISABLED") {
+  if (
+    input.httpStatus === 401 ||
+    input.httpStatus === 403 ||
+    code === "FEATURE_DISABLED" ||
+    code === "PRODUCT_ISOLATION"
+  ) {
     return "access_blocked";
   }
-  if (input.errorCode === "CONNECTOR_UNAVAILABLE") return "connector_unavailable";
-  if (input.errorCode === "PROVIDER_ERROR") return "provider_error";
-  if (input.errorCode === "SYSTEM_ERROR") return "system_error";
+  if (code === "CONNECTOR_UNAVAILABLE") return "connector_unavailable";
+  if (code === "PROVIDER_ERROR" || code === "OPENAI_NOT_CONFIGURED") {
+    return "provider_error";
+  }
+  if (code === "SYSTEM_ERROR") return "system_error";
 
   const response = input.response;
-  if (!response) return "system_error";
+  if (!response) {
+    if (input.httpStatus != null && input.httpStatus >= 500) return "system_error";
+    if (input.httpStatus != null && input.httpStatus >= 400) return "system_error";
+    return "system_error";
+  }
+
+  if (response.code === "PRODUCT_AUTH_REQUIRED") return "credential_blocked";
+  if (response.code === "FEATURE_DISABLED" || response.code === "PRODUCT_ISOLATION") {
+    return "access_blocked";
+  }
+  if (response.code === "PROVIDER_ERROR") return "provider_error";
+  if (response.code === "SYSTEM_ERROR") return "system_error";
 
   if (response.questions?.length && response.fallback) {
     return "clarification_required";
@@ -63,24 +108,24 @@ export function classifyQueryOutcome(input: QueryOutcomeInput): QueryOutcome {
 }
 
 export function isUnansweredOutcome(outcome: QueryOutcome): boolean {
-  return (
-    outcome === "no_verified_solution" ||
-    outcome === "no_results" ||
-    outcome === "partially_answered"
-  );
+  return (UNANSWERED_OUTCOMES as readonly string[]).includes(outcome);
+}
+
+export function isAnswerQualityOutcome(outcome: QueryOutcome | string): boolean {
+  return (ANSWER_QUALITY_OUTCOMES as readonly string[]).includes(outcome);
 }
 
 /**
  * One user turn → one logical query for analytics. Prefer the persisted turn id
- * so cancel/retry attempts share a single logical_query_id; fall back to the
- * request correlation id when persistence is unavailable.
+ * so cancel/retry attempts share a single logical_query_id; fall back to a
+ * server-minted id when persistence is unavailable.
  */
 export function logicalQueryIdForAnalytics(
   turnId: string | null | undefined,
-  requestId: string
+  fallbackId: string
 ): string {
   if (typeof turnId === "string" && turnId.trim()) return turnId.trim();
-  return requestId;
+  return fallbackId;
 }
 
 /**

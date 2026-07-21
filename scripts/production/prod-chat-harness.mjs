@@ -14,7 +14,7 @@
  *   node scripts/production/prod-chat-harness.mjs
  *   node scripts/production/prod-chat-harness.mjs --product=ctix
  */
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 

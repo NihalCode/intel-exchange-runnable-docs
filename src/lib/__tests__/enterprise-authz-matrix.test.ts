@@ -33,6 +33,8 @@ const DEVELOPER_DENIED: EnterprisePermission[] = [
   "deployments.manage",
   "collections.manage",
   "query_analytics.read_sensitive",
+  "unanswered_queries.read_sensitive",
+  "unanswered_queries.export",
   "unanswered_queries.manage",
 ];
 

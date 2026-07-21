@@ -48,4 +48,17 @@ describe("documentation UI credential boundaries", () => {
     }
     expect(isProtectedDocumentationPath("/sign-in")).toBe(false);
   });
+
+  it("aligns snippet Run UI with test_snippets permission (not role!==viewer)", () => {
+    const codeBlock = source("src/components/CodeBlock.tsx");
+    expect(codeBlock).toContain('hasPermission("test_snippets")');
+    expect(codeBlock).not.toContain('role !== "viewer"');
+  });
+
+  it("gates Viewer Ask AI on viewer_ask_ai_access_enabled", () => {
+    const agentPage = source("src/app/agent/page.tsx");
+    expect(agentPage).toContain("resolveViewerAskAiAccessEnabled");
+    expect(agentPage).toContain('session.user.role === "viewer"');
+    expect(agentPage).toContain("notFound()");
+  });
 });

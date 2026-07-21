@@ -30,6 +30,7 @@ interface AuthState {
   user: AuthUser | null;
   permissions: DocumentationPermission[];
   enterpriseCapabilities: string[];
+  canAskAi: boolean;
   accessDenied: { reason: string; invitedEmail?: string; redirectTo?: string } | null;
 }
 
@@ -49,6 +50,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
     user: null,
     permissions: [],
     enterpriseCapabilities: [],
+    canAskAi: false,
     accessDenied: null,
   });
 
@@ -61,6 +63,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
         user?: AuthUser | null;
         permissions?: DocumentationPermission[];
         enterpriseCapabilities?: string[];
+        canAskAi?: boolean;
         accessDenied?: AuthState["accessDenied"];
       };
       setState({
@@ -70,6 +73,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
         user: data.user ?? null,
         permissions: data.permissions ?? [],
         enterpriseCapabilities: data.enterpriseCapabilities ?? [],
+        canAskAi: Boolean(data.canAskAi),
         accessDenied: data.accessDenied ?? null,
       });
     } catch {

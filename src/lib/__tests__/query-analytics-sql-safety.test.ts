@@ -159,7 +159,8 @@ describe("query-analytics SQL injection / tenant isolation", () => {
         sinceIso: "1970-01-01T00:00:00.000Z",
         hostname: payload,
       });
-      expect(csv.startsWith("logical_query_id,")).toBe(true);
+      expect(csv).toContain("logical_query_id,attempt_id,hostname");
+      expect(csv.startsWith("# generated_at=")).toBe(true);
     }
   });
 

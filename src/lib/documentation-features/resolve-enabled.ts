@@ -7,10 +7,20 @@ import {
 } from "@/lib/documentation-features";
 import { DOCUMENTATION_FEATURE_KEYS } from "@/lib/documentation-features/keys";
 import {
+  isChatFeedbackEnabled,
+  isChatResponseNavigationEnabled,
   isCrossDomainSsoEnabled,
+  isCustomSnippetQueryParamsEnabled,
   isDomainRoutingEnabled,
+  isProductionQueryMetricsEnabled,
   isQueryAnalyticsEnabled,
+  isRecaptchaProtectionEnabled,
   isSeparateAdminDomainEnabled,
+  isUnansweredQueryReviewEnabled,
+  isUnansweredRealtimeSummaryEnabled,
+  isUnansweredSensitiveCaptureEnabled,
+  isUnansweredWeeklyAnalyticsEnabled,
+  isViewerAskAiAccessEnabled,
 } from "@/lib/domains/feature-gates";
 
 export interface ResolveDocumentationFeatureInput {
@@ -35,12 +45,40 @@ export async function resolveDocumentationFeatureEnabled(
   if (input.key === "cross_domain_sso") {
     if (isCrossDomainSsoEnabled()) return true;
   }
-  if (
-    input.key === "query_analytics" ||
-    input.key === "production_query_metrics" ||
-    input.key === "unanswered_query_review"
-  ) {
+  if (input.key === "query_analytics") {
     if (isQueryAnalyticsEnabled() || multiProject) return true;
+  }
+  if (input.key === "production_query_metrics") {
+    if (isProductionQueryMetricsEnabled() || isQueryAnalyticsEnabled() || multiProject) {
+      return true;
+    }
+  }
+  if (input.key === "unanswered_query_review") {
+    if (isUnansweredQueryReviewEnabled() || multiProject) return true;
+  }
+  if (input.key === "unanswered_query_weekly_analytics") {
+    if (isUnansweredWeeklyAnalyticsEnabled()) return true;
+  }
+  if (input.key === "unanswered_query_realtime_summary") {
+    if (isUnansweredRealtimeSummaryEnabled()) return true;
+  }
+  if (input.key === "unanswered_query_sensitive_capture") {
+    if (isUnansweredSensitiveCaptureEnabled()) return true;
+  }
+  if (input.key === "chat_feedback") {
+    if (isChatFeedbackEnabled()) return true;
+  }
+  if (input.key === "recaptcha_protection") {
+    if (isRecaptchaProtectionEnabled()) return true;
+  }
+  if (input.key === "viewer_ask_ai_access_enabled") {
+    if (isViewerAskAiAccessEnabled()) return true;
+  }
+  if (input.key === "custom_snippet_query_parameters") {
+    if (isCustomSnippetQueryParamsEnabled()) return true;
+  }
+  if (input.key === "chat_response_navigation") {
+    if (isChatResponseNavigationEnabled()) return true;
   }
   if (input.key === "multi_project_deployment" || input.key === "admin_deployment_management") {
     if (multiProject) return true;

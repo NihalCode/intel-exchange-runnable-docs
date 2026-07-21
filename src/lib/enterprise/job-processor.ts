@@ -21,6 +21,9 @@ import {
   failJob,
   listDueScheduledChanges,
 } from "@/lib/enterprise/repository";
+import { processAnalyticsOutbox } from "@/lib/query-analytics/service";
+import { buildUnansweredWeeklySnapshots } from "@/lib/query-analytics/unanswered-intel";
+import { resolveUnansweredWeeklyAnalyticsEnabled } from "@/lib/domains/feature-gates-resolve";
 
 const SYSTEM_CRON_USER = "control-plane-cron";
 
@@ -29,6 +32,8 @@ export interface ProcessJobsResult {
   scheduledChangesActivated: number;
   jobsCompleted: number;
   jobsFailed: number;
+  analyticsOutboxProcessed: number;
+  weeklySnapshotsUpserted: number;
   errors: string[];
 }
 
@@ -204,6 +209,8 @@ export async function processControlPlaneJobs(input: {
   let scheduledChangesActivated = 0;
   let jobsCompleted = 0;
   let jobsFailed = 0;
+  let analyticsOutboxProcessed = 0;
+  let weeklySnapshotsUpserted = 0;
   const errors: string[] = [];
 
   for (const organization of organizations) {
@@ -212,6 +219,39 @@ export async function processControlPlaneJobs(input: {
     jobsCompleted += result.jobsCompleted;
     jobsFailed += result.jobsFailed;
     errors.push(...result.errors);
+
+    try {
+      const weeklyEnabled = await resolveUnansweredWeeklyAnalyticsEnabled({
+        organizationId: organization.id,
+        role: "owner",
+      });
+      if (weeklyEnabled) {
+        const weekly = await buildUnansweredWeeklySnapshots({
+          organizationId: organization.id,
+        });
+        weeklySnapshotsUpserted += weekly.rowsUpserted;
+      }
+    } catch (error) {
+      errors.push(
+        `weekly_unanswered ${organization.id}: ${
+          error instanceof Error ? error.message : "snapshot failed"
+        }`
+      );
+    }
+  }
+
+  try {
+    const outbox = await processAnalyticsOutbox(limit);
+    analyticsOutboxProcessed = outbox.processed;
+    if (outbox.failed > 0 || outbox.deadLetter > 0) {
+      errors.push(
+        `analytics_outbox: failed=${outbox.failed} dead_letter=${outbox.deadLetter}`
+      );
+    }
+  } catch (error) {
+    errors.push(
+      `analytics_outbox: ${error instanceof Error ? error.message : "process failed"}`
+    );
   }
 
   return {
@@ -219,6 +259,8 @@ export async function processControlPlaneJobs(input: {
     scheduledChangesActivated,
     jobsCompleted,
     jobsFailed,
+    analyticsOutboxProcessed,
+    weeklySnapshotsUpserted,
     errors,
   };
 }

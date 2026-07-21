@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifyQueryOutcome,
   countsTowardLogicalQueryMetrics,
+  isUnansweredOutcome,
   logicalQueryIdForAnalytics,
 } from "@/lib/agent/query-outcome";
 
@@ -43,6 +44,11 @@ describe("classifyQueryOutcome", () => {
         },
       })
     ).toBe("clarification_required");
+  });
+
+  it("does not treat partially_answered as unanswered", () => {
+    expect(isUnansweredOutcome("partially_answered")).toBe(false);
+    expect(isUnansweredOutcome("clarification_required")).toBe(true);
   });
 });
 

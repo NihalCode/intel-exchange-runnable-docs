@@ -1,6 +1,6 @@
 import { resolveAppProductId } from "@/lib/deployment/resolve-app-product-id";
 import { isOpenAiConfigured } from "@/lib/openai/client";
-import { getPineconeConfig, isPineconeConfigured } from "@/lib/agent/pinecone";
+import { isPineconeConfigured } from "@/lib/agent/pinecone";
 import { resolveVectorNamespace } from "@/lib/agent/vector-namespace";
 import type { RetrievalReasonCode } from "@/lib/agent/types";
 

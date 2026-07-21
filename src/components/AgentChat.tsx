@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { AgentFeedbackControl } from "./AgentFeedbackControl";
 import { AgentMessageView } from "./AgentMessageView";
 import { AgentSavedAppsBar, ImportVercelModal } from "./AgentSavedAppsBar";
 import { AgentChatSidebar } from "./AgentChatSidebar";
@@ -38,7 +39,14 @@ export function AgentChat({
 }: {
   credentialedProducts: readonly string[];
   features?: Partial<Record<
-    "app_builder" | "project_workspace" | "preview" | "vercel_deployment" | "git_commit" | "project_download" | "vercel_import",
+    | "app_builder"
+    | "project_workspace"
+    | "preview"
+    | "vercel_deployment"
+    | "git_commit"
+    | "project_download"
+    | "vercel_import"
+    | "chat_feedback",
     boolean
   >>;
 }) {
@@ -73,7 +81,14 @@ function AgentChatBody({
   quickStarts: string[];
   connectedLabels: string;
   features?: Partial<Record<
-    "app_builder" | "project_workspace" | "preview" | "vercel_deployment" | "git_commit" | "project_download" | "vercel_import",
+    | "app_builder"
+    | "project_workspace"
+    | "preview"
+    | "vercel_deployment"
+    | "git_commit"
+    | "project_download"
+    | "vercel_import"
+    | "chat_feedback",
     boolean
   >>;
 }) {
@@ -338,6 +353,14 @@ function AgentChatBody({
                         compactAppFiles
                       />
                       </div>
+                      <AgentFeedbackControl
+                        messageId={msg.id}
+                        conversationId={msg.conversationId}
+                        turnId={msg.turnId}
+                        logicalQueryId={msg.logicalQueryId}
+                        productId={msg.response.productContext?.products[0]?.id}
+                        enabled={Boolean(features.chat_feedback)}
+                      />
                     </div>
                   </div>
                 );

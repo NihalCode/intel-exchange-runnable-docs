@@ -405,6 +405,21 @@ export async function completeTurnWithFinal(input: {
   );
 }
 
+export async function getOwnedTurn(
+  turnId: string,
+  organizationId: string,
+  userId: string,
+  conversationId?: string
+): Promise<AgentTurn | null> {
+  ensureMigrations();
+  return withOrganizationTransaction({ organizationId, userId }, async (tx) => {
+    const turn = await getScopedTurn(tx, turnId, organizationId, userId);
+    if (!turn) return null;
+    if (conversationId && turn.conversationId !== conversationId) return null;
+    return turn;
+  });
+}
+
 export async function cancelTurn(
   turnId: string,
   organizationId: string,

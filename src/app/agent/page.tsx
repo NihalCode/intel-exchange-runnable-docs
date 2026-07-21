@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { AgentChat } from "@/components/AgentChat";
 import { getAppSession } from "@/lib/documentation-auth/session";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
@@ -9,14 +10,16 @@ import {
 } from "@/lib/documentation-credentials/agent-access-policy";
 import { listValidCredentialProductIds } from "@/lib/documentation-credentials/repository";
 import { mergeEnsuredProductIds } from "@/lib/documentation-credentials/access";
-import { listDocumentationFeatures } from "@/lib/documentation-features";
+import {
+  listDocumentationFeatures,
+} from "@/lib/documentation-features";
 import { listProducts } from "@/lib/products/registry";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import { resolveViewerAskAiAccessEnabled } from "@/lib/domains/feature-gates-resolve";
 
 export const metadata: Metadata = {
   title: "AI Agent — Cyware API Docs",
-  description:
-    "Ask grounded questions across Cyware product documentation.",
+  description: "Ask grounded questions across Cyware product documentation.",
 };
 
 export default async function AgentPage() {
@@ -26,46 +29,88 @@ export default async function AgentPage() {
   let features: Record<string, boolean> = {};
   let requiresProductCredentials = true;
 
-  if (session && !credentialReady) {
-    try {
-      const context = await resolveOrganizationContext(session);
-      const access = await canUseAgentWithoutStoredProductSecrets({
-        organizationId: context.organization.id,
-        userId: session.user.id,
-        role: context.principal.role,
-      });
-      credentialReady = access.allowed;
-      requiresProductCredentials = await agentRequiresProductCredentials({
-        organizationId: context.organization.id,
-        role: context.principal.role,
-      });
-      if (credentialReady) {
-        const connected = await listValidCredentialProductIds(
-          context.organization.id,
-          session.user.id
-        );
-        credentialedProducts = mergeEnsuredProductIds(
-          connected,
-          access.pinnedProductId
-        );
-        if (credentialedProducts.length === 0 && access.pinnedProductId) {
-          credentialedProducts = [access.pinnedProductId];
+  if (session) {
+    // Fail closed for Viewer before credential shortcuts (including AUTH_DISABLED).
+    if (session.user.role === "viewer") {
+      try {
+        const context = await resolveOrganizationContext(session);
+        const viewerAllowed = await resolveViewerAskAiAccessEnabled({
+          organizationId: context.organization.id,
+          role: context.principal.role,
+        });
+        if (!viewerAllowed) {
+          notFound();
         }
-        if (credentialedProducts.length === 0) {
-          credentialedProducts = listProducts().map((p) => p.productId);
-        }
+        credentialReady = true;
+        credentialedProducts = listProducts().map((p) => p.productId);
+        requiresProductCredentials = false;
+        features = Object.fromEntries(
+          (await listDocumentationFeatures(context.organization.id)).map((flag) => [
+            flag.key,
+            flag.enabled &&
+              (!flag.allowedRoles.length ||
+                flag.allowedRoles.includes(context.principal.role)),
+          ])
+        );
+      } catch {
+        notFound();
       }
-      features = Object.fromEntries(
-        (await listDocumentationFeatures(context.organization.id)).map((flag) => [
-          flag.key,
-          flag.enabled &&
-            (!flag.allowedRoles.length ||
-              flag.allowedRoles.includes(context.principal.role)),
-        ])
-      );
-    } catch {
-      credentialReady = false;
-      credentialedProducts = [];
+    } else if (!credentialReady) {
+      try {
+        const context = await resolveOrganizationContext(session);
+        const access = await canUseAgentWithoutStoredProductSecrets({
+          organizationId: context.organization.id,
+          userId: session.user.id,
+          role: context.principal.role,
+        });
+        credentialReady = access.allowed;
+        requiresProductCredentials = await agentRequiresProductCredentials({
+          organizationId: context.organization.id,
+          role: context.principal.role,
+        });
+        if (credentialReady) {
+          const connected = await listValidCredentialProductIds(
+            context.organization.id,
+            session.user.id
+          );
+          credentialedProducts = mergeEnsuredProductIds(
+            connected,
+            access.pinnedProductId
+          );
+          if (credentialedProducts.length === 0 && access.pinnedProductId) {
+            credentialedProducts = [access.pinnedProductId];
+          }
+          if (credentialedProducts.length === 0) {
+            credentialedProducts = listProducts().map((p) => p.productId);
+          }
+        }
+
+        features = Object.fromEntries(
+          (await listDocumentationFeatures(context.organization.id)).map((flag) => [
+            flag.key,
+            flag.enabled &&
+              (!flag.allowedRoles.length ||
+                flag.allowedRoles.includes(context.principal.role)),
+          ])
+        );
+      } catch {
+        credentialReady = false;
+        credentialedProducts = [];
+      }
+    } else {
+      try {
+        const context = await resolveOrganizationContext(session);
+        features = Object.fromEntries(
+          (await listDocumentationFeatures(context.organization.id)).map((flag) => [
+            flag.key,
+            flag.enabled &&
+              (!flag.allowedRoles.length ||
+                flag.allowedRoles.includes(context.principal.role)),
+          ])
+        );
+      } catch {
+        /* keep AUTH_DISABLED credential shortcut */
+      }
     }
   }
 

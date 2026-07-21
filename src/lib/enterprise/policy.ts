@@ -25,6 +25,7 @@ const ROLE_PERMISSIONS: Record<EnterpriseRole, readonly EnterprisePermission[]> 
     "deployments.read",
     "collections.read",
     "query_analytics.read",
+    "unanswered_queries.read",
   ],
 };
 
@@ -83,6 +84,8 @@ export function authorizeEnterprise(
       permission === "deployments.manage" ||
       permission === "collections.manage" ||
       permission === "query_analytics.read_sensitive" ||
+      permission === "unanswered_queries.read_sensitive" ||
+      permission === "unanswered_queries.export" ||
       permission === "unanswered_queries.manage"
     ) {
       return false;

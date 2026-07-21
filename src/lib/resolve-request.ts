@@ -64,7 +64,7 @@ export function missingAuthCredentials(
 
 function joinBase(base: string, path: string): string {
   const b = (base || "").replace(/\/+$/, "");
-  let p = path.startsWith("/") ? path : `/${path}`;
+  const p = path.startsWith("/") ? path : `/${path}`;
   if (!b) return p;
   try {
     const baseUrl = new URL(b);

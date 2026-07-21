@@ -2,25 +2,55 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 
-import { db } from "@/lib/db/client";
 import {
   countsTowardLogicalQueryMetrics,
+  isAnswerQualityOutcome,
+  isUnansweredOutcome,
   type QueryOutcome,
 } from "@/lib/agent/query-outcome";
+import { db, ensureMigrations } from "@/lib/db/client";
+import {
+  decryptSecret,
+  type EncryptedSecret,
+} from "@/lib/documentation-credentials/encryption";
 import type { ProductKey } from "@/lib/products/registry";
 import {
   UNANSWERED_QUERY_REVIEW_STATUSES,
   type UnansweredQueryReviewStatus,
 } from "@/lib/domains/types";
 
-/** Static INSERT — all values bound. */
-const INSERT_ANALYTICS_EVENT_SQL = `
+/** Static INSERT — all values bound. Idempotent via unique (org, attempt_id). */
+const UPSERT_ANALYTICS_EVENT_SQL = `
 INSERT INTO query_analytics_events (
   id, organization_id, user_id, conversation_id, turn_id, logical_query_id, attempt_id,
   hostname, product_id, collection_id, intent, outcome, retrieval_result_count,
   citation_count, latency_ms, request_id, trace_id, model_version, prompt_version,
   index_version, metadata_json, created_at
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(organization_id, attempt_id) DO UPDATE SET
+  user_id = excluded.user_id,
+  conversation_id = excluded.conversation_id,
+  turn_id = excluded.turn_id,
+  logical_query_id = excluded.logical_query_id,
+  hostname = excluded.hostname,
+  product_id = excluded.product_id,
+  collection_id = excluded.collection_id,
+  intent = excluded.intent,
+  outcome = excluded.outcome,
+  retrieval_result_count = excluded.retrieval_result_count,
+  citation_count = excluded.citation_count,
+  latency_ms = excluded.latency_ms,
+  request_id = excluded.request_id,
+  trace_id = excluded.trace_id,
+  model_version = excluded.model_version,
+  prompt_version = excluded.prompt_version,
+  index_version = excluded.index_version,
+  metadata_json = excluded.metadata_json
+`;
+
+const SELECT_EVENT_ID_BY_ATTEMPT_SQL = `
+SELECT id FROM query_analytics_events
+WHERE organization_id = ? AND attempt_id = ?
 `;
 
 const SUMMARIZE_ANALYTICS_SQL = `
@@ -53,6 +83,7 @@ INSERT INTO unanswered_query_reviews (
 
 const LIST_REVIEWS_SQL = `
 SELECT r.id, r.analytics_event_id, r.status, r.internal_note, r.created_at, r.updated_at,
+       r.sanitized_topic, r.query_fingerprint, r.logical_query_id,
        e.outcome, e.hostname, e.product_id
 FROM unanswered_query_reviews r
 LEFT JOIN query_analytics_events e ON e.id = r.analytics_event_id
@@ -70,6 +101,18 @@ const UPDATE_REVIEW_SQL = `
 UPDATE unanswered_query_reviews
 SET status = ?, internal_note = ?, updated_at = ?, version = version + 1
 WHERE organization_id = ? AND id = ? AND version = ?
+`;
+
+const RESOLVE_OPEN_REVIEWS_SQL = `
+UPDATE unanswered_query_reviews
+SET status = 'FIXED',
+    resolved_by_logical_query_id = ?,
+    resolution_reference = ?,
+    updated_at = ?,
+    version = version + 1
+WHERE organization_id = ?
+  AND logical_query_id = ?
+  AND status NOT IN ('FIXED', 'ACCEPTED_LIMITATION')
 `;
 
 /**
@@ -114,7 +157,27 @@ const EXPORT_FILTERED_SQL =
   "FROM query_analytics_events\n" +
   "WHERE " +
   FILTERED_ANALYTICS_WHERE_SQL +
-  "\nORDER BY created_at DESC";
+  "\nORDER BY created_at DESC\n" +
+  "LIMIT ?";
+
+const EXPORT_SENSITIVE_SQL = `
+SELECT e.logical_query_id, e.attempt_id, e.hostname, e.product_id, e.outcome,
+  e.latency_ms, e.created_at, r.sanitized_topic, r.query_fingerprint,
+  r.query_ciphertext, r.query_iv, r.query_tag, r.ip_ciphertext, r.ip_iv, r.ip_tag
+FROM query_analytics_events e
+LEFT JOIN unanswered_query_reviews r
+  ON r.analytics_event_id = e.id AND r.organization_id = e.organization_id
+WHERE e.organization_id = ?
+AND e.created_at >= ?
+AND (? IS NULL OR e.created_at <= ?)
+AND (? IS NULL OR e.product_id = ?)
+AND (? IS NULL OR e.hostname = ?)
+AND (? IS NULL OR e.outcome = ?)
+ORDER BY e.created_at DESC
+LIMIT ?
+`;
+
+export const CSV_EXPORT_ROW_LIMIT = 10_000;
 
 const REVIEW_STATUS_SET = new Set<string>(UNANSWERED_QUERY_REVIEW_STATUSES);
 
@@ -147,6 +210,15 @@ function filteredParams(
   ];
 }
 
+/** Escape CSV cell against formula injection (=, +, -, @, tab, CR). */
+export function escapeCsvCell(value: unknown): string {
+  let text = String(value ?? "");
+  if (/^[=+\-@\t\r]/.test(text)) {
+    text = `'${text}`;
+  }
+  return `"${text.replace(/"/g, '""')}"`;
+}
+
 export interface QueryAnalyticsEventInput {
   organizationId: string;
   userId?: string | null;
@@ -170,13 +242,22 @@ export interface QueryAnalyticsEventInput {
   metadata?: Record<string, unknown>;
 }
 
-export async function recordQueryAnalyticsEvent(
+/**
+ * Idempotent projection upsert keyed by (organization_id, attempt_id).
+ * Requires migration 010 unique index.
+ */
+export async function upsertQueryAnalyticsEvent(
   input: QueryAnalyticsEventInput
 ): Promise<string> {
-  const id = randomUUID();
+  ensureMigrations();
   const attemptId = input.attemptId ?? randomUUID();
+  const existing = await db.queryOne<{ id: string }>(SELECT_EVENT_ID_BY_ATTEMPT_SQL, [
+    input.organizationId,
+    attemptId,
+  ]);
+  const id = existing?.id ?? randomUUID();
   const now = new Date().toISOString();
-  await db.execute(INSERT_ANALYTICS_EVENT_SQL, [
+  await db.execute(UPSERT_ANALYTICS_EVENT_SQL, [
     id,
     input.organizationId,
     input.userId ?? null,
@@ -200,17 +281,32 @@ export async function recordQueryAnalyticsEvent(
     JSON.stringify(input.metadata ?? {}),
     now,
   ]);
-  return id;
+  const row = await db.queryOne<{ id: string }>(SELECT_EVENT_ID_BY_ATTEMPT_SQL, [
+    input.organizationId,
+    attemptId,
+  ]);
+  return row?.id ?? id;
+}
+
+/** @deprecated Prefer upsertQueryAnalyticsEvent — kept for test compatibility. */
+export async function recordQueryAnalyticsEvent(
+  input: QueryAnalyticsEventInput
+): Promise<string> {
+  return upsertQueryAnalyticsEvent(input);
 }
 
 export interface QueryAnalyticsSummary {
   totalLogicalQueries: number;
   totalAttempts: number;
   answered: number;
+  partiallyAnswered: number;
   unanswered: number;
   accessBlocked: number;
   credentialBlocked: number;
   providerError: number;
+  clarificationRequired: number;
+  /** answered + partially_answered + no_verified_solution + no_results + clarification_required */
+  answerQualityDenominator: number;
 }
 
 function emptySummary(): QueryAnalyticsSummary {
@@ -218,10 +314,13 @@ function emptySummary(): QueryAnalyticsSummary {
     totalLogicalQueries: 0,
     totalAttempts: 0,
     answered: 0,
+    partiallyAnswered: 0,
     unanswered: 0,
     accessBlocked: 0,
     credentialBlocked: 0,
     providerError: 0,
+    clarificationRequired: 0,
+    answerQualityDenominator: 0,
   };
 }
 
@@ -235,20 +334,26 @@ function accumulateOutcome(
     summary.totalLogicalQueries += logicalCount;
   }
   summary.totalAttempts += attemptCount;
-  if (outcome === "answered" || outcome === "partially_answered") {
+
+  if (outcome === "answered") {
     summary.answered += logicalCount;
   }
-  if (
-    outcome === "no_verified_solution" ||
-    outcome === "no_results" ||
-    outcome === "partially_answered"
-  ) {
+  if (outcome === "partially_answered") {
+    summary.partiallyAnswered += logicalCount;
+  }
+  if (isUnansweredOutcome(outcome as QueryOutcome)) {
     summary.unanswered += logicalCount;
+  }
+  if (outcome === "clarification_required") {
+    summary.clarificationRequired += logicalCount;
   }
   if (outcome === "access_blocked") summary.accessBlocked += logicalCount;
   if (outcome === "credential_blocked") summary.credentialBlocked += logicalCount;
   if (outcome === "provider_error" || outcome === "system_error") {
     summary.providerError += logicalCount;
+  }
+  if (isAnswerQualityOutcome(outcome)) {
+    summary.answerQualityDenominator += logicalCount;
   }
 }
 
@@ -300,6 +405,26 @@ export async function ensureUnansweredReviewForEvent(
   ]);
 }
 
+/**
+ * Mark prior unanswered reviews for this logical query as FIXED/superseded
+ * without deleting history (successful retry path).
+ */
+export async function resolveUnansweredReviewsForLogicalQuery(input: {
+  organizationId: string;
+  logicalQueryId: string;
+  resolvedByLogicalQueryId: string;
+}): Promise<void> {
+  ensureMigrations();
+  const now = new Date().toISOString();
+  await db.execute(RESOLVE_OPEN_REVIEWS_SQL, [
+    input.resolvedByLogicalQueryId,
+    `superseded_by:${input.resolvedByLogicalQueryId}`,
+    now,
+    input.organizationId,
+    input.logicalQueryId,
+  ]);
+}
+
 export interface UnansweredQueryReviewRow {
   id: string;
   analyticsEventId: string;
@@ -310,6 +435,9 @@ export interface UnansweredQueryReviewRow {
   outcome: string | null;
   hostname: string | null;
   productId: string | null;
+  sanitizedTopic?: string | null;
+  queryFingerprint?: string | null;
+  logicalQueryId?: string | null;
 }
 
 export async function listUnansweredQueryReviews(
@@ -330,7 +458,59 @@ export async function listUnansweredQueryReviews(
     outcome: row.outcome == null ? null : String(row.outcome),
     hostname: row.hostname == null ? null : String(row.hostname),
     productId: row.product_id == null ? null : String(row.product_id),
+    sanitizedTopic:
+      row.sanitized_topic == null ? null : String(row.sanitized_topic),
+    queryFingerprint:
+      row.query_fingerprint == null ? null : String(row.query_fingerprint),
+    logicalQueryId:
+      row.logical_query_id == null ? null : String(row.logical_query_id),
   }));
+}
+
+export async function getUnansweredReviewSensitive(input: {
+  organizationId: string;
+  reviewId: string;
+}): Promise<{ queryText: string | null; clientIp: string | null } | null> {
+  ensureMigrations();
+  const row = await db.queryOne<Record<string, unknown>>(
+    `SELECT logical_query_id, query_ciphertext, query_iv, query_tag,
+            ip_ciphertext, ip_iv, ip_tag
+     FROM unanswered_query_reviews
+     WHERE organization_id = ? AND id = ?`,
+    [input.organizationId, input.reviewId]
+  );
+  if (!row) return null;
+
+  const logicalQueryId = String(row.logical_query_id ?? "");
+  const aad = `unanswered:${input.organizationId}:${logicalQueryId}`;
+  let queryText: string | null = null;
+  let clientIp: string | null = null;
+
+  if (row.query_ciphertext && row.query_iv && row.query_tag) {
+    const enc: EncryptedSecret = {
+      ciphertext: String(row.query_ciphertext),
+      iv: String(row.query_iv),
+      tag: String(row.query_tag),
+    };
+    try {
+      queryText = decryptSecret(enc, aad);
+    } catch {
+      queryText = null;
+    }
+  }
+  if (row.ip_ciphertext && row.ip_iv && row.ip_tag) {
+    const enc: EncryptedSecret = {
+      ciphertext: String(row.ip_ciphertext),
+      iv: String(row.ip_iv),
+      tag: String(row.ip_tag),
+    };
+    try {
+      clientIp = decryptSecret(enc, aad);
+    } catch {
+      clientIp = null;
+    }
+  }
+  return { queryText, clientIp };
 }
 
 export async function updateUnansweredQueryReview(input: {
@@ -434,13 +614,88 @@ export async function listQueryAnalyticsEvents(
 
 export async function exportQueryAnalyticsCsv(
   organizationId: string,
-  filters: QueryAnalyticsFilters
+  filters: QueryAnalyticsFilters,
+  options?: { timezone?: string; sensitive?: boolean; rowLimit?: number }
 ): Promise<string> {
-  const rows = await db.query<Record<string, unknown>>(
-    EXPORT_FILTERED_SQL,
-    filteredParams(organizationId, filters)
+  const limit = Math.min(
+    Math.max(options?.rowLimit ?? CSV_EXPORT_ROW_LIMIT, 1),
+    CSV_EXPORT_ROW_LIMIT
   );
-  const header = "logical_query_id,attempt_id,hostname,product_id,outcome,latency_ms,created_at";
+  const timezone = options?.timezone ?? "UTC";
+  const generatedAt = new Date().toISOString();
+
+  if (options?.sensitive) {
+    const rows = await db.query<Record<string, unknown>>(EXPORT_SENSITIVE_SQL, [
+      ...filteredParams(organizationId, filters),
+      limit,
+    ]);
+    const header =
+      "logical_query_id,attempt_id,hostname,product_id,outcome,latency_ms,created_at,sanitized_topic,query_fingerprint,query_text,client_ip";
+    const lines = rows.map((row) => {
+      let queryText = "";
+      let clientIp = "";
+      const logicalQueryId = String(row.logical_query_id ?? "");
+      const aad = `unanswered:${organizationId}:${logicalQueryId}`;
+      if (row.query_ciphertext && row.query_iv && row.query_tag) {
+        try {
+          queryText = decryptSecret(
+            {
+              ciphertext: String(row.query_ciphertext),
+              iv: String(row.query_iv),
+              tag: String(row.query_tag),
+            },
+            aad
+          );
+        } catch {
+          queryText = "";
+        }
+      }
+      if (row.ip_ciphertext && row.ip_iv && row.ip_tag) {
+        try {
+          clientIp = decryptSecret(
+            {
+              ciphertext: String(row.ip_ciphertext),
+              iv: String(row.ip_iv),
+              tag: String(row.ip_tag),
+            },
+            aad
+          );
+        } catch {
+          clientIp = "";
+        }
+      }
+      return [
+        row.logical_query_id,
+        row.attempt_id,
+        row.hostname,
+        row.product_id ?? "",
+        row.outcome,
+        row.latency_ms ?? "",
+        row.created_at,
+        row.sanitized_topic ?? "",
+        row.query_fingerprint ?? "",
+        queryText,
+        clientIp,
+      ]
+        .map(escapeCsvCell)
+        .join(",");
+    });
+    return [
+      `# generated_at=${generatedAt}`,
+      `# timezone=${timezone}`,
+      `# row_limit=${limit}`,
+      `# sensitive=true`,
+      header,
+      ...lines,
+    ].join("\n");
+  }
+
+  const rows = await db.query<Record<string, unknown>>(EXPORT_FILTERED_SQL, [
+    ...filteredParams(organizationId, filters),
+    limit,
+  ]);
+  const header =
+    "logical_query_id,attempt_id,hostname,product_id,outcome,latency_ms,created_at";
   const lines = rows.map((row) =>
     [
       row.logical_query_id,
@@ -451,8 +706,14 @@ export async function exportQueryAnalyticsCsv(
       row.latency_ms ?? "",
       row.created_at,
     ]
-      .map((value) => `"${String(value).replace(/"/g, '""')}"`)
+      .map(escapeCsvCell)
       .join(",")
   );
-  return [header, ...lines].join("\n");
+  return [
+    `# generated_at=${generatedAt}`,
+    `# timezone=${timezone}`,
+    `# row_limit=${limit}`,
+    header,
+    ...lines,
+  ].join("\n");
 }

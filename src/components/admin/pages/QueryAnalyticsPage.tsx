@@ -15,32 +15,64 @@ export function QueryAnalyticsPage({
   initialSince,
   initialUntil,
   initialProductId,
+  initialHostname,
+  refreshedAt,
+  showProductionMetrics,
 }: {
   summary: QueryAnalyticsMetrics;
   recent: Record<string, unknown>[];
   initialSince: string;
   initialUntil: string;
   initialProductId?: string;
+  initialHostname?: string;
+  refreshedAt: string;
+  showProductionMetrics?: boolean;
 }) {
-  const { organization } = useAdmin();
+  const { organization, hasPermission } = useAdmin();
   const router = useRouter();
   const products = listProducts();
+  const canReadSensitive = hasPermission("query_analytics.read_sensitive");
 
   const [since, setSince] = useState(initialSince.slice(0, 10));
   const [until, setUntil] = useState(initialUntil.slice(0, 10));
   const [productId, setProductId] = useState(initialProductId ?? "");
+  const [hostname, setHostname] = useState(initialHostname ?? "");
 
   const exportUrl = useMemo(() => {
     const params = new URLSearchParams({ export: "csv", since, until });
     if (productId) params.set("productId", productId);
+    if (hostname) params.set("hostname", hostname);
     return `/api/admin/query-analytics?${params.toString()}`;
-  }, [since, until, productId]);
+  }, [since, until, productId, hostname]);
+
+  const sensitiveExportUrl = useMemo(() => {
+    const params = new URLSearchParams({
+      export: "csv",
+      sensitive: "1",
+      since,
+      until,
+    });
+    if (productId) params.set("productId", productId);
+    if (hostname) params.set("hostname", hostname);
+    return `/api/admin/query-analytics?${params.toString()}`;
+  }, [since, until, productId, hostname]);
 
   function applyFilters() {
     const params = new URLSearchParams({ since, until });
     if (productId) params.set("productId", productId);
+    if (hostname) params.set("hostname", hostname);
     router.push(`/admin/documentation-agent/query-analytics?${params.toString()}`);
   }
+
+  const denom = summary.answerQualityDenominator || 0;
+  const answeredPct =
+    denom > 0 ? `${Math.round((summary.answered / denom) * 100)}% of answer-quality` : "—";
+  const partialPct =
+    denom > 0
+      ? `${Math.round((summary.partiallyAnswered / denom) * 100)}% of answer-quality`
+      : "—";
+  const unansweredPct =
+    denom > 0 ? `${Math.round((summary.unanswered / denom) * 100)}% of answer-quality` : "—";
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -49,6 +81,11 @@ export function QueryAnalyticsPage({
         title="Query analytics"
         description="Server-recorded Ask AI outcomes with date range, latency percentiles, and CSV export."
       />
+
+      <p className="text-xs text-zinc-500">
+        Refreshed {new Date(refreshedAt).toLocaleString()} · Answer-quality denominator = answered +
+        partially answered + no verified solution + no results + clarification required ({denom})
+      </p>
 
       <section className="flex flex-wrap items-end gap-3 rounded-lg border border-zinc-200 p-4 text-xs dark:border-zinc-800">
         <label className="flex flex-col gap-1">
@@ -84,6 +121,16 @@ export function QueryAnalyticsPage({
             ))}
           </select>
         </label>
+        <label className="flex flex-col gap-1">
+          Hostname / environment
+          <input
+            type="text"
+            value={hostname}
+            onChange={(e) => setHostname(e.target.value)}
+            placeholder="docs.example.com"
+            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
+          />
+        </label>
         <button
           type="button"
           onClick={applyFilters}
@@ -97,18 +144,48 @@ export function QueryAnalyticsPage({
         >
           Export CSV
         </a>
+        {canReadSensitive ? (
+          <a
+            href={sensitiveExportUrl}
+            className="rounded border border-amber-400 px-3 py-1.5 text-amber-800 dark:border-amber-700 dark:text-amber-200"
+          >
+            Sensitive CSV
+          </a>
+        ) : null}
       </section>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard label="Logical queries" value={String(summary.totalLogicalQueries)} />
         <MetricCard label="Attempts" value={String(summary.totalAttempts)} />
-        <MetricCard label="Answered" value={String(summary.answered)} />
-        <MetricCard label="Unanswered" value={String(summary.unanswered)} />
+        <MetricCard label="Answered" value={String(summary.answered)} change={answeredPct} />
+        <MetricCard
+          label="Partially answered"
+          value={String(summary.partiallyAnswered)}
+          change={partialPct}
+        />
       </div>
-      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
+          label="Unanswered (review queue)"
+          value={String(summary.unanswered)}
+          change={unansweredPct}
+        />
+        <MetricCard
+          label="Clarification required"
+          value={String(summary.clarificationRequired)}
+        />
         <MetricCard label="Access blocked" value={String(summary.accessBlocked)} />
         <MetricCard label="Credential blocked" value={String(summary.credentialBlocked)} />
-        <MetricCard label="Provider errors" value={String(summary.providerError)} />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <MetricCard label="Provider / system errors" value={String(summary.providerError)} />
+        <MetricCard
+          label="Answer-quality denom"
+          value={String(summary.answerQualityDenominator)}
+        />
+        {showProductionMetrics ? (
+          <MetricCard label="Production metrics" value="enabled" />
+        ) : null}
         <MetricCard
           label="p50 latency"
           value={summary.p50LatencyMs == null ? "—" : `${Math.round(summary.p50LatencyMs)} ms`}

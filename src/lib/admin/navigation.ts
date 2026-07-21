@@ -124,6 +124,12 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         featureFlag: "unanswered_query_review",
       },
       {
+        href: "/admin/documentation-agent/unanswered/weekly",
+        label: "Unanswered weekly",
+        permission: "query_analytics.read",
+        featureFlag: "unanswered_query_weekly_analytics",
+      },
+      {
         href: "/admin/documentation-agent/webhooks",
         label: "Webhooks",
         permission: "resources.read",

@@ -1,15 +1,57 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 
 import { UNANSWERED_QUERY_REVIEW_STATUSES } from "@/lib/domains/types";
 import type { UnansweredQueryReviewStatus } from "@/lib/domains/types";
+import { appendEnterpriseAuditEvent } from "@/lib/enterprise/audit";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
 import { requireEnterpriseMutationRateLimit, requireMutationCsrf } from "@/lib/enterprise/http";
-import { updateUnansweredQueryReview } from "@/lib/query-analytics/repository";
+import {
+  getUnansweredReviewSensitive,
+  updateUnansweredQueryReview,
+} from "@/lib/query-analytics/repository";
 
 export const runtime = "nodejs";
 
 const STATUSES = new Set<string>(UNANSWERED_QUERY_REVIEW_STATUSES);
+
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  if (request.nextUrl.searchParams.get("sensitive") !== "1") {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const access = await guardEnterpriseApi(request, "query_analytics.read_sensitive");
+  if (access instanceof NextResponse) return access;
+
+  const { id } = await context.params;
+  const orgId = access.context.organization.id;
+  const sensitive = await getUnansweredReviewSensitive({
+    organizationId: orgId,
+    reviewId: id,
+  });
+  if (!sensitive) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  await appendEnterpriseAuditEvent({
+    organizationId: orgId,
+    actorUserId: access.context.principal.userId,
+    action: "query_analytics.sensitive_read",
+    resourceType: "unanswered_query_reviews",
+    resourceId: id,
+    outcome: "success",
+    correlationId: randomUUID(),
+  });
+
+  return NextResponse.json({
+    queryText: sensitive.queryText,
+    clientIp: sensitive.clientIp,
+  });
+}
 
 export async function PATCH(
   request: NextRequest,

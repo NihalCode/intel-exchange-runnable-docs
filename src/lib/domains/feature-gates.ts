@@ -23,6 +23,41 @@ export function isQueryAnalyticsEnabled(): boolean {
   return process.env.QUERY_ANALYTICS_ENABLED === "true";
 }
 
+export function isUnansweredQueryReviewEnabled(): boolean {
+  return (
+    process.env.UNANSWERED_QUERY_REVIEW_ENABLED === "true" ||
+    isQueryAnalyticsEnabled()
+  );
+}
+
+export function isUnansweredWeeklyAnalyticsEnabled(): boolean {
+  return process.env.UNANSWERED_QUERY_WEEKLY_ANALYTICS_ENABLED === "true";
+}
+
+export function isUnansweredRealtimeSummaryEnabled(): boolean {
+  return process.env.UNANSWERED_QUERY_REALTIME_SUMMARY_ENABLED === "true";
+}
+
+export function isUnansweredSensitiveCaptureEnabled(): boolean {
+  return process.env.UNANSWERED_QUERY_SENSITIVE_CAPTURE_ENABLED === "true";
+}
+
+export function isChatFeedbackEnabled(): boolean {
+  return process.env.CHAT_FEEDBACK_ENABLED === "true";
+}
+
+export function isRecaptchaProtectionEnabled(): boolean {
+  return process.env.RECAPTCHA_PROTECTION_ENABLED === "true";
+}
+
+export function isViewerAskAiAccessEnabled(): boolean {
+  return process.env.VIEWER_ASK_AI_ACCESS_ENABLED === "true";
+}
+
+export function isProductionQueryMetricsEnabled(): boolean {
+  return process.env.PRODUCTION_QUERY_METRICS_ENABLED === "true";
+}
+
 export function isCustomSnippetQueryParamsEnabled(): boolean {
   return process.env.CUSTOM_SNIPPET_QUERY_PARAMS_ENABLED === "true";
 }

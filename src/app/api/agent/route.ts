@@ -1,3 +1,5 @@
+import { randomUUID } from "node:crypto";
+
 import {
   guardAskAgent,
 } from "@/lib/documentation-auth/guard-api";
@@ -6,11 +8,13 @@ import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import { requireMutationCsrf } from "@/lib/enterprise/http";
 import {
   classifyQueryOutcome,
-  isUnansweredOutcome,
   logicalQueryIdForAnalytics,
 } from "@/lib/agent/query-outcome";
 import { getAgentProductAccess } from "@/lib/documentation-credentials/access";
-import { completeTurnWithFinal } from "@/lib/agent/conversation-store";
+import {
+  completeTurnWithFinal,
+  getOwnedTurn,
+} from "@/lib/agent/conversation-store";
 import { runAgent } from "@/lib/agent/orchestrate";
 import { isAppBuilderQuery } from "@/lib/agent/intent";
 import type { AgentRequest } from "@/lib/agent/types";
@@ -21,18 +25,44 @@ import { getResolvedHostContext } from "@/lib/domains/host-context";
 import { trustedHostnameFromHeaders } from "@/lib/domains/request-host";
 import { resolveQueryAnalyticsEnabled } from "@/lib/domains/feature-gates-resolve";
 import {
-  ensureUnansweredReviewForEvent,
-  recordQueryAnalyticsEvent,
-} from "@/lib/query-analytics/repository";
+  mintLogicalQueryId,
+  recordTerminalAnalyticsSafe,
+} from "@/lib/query-analytics/service";
 import { resolveAppProductId, assertProductAccess } from "@/lib/deployment/resolve-app-product-id";
-import { isProductKey } from "@/lib/products/registry";
+import { isProductKey, type ProductKey } from "@/lib/products/registry";
 import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
 import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
+import { resolveTrustedClientIp } from "@/lib/security/client-ip";
+import { deriveCustomerNameSnapshot } from "@/lib/security/customer-name";
+import {
+  resolveRecaptchaProtectionEnabled,
+  resolveUnansweredSensitiveCaptureEnabled,
+} from "@/lib/domains/feature-gates-resolve";
+import { verifyRecaptchaToken } from "@/lib/recaptcha/verify";
 
 export const runtime = "nodejs";
 // LLM-backed planning/edits can take 20-40s; Vercel's default function
 // duration (10s on Hobby) kills the request mid-flight otherwise.
 export const maxDuration = 60;
+
+async function sensitiveCaptureAllowed(
+  organizationId: string | undefined,
+  role: string
+): Promise<boolean> {
+  if (!organizationId) return false;
+  return resolveUnansweredSensitiveCaptureEnabled({ organizationId, role });
+}
+
+function resolveProductId(
+  agentRequest: AgentRequest,
+  resultProductId?: string | null
+): ProductKey | null {
+  const candidate =
+    typeof agentRequest.productId === "string" && agentRequest.productId !== "all"
+      ? agentRequest.productId
+      : resultProductId;
+  return candidate && isProductKey(candidate) ? candidate : null;
+}
 
 export async function POST(req: Request) {
   const requestId = correlationIds(req.headers).requestId;
@@ -49,8 +79,24 @@ export async function POST(req: Request) {
     return Response.json({ error: "Too many requests" }, { status: 429, headers: responseHeaders });
   }
 
+  let organizationId: string | undefined;
+  let logicalQueryId: string | undefined;
+  let attemptId: string | undefined;
+  let analyticsHostname: string | undefined;
+  let analyticsProductId: ProductKey | null = null;
+  let analyticsTurnId: string | null = null;
+  let analyticsConversationId: string | null = null;
+  let analyticsQueryText: string | null = null;
+  let analyticsCustomerName: string | null = null;
+  let analyticsEnabled = false;
+  let recaptchaDegraded = false;
+  const started = Date.now();
+
   try {
-    const body = (await req.json()) as AgentRequest & { llmApiKey?: string };
+    const body = (await req.json()) as AgentRequest & {
+      llmApiKey?: string;
+      recaptchaToken?: string | null;
+    };
     const hasConversationId = typeof body.conversationId === "string" && Boolean(body.conversationId);
     const hasTurnId = typeof body.turnId === "string" && Boolean(body.turnId);
     if (hasConversationId !== hasTurnId) {
@@ -99,6 +145,8 @@ export async function POST(req: Request) {
 
     const hostContext = await getResolvedHostContext();
     let agentRequest: AgentRequest = agentRequestBody;
+    analyticsQueryText =
+      typeof agentRequest.query === "string" ? agentRequest.query.slice(0, 8_000) : null;
 
     const pinnedProduct = resolveAppProductId();
     if (pinnedProduct) {
@@ -124,7 +172,6 @@ export async function POST(req: Request) {
     }
 
     let allowedProductIds: string[] | undefined;
-    let organizationId: string | undefined;
     if (isAuthEnabled() || process.env.NODE_ENV === "production") {
       const context = await resolveOrganizationContext(session);
       organizationId = context.organization.id;
@@ -143,47 +190,115 @@ export async function POST(req: Request) {
       organizationId = (await resolveOrganizationContext(session)).organization.id;
     }
 
-    const started = Date.now();
+    analyticsHostname = trustedHostnameFromHeaders(req.headers);
+    analyticsConversationId = hasConversationId ? body.conversationId! : null;
+    analyticsCustomerName = deriveCustomerNameSnapshot({
+      name: session.user.name,
+      email: session.user.email,
+    });
+
+    analyticsEnabled =
+      Boolean(organizationId) &&
+      (await resolveQueryAnalyticsEnabled({
+        organizationId,
+        role: session.user.role,
+      }));
+
+    // Verify reCAPTCHA before model cost when protection is enabled (fail-soft).
+    if (organizationId) {
+      const recaptchaEnabled = await resolveRecaptchaProtectionEnabled({
+        organizationId,
+        role: session.user.role,
+      });
+      if (recaptchaEnabled) {
+        const verified = await verifyRecaptchaToken({
+          token: body.recaptchaToken,
+          expectedAction: "ask_ai_submit",
+          remoteIp: resolveTrustedClientIp(req.headers),
+          failSoft: true,
+        });
+        if (!verified.ok) {
+          return Response.json(
+            { error: "reCAPTCHA verification failed", code: "RECAPTCHA_FAILED" },
+            { status: 403, headers: responseHeaders }
+          );
+        }
+        if (verified.degraded) {
+          recaptchaDegraded = true;
+          if (!checkRateLimit(`agent-recaptcha-degraded:${session.user.id}`, 10, 60_000)) {
+            return Response.json(
+              { error: "Too many requests" },
+              { status: 429, headers: responseHeaders }
+            );
+          }
+        }
+      }
+    }
+
+    if (analyticsEnabled && organizationId) {
+      if (hasTurnId && hasConversationId) {
+        const owned = await getOwnedTurn(
+          body.turnId!,
+          organizationId,
+          session.user.id,
+          body.conversationId
+        );
+        if (owned) {
+          analyticsTurnId = owned.id;
+          logicalQueryId = owned.id;
+        } else {
+          // Client-supplied turn id is not owned — mint server id; do not bind forged turn.
+          logicalQueryId = mintLogicalQueryId();
+          analyticsTurnId = null;
+        }
+      } else {
+        logicalQueryId = mintLogicalQueryId();
+      }
+      attemptId = randomUUID();
+      analyticsProductId = resolveProductId(agentRequest);
+    }
+
     const result = await runAgent({
       ...agentRequest,
       allowedProductIds,
     });
-    if (
-      (await resolveQueryAnalyticsEnabled({
-        organizationId,
-        role: session.user.role,
-      })) &&
-      organizationId
-    ) {
+
+    if (analyticsEnabled && organizationId && logicalQueryId && attemptId) {
       const outcome = classifyQueryOutcome({
         response: result,
         errorCode: result.code,
         retrievalCount: result.retrieval?.length ?? result.citations.length,
       });
-      const eventId = await recordQueryAnalyticsEvent({
+      analyticsProductId = resolveProductId(
+        agentRequest,
+        result.productContext?.products[0]?.id
+      );
+      const captureSensitive = await sensitiveCaptureAllowed(
         organizationId,
+        session.user.role
+      );
+      await recordTerminalAnalyticsSafe({
+        organizationId,
+        logicalQueryId,
+        attemptId,
         userId: session.user.id,
-        conversationId: body.conversationId ?? null,
-        turnId: body.turnId ?? null,
-        logicalQueryId: logicalQueryIdForAnalytics(body.turnId, requestId),
-        hostname: trustedHostnameFromHeaders(req.headers),
-        productId: (() => {
-          const candidate =
-            typeof agentRequest.productId === "string"
-              ? agentRequest.productId
-              : result.productContext?.products[0]?.id;
-          return candidate && isProductKey(candidate) ? candidate : null;
-        })(),
+        conversationId: analyticsConversationId,
+        turnId: analyticsTurnId,
+        hostname: analyticsHostname,
+        productId: analyticsProductId,
+        collectionId: hostContext?.collectionId ?? null,
         outcome,
+        reasonCode: result.code ?? result.retrievalReasonCode ?? null,
         retrievalResultCount: result.retrieval?.length ?? null,
         citationCount: result.citations.length,
         latencyMs: Date.now() - started,
         requestId,
+        queryText: captureSensitive ? analyticsQueryText : null,
+        clientIp: captureSensitive ? resolveTrustedClientIp(req.headers) : null,
+        customerNameSnapshot: analyticsCustomerName,
       });
-      if (isUnansweredOutcome(outcome)) {
-        await ensureUnansweredReviewForEvent(organizationId, eventId);
-      }
     }
+
     if (hasTurnId && hasConversationId && organizationId) {
       await completeTurnWithFinal({
         turnId: body.turnId!,
@@ -199,8 +314,65 @@ export async function POST(req: Request) {
         },
       });
     }
-    return Response.json(result, { headers: responseHeaders });
+    return Response.json(
+      {
+        ...result,
+        ...(logicalQueryId
+          ? {
+              analytics: {
+                logicalQueryId,
+                turnId: analyticsTurnId,
+                conversationId: analyticsConversationId,
+                attemptId: attemptId ?? null,
+              },
+            }
+          : {}),
+        ...(recaptchaDegraded ? { recaptchaDegraded: true } : {}),
+      },
+      { headers: responseHeaders }
+    );
   } catch (err) {
+    if (
+      analyticsEnabled &&
+      organizationId &&
+      logicalQueryId &&
+      attemptId &&
+      analyticsHostname
+    ) {
+      const errorCode =
+        err instanceof OpenAiNotConfiguredError
+          ? "OPENAI_NOT_CONFIGURED"
+          : "PROVIDER_ERROR";
+      const outcome = classifyQueryOutcome({
+        errorCode:
+          err instanceof OpenAiNotConfiguredError
+            ? "PROVIDER_ERROR"
+            : "PROVIDER_ERROR",
+        httpStatus: err instanceof OpenAiNotConfiguredError ? 503 : 500,
+      });
+      await recordTerminalAnalyticsSafe({
+        organizationId,
+        logicalQueryId: logicalQueryIdForAnalytics(analyticsTurnId, logicalQueryId),
+        attemptId,
+        userId: session.user.id,
+        conversationId: analyticsConversationId,
+        turnId: analyticsTurnId,
+        hostname: analyticsHostname,
+        productId: analyticsProductId,
+        outcome,
+        reasonCode: errorCode,
+        latencyMs: Date.now() - started,
+        requestId,
+        queryText: (await sensitiveCaptureAllowed(organizationId, session.user.role))
+          ? analyticsQueryText
+          : null,
+        clientIp: (await sensitiveCaptureAllowed(organizationId, session.user.role))
+          ? resolveTrustedClientIp(req.headers)
+          : null,
+        customerNameSnapshot: analyticsCustomerName,
+      });
+    }
+
     if (err instanceof OpenAiNotConfiguredError) {
       return Response.json(
         { error: err.clientMessage, code: err.code },

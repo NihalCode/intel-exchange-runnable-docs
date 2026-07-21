@@ -51,6 +51,9 @@ export type AssistantMessage = {
   role: "assistant";
   content: string;
   response: AgentResponse;
+  conversationId?: string | null;
+  turnId?: string | null;
+  logicalQueryId?: string | null;
 };
 export type ErrorMessage = { id: string; role: "error"; content: string };
 export type ChatMessage = UserMessage | AssistantMessage | ErrorMessage;
@@ -573,6 +576,9 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           existingApp: resolved.editExistingApp ? existingCtx : undefined,
           conversationId: serverConversationId ?? undefined,
           turnId: serverTurnId ?? undefined,
+          recaptchaToken: (await import("@/lib/recaptcha/client").then((m) =>
+            m.obtainRecaptchaToken("ask_ai_submit")
+          )) ?? undefined,
         };
 
         async function postAgent(attempt: number): Promise<Response> {
@@ -609,6 +615,12 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           error?: string | { message?: string; code?: string };
           code?: string;
           signIn?: string;
+          analytics?: {
+            logicalQueryId?: string;
+            turnId?: string | null;
+            conversationId?: string | null;
+          };
+          recaptchaDegraded?: boolean;
         };
         try {
           data = JSON.parse(bodyText);
@@ -656,8 +668,16 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           role: "assistant",
           content: data.workflow,
           response: data,
+          conversationId:
+            data.analytics?.conversationId ?? serverConversationId ?? null,
+          turnId: data.analytics?.turnId ?? serverTurnId ?? null,
+          logicalQueryId:
+            data.analytics?.logicalQueryId ?? serverTurnId ?? null,
         };
         setMessages((prev) => [...prev, assistantMsg]);
+        if (data.recaptchaDegraded) {
+          logPanel("Abuse protection is degraded — stricter rate limits apply.");
+        }
         logPanel(resolved.userLabel);
       } catch (err) {
         if (requestController.signal.aborted) {

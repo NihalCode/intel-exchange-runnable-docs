@@ -4,6 +4,7 @@ import {
   requireAdminPageContext,
   requirePermission,
 } from "@/lib/admin/page-data";
+import { resolveProductionQueryMetricsEnabled } from "@/lib/domains/feature-gates-resolve";
 import { isProductKey } from "@/lib/products/registry";
 import {
   listQueryAnalyticsEvents,
@@ -15,7 +16,12 @@ export const dynamic = "force-dynamic";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ since?: string; until?: string; productId?: string }>;
+  searchParams: Promise<{
+    since?: string;
+    until?: string;
+    productId?: string;
+    hostname?: string;
+  }>;
 }) {
   const { capabilities, context } = await requireAdminPageContext();
   requirePermission(capabilities, "query_analytics.read");
@@ -29,11 +35,16 @@ export default async function Page({
     : new Date(nowMs - 30 * 24 * 60 * 60 * 1000).toISOString();
   const productId =
     params.productId && isProductKey(params.productId) ? params.productId : undefined;
+  const hostname = params.hostname?.trim() || undefined;
 
-  const filters = { sinceIso, untilIso, productId };
-  const [summary, recent] = await Promise.all([
+  const filters = { sinceIso, untilIso, productId, hostname };
+  const [summary, recent, showProductionMetrics] = await Promise.all([
     summarizeQueryAnalyticsFiltered(context.organization.id, filters),
     listQueryAnalyticsEvents(context.organization.id, filters, 25),
+    resolveProductionQueryMetricsEnabled({
+      organizationId: context.organization.id,
+      role: context.principal.role,
+    }),
   ]);
 
   return (
@@ -43,6 +54,9 @@ export default async function Page({
       initialSince={sinceIso}
       initialUntil={untilIso}
       initialProductId={productId}
+      initialHostname={hostname}
+      refreshedAt={new Date().toISOString()}
+      showProductionMetrics={showProductionMetrics}
     />
   );
 }

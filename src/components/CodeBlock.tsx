@@ -8,10 +8,15 @@ import { applyRuntimeBaseUrl } from "@/lib/snippet-base-url";
 import { isPostmanPreRequestScript } from "@/lib/parse-request";
 import { SnippetRunner } from "./runners";
 import { useRunSettings } from "./RunSettings";
+import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 
 export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
   const [copied, setCopied] = useState(false);
   const { baseUrl } = useRunSettings();
+  const { hasPermission, state } = useDocumentationAuth();
+  // Align with /api/run (`test_snippets`). Unauthenticated local/dev may still run.
+  const canRunSnippets =
+    !state.authenticated || hasPermission("test_snippets");
   const displayCode = useMemo(
     () => applyRuntimeBaseUrl(snippet.code, baseUrl),
     [snippet.code, baseUrl]
@@ -35,6 +40,11 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
     }
   }
 
+  const showRunner =
+    snippet.runKind !== "none" ||
+    /^(bash|sh|shell|zsh)$/i.test(snippet.lang) ||
+    isPostmanPreRequestScript(snippet.code);
+
   return (
     <div className="not-prose my-4 overflow-hidden rounded-lg border border-zinc-800 bg-[#0d1117] text-zinc-100 shadow-sm">
       <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-1.5">
@@ -56,11 +66,16 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
           <code className={`hljs language-${snippet.lang}`}>{highlighted}</code>
         </pre>
       </div>
-      {snippet.runKind !== "none" ||
-      /^(bash|sh|shell|zsh)$/i.test(snippet.lang) ||
-      isPostmanPreRequestScript(snippet.code) ? (
+      {showRunner ? (
         <div className="border-t border-zinc-800 bg-zinc-950/40 px-3 py-2 text-zinc-200">
-          <SnippetRunner snippet={runnableSnippet} />
+          {canRunSnippets ? (
+            <SnippetRunner snippet={runnableSnippet} />
+          ) : (
+            <p className="text-[11px] text-zinc-400">
+              View-only example — running live API calls requires a role with snippet testing
+              access.
+            </p>
+          )}
         </div>
       ) : null}
     </div>
@@ -78,7 +93,7 @@ function CopyIcon() {
 function CheckIcon() {
   return (
     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-      <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 6L9 17l-5-5" />
     </svg>
   );
 }
