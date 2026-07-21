@@ -5,7 +5,7 @@
 **Key commits:** `2a90906` · `6db046d` (auth how-to) · `fa1f546` (Build App guard) · `f82c4d4` (HTTP 401/4xx) · `dad2471` (extreme suites + retrieval health) · `afa8ebd` (host-pinned product allowlist) · `81b7d4f` (Build App product label + credentials lead) · `445aff7` (non-CTIX sidebar nav)  
 **Readiness banner:** `VERIFIED WITH DOCUMENTED LIMITATIONS`
 
-Do **not** claim `ALL FOUR PRODUCTION CHAT PRODUCTS VERIFIED` — CSAP and Orchestrate still need authenticated browser sessions (Auth0 MFA per host); in-product preview sandbox (Phases 36–39) does not exist.
+Do **not** claim `ALL FOUR PRODUCTION CHAT PRODUCTS VERIFIED` without caveats — in-product preview sandbox (Phases 36–39) does not exist; full ~100 live LLM cases per product and Safari UI farm are not finished. Authenticated Ask AI canaries **PASS on all four hosts** with hybrid retrieval.
 
 ---
 
@@ -15,10 +15,10 @@ See [prod-chat-build-matrix.md](../prod-chat-build-matrix.md).
 
 | Product | Canonical host | authReady | Retrieval health | Authenticated chat canary |
 |---|---|---|---|---|
-| CTIX | `apitest1.cyninjadev.com` | true | `hybrid_ok` | **PASS** (fresh CSRF canary: auth, 401, keys, list; hybrid) |
-| CFTR | `cyware-docs-cftr.vercel.app` | true | `hybrid_ok` | **PASS** (Ask AI without CFTR Open API connect via host-pinned allowlist) |
-| CSAP | `cyware-docs-csap.vercel.app` | true | `hybrid_ok` | **BLOCKED** — sign-in required on this host (no shared Auth0 cookie) |
-| Orchestrate | `cyware-docs-orchestrate.vercel.app` | true | `hybrid_ok` | **BLOCKED** — sign-in required on this host |
+| CTIX | `apitest1.cyninjadev.com` | true | `hybrid_ok` | **PASS** (auth, 401, keys, list; hybrid) |
+| CFTR | `cyware-docs-cftr.vercel.app` | true | `hybrid_ok` | **PASS** (host-pinned allowlist; hybrid) |
+| CSAP | `cyware-docs-csap.vercel.app` | true | `hybrid_ok` | **PASS** (host-pinned allowlist; hybrid) |
+| Orchestrate | `cyware-docs-orchestrate.vercel.app` | true | `hybrid_ok` | **PASS** (auth, 401, keys, playbooks; hybrid) |
 
 Infra probes: `auth:smoke --all` 4/4 · `prod:extreme-probe` 196/196 PASS.
 
@@ -33,7 +33,7 @@ Infra probes: `auth:smoke --all` 4/4 · `prod:extreme-probe` 196/196 PASS.
 | Build App suite | **31 cases × 4 products** |
 | Multiturn suite | Expanded |
 | Prod chat harness (`PROD_CHAT_*`) | Scaffold exists; cookie-env still blocked (HttpOnly Auth0) |
-| Browser canary | CTIX + CFTR PASS via in-page CSRF + `/api/agent` |
+| Browser canary | **CTIX + CFTR + CSAP + Orchestrate PASS** via in-page CSRF + `/api/agent` |
 | Retrieval health | `/api/health/retrieval` → `hybrid_ok` on all four hosts |
 
 ---
@@ -85,19 +85,19 @@ npx tsc --noEmit              → clean
 ## 24–25. Canary / deploy
 
 - Staged CLI deploys (Git auto-deploy was often stale): `npx vercel --prod` per project.
-- CTIX evidence: browser CSRF canary (auth/401/keys/list) with `retrievalMode: hybrid`.
-- CFTR evidence: `artifacts/chat-accuracy/prod-cftr-auth-canary.json` (redacted summary) — Ask AI works without CFTR Open API connect.
-- CSAP / Orchestrate: Auth0 sign-in required per Vercel host; operator must complete MFA, then re-run the same CSRF canary pattern.
+- CTIX / CFTR / CSAP / Orchestrate evidence: browser CSRF canaries (auth/401/keys/list) with `retrievalMode: hybrid`.
+- Summaries under `artifacts/chat-accuracy/prod-*-auth-canary*.json` (gitignored where present).
+- Host-pinned allowlist lets single-product hosts answer docs chat without that product’s Open API connect.
 
 ---
 
 ## 26. Remaining limitations (prompt not fully closeable without these)
 
-1. **Sign in to CSAP and Orchestrate** hosts (Auth0 MFA) and re-run authenticated canaries.
-2. **Preview sandbox / npm install / idle→ready FSM** (Phases 36–39) — **not implemented**; cannot be honestly verified.
-3. Full Safari UI farm / ~100 live LLM cases per product on all four hosts — not finished.
-4. HttpOnly Auth0 cookies block `PROD_CHAT_COOKIE` harness without operator export.
-5. Optional: connect CFTR/CSAP/Orchestrate Open API credentials for **live runnable** calls (docs chat no longer requires host-product connect).
+1. **Preview sandbox / npm install / idle→ready FSM** (Phases 36–39) — **not implemented**; cannot be honestly verified.
+2. Full Safari UI farm / ~100 live LLM cases per product on all four hosts — not finished.
+3. HttpOnly Auth0 cookies block `PROD_CHAT_COOKIE` harness without operator export.
+4. Optional: connect CFTR/CSAP/Orchestrate Open API credentials for **live runnable** calls (docs chat no longer requires host-product connect).
+5. Redeploy sidebar fix (`445aff7`) on CFTR/CSAP if those hosts still show CTIX SSR nav (Orchestrate already shows correct product nav).
 
 ---
 
@@ -113,4 +113,4 @@ Redeploy the previous Vercel production deployment per project, or `git revert` 
 VERIFIED WITH DOCUMENTED LIMITATIONS
 ```
 
-Authenticated Ask AI verified on **CTIX + CFTR**. Retrieval hybrid OK on all four. CSAP/Orchestrate chat canaries pending per-host Auth0. Build App preview sandbox N/A.
+Authenticated Ask AI verified on **all four hosts** (CTIX, CFTR, CSAP, Orchestrate) with hybrid retrieval. Build App preview sandbox N/A. Full extreme live LLM volume and Safari UI farm still open.
