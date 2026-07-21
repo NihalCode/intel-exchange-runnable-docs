@@ -1,5 +1,4 @@
 import {
-  guardAgentFeature,
   guardAskAgent,
 } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
@@ -28,7 +27,7 @@ import {
 import { resolveAppProductId, assertProductAccess } from "@/lib/deployment/resolve-app-product-id";
 import { isProductKey } from "@/lib/products/registry";
 import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
-import { NextResponse } from "next/server";
+import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
 
 export const runtime = "nodejs";
 // LLM-backed planning/edits can take 20-40s; Vercel's default function
@@ -69,14 +68,30 @@ export async function POST(req: Request) {
         { status: 400, headers: responseHeaders }
       );
     }
+    // Fail closed for Build App: check the flag without re-entering guardAskAgent
+    // (a second session/feature pass was returning opaque 500s on production).
     if (body.mode === "app" || body.existingApp || isAppBuilderQuery(body.query ?? "")) {
-      const featureAccess = await guardAgentFeature(
-        req as import("next/server").NextRequest,
-        "app_builder"
-      );
-      if (featureAccess instanceof NextResponse) return featureAccess;
-      // Dual-package / Response subclass safety (same pattern as other agent routes).
-      if (featureAccess instanceof Response) return featureAccess;
+      if (isAuthEnabled() || process.env.NODE_ENV === "production") {
+        try {
+          const context = await resolveOrganizationContext(session);
+          const enabled = await isDocumentationFeatureEnabled({
+            organizationId: context.organization.id,
+            key: "app_builder",
+            role: context.principal.role,
+          });
+          if (!enabled) {
+            return Response.json(
+              { error: "Feature unavailable", code: "FEATURE_DISABLED" },
+              { status: 403, headers: responseHeaders }
+            );
+          }
+        } catch {
+          return Response.json(
+            { error: "Feature unavailable", code: "FEATURE_DISABLED" },
+            { status: 403, headers: responseHeaders }
+          );
+        }
+      }
     }
     // Ignore any client-supplied key — OpenAI is server-configured only.
     const { llmApiKey: _ignored, ...agentRequestBody } = body;
