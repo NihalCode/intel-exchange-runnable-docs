@@ -12,7 +12,7 @@ import type {
   CredentialMetadata,
   DocumentationProduct,
 } from "@/lib/documentation-credentials/types";
-import { disallowedBaseUrlMessage, isAllowedBaseUrl } from "@/lib/products/registry";
+import { disallowedBaseUrlMessage, isAllowedBaseUrl, normalizeProductBaseUrl } from "@/lib/products/registry";
 import { isCftrDocsHostBase } from "@/lib/run-feedback";
 import { assertPublicUrl, safeFetch } from "@/lib/security/public-host";
 
@@ -136,7 +136,7 @@ export async function validateAndStoreCredential(input: {
 }): Promise<CredentialMetadata> {
   const accessId = input.accessId.trim();
   const secretKey = input.secretKey.trim();
-  let baseUrl = input.baseUrl.trim().replace(/\/+$/, "");
+  let baseUrl = normalizeProductBaseUrl(input.productId, input.baseUrl);
   // http→https redirects drop the auth query; probe HTTPS directly.
   if (baseUrl.startsWith("http://")) {
     baseUrl = `https://${baseUrl.slice("http://".length)}`;

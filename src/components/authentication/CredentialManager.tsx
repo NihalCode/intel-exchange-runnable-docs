@@ -30,7 +30,7 @@ const PRODUCTS: Array<{ id: ProductId; label: string; hint: string }> = [
   {
     id: "csap",
     label: "CSAP",
-    hint: "Tenant URL ending in /csap (preferred), or https://csapapi.cyware.com",
+    hint: "Tenant URL ending in /csap (preferred). Pasting …/api is OK — rewritten to …/csap. Or https://csapapi.cyware.com",
   },
 ];
 
@@ -175,15 +175,26 @@ export function CredentialManager() {
       };
       const connected = response.ok && data.credential?.status === "valid";
       if (connected) {
-        applyProductCredentials(productId, formValues);
+        const connectedBaseUrl = data.credential?.baseUrl?.trim() || formValues.baseUrl;
+        applyProductCredentials(productId, {
+          ...formValues,
+          baseUrl: connectedBaseUrl,
+        });
         setForms((current) => ({
           ...current,
-          [productId]: { ...current[productId]!, secretKey: "" },
+          [productId]: {
+            ...current[productId]!,
+            baseUrl: connectedBaseUrl,
+            secretKey: "",
+          },
         }));
+        const rewritten =
+          connectedBaseUrl.replace(/\/+$/, "") !== formValues.baseUrl.trim().replace(/\/+$/, "");
         setMessage((value) => ({
           ...value,
-          [productId]:
-            "Connected. Credentials are in memory for this browser tab only — re-enter them after closing the tab.",
+          [productId]: rewritten
+            ? `Connected using ${connectedBaseUrl} (normalized from your paste). Credentials stay in memory for this tab only.`
+            : "Connected. Credentials are in memory for this browser tab only — re-enter them after closing the tab.",
         }));
       } else {
         // Keep Secret Key on failure so the user can retry without retyping.

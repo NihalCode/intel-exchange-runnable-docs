@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import { readFile, access } from "node:fs/promises";
 import path from "node:path";
 import { authKeyValues, baseUrlForProduct } from "@/lib/products/auth";
-import { getProduct, inferProductFromQuery, isAllowedBaseUrl, listProducts } from "@/lib/products/registry";
+import {
+  getProduct,
+  inferProductFromQuery,
+  isAllowedBaseUrl,
+  listProducts,
+  normalizeProductBaseUrl,
+} from "@/lib/products/registry";
 import { buildRunnableRequest, buildEndpointSnippets } from "@/lib/snippets";
 import { DISPLAY_BASE } from "@/lib/constants";
 import type { EndpointPage } from "@/lib/types";
@@ -65,6 +71,12 @@ describe("product registry", () => {
     expect(isAllowedBaseUrl("ctix", "https://tenant.cyware.com/ctixapi/ping/")).toBe(true);
     expect(isAllowedBaseUrl("csap", "https://tenant.cyware.com/csap/api/")).toBe(true);
     expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/api/")).toBe(false);
+    expect(
+      isAllowedBaseUrl(
+        "csap",
+        normalizeProductBaseUrl("csap", "https://cs-test.cyware.com/api/")
+      )
+    ).toBe(true);
     expect(isAllowedBaseUrl("orchestrate", "https://cs-test.cyware.com/soarapi/openapi/")).toBe(
       true
     );

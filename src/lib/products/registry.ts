@@ -163,6 +163,59 @@ export function listProducts(): ApiProduct[] {
   return PRODUCTS;
 }
 
+/**
+ * Normalize tenant Base URLs users paste from Integrators / old docs into the
+ * canonical Open API root for each product (before allowlist + connectivity).
+ */
+export function normalizeProductBaseUrl(productId: string, url: string): string {
+  let normalized = url.trim().replace(/\/+$/, "");
+  if (normalized.startsWith("http://")) {
+    normalized = `https://${normalized.slice("http://".length)}`;
+  }
+
+  try {
+    const parsed = new URL(normalized);
+    if (!/\.cyware\.com$/i.test(parsed.hostname)) return normalized;
+    const path = parsed.pathname.replace(/\/+$/, "") || "";
+
+    if (productId === "csap") {
+      // Tenants often paste …/api from generic Cyware docs; CSAP Open API lives under /csap.
+      if (/^\/api$/i.test(path)) {
+        parsed.pathname = "/csap";
+        parsed.search = "";
+        parsed.hash = "";
+        return parsed.toString().replace(/\/+$/, "");
+      }
+    }
+
+    if (productId === "cftr") {
+      // Bare tenant origin → /cftrapi (never rewrite docs host).
+      if (
+        !/^cftrapi\.cyware\.com$/i.test(parsed.hostname) &&
+        (path === "" || path === "/")
+      ) {
+        parsed.pathname = "/cftrapi";
+        parsed.search = "";
+        parsed.hash = "";
+        return parsed.toString().replace(/\/+$/, "");
+      }
+    }
+
+    if (productId === "ctix") {
+      if (path === "" || path === "/") {
+        parsed.pathname = "/ctixapi";
+        parsed.search = "";
+        parsed.hash = "";
+        return parsed.toString().replace(/\/+$/, "");
+      }
+    }
+  } catch {
+    return normalized;
+  }
+
+  return normalized;
+}
+
 export function isAllowedBaseUrl(productId: string, url: string): boolean {
   const product = getProduct(productId);
   if (!product) return false;
@@ -185,7 +238,7 @@ export function disallowedBaseUrlMessage(productId: string): string {
       return (
         "Base URL is not allowed for CSAP. Use a tenant URL ending in /csap " +
         "(https://YOUR-TENANT.cyware.com/csap), or https://csapapi.cyware.com. " +
-        "Paths like …/api alone are not a CSAP Open API base."
+        "If you pasted …/api, change it to …/csap (or we rewrite …/api → …/csap automatically)."
       );
     case "cftr":
       return (
@@ -224,8 +277,8 @@ export function apiBaseUrlHint(productId: string): string {
       );
     case "csap":
       return (
-        "Tenant URL ending in /csap (preferred), e.g. https://YOUR-TENANT.cyware.com/csap, " +
-        "or https://csapapi.cyware.com"
+        "Tenant URL ending in /csap (preferred), e.g. https://YOUR-TENANT.cyware.com/csap. " +
+        "Pasting …/api is OK — it is rewritten to …/csap. Or use https://csapapi.cyware.com"
       );
     case "orchestrate":
       return (

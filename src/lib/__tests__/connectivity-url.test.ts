@@ -7,6 +7,7 @@ import {
 import {
   disallowedBaseUrlMessage,
   isAllowedBaseUrl,
+  normalizeProductBaseUrl,
 } from "@/lib/products/registry";
 
 describe("buildConnectivityUrl", () => {
@@ -125,9 +126,27 @@ describe("isAllowedBaseUrl product bases", () => {
     expect(isAllowedBaseUrl("csap", "https://csapapi.cyware.com")).toBe(true);
   });
 
-  it("rejects bare /api as a CSAP Open API base", () => {
+  it("rejects bare /api as a CSAP Open API base until normalized", () => {
     expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/api")).toBe(false);
     expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/api/")).toBe(false);
+  });
+
+  it("normalizes CSAP tenant …/api to …/csap", () => {
+    expect(normalizeProductBaseUrl("csap", "https://cs-test.cyware.com/api")).toBe(
+      "https://cs-test.cyware.com/csap"
+    );
+    expect(normalizeProductBaseUrl("csap", "https://cs-test.cyware.com/api/")).toBe(
+      "https://cs-test.cyware.com/csap"
+    );
+    expect(
+      isAllowedBaseUrl(
+        "csap",
+        normalizeProductBaseUrl("csap", "https://cs-test.cyware.com/api/")
+      )
+    ).toBe(true);
+    expect(normalizeProductBaseUrl("csap", "https://cs-test.cyware.com/csap")).toBe(
+      "https://cs-test.cyware.com/csap"
+    );
   });
 
   it("rejects CFTR docs host — tenant /cftrapi only", () => {
