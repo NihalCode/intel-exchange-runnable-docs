@@ -44,12 +44,14 @@ import {
   enforceConnectivityPlan,
   enforceReportDownloadPlan,
   enforceSetupInfoPlan,
+  enforceOpenApiAuthPlan,
   enforceCatalogPlan,
   enforceProductDocPlan,
   isCatalogQuery,
   isReportDownloadQuery,
   isPingQuery,
   isSetupInfoQuery,
+  isOpenApiAuthHowToQuery,
   isRateLimitQuery,
   enforceRateLimitGuidancePlan,
 } from "./planner";
@@ -487,12 +489,27 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     plan = enforceCatalogPlan(plan, query, req.allowedProductIds);
     plan = enforceSetupInfoPlan(plan, query, scope.filterMode === "all" ? "all" : activeProductId);
     plan = enforceRateLimitGuidancePlan(plan, query);
+    plan = enforceOpenApiAuthPlan(
+      plan,
+      query,
+      scope.filterMode === "all" ? "all" : activeProductId
+    );
 
-    if (!isSetupInfoQuery(query) && !isCatalogQuery(query) && !isRateLimitQuery(query)) {
+    if (
+      !isSetupInfoQuery(query) &&
+      !isCatalogQuery(query) &&
+      !isRateLimitQuery(query) &&
+      !isOpenApiAuthHowToQuery(query)
+    ) {
       plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
     }
 
-    if (activeProductId === "ctix" && !isPingQuery(query) && !isRateLimitQuery(query)) {
+    if (
+      activeProductId === "ctix" &&
+      !isPingQuery(query) &&
+      !isRateLimitQuery(query) &&
+      !isOpenApiAuthHowToQuery(query)
+    ) {
       // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
       // rule-based enforcers fire for non-technical phrasing.
       const intentQuery = canonicalizeIntent(query);
@@ -525,7 +542,8 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     if (
       !isSetupInfoQuery(query) &&
       !isCatalogQuery(query) &&
-      !isRateLimitQuery(query)
+      !isRateLimitQuery(query) &&
+      !isOpenApiAuthHowToQuery(query)
     ) {
       plan = enforceProductDocPlan(plan, query, scored, activeProductId);
     }
@@ -557,12 +575,14 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const setupInfoAnswer = isSetupInfoQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const catalogAnswer = isCatalogQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const rateLimitAnswer = isRateLimitQuery(query) && (plan.confidence ?? 0) >= 0.9;
+  const openApiAuthAnswer = isOpenApiAuthHowToQuery(query) && (plan.confidence ?? 0) >= 0.9;
   // Do not mark fallback merely because validation dropped a sibling step while
   // a usable step remains — that contradicts strong/partial evidence badges.
   const fallback =
     (!setupInfoAnswer &&
       !catalogAnswer &&
       !rateLimitAnswer &&
+      !openApiAuthAnswer &&
       (lowConfidence || stepResults.length === 0));
 
   const titleBySlug = new Map(productManifest.pages.map((p) => [p.slug, p.title]));

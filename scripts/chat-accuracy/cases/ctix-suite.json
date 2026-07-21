@@ -18,6 +18,16 @@
     "mustContain": ["access", "signature"]
   },
   {
+    "id": "ctix-auth-howto-query-params",
+    "prompt": "How do I authenticate a CTIX Open API request? List the required query parameters.",
+    "expectedIntent": "workflow",
+    "fallbackIntent": ["workflow", "explain"],
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "mustContain": ["AccessID", "Signature", "Expires"],
+    "mustNotContain": ["I can’t verify", "I can't verify", "SecretKey="]
+  },
+  {
     "id": "ctix-no-mass-delete",
     "prompt": "Delete all indicators with one undocumented CTIX call.",
     "expectedIntent": "workflow",

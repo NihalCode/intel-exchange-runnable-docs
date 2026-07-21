@@ -64,30 +64,42 @@ Covered by existing `chat-accuracy-*` suites + manifest title/snippet/no-code te
 | Manifest cases wrong `resolveProductScope` API | Test bug | Fixed call signature |
 | Cross-isolation over-strict abstention | Agent still plans | Softened to product-scope + no SecretKey |
 | Path doubling CFTR/CSAP (prior) | `joinBase` | Already shipped in `3fc9e04` |
+| Auth how-to abstention on prod (Wave D) | LLM invented slug `authentication`; validator dropped all steps → `unsupportedEndpointAbstention` | `isOpenApiAuthHowToQuery` + `enforceOpenApiAuthPlan` (AccessID / Signature / Expires + Ping cite) |
+| Prod retrieval degraded banner | Vector path failed → local BM25 fallback | Documented; auth how-to no longer depends on retrieval |
 
 **Key files added/changed:**  
-`scripts/chat-accuracy/*`, `scripts/production/prod-chat-harness.mjs`, `scripts/auth-smoke.mjs`, `scripts/production/four-product-extreme-probe.mjs`, `src/lib/__tests__/chat-accuracy-*.test.ts`, `e2e/agent-chat-smoke.spec.ts`, `docs/enterprise/prod-chat-*`, `package.json` scripts.
+`src/lib/agent/planner.ts`, `src/lib/agent/orchestrate.ts`, `src/lib/__tests__/setup-info-plan.test.ts`, `scripts/chat-accuracy/cases/ctix-suite.json`, `scripts/chat-accuracy/*`, `scripts/production/prod-chat-harness.mjs`, `scripts/auth-smoke.mjs`, `scripts/production/four-product-extreme-probe.mjs`, `src/lib/__tests__/chat-accuracy-*.test.ts`, `e2e/agent-chat-smoke.spec.ts`, `docs/enterprise/prod-chat-*`, `package.json` scripts.
 
 ## 23. Commands / results
 
 ```text
 npm run auth:smoke -- --all          → 4/4
 npm run prod:extreme-probe           → 196 PASS / 0 FAIL
-npm test -- chat-accuracy            → 279 passed
-npm run prod:chat-harness            → BLOCKED (no credentials)
+npm test -- chat-accuracy            → 284 passed
+npm run prod:chat-harness            → BLOCKED without cookie env (browser canary used instead)
 ```
 
 ## 24–25. Preview / canary
 
-Unauthenticated infra canaries green on all four canonical hosts. Authenticated agent canary **not run** (no test-tenant Auth0 cookie/CSRF supplied).
+Unauthenticated infra canaries green on all four canonical hosts.
+
+**Authenticated CTIX browser canary** (`apitest1.cyninjadev.com/agent`, user session present):
+
+| Check | Result |
+|---|---|
+| Session / Ask AI UI | PASS (signed in) |
+| Auth how-to (pre-fix) | FAIL — abstention + local-index banner |
+| Auth how-to (post `enforceOpenApiAuthPlan`) | Fixed in code; re-verify after deploy |
+| Cookie harness | BLOCKED — Auth0 cookies HttpOnly; use browser canary |
 
 ## 26. Remaining limitations
 
-1. No live authenticated multi-turn LLM scoring (needs `PROD_CHAT_COOKIE` + `PROD_CHAT_CSRF`)  
-2. Vitest uses BM25 + rule planner; production may use OpenAI + Pinecone  
+1. Programmatic `PROD_CHAT_COOKIE` + `PROD_CHAT_CSRF` harness still needs operator-exported session (HttpOnly cookies)  
+2. Vitest uses BM25 + rule planner; production may use OpenAI + Pinecone (often degraded → local index on CTIX canary)  
 3. Build App has no in-product preview worker / sandbox (documented in BUILD_APP_ARCHITECTURE.md)  
 4. Manifest suite volume capped (`MANIFEST_SUITE_LIMIT`, default 24/product in tests) vs full prompt minimums  
 5. Playwright agent UI smoke skipped without session cookie  
+6. Full four-product authenticated LLM scoring after shared agent change still requires staged canaries per product 
 
 ## 27. Rollback
 

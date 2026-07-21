@@ -337,6 +337,109 @@ export function isSetupInfoQuery(query: string): boolean {
   return isBaseUrlQuery(query) || isCredentialsQuery(query);
 }
 
+/**
+ * How-to Open API auth (AccessID / Signature / Expires) — not an endpoint lookup.
+ * Without this, LLMs invent a fake `authentication` slug and the validator abstains.
+ */
+export function isOpenApiAuthHowToQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  if (isSetupInfoQuery(query) || isCatalogQuery(query) || isRateLimitQuery(query)) {
+    return false;
+  }
+  const howTo =
+    /\bhow\s+(do\s+i|does|to)\b[\s\S]{0,80}\bauthenticat/.test(q) ||
+    /\bauthenticat(?:e|ion|ing)\b[\s\S]{0,80}\b(open\s*api|api\s+request|request|ctix|cftr|csap|orchestrate)\b/.test(
+      q
+    ) ||
+    /\b(open\s*api|api)\s+authenticat/.test(q) ||
+    /\bhow\s+does\b[\s\S]{0,40}\b(open\s*api\s+)?authentication\s+work\b/.test(q) ||
+    /\b(required|need(?:ed)?)\b[\s\S]{0,60}\b(query\s*)?(param(?:eter)?s?)\b[\s\S]{0,40}\b(access\s*id|signature|expires|auth)/.test(
+      q
+    ) ||
+    /\b(access\s*id|signature|expires)\b[\s\S]{0,40}\b(query|param|hmac|sign|authenticat)/.test(q) ||
+    /\bhmac[- ]?sha-?1\b/.test(q);
+  if (!howTo) return false;
+  // isPingQuery also matches phrases like "api … work"; keep those as auth how-to
+  // when authentication / HMAC / query-auth params are explicit.
+  if (
+    isPingQuery(query) &&
+    !/\bauthenticat/.test(q) &&
+    !/\b(access\s*id|signature|expires|hmac)\b/.test(q)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function openApiAuthWorkflow(productId: string): string {
+  const label =
+    productId === "all" ? "Cyware Open API" : getProductOrThrow(productId).displayLabel;
+  return (
+    `**${label} Open API authentication** uses three query parameters on every request:\n\n` +
+    `1. **AccessID** — your Open API access ID\n` +
+    `2. **Expires** — Unix expiry timestamp (short-lived; typically tens of seconds)\n` +
+    `3. **Signature** — HMAC-SHA1 of \`{AccessID}\\n{Expires}\`, keyed with your **Secret Key**, then Base64-encoded (URL-safe as needed)\n\n` +
+    `Never put the Secret Key in the URL or in chat answers as a concrete value — only AccessID, Signature, and Expires belong on the request. ` +
+    `Generate Signature & Expires in **API Settings** (or your Integrators / pre-request tooling), connect products at **/authentication**, ` +
+    `then verify with the product connectivity check.`
+  );
+}
+
+/** Answer Open API auth how-to from product rules (not a hallucinated auth endpoint). */
+export function enforceOpenApiAuthPlan(
+  plan: AgentPlan,
+  query: string,
+  productId: string
+): AgentPlan {
+  if (!isOpenApiAuthHowToQuery(query)) return plan;
+
+  const workflow = openApiAuthWorkflow(productId);
+  const steps: AgentPlanStep[] = [];
+  const citations: AgentCitation[] = [];
+
+  if (productId === "ctix") {
+    citations.push({
+      slug: "authentication",
+      title: "Authentication",
+      url: docsUrlForProduct("ctix", "authentication"),
+    });
+  }
+
+  const targets =
+    productId === "all"
+      ? listProducts().map((p) => p.productId)
+      : [productId];
+
+  for (const id of targets) {
+    const cfg = CONNECTIVITY_BY_PRODUCT[id];
+    if (!cfg) continue;
+    // Single-product: attach connectivity as a verification step. All-products:
+    // citations only (steps must resolve in one product content tree).
+    if (productId !== "all") {
+      steps.push({
+        slug: cfg.slug,
+        order: 1,
+        explanation:
+          `After auth params are set, verify with **${cfg.title}**. ${cfg.intro}`,
+      });
+    }
+    citations.push({
+      slug: cfg.slug,
+      title: productId === "all" ? `${getProductOrThrow(id).displayLabel}: ${cfg.title}` : cfg.title,
+      url: docsUrlForProduct(id, cfg.slug),
+    });
+  }
+
+  return {
+    ...plan,
+    confidence: 0.95,
+    workflow,
+    steps,
+    citations: citations.length > 0 ? citations : plan.citations,
+    questions: undefined,
+  };
+}
+
 /** HTTP 429 / rate-limit client guidance — not an endpoint lookup. */
 export function isRateLimitQuery(query: string): boolean {
   const q = query.toLowerCase();
