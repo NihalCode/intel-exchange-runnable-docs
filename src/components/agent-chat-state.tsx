@@ -621,7 +621,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           );
         }
         if (res.status === 401) {
-          const fallbackSignIn = `/sign-in?returnTo=${encodeURIComponent(
+          const fallbackSignIn = `/auth/login?returnTo=${encodeURIComponent(
             typeof window !== "undefined"
               ? window.location.pathname + window.location.search
               : "/agent"

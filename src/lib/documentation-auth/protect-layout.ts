@@ -23,7 +23,7 @@ function redirectForMissingSession(result: AppSessionResult, returnTo: string): 
   if (result.auth0Authenticated) {
     redirect(`/post-login?returnTo=${encodeURIComponent(returnTo)}`);
   }
-  redirect(`/sign-in?returnTo=${encodeURIComponent(returnTo)}`);
+  redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
 }
 
 /** Returns workspace session or redirects to sign-in / access-denied flows. */

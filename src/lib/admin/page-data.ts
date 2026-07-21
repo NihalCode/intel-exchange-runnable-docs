@@ -28,12 +28,12 @@ import {
 
 export async function requireAdminPageContext() {
   const session = await getAppSession();
-  if (!session) redirect("/sign-in?returnTo=/admin");
+  if (!session) redirect("/auth/login?returnTo=/admin");
   let context;
   try {
     context = await resolveOrganizationContextOrBootstrap(session);
   } catch {
-    redirect("/sign-in?returnTo=/admin");
+    redirect("/auth/login?returnTo=/admin");
   }
   const capabilities = ENTERPRISE_PERMISSIONS.filter((permission) =>
     authorizeEnterprise(context.principal, permission, {
