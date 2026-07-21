@@ -36,6 +36,19 @@ describe("isCredentialsQuery", () => {
         "will I need 8 separate keys (access id + secret key) for all 4 of these apis?"
       )
     ).toBe(true);
+    expect(isCredentialsQuery("Does each product need its own API keys?")).toBe(true);
+  });
+});
+
+describe("enforceSetupInfoPlan credentials lead", () => {
+  it("leads with own-keys guidance for credentials-only prompts", () => {
+    const plan = enforceSetupInfoPlan(
+      emptyPlan,
+      "Does each product need its own API keys?",
+      "cftr"
+    );
+    expect(plan.workflow).toMatch(/^\*\*Yes — use each product/i);
+    expect(plan.workflow).toMatch(/own.*separate/i);
   });
 });
 

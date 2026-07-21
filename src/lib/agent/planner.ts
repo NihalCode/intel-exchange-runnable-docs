@@ -753,8 +753,27 @@ export function enforceProductDocPlan(
   return plan;
 }
 
-function setupInfoWorkflow(productId: string): string {
+function setupInfoWorkflow(productId: string, query: string): string {
+  // Prefer credentials lead whenever the query is about keys — base-URL regexes
+  // can false-positive on phrases like "each … API keys".
+  const credentialsLead = isCredentialsQuery(query);
+
   if (productId === "all") {
+    const credBlock =
+      "**Credentials:** each product has its **own** separate Access ID + Secret Key pair (generated in that product's admin). " +
+      "CTIX keys do not work for CFTR, CSAP, or Orchestrate. If you use all four products, you need **four pairs** (eight values total).";
+    if (credentialsLead) {
+      return (
+        `${credBlock}\n\n` +
+        "**Live Open API base URLs** (set in API Settings when you switch products):\n\n" +
+        listProducts()
+          .map((p) => {
+            const hint = apiBaseUrlHint(p.productId);
+            return `- **${p.displayLabel}** — \`${p.baseApiUrl}\` — ${hint}`;
+          })
+          .join("\n")
+      );
+    }
     const lines = listProducts().map((p) => {
       const hint = apiBaseUrlHint(p.productId);
       return `- **${p.displayLabel}** — \`${p.baseApiUrl}\` — ${hint}`;
@@ -762,8 +781,7 @@ function setupInfoWorkflow(productId: string): string {
     return (
       "**Live Open API base URLs** (set in API Settings when you switch products):\n\n" +
       `${lines.join("\n")}\n\n` +
-      "**Credentials:** each product has its **own** Access ID + Secret Key pair (generated in that product's admin). " +
-      "CTIX keys do not work for CFTR, CSAP, or Orchestrate. If you use all four products, you need **four pairs** (eight values total)."
+      credBlock
     );
   }
 
@@ -773,12 +791,20 @@ function setupInfoWorkflow(productId: string): string {
     productId === "ctix"
       ? "Generate Access ID + Secret Key in CTIX → API Settings / Integrators CSV."
       : `Generate Access ID + Secret Key in **${product.productName}** admin (not from CTIX).`;
+  const ownKeys =
+    `Each Cyware product uses its **own** separate Access ID + Secret Key pair — you cannot reuse CTIX credentials on other APIs.`;
+
+  if (credentialsLead) {
+    return (
+      `**Yes — use each product’s own keys.** ${ownKeys} ${credNote}\n\n` +
+      `**Live Open API base URL** for ${product.displayLabel}: \`${product.baseApiUrl}\`\n\n${hint}`
+    );
+  }
 
   return (
     `**Live Open API base URL** for ${product.displayLabel}: \`${product.baseApiUrl}\`\n\n` +
     `${hint}\n\n` +
-    `Enter this in **API Settings** (header). ${credNote} ` +
-    `Each Cyware product uses its **own** separate Access ID + Secret Key pair — you cannot reuse CTIX credentials on other APIs.`
+    `Enter this in **API Settings** (header). ${credNote} ${ownKeys}`
   );
 }
 
@@ -790,7 +816,7 @@ export function enforceSetupInfoPlan(
 ): AgentPlan {
   if (!isSetupInfoQuery(query)) return plan;
 
-  const workflow = setupInfoWorkflow(productId);
+  const workflow = setupInfoWorkflow(productId, query);
   const authSlug =
     productId === "all"
       ? undefined
@@ -954,7 +980,8 @@ function matchAppPattern(query: string): (typeof APP_PATTERNS)[0] | null {
 export function planAppFromRetrieval(
   query: string,
   chunks: ScoredChunk[],
-  confidence: number
+  confidence: number,
+  productId = "ctix"
 ): AgentPlan & { appTitle?: string } {
   const pattern = matchAppPattern(query);
   if (pattern) {
@@ -970,12 +997,12 @@ export function planAppFromRetrieval(
         const chunk = chunks.find((c) => c.slug === s.slug);
         return chunk
           ? citationFromChunk(chunk)
-          : { slug: s.slug, title: s.slug, url: `/docs/${s.slug}` };
+          : { slug: s.slug, title: s.slug, url: docsUrlForProduct(productId, s.slug) };
       }),
       appTitle: pattern.title,
     };
   }
-  const base = planFromRetrieval(query, chunks, confidence);
+  const base = planFromRetrieval(query, chunks, confidence, productId);
   return {
     ...base,
     workflow:

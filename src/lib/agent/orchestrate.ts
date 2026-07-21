@@ -500,7 +500,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   let plan: ReturnType<typeof planFromRetrieval> & { appTitle?: string };
   if (mode === "app") {
-    plan = planAppFromRetrieval(query, scored, confidence);
+    plan = planAppFromRetrieval(query, scored, confidence, activeProductId);
   } else if (apiKeyConfigured && !lowConfidence) {
     try {
       plan = await planWithLlm(query, scored, req.history, activeProductId, {
