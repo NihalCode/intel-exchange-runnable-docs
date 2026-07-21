@@ -128,9 +128,15 @@ export async function POST(req: Request) {
     if (isAuthEnabled() || process.env.NODE_ENV === "production") {
       const context = await resolveOrganizationContext(session);
       organizationId = context.organization.id;
+      const ensureProductId =
+        pinnedProduct ??
+        (hostContext?.productId && isProductKey(hostContext.productId)
+          ? hostContext.productId
+          : null);
       const access = await getAgentProductAccess(
         organizationId,
-        session.user.id
+        session.user.id,
+        { ensureProductId }
       );
       allowedProductIds = access.productIds;
     } else if (hasTurnId) {

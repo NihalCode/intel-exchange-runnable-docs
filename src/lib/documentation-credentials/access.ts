@@ -1,20 +1,41 @@
 import "server-only";
 
 import type { AgentMode, AgentResponse } from "@/lib/agent/types";
-import { getProductOrThrow } from "@/lib/products/registry";
+import { getProductOrThrow, isProductKey } from "@/lib/products/registry";
 
 import { listValidCredentialProductIds } from "@/lib/documentation-credentials/repository";
 import type { DocumentationProduct } from "@/lib/documentation-credentials/types";
 
+/** Merge connected credentials with an optional host-pinned product for docs chat. */
+export function mergeEnsuredProductIds(
+  connected: readonly DocumentationProduct[],
+  ensureProductId?: string | null
+): DocumentationProduct[] {
+  const productIds = [...connected];
+  const ensure = ensureProductId?.trim();
+  if (ensure && isProductKey(ensure) && !productIds.includes(ensure)) {
+    productIds.push(ensure);
+  }
+  return productIds;
+}
+
+/**
+ * Products the user may ask about in Ask AI.
+ * Connected Open API credentials unlock multi-product scope.
+ * On a single-product deployment, the pinned host product is always allowed for
+ * documentation answers (runnable live calls still need that product connected).
+ */
 export async function getAgentProductAccess(
   organizationId: string,
-  userId: string
+  userId: string,
+  options?: { ensureProductId?: string | null }
 ): Promise<{
   productIds: DocumentationProduct[];
   hasAny: boolean;
   labels: string[];
 }> {
-  const productIds = await listValidCredentialProductIds(organizationId, userId);
+  const connected = await listValidCredentialProductIds(organizationId, userId);
+  const productIds = mergeEnsuredProductIds(connected, options?.ensureProductId);
   return {
     productIds,
     hasAny: productIds.length > 0,

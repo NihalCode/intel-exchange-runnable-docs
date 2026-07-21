@@ -10,6 +10,7 @@ import { runAgent } from "@/lib/agent/orchestrate";
 import {
   buildProductAccessDeniedResponse,
   buildProductClarificationQuestions,
+  mergeEnsuredProductIds,
 } from "@/lib/documentation-credentials/access";
 import {
   resetDatabaseConnection,
@@ -117,6 +118,14 @@ describe("buildProductAccessDeniedResponse", () => {
     expect(response.workflow).toMatch(/CSAP/);
     expect(response.workflow).toMatch(/CTIX/);
     expect(response.workflow).toMatch(/CFTR/);
+  });
+});
+
+describe("mergeEnsuredProductIds", () => {
+  it("always includes the host-pinned product for docs chat", () => {
+    expect(mergeEnsuredProductIds(["ctix"], "cftr").sort()).toEqual(["cftr", "ctix"]);
+    expect(mergeEnsuredProductIds([], "cftr")).toEqual(["cftr"]);
+    expect(mergeEnsuredProductIds(["cftr"], "cftr")).toEqual(["cftr"]);
   });
 });
 
