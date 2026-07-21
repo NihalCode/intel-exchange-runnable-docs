@@ -175,35 +175,51 @@ async function main() {
   console.log(`Total: ${chunks.length} chunks across ${productFilter ?? "all products"}`);
 
   const host = await ensureIndex(cfg);
-  const namespace =
-    process.env.VECTOR_NAMESPACE?.trim() ||
-    (productFilter ? `product-${productFilter}` : undefined);
 
+  // Always isolate by product namespace (product-ctix, product-cftr, …).
+  // VECTOR_NAMESPACE overrides only for a single-product upsert.
+  const explicitNs = process.env.VECTOR_NAMESPACE?.trim();
   const batchSize = 64;
   let upserted = 0;
-  for (let i = 0; i < chunks.length; i += batchSize) {
-    const batch = chunks.slice(i, i + batchSize);
-    const embeddings = await embedBatch(
-      batch.map((c) => c.text.slice(0, 8000)),
-      openaiKey
-    );
-    const vectors = batch.map((c, j) => ({
-      id: c.id,
-      values: embeddings[j],
-      metadata: {
-        productId: c.productId,
-        slug: c.slug,
-        title: c.title,
-        kind: c.kind,
-        ...(c.method ? { method: c.method } : {}),
-        ...(c.path ? { path: c.path } : {}),
-      },
-    }));
-    await upsertBatch(host, cfg.apiKey, vectors, namespace);
-    upserted += vectors.length;
-    process.stdout.write(`  upserted ${upserted}/${chunks.length}\r`);
+
+  const byProduct = new Map();
+  for (const c of chunks) {
+    const pid = c.productId || "ctix";
+    if (!byProduct.has(pid)) byProduct.set(pid, []);
+    byProduct.get(pid).push(c);
   }
-  console.log(`\nDone. Upserted ${upserted} vectors into "${cfg.indexName}"${namespace ? ` (namespace: ${namespace})` : ""}.`);
+
+  for (const [productId, productChunks] of byProduct) {
+    const ns =
+      explicitNs && (productFilter || byProduct.size === 1)
+        ? explicitNs
+        : `product-${productId}`;
+
+    console.log(`Upserting ${productChunks.length} vectors → namespace "${ns}"`);
+    for (let i = 0; i < productChunks.length; i += batchSize) {
+      const batch = productChunks.slice(i, i + batchSize);
+      const embeddings = await embedBatch(
+        batch.map((c) => c.text.slice(0, 8000)),
+        openaiKey
+      );
+      const vectors = batch.map((c, j) => ({
+        id: c.id,
+        values: embeddings[j],
+        metadata: {
+          productId: c.productId,
+          slug: c.slug,
+          title: c.title,
+          kind: c.kind,
+          ...(c.method ? { method: c.method } : {}),
+          ...(c.path ? { path: c.path } : {}),
+        },
+      }));
+      await upsertBatch(host, cfg.apiKey, vectors, ns);
+      upserted += vectors.length;
+      process.stdout.write(`  upserted ${upserted}/${chunks.length}\r`);
+    }
+  }
+  console.log(`\nDone. Upserted ${upserted} vectors into "${cfg.indexName}".`);
 }
 
 main().catch((err) => {

@@ -70,10 +70,23 @@ describe("empty retrieval and degraded lexical mode", () => {
   });
 
   it("exposes degraded_lexical without provider error details", () => {
-    const status = retrievalStatus(true, false, true);
-    expect(status).toEqual({ retrievalMode: "degraded_lexical", retrievalDegraded: true });
+    const status = retrievalStatus(true, false, true, "vector_id_mismatch");
+    expect(status).toEqual({
+      retrievalMode: "degraded_lexical",
+      retrievalDegraded: true,
+      retrievalReasonCode: "vector_id_mismatch",
+    });
     expect(degradedRetrievalNotice(true)).toContain("local index");
     expect(degradedRetrievalNotice(true)).not.toMatch(/pinecone|openai|api key|401|403/i);
+  });
+
+  it("keeps healthy hybrid status distinct from degraded lexical", () => {
+    expect(retrievalStatus(true, true, false)).toEqual({
+      retrievalMode: "hybrid",
+      retrievalDegraded: false,
+      retrievalReasonCode: "hybrid_ok",
+    });
+    expect(degradedRetrievalNotice(false)).toBeUndefined();
   });
 
   it("empty retrieval plan asks clarifying questions instead of inventing endpoints", () => {

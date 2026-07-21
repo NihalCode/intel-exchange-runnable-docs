@@ -63,6 +63,9 @@ const SHARED_ENV_KEYS = [
   "INVITE_EMAIL_FROM",
 ];
 
+/** Keys that must be non-empty when present on the source project. */
+const REQUIRED_RETRIEVAL_KEYS = ["OPENAI_API_KEY", "PINECONE_API_KEY", "PINECONE_INDEX"];
+
 const SENSITIVE_KEYS = new Set([
   "AUTH0_SECRET",
   "AUTH0_CLIENT_SECRET",
@@ -166,6 +169,13 @@ async function main() {
     );
   }
 
+  const missingRetrieval = REQUIRED_RETRIEVAL_KEYS.filter((key) => !sharedValues[key]);
+  if (missingRetrieval.length > 0) {
+    console.warn(
+      `Warning: retrieval keys missing on source (Ask AI will degrade to local index): ${missingRetrieval.join(", ")}`
+    );
+  }
+
   for (const product of PRODUCTS) {
     const entries = [];
     for (const [key, value] of Object.entries(sharedValues)) {
@@ -173,6 +183,7 @@ async function main() {
     }
     entries.push(buildEntry("APP_PRODUCT_ID", product.productId));
     entries.push(buildEntry("APP_BASE_URL", product.appBaseUrl));
+    entries.push(buildEntry("VECTOR_NAMESPACE", `product-${product.productId}`));
     entries.push(buildEntry("MULTI_PROJECT_DEPLOYMENT", "true"));
 
     console.log(`\n${product.project} (${product.productId})`);

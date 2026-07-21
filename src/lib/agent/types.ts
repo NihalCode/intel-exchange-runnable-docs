@@ -221,6 +221,20 @@ export type RetrievalEvidence =
 
 export type RetrievalMode = "hybrid" | "lexical" | "degraded_lexical";
 
+/** Safe machine-readable reasons for retrieval health (never include secrets). */
+export type RetrievalReasonCode =
+  | "hybrid_ok"
+  | "lexical_only"
+  | "openai_not_configured"
+  | "pinecone_not_configured"
+  | "embedding_failed"
+  | "pinecone_index_unavailable"
+  | "pinecone_query_failed"
+  | "pinecone_query_exception"
+  | "vector_id_mismatch"
+  | "vector_empty"
+  | "vector_exception";
+
 import type { ResponseStyleDecision } from "./response-style";
 
 /**
@@ -243,6 +257,8 @@ export interface AgentResponse {
   retrievalMode?: RetrievalMode;
   /** Vector retrieval was attempted but unavailable or failed; lexical results remain. */
   retrievalDegraded?: boolean;
+  /** Safe reason code for operators / health UI (no secrets or provider payloads). */
+  retrievalReasonCode?: RetrievalReasonCode;
   app?: AgentAppBlueprint;
   appDiff?: AgentAppDiff;
   appEdit?: boolean;

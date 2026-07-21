@@ -3,9 +3,10 @@ import type {
   AgentChunk,
   RetrievalEvidence,
   RetrievalMode,
+  RetrievalReasonCode,
   ScoredChunk,
 } from "./types";
-export type { RetrievalEvidence } from "./types";
+export type { RetrievalEvidence, RetrievalReasonCode } from "./types";
 import { termFrequencies, tokenize } from "./tokenize";
 
 const K1 = 1.2;
@@ -173,15 +174,39 @@ export function fuseRankedResults(
 export function retrievalStatus(
   vectorAttempted: boolean,
   vectorContributed: boolean,
-  vectorFailed: boolean
-): { retrievalMode: RetrievalMode; retrievalDegraded: boolean } {
+  vectorFailed: boolean,
+  reasonCode?: RetrievalReasonCode
+): {
+  retrievalMode: RetrievalMode;
+  retrievalDegraded: boolean;
+  retrievalReasonCode: RetrievalReasonCode;
+} {
   if (vectorContributed) {
-    return { retrievalMode: "hybrid", retrievalDegraded: vectorFailed };
+    return {
+      retrievalMode: "hybrid",
+      retrievalDegraded: vectorFailed,
+      retrievalReasonCode: reasonCode ?? (vectorFailed ? "pinecone_query_failed" : "hybrid_ok"),
+    };
   }
   if (vectorAttempted && vectorFailed) {
-    return { retrievalMode: "degraded_lexical", retrievalDegraded: true };
+    return {
+      retrievalMode: "degraded_lexical",
+      retrievalDegraded: true,
+      retrievalReasonCode: reasonCode ?? "pinecone_query_failed",
+    };
   }
-  return { retrievalMode: "lexical", retrievalDegraded: false };
+  if (!vectorAttempted) {
+    return {
+      retrievalMode: "lexical",
+      retrievalDegraded: false,
+      retrievalReasonCode: reasonCode ?? "openai_not_configured",
+    };
+  }
+  return {
+    retrievalMode: "lexical",
+    retrievalDegraded: false,
+    retrievalReasonCode: reasonCode ?? "lexical_only",
+  };
 }
 
 export function retrieveWithEmbedding(
@@ -213,17 +238,75 @@ export function retrieveWithEmbedding(
   return mergeHybridScores(lexical, semantic.slice(0, limit * 2), limit);
 }
 
+/**
+ * Combined indexes prefix chunk ids as `{productId}::{rawId}` to avoid
+ * collisions (e.g. `tags::section` exists in CTIX and Orchestrate). Pinecone
+ * stores the raw id inside a product namespace (and often `metadata.productId`).
+ * Resolve either form so vector hits are not dropped as an "id mismatch".
+ */
+export function resolveChunkIdForPineconeMatch(
+  matchId: string,
+  byId: Map<string, AgentChunk>,
+  metadataProductId?: string,
+  fallbackProductId?: string
+): string | undefined {
+  if (byId.has(matchId)) return matchId;
+
+  const candidates: string[] = [];
+  const meta =
+    typeof metadataProductId === "string" && metadataProductId.trim()
+      ? metadataProductId.trim()
+      : undefined;
+  const fallback =
+    typeof fallbackProductId === "string" && fallbackProductId.trim()
+      ? fallbackProductId.trim()
+      : undefined;
+
+  for (const productId of [meta, fallback]) {
+    if (!productId) continue;
+    const prefix = `${productId}::`;
+    if (!matchId.startsWith(prefix)) candidates.push(`${prefix}${matchId}`);
+  }
+
+  // Last resort: try known product prefixes when metadata is missing.
+  if (candidates.length === 0) {
+    for (const productId of ["ctix", "cftr", "csap", "orchestrate"]) {
+      candidates.push(`${productId}::${matchId}`);
+    }
+  }
+
+  for (const id of candidates) {
+    if (byId.has(id)) return id;
+  }
+  return undefined;
+}
+
 /** Map external (e.g. Pinecone) match ids+scores back to local chunks. */
 export function scoredChunksByIds(
-  matches: { id: string; score: number }[],
-  index: AgentIndex
+  matches: { id: string; score: number; metadata?: Record<string, unknown> }[],
+  index: AgentIndex,
+  fallbackProductId?: string
 ): ScoredChunk[] {
   const byId = chunkById(index);
   const out: ScoredChunk[] = [];
-  for (const { id, score } of matches) {
-    const chunk = byId.get(id);
+  for (const match of matches) {
+    const metaPid =
+      typeof match.metadata?.productId === "string" ? match.metadata.productId : undefined;
+    const resolvedId = resolveChunkIdForPineconeMatch(
+      match.id,
+      byId,
+      metaPid,
+      fallbackProductId
+    );
+    if (!resolvedId) continue;
+    const chunk = byId.get(resolvedId);
     if (!chunk) continue;
-    out.push({ ...chunk, score, lexicalScore: 0, semanticScore: score });
+    out.push({
+      ...chunk,
+      score: match.score,
+      lexicalScore: 0,
+      semanticScore: match.score,
+    });
   }
   return out;
 }

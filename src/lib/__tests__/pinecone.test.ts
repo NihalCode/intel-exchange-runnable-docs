@@ -106,6 +106,32 @@ describe("scoredChunksByIds", () => {
     expect(scored[0].semanticScore).toBeCloseTo(0.91);
   });
 
+  it("maps unprefixed pinecone ids onto combined-index product prefixes", () => {
+    const combined: AgentIndex = {
+      ...index,
+      chunks: [
+        {
+          ...index.chunks[0],
+          id: "ctix::tags/list-tags::endpoint",
+          productId: "ctix",
+        },
+      ],
+    };
+    const scored = scoredChunksByIds(
+      [
+        {
+          id: "tags/list-tags::endpoint",
+          score: 0.88,
+          metadata: { productId: "ctix" },
+        },
+      ],
+      combined,
+      "ctix"
+    );
+    expect(scored).toHaveLength(1);
+    expect(scored[0].id).toBe("ctix::tags/list-tags::endpoint");
+  });
+
   it("skips unknown ids", () => {
     expect(scoredChunksByIds([{ id: "nope", score: 1 }], index)).toEqual([]);
   });

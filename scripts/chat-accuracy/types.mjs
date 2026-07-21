@@ -2,7 +2,7 @@
  * @typedef {"workflow" | "snippet" | "app_build" | "app_edit" | "explain" | "deploy" | "commit" | "preview"} ChatIntentFamily
  * @typedef {"plan" | "gated_unavailable" | "refusal" | "abstention" | "abstention_or_no_invent" | "secret_refusal" | "side_effect_refusal"} ChatResponseType
  * @typedef {"answered" | "partially_answered" | "no_verified_solution" | "no_results" | "clarification_required" | "access_blocked" | "credential_blocked" | "provider_error" | "system_error" | "cancelled"} ExpectedOutcome
- * @typedef {"concept" | "endpoint" | "authentication" | "authorization" | "parameters" | "request_body" | "response_schema" | "status_code" | "pagination" | "filtering" | "troubleshooting" | "upgrade" | "snippet" | "unsupported" | "cross_product" | "multi_turn" | "adversarial" | "readability" | "error_recovery"} ProductionChatCategory
+ * @typedef {"concept" | "endpoint" | "authentication" | "authorization" | "parameters" | "request_body" | "response_schema" | "status_code" | "pagination" | "filtering" | "troubleshooting" | "upgrade" | "snippet" | "unsupported" | "typo" | "cross_product" | "multi_turn" | "adversarial" | "readability" | "error_recovery"} ProductionChatCategory
  *
  * @typedef {object} ProductionChatCase
  * @property {string} id

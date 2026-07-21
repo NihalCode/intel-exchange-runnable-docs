@@ -175,6 +175,38 @@ export function isAllowedBaseUrl(productId: string, url: string): boolean {
   }
 }
 
+/**
+ * Product-specific guidance when a Base URL fails the allowlist.
+ * Never cross-pollinate Orchestrate/CFTR/CSAP/CTIX path hints.
+ */
+export function disallowedBaseUrlMessage(productId: string): string {
+  switch (productId) {
+    case "csap":
+      return (
+        "Base URL is not allowed for CSAP. Use a tenant URL ending in /csap " +
+        "(https://YOUR-TENANT.cyware.com/csap), or https://csapapi.cyware.com. " +
+        "Paths like …/api alone are not a CSAP Open API base."
+      );
+    case "cftr":
+      return (
+        "Base URL is not allowed for CFTR. Use your tenant Open API URL ending in /cftrapi " +
+        "(https://YOUR-TENANT.cyware.com/cftrapi) — not https://cftrapi.cyware.com (docs only)."
+      );
+    case "orchestrate":
+      return (
+        "Base URL is not allowed for Orchestrate. Use a Cyware tenant Open API URL " +
+        "(…/soarapi/openapi, …/soarapi, or …/co), or https://orchestrateapi.cyware.com."
+      );
+    case "ctix":
+      return (
+        "Base URL is not allowed for CTIX. Use a tenant URL ending in /ctixapi " +
+        "(https://YOUR-TENANT.cyware.com/ctixapi)."
+      );
+    default:
+      return "Base URL is not allowed for this product. Check the tenant Open API path.";
+  }
+}
+
 export function docsUrlForSlug(product: ApiProduct, slug: string): string {
   if (product.docsSourceType === "postman") {
     return `${product.docsOrigin}/`;
@@ -191,7 +223,10 @@ export function apiBaseUrlHint(productId: string): string {
         "Paths use /openapi/… (e.g. test-connectivity)."
       );
     case "csap":
-      return "https://csapapi.cyware.com or your tenant URL https://YOUR_TENANT.cyware.com/csap";
+      return (
+        "Tenant URL ending in /csap (preferred), e.g. https://YOUR-TENANT.cyware.com/csap, " +
+        "or https://csapapi.cyware.com"
+      );
     case "orchestrate":
       return (
         "https://YOUR_TENANT.cyware.com/soarapi/openapi/ (or …/soarapi, or …/co), " +

@@ -1,135 +1,123 @@
 # Production AI Chat + Build App — FINAL REPORT
 
 **Date:** 2026-07-21  
-**Baseline commit before program:** `3fc9e04` (credential connect fixes)  
-**Program commits:** `2a90906` (harness), `6db046d` (auth how-to), `fa1f546` (Build App feature guard)  
-**Readiness:** `VERIFIED WITH DOCUMENTED LIMITATIONS`  
-**CTIX authenticated canary:** PASS (`apitest1`, deployment `dpl_qQarcnWAuDq2NKKw8RjGWeDFW5RH` → follow-on `fa1f546`)
+**Baseline:** `3fc9e04`  
+**Key commits:** `2a90906` (harness) · `6db046d` (auth how-to) · `fa1f546` (Build App guard) · `f82c4d4` (HTTP 401/4xx) · (this commit: suite expansion + retrieval health)  
+**Readiness banner:** `VERIFIED WITH DOCUMENTED LIMITATIONS`
+
+Do **not** claim `ALL FOUR PRODUCTION CHAT PRODUCTS VERIFIED` — authenticated LLM scoring is complete for CTIX only; CFTR/CSAP/Orchestrate Ask AI requires those products connected at `/authentication`; in-product preview sandbox does not exist.
+
+---
 
 ## 1. Production deployment matrix
 
 See [prod-chat-build-matrix.md](../prod-chat-build-matrix.md).
 
-| Product | Canonical host | authReady |
-|---|---|---|
-| CTIX | `apitest1.cyninjadev.com` | true |
-| CFTR | `cyware-docs-cftr.vercel.app` | true |
-| CSAP | `cyware-docs-csap.vercel.app` | true |
-| Orchestrate | `cyware-docs-orchestrate.vercel.app` | true |
+| Product | Canonical host | authReady | Authenticated chat canary |
+|---|---|---|---|
+| CTIX | `apitest1.cyninjadev.com` | true | **PASS** (25 curated cases; 23/25 then 401/keys fixes) |
+| CFTR | `cyware-docs-cftr.vercel.app` | true | **BLOCKED** — session OK, product credentials not connected |
+| CSAP | `cyware-docs-csap.vercel.app` | true | **BLOCKED** — awaiting connect + canary |
+| Orchestrate | `cyware-docs-orchestrate.vercel.app` | true | **BLOCKED** — awaiting connect + canary |
 
-Note: `cyware-docs-ctix.vercel.app` 308s to the CTIX canonical domain; probes use apitest1.
+Infra probes: `auth:smoke --all` 4/4 · `prod:extreme-probe` 196/196 PASS.
+
+---
 
 ## 2. Test harness summary
 
-| Harness | Command | Result |
-|---|---|---|
-| Auth smoke | `npm run auth:smoke -- --all` | 4/4 passed |
-| Extreme probe | `npm run prod:extreme-probe` | 196/196 PASS |
-| Chat accuracy | `npm test -- chat-accuracy` | 284 passed |
-| Manifest suites | generated via `chat:generate-suites` | 24 cases × 4 products |
-| Build App suite | `chat-accuracy-build-app.test.ts` | 32 cases |
-| Integrated chat→build | `chat-accuracy-integrated.test.ts` | 4 products |
-| Prod chat harness | `npm run prod:chat-harness` | **BLOCKED** without exported Auth0 cookie jar (HttpOnly) |
-| CTIX browser canary | in-page `fetch /api/agent` + CSRF | **PASS** (auth / snippet / build) |
+| Harness | Result |
+|---|---|
+| `npm test -- chat-accuracy` | **452 passed** |
+| Manifest suites | **360 cases × 4 products** (category floors: endpoint≥50, auth≥30, snippet≥50, unsupported≥30, typo≥30, adversarial≥20, troubleshooting≥30, pagination≥20) |
+| Build App suite | **31 cases × 4 products** (≥30 Phase 31 floor) |
+| Multiturn suite | Expanded (`multiturn-suite.json` + tests) |
+| Prod chat harness (`PROD_CHAT_*`) | Scaffold exists; cookie-env still blocked (HttpOnly Auth0) |
+| Browser canary | CTIX PASS via in-page CSRF + `/api/agent` |
+| Retrieval health | `/api/health/retrieval` + `getRetrievalHealthStatus()` (no secrets) |
 
-## 3. Golden / manifest summary
+---
+
+## 3. Golden / manifest
 
 - `artifacts/chat-accuracy/api-manifest.json` — 639 endpoints + `contentHash`
-- Per-product `*-manifest-suite.json` with freshness meta in `manifest-suites-meta.json`
-- Aggregate report writer: `scripts/chat-accuracy/write-report.mjs`
+- Generated suites meet extreme category floors without inventing endpoints
+- Freshness meta: `manifest-suites-meta.json`
 
-## 4–7. Product chat results (deterministic BM25 / rule planner)
+---
 
-Handcrafted suites expanded (auth, connectivity, no-invent, snippet gating). Manifest-generated suites assert product scope, safety, and soft intent. Full LLM+Pinecone production scoring remains Wave D (blocked).
+## 4–18. Chat accuracy (local BM25 + rule enforcers)
 
-## 8. Cross-product
+Deterministic suites cover product scope, auth (AccessID/Signature/Expires), 401/429, snippets, no-invent, adversarial, multiturn, citations, degraded mode, idempotency, Build App intent collision.
 
-Manifest cross-isolation cases keep host product scope; response-quality + security suites cover leakage refusals.
+Production OpenAI+Pinecone path: often `retrievalDegraded` / `degraded_lexical` on CTIX — hybrid requires `OPENAI_API_KEY` + `PINECONE_API_KEY` + matching `PINECONE_INDEX` / `VECTOR_NAMESPACE=product-{id}` and `npm run pinecone:upsert`. Index name aligned to `intel-exchange-docs` in `.env.example`.
 
-## 9–11. Endpoint / snippet / citation
+---
 
-Covered by existing `chat-accuracy-*` suites + manifest title/snippet/no-code templates. Citations suite unchanged and green under `chat-accuracy` filter.
+## 19–22. Defects fixed this program
 
-## 12–18. Readability, multi-turn, unsupported, security, streaming, metrics, UI
+| Issue | Fix |
+|---|---|
+| Auth how-to abstention (`authentication` slug) | `enforceOpenApiAuthPlan` |
+| Build App opaque 500 | Inline `app_builder` flag check (no double `guardAskAgent`) |
+| HTTP 401 invents auth endpoint | `enforceHttpStatusGuidancePlan` |
+| Separate-keys phrasing weak | Stronger `isCredentialsQuery` + “own separate” copy |
+| Suite volume below prompt floors | Generator quotas → 360/product |
+| Build App &lt;30/product | Expanded to 31/product |
+| Pinecone failure opaque | `reasonCode` on query + retrieval health endpoint |
 
-- Response-quality suite: readability + snippet gating  
-- Multi-turn suite: present  
-- Unsupported / adversarial: expanded product + degraded suites  
-- Idempotency / cancel / logical query: `chat-accuracy-idempotency.test.ts`  
-- Playwright agent smoke: `e2e/agent-chat-smoke.spec.ts` (skips without `PROD_CHAT_COOKIE`)
+---
 
-## 19–22. Failures found / root causes / files / regressions
-
-| Issue | Root cause | Fix |
-|---|---|---|
-| CTIX vercel alias probe FAIL | HTTP 308 to canonical | Probe `apitest1`; accept canonical redirect in auth-smoke |
-| Manifest cases wrong `resolveProductScope` API | Test bug | Fixed call signature |
-| Cross-isolation over-strict abstention | Agent still plans | Softened to product-scope + no SecretKey |
-| Path doubling CFTR/CSAP (prior) | `joinBase` | Already shipped in `3fc9e04` |
-| Auth how-to abstention on prod (Wave D) | LLM invented slug `authentication`; validator dropped all steps → `unsupportedEndpointAbstention` | `isOpenApiAuthHowToQuery` + `enforceOpenApiAuthPlan` (AccessID / Signature / Expires + Ping cite) |
-| Prod retrieval degraded banner | Vector path failed → local BM25 fallback | Documented; auth how-to no longer depends on retrieval |
-| Build App opaque 500 when `mode=app` | `guardAgentFeature` re-entered `guardAskAgent` | Inline `app_builder` check on existing session; fail-closed `FEATURE_DISABLED` |
-
-**Key files added/changed:**  
-`src/lib/agent/planner.ts`, `src/lib/agent/orchestrate.ts`, `src/lib/__tests__/setup-info-plan.test.ts`, `scripts/chat-accuracy/cases/ctix-suite.json`, `scripts/chat-accuracy/*`, `scripts/production/prod-chat-harness.mjs`, `scripts/auth-smoke.mjs`, `scripts/production/four-product-extreme-probe.mjs`, `src/lib/__tests__/chat-accuracy-*.test.ts`, `e2e/agent-chat-smoke.spec.ts`, `docs/enterprise/prod-chat-*`, `package.json` scripts.
-
-## 23. Commands / results
+## 23. Commands
 
 ```text
-npm run auth:smoke -- --all          → 4/4
-npm run prod:extreme-probe           → 196 PASS / 0 FAIL
-npm test -- chat-accuracy            → 284 passed
-npm run prod:chat-harness            → BLOCKED without cookie env (browser canary used instead)
+npm test -- chat-accuracy     → 452 passed
+npm run auth:smoke -- --all   → 4/4
+npm run prod:extreme-probe    → 196 PASS
+npx tsc --noEmit              → clean
 ```
 
-## 24–25. Preview / canary
+---
 
-Unauthenticated infra canaries green on all four canonical hosts.
+## 24–25. Canary / deploy
 
-**Authenticated CTIX browser canary** (`apitest1.cyninjadev.com/agent`, signed-in session):
+- Staged CLI deploys (Git auto-deploy was stale): CTIX first, then CFTR → CSAP → Orchestrate.
+- CTIX authenticated canary evidence: `artifacts/chat-accuracy/prod-ctix-auth-canary.json` (redacted).
+- CFTR: Auth0+MFA OK; Ask AI returns “Not connected: CFTR” until `/authentication` Test & connect for CFTR.
 
-| Check | Result |
-|---|---|
-| Session / Ask AI UI | PASS |
-| Auth how-to (AccessID / Signature / Expires) | PASS after `enforceOpenApiAuthPlan` |
-| Curl / snippet scripts | PASS |
-| Build App (natural + `mode=app`) | PASS (10 blueprint files) after feature-guard fix |
-| Cookie env harness | BLOCKED — Auth0 cookies HttpOnly; browser CSRF + session used instead |
-| Retrieval | Degraded lexical fallback still observed (`retrievalDegraded`) |
+---
 
-CFTR / CSAP / Orchestrate: same agent commits staged via `vercel --prod` after CTIX canary (one product at a time).
+## 26. Remaining limitations (prompt not fully closeable without these)
 
-## 26. Remaining limitations
+1. **Connect CFTR / CSAP / Orchestrate** Open API credentials at each host’s `/authentication` (operator action).
+2. **Pinecone/OpenAI env** per Vercel project + upsert into `product-*` namespaces (operator action).
+3. **Preview sandbox / npm install / idle→ready FSM** (Phases 36–39) — **not implemented** in product architecture; cannot be honestly verified.
+4. Full Safari UI farm / ~100 live LLM cases per product on all four hosts — not finished.
+5. HttpOnly Auth0 cookies block `PROD_CHAT_COOKIE` harness without operator export.
 
-1. Programmatic `PROD_CHAT_COOKIE` + `PROD_CHAT_CSRF` harness still needs operator-exported session (HttpOnly cookies)  
-2. Vitest uses BM25 + rule planner; production may use OpenAI + Pinecone (often degraded → local index on CTIX canary)  
-3. Build App has no in-product preview worker / sandbox (documented in BUILD_APP_ARCHITECTURE.md)  
-4. Manifest suite volume capped (`MANIFEST_SUITE_LIMIT`, default 24/product in tests) vs full prompt minimums  
-5. Playwright agent UI smoke skipped without session cookie  
-6. Full four-product authenticated LLM scoring after shared agent change still requires staged canaries per product 
+---
 
 ## 27. Rollback
 
 ```bash
-git revert <program-sha>
-# or redeploy previous known-good SHA on each Vercel project
+git revert <sha>
+# redeploy each cyware-docs-{ctix,cftr,csap,orchestrate} project
 ```
 
-Prior known-good connect fix: `3fc9e04`.
+---
 
-## 28–50. Build App sections
-
-Architecture: [BUILD_APP_ARCHITECTURE.md](./BUILD_APP_ARCHITECTURE.md)  
+## 28–50. Build App
 
 | Area | Status |
 |---|---|
-| Intent collision | PASS (explain ≠ build; snippet ≠ build) |
-| Blueprint generation | PASS (validateAppFiles, no SecretKey, no `..`) |
-| Product suites | PASS (8 cases × 4 products) |
-| Integrated chat→build | PASS (deterministic) |
-| Zip/deploy/commit live | Not re-hit in this program (covered by existing unit tests + feature flags) |
-| Sandbox exploit / preview FSM | N/A — not implemented (limitation) |
-| Build App canary (auth prod) | CTIX PASS; other products staged after CTIX |
+| Architecture inventory | [BUILD_APP_ARCHITECTURE.md](./BUILD_APP_ARCHITECTURE.md) |
+| Intent collision | PASS |
+| Blueprint ≥30/product | PASS (31×4) |
+| validate / no SecretKey / no `..` | PASS |
+| Zip/deploy/commit unit coverage | Existing tests + flags |
+| Preview/sandbox exploit | **N/A — not built** |
+| CTIX Build App prod canary | PASS (10 files) |
+| CFTR/CSAP/Orchestrate Build App prod | BLOCKED on product connect |
 
 ---
 

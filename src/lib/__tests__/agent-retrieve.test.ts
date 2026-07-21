@@ -136,10 +136,27 @@ describe("retrieval evidence and status", () => {
     expect(retrievalStatus(true, false, true)).toEqual({
       retrievalMode: "degraded_lexical",
       retrievalDegraded: true,
+      retrievalReasonCode: "pinecone_query_failed",
     });
-    expect(retrievalStatus(true, true, true)).toEqual({
+    expect(retrievalStatus(true, true, true, "vector_id_mismatch")).toEqual({
       retrievalMode: "hybrid",
       retrievalDegraded: true,
+      retrievalReasonCode: "vector_id_mismatch",
+    });
+    expect(retrievalStatus(true, true, false)).toEqual({
+      retrievalMode: "hybrid",
+      retrievalDegraded: false,
+      retrievalReasonCode: "hybrid_ok",
+    });
+    expect(retrievalStatus(false, false, false)).toEqual({
+      retrievalMode: "lexical",
+      retrievalDegraded: false,
+      retrievalReasonCode: "openai_not_configured",
+    });
+    expect(retrievalStatus(true, false, true, "pinecone_not_configured")).toEqual({
+      retrievalMode: "degraded_lexical",
+      retrievalDegraded: true,
+      retrievalReasonCode: "pinecone_not_configured",
     });
   });
 });

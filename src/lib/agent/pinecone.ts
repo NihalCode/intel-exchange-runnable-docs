@@ -29,6 +29,12 @@ export interface PineconeQueryResult {
   matches: PineconeMatch[];
   /** True only when the vector request could not be completed. */
   failed: boolean;
+  /** Safe reason — never includes API payloads or secrets. */
+  reasonCode:
+    | "ok"
+    | "index_unavailable"
+    | "query_http_error"
+    | "query_exception";
 }
 
 /** Read Pinecone config from env. Returns null when creds are absent. */
@@ -95,7 +101,7 @@ export async function queryPineconeWithStatus(
 ): Promise<PineconeQueryResult> {
   try {
     const host = await describeIndexHost(cfg);
-    if (!host) return { matches: [], failed: true };
+    if (!host) return { matches: [], failed: true, reasonCode: "index_unavailable" };
     const filter =
       productId && productId !== "all"
         ? { productId: { $eq: productId } }
@@ -111,11 +117,11 @@ export async function queryPineconeWithStatus(
         ...(filter ? { filter } : {}),
       }),
     });
-    if (!res.ok) return { matches: [], failed: true };
+    if (!res.ok) return { matches: [], failed: true, reasonCode: "query_http_error" };
     const data = (await res.json()) as { matches?: PineconeMatch[] };
-    return { matches: data.matches ?? [], failed: false };
+    return { matches: data.matches ?? [], failed: false, reasonCode: "ok" };
   } catch {
-    return { matches: [], failed: true };
+    return { matches: [], failed: true, reasonCode: "query_exception" };
   }
 }
 

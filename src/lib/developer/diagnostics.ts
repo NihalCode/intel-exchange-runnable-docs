@@ -7,6 +7,7 @@ import {
 } from "./credential-env";
 import { listProducts } from "../products/registry";
 import { getOpenAiCredentialStatus, openAiDeveloperStatusLabel } from "../openai/credentials";
+import { getRetrievalHealthStatus } from "../agent/retrieval-health";
 
 export interface DeveloperBlocker {
   id: string;
@@ -26,6 +27,7 @@ export interface DeveloperDiagnostics {
     developerStatusLabel: "Configured" | "Missing";
   };
   pineconeConfigured: boolean;
+  retrieval: ReturnType<typeof getRetrievalHealthStatus>;
   products: {
     productId: string;
     productName: string;
@@ -40,6 +42,7 @@ export interface DeveloperDiagnostics {
 export function runDeveloperDiagnostics(): DeveloperDiagnostics {
   const blockers: DeveloperBlocker[] = [];
   const developerAccessConfigured = isDeveloperAccessConfigured();
+  const retrieval = getRetrievalHealthStatus();
 
   if (!isAuthEnabled()) {
     if (!developerAccessConfigured) {
@@ -79,6 +82,13 @@ export function runDeveloperDiagnostics(): DeveloperDiagnostics {
       message: "PINECONE_API_KEY is unset — agent uses local BM25 index (expected for offline dev).",
       blocking: false,
     });
+  } else if (!retrieval.ready) {
+    blockers.push({
+      id: "retrieval-degraded-config",
+      severity: "warning",
+      message: `Retrieval config incomplete (reasonCodes: ${retrieval.reasonCodes.join(", ")}). Ask AI may show the local-index notice until OpenAI + Pinecone are both set.`,
+      blocking: false,
+    });
   }
 
   const liveApiUiEnabled = process.env.NEXT_PUBLIC_ENABLE_LIVE_API_UI === "true";
@@ -106,6 +116,7 @@ export function runDeveloperDiagnostics(): DeveloperDiagnostics {
     openAiConfigured: openai.configured,
     openai,
     pineconeConfigured: Boolean(process.env.PINECONE_API_KEY?.trim()),
+    retrieval,
     products: listProducts().map((p) => ({
       productId: p.productId,
       productName: p.productName,

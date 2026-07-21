@@ -1,20 +1,12 @@
 [
   {
-    "id": "ctix-build-dashboard",
-    "product": "ctix",
-    "prompt": "Build me a dashboard to search CTIX indicators",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["ctix"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env", ".env.local"],
-    "notes": "Blueprint path only — no live preview worker"
-  },
-  {
     "id": "ctix-explain-not-build",
     "product": "ctix",
-    "prompt": "Explain how to build an app that lists threat data — do not generate one",
+    "prompt": "Explain how to build an app that lists indicators — do not generate one",
     "expectedIntent": "explain_only",
-    "expectedProductScope": ["ctix"],
+    "expectedProductScope": [
+      "ctix"
+    ],
     "buildMustSucceed": false,
     "forbiddenFiles": [],
     "notes": "Intent collision: explain vs build"
@@ -22,272 +14,1749 @@
   {
     "id": "ctix-snippet-not-build",
     "product": "ctix",
-    "prompt": "Show me curl code for listing indicators — do not build an app",
+    "prompt": "Show me curl code for threat data — do not build an app",
     "expectedIntent": "snippet",
-    "expectedProductScope": ["ctix"],
+    "expectedProductScope": [
+      "ctix"
+    ],
     "buildMustSucceed": false,
     "forbiddenFiles": []
-  },
-  {
-    "id": "ctix-build-cql",
-    "product": "ctix",
-    "prompt": "Create an app with a CQL query builder for threat data",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["ctix"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "ctix-build-ping",
-    "product": "ctix",
-    "prompt": "Build a small app that pings the CTIX API",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["ctix"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
   },
   {
     "id": "ctix-edit-loading",
     "product": "ctix",
     "prompt": "Add a loading state to the app",
     "expectedIntent": "edit_app",
-    "expectedProductScope": ["ctix"],
+    "expectedProductScope": [
+      "ctix"
+    ],
     "buildMustSucceed": false,
     "forbiddenFiles": [],
     "notes": "edit requires existingApp; intent only"
   },
   {
-    "id": "ctix-build-table",
+    "id": "ctix-build-1",
     "product": "ctix",
-    "prompt": "Generate a web app to show a threat-data table",
+    "prompt": "Build a dashboard app to explore CTIX indicators",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["ctix"],
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
-    "id": "ctix-build-explorer",
+    "id": "ctix-build-2",
     "product": "ctix",
-    "prompt": "Scaffold a frontend tool to explore recent indicators",
+    "prompt": "Create a web app to explore CTIX indicators",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["ctix"],
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
-    "id": "cftr-build-incidents",
-    "product": "cftr",
-    "prompt": "Build me a CFTR incident dashboard app",
+    "id": "ctix-build-3",
+    "product": "ctix",
+    "prompt": "Generate a portal app to explore CTIX indicators",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["cftr"],
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-4",
+    "product": "ctix",
+    "prompt": "Make a frontend tool to explore CTIX indicators",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-5",
+    "product": "ctix",
+    "prompt": "Scaffold a application to explore CTIX indicators",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-6",
+    "product": "ctix",
+    "prompt": "Develop a explorer app to explore CTIX indicators",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-7",
+    "product": "ctix",
+    "prompt": "Build a web app to explore CTIX threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-8",
+    "product": "ctix",
+    "prompt": "Create a portal app to explore CTIX threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-9",
+    "product": "ctix",
+    "prompt": "Generate a frontend tool to explore CTIX threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-10",
+    "product": "ctix",
+    "prompt": "Make a application to explore CTIX threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-11",
+    "product": "ctix",
+    "prompt": "Scaffold a explorer app to explore CTIX threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-12",
+    "product": "ctix",
+    "prompt": "Develop a dashboard app to explore CTIX threat data",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-13",
+    "product": "ctix",
+    "prompt": "Build a portal app to explore CTIX CQL queries",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-14",
+    "product": "ctix",
+    "prompt": "Create a frontend tool to explore CTIX CQL queries",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-15",
+    "product": "ctix",
+    "prompt": "Generate a application to explore CTIX CQL queries",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-16",
+    "product": "ctix",
+    "prompt": "Make a explorer app to explore CTIX CQL queries",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-17",
+    "product": "ctix",
+    "prompt": "Scaffold a dashboard app to explore CTIX CQL queries",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-18",
+    "product": "ctix",
+    "prompt": "Develop a web app to explore CTIX CQL queries",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-19",
+    "product": "ctix",
+    "prompt": "Build a frontend tool to explore CTIX tags",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-20",
+    "product": "ctix",
+    "prompt": "Create a application to explore CTIX tags",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-21",
+    "product": "ctix",
+    "prompt": "Generate a explorer app to explore CTIX tags",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-22",
+    "product": "ctix",
+    "prompt": "Make a dashboard app to explore CTIX tags",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-23",
+    "product": "ctix",
+    "prompt": "Scaffold a web app to explore CTIX tags",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-24",
+    "product": "ctix",
+    "prompt": "Develop a portal app to explore CTIX tags",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-25",
+    "product": "ctix",
+    "prompt": "Build a application to explore CTIX ping",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-26",
+    "product": "ctix",
+    "prompt": "Create a explorer app to explore CTIX ping",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "ctix-build-27",
+    "product": "ctix",
+    "prompt": "Generate a dashboard app to explore CTIX ping",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "ctix"
+    ],
+    "productSelector": "ctix",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
     "id": "cftr-explain-not-build",
     "product": "cftr",
-    "prompt": "Explain how I would build an incident viewer app",
+    "prompt": "Explain how to build an app that lists incidents — do not generate one",
     "expectedIntent": "explain_only",
-    "expectedProductScope": ["cftr"],
+    "expectedProductScope": [
+      "cftr"
+    ],
     "buildMustSucceed": false,
-    "forbiddenFiles": []
+    "forbiddenFiles": [],
+    "notes": "Intent collision: explain vs build"
   },
   {
     "id": "cftr-snippet-not-build",
     "product": "cftr",
-    "prompt": "Give me a Python snippet for CFTR test connectivity — no app",
+    "prompt": "Show me curl code for reports — do not build an app",
     "expectedIntent": "snippet",
-    "expectedProductScope": ["cftr"],
+    "expectedProductScope": [
+      "cftr"
+    ],
     "buildMustSucceed": false,
     "forbiddenFiles": []
   },
   {
-    "id": "cftr-build-feed",
+    "id": "cftr-edit-loading",
     "product": "cftr",
-    "prompt": "Create an application to browse CFTR feeds and reports",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["cftr"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "cftr-build-filter",
-    "product": "cftr",
-    "prompt": "Make a dashboard app with an incident filter form",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["cftr"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "cftr-build-pagination",
-    "product": "cftr",
-    "prompt": "Build a web app that explores CFTR pagination",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["cftr"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "cftr-edit-header",
-    "product": "cftr",
-    "prompt": "Only change the header in the app",
+    "prompt": "Add a loading state to the app",
     "expectedIntent": "edit_app",
-    "expectedProductScope": ["cftr"],
+    "expectedProductScope": [
+      "cftr"
+    ],
     "buildMustSucceed": false,
-    "forbiddenFiles": []
+    "forbiddenFiles": [],
+    "notes": "edit requires existingApp; intent only"
   },
   {
-    "id": "cftr-build-detail",
+    "id": "cftr-build-1",
     "product": "cftr",
-    "prompt": "Develop a portal app for CFTR report detail viewing",
+    "prompt": "Build a dashboard app to explore CFTR incidents",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["cftr"],
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
-    "id": "csap-build-alerts",
-    "product": "csap",
-    "prompt": "Build a CSAP alert explorer dashboard app",
+    "id": "cftr-build-2",
+    "product": "cftr",
+    "prompt": "Create a web app to explore CFTR incidents",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["csap"],
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-3",
+    "product": "cftr",
+    "prompt": "Generate a portal app to explore CFTR incidents",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-4",
+    "product": "cftr",
+    "prompt": "Make a frontend tool to explore CFTR incidents",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-5",
+    "product": "cftr",
+    "prompt": "Scaffold a application to explore CFTR incidents",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-6",
+    "product": "cftr",
+    "prompt": "Develop a explorer app to explore CFTR incidents",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-7",
+    "product": "cftr",
+    "prompt": "Build a web app to explore CFTR reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-8",
+    "product": "cftr",
+    "prompt": "Create a portal app to explore CFTR reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-9",
+    "product": "cftr",
+    "prompt": "Generate a frontend tool to explore CFTR reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-10",
+    "product": "cftr",
+    "prompt": "Make a application to explore CFTR reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-11",
+    "product": "cftr",
+    "prompt": "Scaffold a explorer app to explore CFTR reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-12",
+    "product": "cftr",
+    "prompt": "Develop a dashboard app to explore CFTR reports",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-13",
+    "product": "cftr",
+    "prompt": "Build a portal app to explore CFTR feeds",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-14",
+    "product": "cftr",
+    "prompt": "Create a frontend tool to explore CFTR feeds",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-15",
+    "product": "cftr",
+    "prompt": "Generate a application to explore CFTR feeds",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-16",
+    "product": "cftr",
+    "prompt": "Make a explorer app to explore CFTR feeds",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-17",
+    "product": "cftr",
+    "prompt": "Scaffold a dashboard app to explore CFTR feeds",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-18",
+    "product": "cftr",
+    "prompt": "Develop a web app to explore CFTR feeds",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-19",
+    "product": "cftr",
+    "prompt": "Build a frontend tool to explore CFTR alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-20",
+    "product": "cftr",
+    "prompt": "Create a application to explore CFTR alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-21",
+    "product": "cftr",
+    "prompt": "Generate a explorer app to explore CFTR alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-22",
+    "product": "cftr",
+    "prompt": "Make a dashboard app to explore CFTR alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-23",
+    "product": "cftr",
+    "prompt": "Scaffold a web app to explore CFTR alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-24",
+    "product": "cftr",
+    "prompt": "Develop a portal app to explore CFTR alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-25",
+    "product": "cftr",
+    "prompt": "Build a application to explore CFTR cases",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-26",
+    "product": "cftr",
+    "prompt": "Create a explorer app to explore CFTR cases",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "cftr-build-27",
+    "product": "cftr",
+    "prompt": "Generate a dashboard app to explore CFTR cases",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "cftr"
+    ],
+    "productSelector": "cftr",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
     "id": "csap-explain-not-build",
     "product": "csap",
-    "prompt": "Explain how to build a CSAP vulnerability viewer — don't generate files",
+    "prompt": "Explain how to build an app that lists alerts — do not generate one",
     "expectedIntent": "explain_only",
-    "expectedProductScope": ["csap"],
+    "expectedProductScope": [
+      "csap"
+    ],
     "buildMustSucceed": false,
-    "forbiddenFiles": []
+    "forbiddenFiles": [],
+    "notes": "Intent collision: explain vs build"
   },
   {
     "id": "csap-snippet-not-build",
     "product": "csap",
-    "prompt": "Show TypeScript example for CSAP test connectivity without building an app",
+    "prompt": "Show me curl code for vulnerabilities — do not build an app",
     "expectedIntent": "snippet",
-    "expectedProductScope": ["csap"],
+    "expectedProductScope": [
+      "csap"
+    ],
     "buildMustSucceed": false,
     "forbiddenFiles": []
   },
   {
-    "id": "csap-build-filter",
+    "id": "csap-edit-loading",
     "product": "csap",
-    "prompt": "Create an app with filtering and pagination UI for CSAP alerts",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["csap"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "csap-build-summary",
-    "product": "csap",
-    "prompt": "Generate a web application for CSAP risk summary",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["csap"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "csap-build-detail",
-    "product": "csap",
-    "prompt": "Make a dashboard app with an alert detail pane",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["csap"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "csap-edit-mobile",
-    "product": "csap",
-    "prompt": "Fix the mobile layout in the app",
+    "prompt": "Add a loading state to the app",
     "expectedIntent": "edit_app",
-    "expectedProductScope": ["csap"],
+    "expectedProductScope": [
+      "csap"
+    ],
     "buildMustSucceed": false,
-    "forbiddenFiles": []
+    "forbiddenFiles": [],
+    "notes": "edit requires existingApp; intent only"
   },
   {
-    "id": "csap-build-inventory",
+    "id": "csap-build-1",
     "product": "csap",
-    "prompt": "Build an application for CSAP alert inventory browsing",
+    "prompt": "Build a dashboard app to explore CSAP alerts",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["csap"],
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
-    "id": "orchestrate-build-launcher",
-    "product": "orchestrate",
-    "prompt": "Build an Orchestrate workflow launcher app",
+    "id": "csap-build-2",
+    "product": "csap",
+    "prompt": "Create a web app to explore CSAP alerts",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["orchestrate"],
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-3",
+    "product": "csap",
+    "prompt": "Generate a portal app to explore CSAP alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-4",
+    "product": "csap",
+    "prompt": "Make a frontend tool to explore CSAP alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-5",
+    "product": "csap",
+    "prompt": "Scaffold a application to explore CSAP alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-6",
+    "product": "csap",
+    "prompt": "Develop a explorer app to explore CSAP alerts",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-7",
+    "product": "csap",
+    "prompt": "Build a web app to explore CSAP vulnerabilities",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-8",
+    "product": "csap",
+    "prompt": "Create a portal app to explore CSAP vulnerabilities",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-9",
+    "product": "csap",
+    "prompt": "Generate a frontend tool to explore CSAP vulnerabilities",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-10",
+    "product": "csap",
+    "prompt": "Make a application to explore CSAP vulnerabilities",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-11",
+    "product": "csap",
+    "prompt": "Scaffold a explorer app to explore CSAP vulnerabilities",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-12",
+    "product": "csap",
+    "prompt": "Develop a dashboard app to explore CSAP vulnerabilities",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-13",
+    "product": "csap",
+    "prompt": "Build a portal app to explore CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-14",
+    "product": "csap",
+    "prompt": "Create a frontend tool to explore CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-15",
+    "product": "csap",
+    "prompt": "Generate a application to explore CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-16",
+    "product": "csap",
+    "prompt": "Make a explorer app to explore CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-17",
+    "product": "csap",
+    "prompt": "Scaffold a dashboard app to explore CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-18",
+    "product": "csap",
+    "prompt": "Develop a web app to explore CSAP risk summary",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-19",
+    "product": "csap",
+    "prompt": "Build a frontend tool to explore CSAP assets",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-20",
+    "product": "csap",
+    "prompt": "Create a application to explore CSAP assets",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-21",
+    "product": "csap",
+    "prompt": "Generate a explorer app to explore CSAP assets",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-22",
+    "product": "csap",
+    "prompt": "Make a dashboard app to explore CSAP assets",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-23",
+    "product": "csap",
+    "prompt": "Scaffold a web app to explore CSAP assets",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-24",
+    "product": "csap",
+    "prompt": "Develop a portal app to explore CSAP assets",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-25",
+    "product": "csap",
+    "prompt": "Build a application to explore CSAP findings",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-26",
+    "product": "csap",
+    "prompt": "Create a explorer app to explore CSAP findings",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "csap-build-27",
+    "product": "csap",
+    "prompt": "Generate a dashboard app to explore CSAP findings",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "csap"
+    ],
+    "productSelector": "csap",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   },
   {
     "id": "orchestrate-explain-not-build",
     "product": "orchestrate",
-    "prompt": "Explain how to build an execution status dashboard app",
+    "prompt": "Explain how to build an app that lists workflows — do not generate one",
     "expectedIntent": "explain_only",
-    "expectedProductScope": ["orchestrate"],
+    "expectedProductScope": [
+      "orchestrate"
+    ],
     "buildMustSucceed": false,
-    "forbiddenFiles": []
+    "forbiddenFiles": [],
+    "notes": "Intent collision: explain vs build"
   },
   {
     "id": "orchestrate-snippet-not-build",
     "product": "orchestrate",
-    "prompt": "Show a TypeScript snippet to start an execution — do not build an app",
+    "prompt": "Show me curl code for executions — do not build an app",
     "expectedIntent": "snippet",
-    "expectedProductScope": ["orchestrate"],
+    "expectedProductScope": [
+      "orchestrate"
+    ],
     "buildMustSucceed": false,
     "forbiddenFiles": []
   },
   {
-    "id": "orchestrate-build-status",
+    "id": "orchestrate-edit-loading",
     "product": "orchestrate",
-    "prompt": "Create a web app dashboard for execution status polling",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["orchestrate"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "orchestrate-build-history",
-    "product": "orchestrate",
-    "prompt": "Generate an application to view execution history",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["orchestrate"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "orchestrate-build-form",
-    "product": "orchestrate",
-    "prompt": "Make a portal app with an idempotent run form",
-    "expectedIntent": "build_app",
-    "expectedProductScope": ["orchestrate"],
-    "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
-  },
-  {
-    "id": "orchestrate-edit-revert",
-    "product": "orchestrate",
-    "prompt": "Revert the last change in the app",
+    "prompt": "Add a loading state to the app",
     "expectedIntent": "edit_app",
-    "expectedProductScope": ["orchestrate"],
+    "expectedProductScope": [
+      "orchestrate"
+    ],
     "buildMustSucceed": false,
-    "forbiddenFiles": []
+    "forbiddenFiles": [],
+    "notes": "edit requires existingApp; intent only"
   },
   {
-    "id": "orchestrate-build-io",
+    "id": "orchestrate-build-1",
     "product": "orchestrate",
-    "prompt": "Build a frontend tool to inspect playbook inputs and outputs",
+    "prompt": "Build a dashboard app to explore ORCHESTRATE workflows",
     "expectedIntent": "build_app",
-    "expectedProductScope": ["orchestrate"],
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
     "buildMustSucceed": true,
-    "forbiddenFiles": [".env"]
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-2",
+    "product": "orchestrate",
+    "prompt": "Create a web app to explore ORCHESTRATE workflows",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-3",
+    "product": "orchestrate",
+    "prompt": "Generate a portal app to explore ORCHESTRATE workflows",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-4",
+    "product": "orchestrate",
+    "prompt": "Make a frontend tool to explore ORCHESTRATE workflows",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-5",
+    "product": "orchestrate",
+    "prompt": "Scaffold a application to explore ORCHESTRATE workflows",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-6",
+    "product": "orchestrate",
+    "prompt": "Develop a explorer app to explore ORCHESTRATE workflows",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-7",
+    "product": "orchestrate",
+    "prompt": "Build a web app to explore ORCHESTRATE executions",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-8",
+    "product": "orchestrate",
+    "prompt": "Create a portal app to explore ORCHESTRATE executions",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-9",
+    "product": "orchestrate",
+    "prompt": "Generate a frontend tool to explore ORCHESTRATE executions",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-10",
+    "product": "orchestrate",
+    "prompt": "Make a application to explore ORCHESTRATE executions",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-11",
+    "product": "orchestrate",
+    "prompt": "Scaffold a explorer app to explore ORCHESTRATE executions",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-12",
+    "product": "orchestrate",
+    "prompt": "Develop a dashboard app to explore ORCHESTRATE executions",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-13",
+    "product": "orchestrate",
+    "prompt": "Build a portal app to explore ORCHESTRATE playbooks",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-14",
+    "product": "orchestrate",
+    "prompt": "Create a frontend tool to explore ORCHESTRATE playbooks",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-15",
+    "product": "orchestrate",
+    "prompt": "Generate a application to explore ORCHESTRATE playbooks",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-16",
+    "product": "orchestrate",
+    "prompt": "Make a explorer app to explore ORCHESTRATE playbooks",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-17",
+    "product": "orchestrate",
+    "prompt": "Scaffold a dashboard app to explore ORCHESTRATE playbooks",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-18",
+    "product": "orchestrate",
+    "prompt": "Develop a web app to explore ORCHESTRATE playbooks",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-19",
+    "product": "orchestrate",
+    "prompt": "Build a frontend tool to explore ORCHESTRATE run forms",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-20",
+    "product": "orchestrate",
+    "prompt": "Create a application to explore ORCHESTRATE run forms",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-21",
+    "product": "orchestrate",
+    "prompt": "Generate a explorer app to explore ORCHESTRATE run forms",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-22",
+    "product": "orchestrate",
+    "prompt": "Make a dashboard app to explore ORCHESTRATE run forms",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-23",
+    "product": "orchestrate",
+    "prompt": "Scaffold a web app to explore ORCHESTRATE run forms",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-24",
+    "product": "orchestrate",
+    "prompt": "Develop a portal app to explore ORCHESTRATE run forms",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-25",
+    "product": "orchestrate",
+    "prompt": "Build a application to explore ORCHESTRATE status polling",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-26",
+    "product": "orchestrate",
+    "prompt": "Create a explorer app to explore ORCHESTRATE status polling",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
+  },
+  {
+    "id": "orchestrate-build-27",
+    "product": "orchestrate",
+    "prompt": "Generate a dashboard app to explore ORCHESTRATE status polling",
+    "expectedIntent": "build_app",
+    "expectedProductScope": [
+      "orchestrate"
+    ],
+    "productSelector": "orchestrate",
+    "buildMustSucceed": true,
+    "forbiddenFiles": [
+      ".env",
+      ".env.local"
+    ]
   }
 ]

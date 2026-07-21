@@ -93,6 +93,7 @@ import type {
   AgentResponse,
   AgentStepResult,
   ExistingAppContext,
+  RetrievalReasonCode,
   ScoredChunk,
 } from "./types";
 import type { EndpointPage } from "../types";
@@ -411,6 +412,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
 
   let vectorContributed = false;
   let vectorFailed = false;
+  let retrievalReason: RetrievalReasonCode | undefined;
 
   // Preferred path: embed query and fuse vector results with lexical results.
   // RRF does not compare BM25 and vector score magnitudes, and never discards
@@ -420,6 +422,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       const embedding = await embedQuery(retrievalQuery);
       if (embedding.length === 0) {
         vectorFailed = true;
+        retrievalReason = "embedding_failed";
       }
       const retrievalProduct =
         retrievalFilter !== "all" && isProductKey(retrievalFilter)
@@ -427,6 +430,9 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           : undefined;
       assertVectorNamespaceAccess(retrievalProduct);
       const pineconeCfg = getPineconeConfig(retrievalProduct);
+      if (!pineconeCfg && embedding.length > 0) {
+        retrievalReason = retrievalReason ?? "pinecone_not_configured";
+      }
       if (embedding.length > 0 && pineconeCfg) {
         const vectorResult = await queryPineconeWithStatus(
           embedding,
@@ -434,17 +440,30 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           pineconeCfg,
           retrievalProduct
         );
-        if (vectorResult.failed) vectorFailed = true;
+        if (vectorResult.failed) {
+          vectorFailed = true;
+          retrievalReason =
+            vectorResult.reasonCode === "index_unavailable"
+              ? "pinecone_index_unavailable"
+              : vectorResult.reasonCode === "query_exception"
+                ? "pinecone_query_exception"
+                : "pinecone_query_failed";
+        }
         const fromPinecone = filterByProductScope(
-          scoredChunksByIds(vectorResult.matches, index),
+          scoredChunksByIds(vectorResult.matches, index, retrievalProduct ?? activeProductId),
           scope
         ).slice(0, topK);
         if (fromPinecone.length > 0) {
           scored = fuseRankedResults(scored, fromPinecone, topK);
           vectorContributed = true;
+          if (!vectorFailed) retrievalReason = "hybrid_ok";
         } else if (vectorResult.matches.length > 0) {
-          // An index/document-version mismatch is not a trustworthy vector result.
+          // Combined indexes prefix ids as productId::rawId; if alignment failed,
+          // treat as mismatch rather than a trustworthy empty vector result.
           vectorFailed = true;
+          retrievalReason = "vector_id_mismatch";
+        } else if (!vectorResult.failed) {
+          retrievalReason = retrievalReason ?? "vector_empty";
         }
       }
       if (!vectorContributed && embedding.length > 0 && index.hasEmbeddings) {
@@ -453,18 +472,26 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
           scope
         ).slice(0, topK);
         vectorContributed = true;
+        if (!retrievalReason || retrievalReason === "pinecone_not_configured") {
+          retrievalReason = "hybrid_ok";
+        }
       }
       if (!vectorContributed && !pineconeCfg && !index.hasEmbeddings) {
         vectorFailed = true;
+        retrievalReason = retrievalReason ?? "pinecone_not_configured";
       }
     } catch {
       vectorFailed = true;
+      retrievalReason = "vector_exception";
     }
+  } else {
+    retrievalReason = "openai_not_configured";
   }
-  const { retrievalMode, retrievalDegraded } = retrievalStatus(
+  const { retrievalMode, retrievalDegraded, retrievalReasonCode } = retrievalStatus(
     apiKeyConfigured,
     vectorContributed,
-    vectorFailed
+    vectorFailed,
+    retrievalReason
   );
 
   const confidence = confidenceFromScores(scored);
@@ -631,6 +658,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     retrievalEvidence,
     retrievalMode,
     retrievalDegraded,
+    retrievalReasonCode,
     retrieval: scored.slice(0, 5).map((c) => ({
       slug: c.slug,
       title: `[${c.productId ?? activeProductId}] ${c.title}`,

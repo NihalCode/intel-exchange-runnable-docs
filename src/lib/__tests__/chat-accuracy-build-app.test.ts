@@ -10,7 +10,7 @@ import type { AgentStepResult } from "../agent/types";
 
 type BuildAppCase = {
   id: string;
-  product: string;
+  product: "ctix" | "cftr" | "csap" | "orchestrate";
   prompt: string;
   expectedIntent: "build_app" | "edit_app" | "explain_only" | "snippet";
   expectedProductScope: string[];
@@ -25,6 +25,7 @@ const results: CaseResult[] = [];
 const ROOT = process.cwd();
 const ARTIFACT_DIR = path.join(ROOT, "artifacts", "chat-accuracy");
 const REPORT_PATH = path.join(ARTIFACT_DIR, "build-app-report.json");
+const PRODUCTS = ["ctix", "cftr", "csap", "orchestrate"] as const;
 
 const INTENT_MAP: Record<BuildAppCase["expectedIntent"], string[]> = {
   build_app: ["app_build"],
@@ -33,6 +34,7 @@ const INTENT_MAP: Record<BuildAppCase["expectedIntent"], string[]> = {
   snippet: ["snippet", "workflow"],
 };
 
+/** Real documented connectivity endpoints only — never invent paths. */
 function sampleStep(product: string): AgentStepResult {
   const pathByProduct: Record<string, { slug: string; apiPath: string }> = {
     ctix: { slug: "ping/ping", apiPath: "/ping/" },
@@ -79,6 +81,14 @@ function sampleStep(product: string): AgentStepResult {
 }
 
 describe("production Build App harness", () => {
+  it("has ≥30 safe ProductionBuildAppCase fixtures per product", () => {
+    for (const product of PRODUCTS) {
+      const count = fixtures.filter((f) => f.product === product).length;
+      expect(count, `${product} build-app cases`).toBeGreaterThanOrEqual(30);
+    }
+    expect(fixtures.length).toBeGreaterThanOrEqual(120);
+  });
+
   for (const fixture of fixtures) {
     it(fixture.id, () => {
       try {
@@ -87,19 +97,32 @@ describe("production Build App harness", () => {
         });
         expect(INTENT_MAP[fixture.expectedIntent]).toContain(intent.intent);
 
+        // Intent collision: explain must never route to app_build
+        if (fixture.expectedIntent === "explain_only") {
+          expect(intent.intent).toBe("explain");
+          expect(intent.intent).not.toBe("app_build");
+        }
+
         if (fixture.buildMustSucceed) {
+          const step = sampleStep(fixture.product);
           const app = generateAppBlueprint(
             fixture.prompt,
             `${fixture.product} demo app`,
             "harness",
-            [sampleStep(fixture.product)]
+            [step]
           );
           expect(app.files.length).toBeGreaterThan(0);
           expect(app.files.some((f) => f.path === "package.json")).toBe(true);
+
+          const routeFiles = app.files.filter((f) => f.path.startsWith("app/api/cyware/"));
+          expect(routeFiles.length).toBeGreaterThan(0);
+          const routeBlob = routeFiles.map((f) => f.code).join("\n");
+          expect(routeBlob).toContain(step.path);
+
           for (const file of app.files) {
             expect(file.path.includes("..")).toBe(false);
             expect(file.path.startsWith("/")).toBe(false);
-            expect(file.code).not.toMatch(/SecretKey\s*=\s*['"][^'"]+['"]/);
+            expect(file.code).not.toMatch(/SecretKey\s*=/);
             expect(file.code).not.toMatch(/process\.env\.(AUTH0_|DATABASE_URL|OPENAI_)/);
           }
           for (const forbidden of fixture.forbiddenFiles) {
@@ -108,7 +131,7 @@ describe("production Build App harness", () => {
             );
           }
           const problems = validateAppFiles(app.files);
-          expect(problems.length).toBe(0);
+          expect(problems).toEqual([]);
         }
 
         results.push({ id: fixture.id, status: "passed", summary: "ok" });

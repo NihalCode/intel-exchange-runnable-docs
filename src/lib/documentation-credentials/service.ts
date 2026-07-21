@@ -12,7 +12,7 @@ import type {
   CredentialMetadata,
   DocumentationProduct,
 } from "@/lib/documentation-credentials/types";
-import { isAllowedBaseUrl } from "@/lib/products/registry";
+import { disallowedBaseUrlMessage, isAllowedBaseUrl } from "@/lib/products/registry";
 import { isCftrDocsHostBase } from "@/lib/run-feedback";
 import { assertPublicUrl, safeFetch } from "@/lib/security/public-host";
 
@@ -152,7 +152,7 @@ export async function validateAndStoreCredential(input: {
   if (!isAllowedBaseUrl(input.productId, baseUrl)) {
     throw new CredentialValidationError(
       "BASE_URL_NOT_ALLOWED",
-      "Base URL is not allowed for this product. Use a Cyware tenant Open API URL (for Orchestrate: …/soarapi/openapi or …/co)."
+      disallowedBaseUrlMessage(input.productId)
     );
   }
 
