@@ -36,19 +36,40 @@ const PRODUCTS: Array<{ id: ProductId; label: string; hint: string }> = [
 
 function connectFailureMessage(
   status: number,
-  data: { error?: string; code?: string; credential?: Credential }
+  data: { error?: string; code?: string; credential?: Credential },
+  productId?: ProductId
 ): string {
   if (data.code === "DOCS_HOST_NOT_ALLOWED" || data.error?.includes("docs site")) {
     return (
       data.error ??
-      "That host is docs-only. Use your live tenant Open API base URL."
+      (productId === "cftr"
+        ? "https://cftrapi.cyware.com is docs-only. Use your tenant URL ending in /cftrapi."
+        : "That host is docs-only. Use your live tenant Open API base URL.")
     );
   }
   if (data.code === "BASE_URL_NOT_ALLOWED" || data.error?.includes("not allowed")) {
-    return (
-      data.error ??
-      "Base URL is not allowed for this product. Check the tenant Open API path."
-    );
+    if (data.error) return data.error;
+    if (productId === "csap") {
+      return (
+        "Base URL is not allowed for CSAP. Use a tenant URL ending in /csap, " +
+        "or https://csapapi.cyware.com."
+      );
+    }
+    if (productId === "cftr") {
+      return (
+        "Base URL is not allowed for CFTR. Use your tenant URL ending in /cftrapi " +
+        "(not cftrapi.cyware.com)."
+      );
+    }
+    if (productId === "orchestrate") {
+      return (
+        "Base URL is not allowed for Orchestrate. Use …/soarapi/openapi, …/soarapi, or …/co."
+      );
+    }
+    if (productId === "ctix") {
+      return "Base URL is not allowed for CTIX. Use a tenant URL ending in /ctixapi.";
+    }
+    return "Base URL is not allowed for this product. Check the tenant Open API path.";
   }
   const code = data.credential?.validationErrorCode;
   if (code === "CLOUDFLARE_BLOCKED") {
@@ -168,7 +189,7 @@ export function CredentialManager() {
         // Keep Secret Key on failure so the user can retry without retyping.
         setMessage((value) => ({
           ...value,
-          [productId]: connectFailureMessage(response.status, data),
+          [productId]: connectFailureMessage(response.status, data, productId),
         }));
       }
       await load();
