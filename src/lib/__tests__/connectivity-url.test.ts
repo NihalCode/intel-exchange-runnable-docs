@@ -4,7 +4,10 @@ import {
   buildConnectivityUrl,
   listConnectivityProbeUrls,
 } from "@/lib/documentation-credentials/connectivity";
-import { isAllowedBaseUrl } from "@/lib/products/registry";
+import {
+  disallowedBaseUrlMessage,
+  isAllowedBaseUrl,
+} from "@/lib/products/registry";
 
 describe("buildConnectivityUrl", () => {
   it("builds CTIX ping under tenant /ctixapi", () => {
@@ -87,6 +90,15 @@ describe("listConnectivityProbeUrls", () => {
       )
     ).toEqual(["https://tenant.cyware.com/cftrapi/openapi/test-connectivity/"]);
   });
+
+  it("probes CSAP under /csap when given a bare tenant-like /api path", () => {
+    const urls = listConnectivityProbeUrls(
+      "csap",
+      "https://cs-test.cyware.com/api"
+    ).map((u) => u.pathname);
+    expect(urls).toContain("/api/csap/v1/test_connectivity/");
+    expect(urls).toContain("/api/v1/test_connectivity/");
+  });
 });
 
 describe("isAllowedBaseUrl product bases", () => {
@@ -106,13 +118,57 @@ describe("isAllowedBaseUrl product bases", () => {
     );
   });
 
-  it("allows CSAP tenant and docs-host bases", () => {
+  it("allows CSAP tenant /csap and csapapi docs-host bases", () => {
     expect(isAllowedBaseUrl("csap", "https://tenant.cyware.com/csap")).toBe(true);
+    expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/csap")).toBe(true);
+    expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/csap/")).toBe(true);
     expect(isAllowedBaseUrl("csap", "https://csapapi.cyware.com")).toBe(true);
+  });
+
+  it("rejects bare /api as a CSAP Open API base", () => {
+    expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/api")).toBe(false);
+    expect(isAllowedBaseUrl("csap", "https://cs-test.cyware.com/api/")).toBe(false);
   });
 
   it("rejects CFTR docs host — tenant /cftrapi only", () => {
     expect(isAllowedBaseUrl("cftr", "https://cftrapi.cyware.com")).toBe(false);
     expect(isAllowedBaseUrl("cftr", "https://tenant.cyware.com/cftrapi")).toBe(true);
+    expect(isAllowedBaseUrl("cftr", "https://cs-test.cyware.com/cftrapi")).toBe(true);
+  });
+});
+
+describe("disallowedBaseUrlMessage", () => {
+  it("gives CSAP-specific guidance and never mentions Orchestrate paths", () => {
+    const msg = disallowedBaseUrlMessage("csap");
+    expect(msg).toMatch(/CSAP/i);
+    expect(msg).toMatch(/\/csap/);
+    expect(msg).toMatch(/csapapi\.cyware\.com/);
+    expect(msg).not.toMatch(/Orchestrate/i);
+    expect(msg).not.toMatch(/soarapi/);
+    expect(msg).not.toMatch(/\/co\b/);
+  });
+
+  it("gives CFTR-specific guidance and never mentions Orchestrate paths", () => {
+    const msg = disallowedBaseUrlMessage("cftr");
+    expect(msg).toMatch(/CFTR/i);
+    expect(msg).toMatch(/\/cftrapi/);
+    expect(msg).toMatch(/cftrapi\.cyware\.com/);
+    expect(msg).not.toMatch(/Orchestrate/i);
+    expect(msg).not.toMatch(/soarapi/);
+  });
+
+  it("gives Orchestrate-specific guidance for Orchestrate only", () => {
+    const msg = disallowedBaseUrlMessage("orchestrate");
+    expect(msg).toMatch(/Orchestrate/i);
+    expect(msg).toMatch(/soarapi/);
+    expect(msg).not.toMatch(/\/csap/);
+    expect(msg).not.toMatch(/\/cftrapi/);
+  });
+
+  it("gives CTIX-specific guidance", () => {
+    const msg = disallowedBaseUrlMessage("ctix");
+    expect(msg).toMatch(/CTIX/i);
+    expect(msg).toMatch(/\/ctixapi/);
+    expect(msg).not.toMatch(/Orchestrate/i);
   });
 });
