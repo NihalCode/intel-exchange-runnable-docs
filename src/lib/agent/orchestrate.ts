@@ -53,7 +53,9 @@ import {
   isSetupInfoQuery,
   isOpenApiAuthHowToQuery,
   isRateLimitQuery,
+  isHttpStatusMeaningQuery,
   enforceRateLimitGuidancePlan,
+  enforceHttpStatusGuidancePlan,
 } from "./planner";
 import {
   confidenceFromScores,
@@ -489,6 +491,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     plan = enforceCatalogPlan(plan, query, req.allowedProductIds);
     plan = enforceSetupInfoPlan(plan, query, scope.filterMode === "all" ? "all" : activeProductId);
     plan = enforceRateLimitGuidancePlan(plan, query);
+    plan = enforceHttpStatusGuidancePlan(plan, query);
     plan = enforceOpenApiAuthPlan(
       plan,
       query,
@@ -499,6 +502,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       !isSetupInfoQuery(query) &&
       !isCatalogQuery(query) &&
       !isRateLimitQuery(query) &&
+      !isHttpStatusMeaningQuery(query) &&
       !isOpenApiAuthHowToQuery(query)
     ) {
       plan = enforceConnectivityPlan(plan, query, scored, activeProductId);
@@ -508,6 +512,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       activeProductId === "ctix" &&
       !isPingQuery(query) &&
       !isRateLimitQuery(query) &&
+      !isHttpStatusMeaningQuery(query) &&
       !isOpenApiAuthHowToQuery(query)
     ) {
       // Canonicalize casual nouns (label->tag, bad ips->indicator) so the
@@ -543,6 +548,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
       !isSetupInfoQuery(query) &&
       !isCatalogQuery(query) &&
       !isRateLimitQuery(query) &&
+      !isHttpStatusMeaningQuery(query) &&
       !isOpenApiAuthHowToQuery(query)
     ) {
       plan = enforceProductDocPlan(plan, query, scored, activeProductId);
@@ -575,6 +581,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
   const setupInfoAnswer = isSetupInfoQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const catalogAnswer = isCatalogQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const rateLimitAnswer = isRateLimitQuery(query) && (plan.confidence ?? 0) >= 0.9;
+  const httpStatusAnswer = isHttpStatusMeaningQuery(query) && (plan.confidence ?? 0) >= 0.9;
   const openApiAuthAnswer = isOpenApiAuthHowToQuery(query) && (plan.confidence ?? 0) >= 0.9;
   // Do not mark fallback merely because validation dropped a sibling step while
   // a usable step remains — that contradicts strong/partial evidence badges.
@@ -582,6 +589,7 @@ export async function runAgent(req: AgentRequest): Promise<AgentResponse> {
     (!setupInfoAnswer &&
       !catalogAnswer &&
       !rateLimitAnswer &&
+      !httpStatusAnswer &&
       !openApiAuthAnswer &&
       (lowConfidence || stepResults.length === 0));
 

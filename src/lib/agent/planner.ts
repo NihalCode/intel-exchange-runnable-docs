@@ -329,7 +329,11 @@ export function isCredentialsQuery(query: string): boolean {
     /\b(same|share[ds]?)\b.*\b(key|credential|access\s*id).*\b(ctix|cftr|csap|orchestrate|product)/.test(q) ||
     /\b(access\s*id|secret\s*key).*\b(each|all|every|four|4)\b.*\b(api|product)/.test(q) ||
     /\buse\b.*\bmy\b.*\b(ctix|cftr|csap|orchestrate)\b.*\b(access|credential|key|secret)/.test(q) ||
-    /\b(ctix|cftr|csap|orchestrate)\b.*\b(access\s*id|secret\s*key|credential)/.test(q)
+    /\b(ctix|cftr|csap|orchestrate)\b.*\b(access\s*id|secret\s*key|credential)/.test(q) ||
+    /\b(need|require)\b[\s\S]{0,40}\b(separate|different|own|distinct)\b[\s\S]{0,60}\b(access\s*id|secret\s*key|credential|key)\b/.test(
+      q
+    ) ||
+    /\b(access\s*id|secret\s*key)\b[\s\S]{0,40}\b(each|every|per)\b[\s\S]{0,20}\b(product|api)\b/.test(q)
   );
 }
 
@@ -343,7 +347,7 @@ export function isSetupInfoQuery(query: string): boolean {
  */
 export function isOpenApiAuthHowToQuery(query: string): boolean {
   const q = query.toLowerCase();
-  if (isSetupInfoQuery(query) || isCatalogQuery(query) || isRateLimitQuery(query)) {
+  if (isSetupInfoQuery(query) || isCatalogQuery(query) || isRateLimitQuery(query) || isHttpStatusMeaningQuery(query)) {
     return false;
   }
   const howTo =
@@ -436,6 +440,63 @@ export function enforceOpenApiAuthPlan(
     workflow,
     steps,
     citations: citations.length > 0 ? citations : plan.citations,
+    questions: undefined,
+  };
+}
+
+/** HTTP status meaning questions (401/403/404/…) — not an endpoint lookup. */
+export function isHttpStatusMeaningQuery(query: string): boolean {
+  const q = query.toLowerCase();
+  if (isRateLimitQuery(query)) return false;
+  return (
+    /\bwhat\s+does\b[\s\S]{0,40}\b(401|403|404|400|409|422|500|502|503)\b/.test(q) ||
+    /\b(mean|meaning|means)\b[\s\S]{0,30}\b(401|403|404|400|409|422|500)\b/.test(q) ||
+    /\b(401|403|404)\b[\s\S]{0,40}\b(mean|error|response|status)\b/.test(q) ||
+    /\bwhy\b[\s\S]{0,40}\b(401|403|404)\b/.test(q)
+  );
+}
+
+export function enforceHttpStatusGuidancePlan(plan: AgentPlan, query: string): AgentPlan {
+  if (!isHttpStatusMeaningQuery(query)) return plan;
+  const q = query.toLowerCase();
+  const code = (q.match(/\b(401|403|404|400|409|422|500|502|503)\b/) || [])[1] || "4xx";
+  const guidance: Record<string, string> = {
+    "401":
+      "HTTP **401 Unauthorized** on an Open API call usually means the request auth is missing, expired, or invalid. " +
+      "Confirm **AccessID**, **Signature**, and **Expires** are present on the query string, regenerate Signature & Expires " +
+      "(Expires is short-lived), and verify you are using that product’s own Access ID + Secret Key — never put the Secret Key in the URL.",
+    "403":
+      "HTTP **403 Forbidden** means the credentials were accepted enough to identify the caller, but the Open API role/permissions " +
+      "do not allow this action. Check the Integrator / Open API role grants for the endpoint, not just the signature.",
+    "404":
+      "HTTP **404 Not Found** means the path or object ID is wrong for this tenant/version, or the resource was removed. " +
+      "Confirm the documented path for this product (including product prefixes) and that any `{id}` path params exist.",
+    "400":
+      "HTTP **400 Bad Request** means the server rejected the payload or query parameters. Compare required fields and types " +
+      "against the endpoint docs; fix validation errors before retrying.",
+    "409":
+      "HTTP **409 Conflict** usually means a create/update collided with an existing resource (duplicate name/ID). " +
+      "Search first, then create or update the existing object.",
+    "422":
+      "HTTP **422 Unprocessable Entity** means the request was understood but failed semantic validation. " +
+      "Inspect the response body for field-level errors and align with the documented schema.",
+    "500":
+      "HTTP **500** is a server-side error. Retry with backoff; if it persists, capture the response body and request ID for support — do not invent alternate undocumented paths.",
+    "502":
+      "HTTP **502 Bad Gateway** is usually transient upstream failure. Retry with backoff; do not invent alternate endpoints.",
+    "503":
+      "HTTP **503 Service Unavailable** means the API is temporarily overloaded or down. Retry with backoff and honour Retry-After when present.",
+  };
+  const workflow =
+    guidance[code] ||
+    `HTTP **${code}** should be handled from the documented status meaning and response body — do not invent undocumented endpoints to work around it.`;
+
+  return {
+    ...plan,
+    confidence: Math.max(plan.confidence, 0.9),
+    workflow,
+    steps: [],
+    citations: [],
     questions: undefined,
   };
 }
@@ -717,7 +778,7 @@ function setupInfoWorkflow(productId: string): string {
     `**Live Open API base URL** for ${product.displayLabel}: \`${product.baseApiUrl}\`\n\n` +
     `${hint}\n\n` +
     `Enter this in **API Settings** (header). ${credNote} ` +
-    `Each Cyware product uses a separate key pair — you cannot reuse CTIX credentials on other APIs.`
+    `Each Cyware product uses its **own** separate Access ID + Secret Key pair — you cannot reuse CTIX credentials on other APIs.`
   );
 }
 

@@ -62,6 +62,21 @@ describe("isOpenApiAuthHowToQuery", () => {
   });
 });
 
+describe("HTTP status meaning guidance", () => {
+  it("answers 401 without inventing an authentication endpoint", async () => {
+    const { isHttpStatusMeaningQuery, enforceHttpStatusGuidancePlan } = await import(
+      "../agent/planner"
+    );
+    expect(
+      isHttpStatusMeaningQuery("What does a 401 mean on a CTIX Open API call?")
+    ).toBe(true);
+    const plan = enforceHttpStatusGuidancePlan(emptyPlan, "What does a 401 mean on a CTIX Open API call?");
+    expect(plan.workflow).toContain("401");
+    expect(plan.workflow).toContain("AccessID");
+    expect(plan.steps).toHaveLength(0);
+  });
+});
+
 describe("enforceOpenApiAuthPlan", () => {
   it("answers with AccessID Signature Expires and ping verification", () => {
     const badLlmPlan: AgentPlan = {

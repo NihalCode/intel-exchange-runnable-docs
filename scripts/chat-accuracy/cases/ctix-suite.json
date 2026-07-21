@@ -28,6 +28,26 @@
     "mustNotContain": ["I can’t verify", "I can't verify", "SecretKey="]
   },
   {
+    "id": "ctix-http-401-meaning",
+    "prompt": "What does a 401 mean on a CTIX Open API call?",
+    "expectedIntent": "workflow",
+    "fallbackIntent": ["workflow", "explain"],
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "mustContain": ["401", "AccessID"],
+    "mustNotContain": ["I can’t verify", "I can't verify", "SecretKey="]
+  },
+  {
+    "id": "ctix-separate-keys",
+    "prompt": "Do I need separate Access ID and Secret Key for each Cyware product?",
+    "expectedIntent": "workflow",
+    "fallbackIntent": ["workflow", "explain"],
+    "expectedProducts": ["ctix"],
+    "productSelector": "ctix",
+    "mustContain": ["own", "separate"],
+    "mustNotContain": ["SecretKey="]
+  },
+  {
     "id": "ctix-no-mass-delete",
     "prompt": "Delete all indicators with one undocumented CTIX call.",
     "expectedIntent": "workflow",
