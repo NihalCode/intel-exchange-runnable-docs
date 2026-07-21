@@ -16,7 +16,7 @@ export function Sparkline({ values }: { values: number[] }) {
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="h-6 w-20 text-sky-600 dark:text-sky-400"
+      className="h-6 w-20 text-[var(--accent-primary)]"
       aria-hidden="true"
     >
       <polyline
@@ -49,14 +49,14 @@ export function MetricCard({
       ? "text-emerald-600 dark:text-emerald-400"
       : trend === "down"
         ? "text-red-600 dark:text-red-400"
-        : "text-zinc-500";
+        : "text-[var(--text-muted)]";
 
   return (
-    <div className={cardClass}>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">{label}</p>
+    <div className={cardClass} data-testid="metric-card">
+      <p className="text-sm text-[var(--text-secondary)]">{label}</p>
       <div className="mt-2 flex items-end justify-between gap-2">
         <div>
-          <p className="text-2xl font-semibold tabular-nums">{value}</p>
+          <p className="text-2xl font-semibold tabular-nums text-[var(--text-heading)]">{value}</p>
           {change ? <p className={`mt-1 text-xs font-medium ${trendColor}`}>{change}</p> : null}
         </div>
         {sparkline?.length ? <Sparkline values={sparkline} /> : null}

@@ -125,12 +125,12 @@ export function ProductSelector({ className = "" }: { className?: string }) {
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
       <label className="flex items-center gap-1.5 text-xs">
-        <span className="font-semibold text-zinc-600 dark:text-zinc-400">Product</span>
+        <span className="font-semibold text-[var(--text-secondary)]">Product</span>
         <select
           aria-label="Active documentation product"
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
-          className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs font-medium dark:border-zinc-600 dark:bg-zinc-900"
+          className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--text-primary)]"
         >
           {products.map((p) => (
             <option key={p.productId} value={p.productId}>
@@ -140,20 +140,18 @@ export function ProductSelector({ className = "" }: { className?: string }) {
         </select>
       </label>
       <label className="flex items-center gap-1.5 text-xs">
-        <span className="font-semibold text-zinc-600 dark:text-zinc-400">Search</span>
+        <span className="font-semibold text-[var(--text-secondary)]">Search</span>
         <select
           aria-label="Documentation search scope"
           value={searchScope}
           onChange={(e) => setSearchScope(e.target.value as "product" | "all")}
-          className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs dark:border-zinc-600 dark:bg-zinc-900"
+          className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 text-xs text-[var(--text-primary)]"
         >
           <option value="product">This product</option>
           <option value="all">All products</option>
         </select>
       </label>
-      <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-        {productId}
-      </span>
+      <ProductBadge productId={productId} />
     </div>
   );
 }
@@ -162,8 +160,30 @@ export function ProductBadge({ productId }: { productId: string }) {
   const p = getProduct(productId);
   if (!p) return null;
   return (
-    <span className="inline-flex items-center rounded-full border border-zinc-300 px-2 py-0.5 text-[10px] font-semibold uppercase text-zinc-600 dark:border-zinc-600 dark:text-zinc-400">
+    <span
+      className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+      style={{
+        borderColor: `color-mix(in srgb, ${productAccent(productId)} 45%, transparent)`,
+        color: productAccent(productId),
+        background: `color-mix(in srgb, ${productAccent(productId)} 10%, transparent)`,
+      }}
+    >
       {p.displayLabel}
     </span>
   );
+}
+
+function productAccent(productId: string): string {
+  switch (productId) {
+    case "ctix":
+      return "var(--product-ctix)";
+    case "csap":
+      return "var(--product-csap)";
+    case "orchestrate":
+      return "var(--product-orchestrate)";
+    case "cftr":
+      return "var(--product-cftr)";
+    default:
+      return "var(--accent-primary)";
+  }
 }

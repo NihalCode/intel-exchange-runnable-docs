@@ -75,7 +75,7 @@ export function QueryAnalyticsPage({
     denom > 0 ? `${Math.round((summary.unanswered / denom) * 100)}% of answer-quality` : "—";
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-5" data-testid="query-analytics-page">
       <PageHeader
         eyebrow={organization.name}
         title="Query analytics"

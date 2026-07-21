@@ -51,7 +51,7 @@ const components: Components = {
       return <CodeBlock snippet={buildSnippet(match?.[1], text)} />;
     }
     return (
-      <code className="rounded bg-zinc-200/70 px-1 py-0.5 font-mono text-[0.85em] dark:bg-zinc-800">
+      <code className="rounded bg-[var(--surface-muted)] px-1 py-0.5 font-mono text-[0.85em] text-[var(--text-heading)]">
         {children}
       </code>
     );
@@ -62,7 +62,7 @@ const components: Components = {
         href={href}
         target="_blank"
         rel="noreferrer noopener"
-        className="text-sky-600 underline decoration-sky-300 underline-offset-2 hover:text-sky-500 dark:text-sky-400"
+        className="text-[var(--text-link)] underline underline-offset-2 hover:text-[var(--text-link-hover)]"
       >
         {children}
       </a>
@@ -74,7 +74,7 @@ export function Markdown({ children }: { children: string }) {
   // Soften GitHub-style callout markers that GFM doesn't render specially.
   const normalized = children.replace(/\[!(NOTE|TIP|WARNING|IMPORTANT|CAUTION)\]/g, "**$1**");
   return (
-    <div className="prose prose-zinc max-w-none dark:prose-invert prose-headings:scroll-mt-24 prose-pre:p-0">
+    <div className="prose prose-cyware max-w-none prose-headings:scroll-mt-24 prose-pre:p-0">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
         {normalized}
       </ReactMarkdown>

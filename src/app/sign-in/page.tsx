@@ -68,8 +68,8 @@ export default async function SignInPage({
   const emailConnection = process.env.AUTH0_EMAIL_CONNECTION?.trim();
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12 dark:bg-zinc-950">
-      <div className="w-full max-w-md text-center">
+    <main className="flex min-h-screen items-center justify-center bg-[var(--background-page)] px-4 py-12">
+      <div className="cx-card w-full max-w-md p-8 text-center">
         <div className="mb-6 flex flex-col items-center justify-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -79,17 +79,17 @@ export default async function SignInPage({
             height={48}
             className="h-12 w-12 object-contain"
           />
-          <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <span className="text-sm font-semibold text-[var(--text-heading)]">
             Cyware API Docs
             {setup.deployment.productId ? (
-              <span className="ml-1 font-normal text-zinc-500">({setup.deployment.productId})</span>
+              <span className="ml-1 font-normal text-[var(--text-muted)]">
+                ({setup.deployment.productId})
+              </span>
             ) : null}
           </span>
         </div>
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-          Sign in
-        </h1>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        <h1 className="text-2xl font-semibold text-[var(--text-heading)]">Sign in</h1>
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
           Sign in with your invited company email.
         </p>
         {errorText ? (

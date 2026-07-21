@@ -88,7 +88,7 @@ export function AdminSidebar() {
     <>
       <button
         type="button"
-        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-sky-700 text-white shadow-lg lg:hidden"
+        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-primary)] text-white shadow-lg lg:hidden"
         aria-label="Open admin navigation"
         aria-expanded={mobileOpen}
         aria-controls="admin-navigation-drawer"
@@ -99,16 +99,22 @@ export function AdminSidebar() {
         </svg>
       </button>
 
-      <aside className="hidden w-72 shrink-0 border-r border-zinc-200 lg:block dark:border-zinc-800">
-        <div className="sticky top-0 flex h-screen flex-col">
-          <div className="border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
-            <Link href="/admin" className="text-sm font-semibold">
-              Enterprise Admin
+      <aside className="hidden w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border-subtle)] lg:block">
+        <div className="sticky top-0 flex h-screen flex-col bg-[var(--surface-raised)]">
+          <div className="border-b border-[var(--border-subtle)] px-4 py-3">
+            <Link href="/admin" className="flex items-center gap-2" data-testid="admin-brand">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/cyware_logo.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
+              <span>
+                <span className="block text-sm font-semibold text-[var(--text-heading)]">
+                  Enterprise Admin
+                </span>
+                <span className="block text-[10px] text-[var(--text-muted)]">Control plane</span>
+              </span>
             </Link>
-            <p className="mt-0.5 text-xs text-zinc-500">Control plane</p>
           </div>
           <AdminAppExitNav variant="sidebar" />
-          <div className="flex-1 overflow-y-auto">{navContent}</div>
+          <div className="flex-1 overflow-y-auto scroll-thin">{navContent}</div>
         </div>
       </aside>
 
@@ -116,7 +122,7 @@ export function AdminSidebar() {
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-[var(--surface-overlay)]"
             aria-label="Close navigation"
             onClick={() => setMobileOpen(false)}
           />
@@ -127,13 +133,13 @@ export function AdminSidebar() {
             role="dialog"
             aria-modal="true"
             aria-label="Administration navigation"
-            className="absolute left-0 top-0 h-full w-72 border-r border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950"
+            className="absolute left-0 top-0 h-full w-72 border-r border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-drawer)]"
           >
-            <div className="border-b border-zinc-200 px-4 py-4 dark:border-zinc-800">
-              <p className="text-sm font-semibold">Enterprise Admin</p>
+            <div className="border-b border-[var(--border-subtle)] px-4 py-3">
+              <p className="text-sm font-semibold text-[var(--text-heading)]">Enterprise Admin</p>
             </div>
             <AdminAppExitNav variant="sidebar" />
-            <div className="overflow-y-auto">{navContent}</div>
+            <div className="overflow-y-auto scroll-thin">{navContent}</div>
           </aside>
         </div>
       ) : null}
@@ -160,14 +166,14 @@ function NavGroup({
     <div className="mb-2">
       <button
         type="button"
-        className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs font-semibold uppercase tracking-wide text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+        className="flex w-full items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
         aria-expanded={!collapsed}
         onClick={onToggle}
       >
         <ChevronIcon open={!collapsed} />
         {group.label}
         {hasActive && collapsed ? (
-          <span className="ml-auto h-1.5 w-1.5 rounded-full bg-sky-600" aria-hidden="true" />
+          <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" aria-hidden="true" />
         ) : null}
       </button>
       {!collapsed ? (
@@ -180,10 +186,10 @@ function NavGroup({
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   onClick={onNavigate}
-                  className={`block rounded-md px-3 py-2 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 ${
+                  className={`block rounded-[var(--radius-md)] px-3 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
                     active
-                      ? "bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-100"
-                      : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
+                      ? "bg-[var(--surface-muted)] text-[var(--text-link)]"
+                      : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {item.label}

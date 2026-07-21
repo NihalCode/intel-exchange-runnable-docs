@@ -159,7 +159,7 @@ function AgentChatBody({
   return (
     <section
       aria-labelledby="agent-chat-heading"
-      className="flex h-[calc(100vh-8rem)] min-h-[560px] overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+      className="flex h-[calc(100vh-8rem)] min-h-[560px] overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-card)]"
     >
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {loading
@@ -250,8 +250,11 @@ function AgentChatBody({
         <div aria-label="Conversation" className="flex-1 overflow-y-auto px-4 py-4">
           {isEmpty ? (
             <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-2xl dark:bg-sky-950">
-                ✨
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-ai-soft)] text-[var(--accent-ai)]">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                  <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" strokeLinejoin="round" />
+                  <path d="M5 16l.8 2.2L8 19l-2.2.8L5 22l-.8-2.2L2 19l2.2-.8L5 16z" strokeLinejoin="round" />
+                </svg>
               </div>
               <h2 className="text-lg font-semibold">What would you like to learn?</h2>
               <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">

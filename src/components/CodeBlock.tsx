@@ -46,8 +46,8 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
     isPostmanPreRequestScript(snippet.code);
 
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-lg border border-zinc-800 bg-[#0d1117] text-zinc-100 shadow-sm">
-      <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-1.5">
+    <div className="not-prose my-4 overflow-hidden rounded-[var(--radius-lg)] border border-zinc-800 bg-[#0d1117] text-zinc-100 shadow-[var(--shadow-card)]">
+      <div className="flex items-center justify-between border-b border-zinc-800 bg-[#010409] px-3 py-1.5">
         <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
           {snippet.label || snippet.lang}
         </span>

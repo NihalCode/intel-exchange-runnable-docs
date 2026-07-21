@@ -31,7 +31,7 @@ export default function RootLayout({
       <head>
         <Script src="/theme-init.js" strategy="beforeInteractive" />
       </head>
-      <body className="min-h-full">
+      <body className="min-h-full font-sans antialiased">
         <RunSettingsProvider defaultBaseUrl={manifest.defaultBaseUrl}>
           <HostProductProvider>
             <DocumentationAuthProvider>

@@ -234,15 +234,15 @@ export function CredentialManager() {
   }
 
   return (
-    <div className="max-w-xl space-y-4">
-      <div className="rounded-xl border border-zinc-200 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
-        <label className="block text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+    <div className="max-w-xl space-y-4" data-testid="credential-manager">
+      <div className="cx-card bg-[var(--surface-sunken)] p-4">
+        <label className="block text-xs font-semibold text-[var(--text-secondary)]">
           Product
         </label>
         <select
           value={selectedProductId}
           onChange={(event) => setSelectedProductId(event.target.value as ProductId)}
-          className="mt-2 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm font-medium dark:border-zinc-700 dark:bg-zinc-950"
+          className="mt-2 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
         >
           {PRODUCTS.map((item) => {
             const itemCredential = credentials.find((entry) => entry.productId === item.id);
@@ -260,23 +260,23 @@ export function CredentialManager() {
             );
           })}
         </select>
-        <p className="mt-2 text-xs text-zinc-500">
+        <p className="mt-2 text-xs text-[var(--text-muted)]">
           {connectedCount} of {PRODUCTS.length} products connected. Select a product to view or
           update its credentials.
         </p>
       </div>
 
-      <section className="rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+      <section className="cx-card p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-semibold">{product.label}</h2>
-            <p className="mt-1 text-xs text-zinc-500">{product.hint}</p>
+            <h2 className="font-semibold text-[var(--text-heading)]">{product.label}</h2>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">{product.hint}</p>
           </div>
           <span
             className={`rounded-full px-2 py-0.5 text-xs ${
               credential?.status === "valid"
                 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                : "bg-[var(--surface-muted)] text-[var(--text-secondary)]"
             }`}
           >
             {statusLabel(credential?.status)}
@@ -284,7 +284,7 @@ export function CredentialManager() {
         </div>
 
         {credential ? (
-          <div className="mt-4 space-y-1 text-xs text-zinc-600 dark:text-zinc-400">
+          <div className="mt-4 space-y-1 text-xs text-[var(--text-secondary)]">
             <p className="break-all">Base URL: {credential.baseUrl}</p>
             <p>
               Last validated:{" "}
@@ -308,38 +308,38 @@ export function CredentialManager() {
         ) : null}
 
         <div className="mt-4 space-y-3">
-          <label className="block text-xs">
+          <label className="block text-xs text-[var(--text-secondary)]">
             <span>Environment / Base URL</span>
             <input
               value={form.baseUrl}
               onChange={(event) => update(product.id, "baseUrl", event.target.value)}
               placeholder="https://your-tenant.cyware.com/…"
-              className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-transparent px-3 py-2 text-sm text-[var(--text-primary)]"
             />
           </label>
-          <label className="block text-xs">
+          <label className="block text-xs text-[var(--text-secondary)]">
             <span>Access ID</span>
             <input
               value={form.accessId}
               onChange={(event) => update(product.id, "accessId", event.target.value)}
               autoComplete="off"
-              className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-transparent px-3 py-2 text-sm text-[var(--text-primary)]"
             />
           </label>
-          <label className="block text-xs">
+          <label className="block text-xs text-[var(--text-secondary)]">
             <span>Secret Key</span>
             <input
               type="password"
               value={form.secretKey}
               onChange={(event) => update(product.id, "secretKey", event.target.value)}
               autoComplete="new-password"
-              className="mt-1 w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm dark:border-zinc-700"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-transparent px-3 py-2 text-sm text-[var(--text-primary)]"
             />
           </label>
         </div>
 
         {message[product.id] ? (
-          <p className="mt-3 text-xs" role="status">
+          <p className="mt-3 text-xs text-[var(--text-secondary)]" role="status">
             {message[product.id]}
           </p>
         ) : null}
@@ -349,7 +349,7 @@ export function CredentialManager() {
             type="button"
             disabled={busy === product.id}
             onClick={() => void connect(product.id)}
-            className="rounded-md bg-sky-600 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+            className="rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 py-2 text-xs font-medium text-white hover:bg-[var(--accent-primary-hover)] disabled:opacity-50"
           >
             {busy === product.id ? "Testing…" : "Test & connect"}
           </button>
@@ -358,7 +358,7 @@ export function CredentialManager() {
               type="button"
               disabled={busy === product.id}
               onClick={() => void disconnect(product.id)}
-              className="rounded-md border border-zinc-300 px-3 py-2 text-xs dark:border-zinc-700"
+              className="rounded-[var(--radius-md)] border border-[var(--border-default)] px-3 py-2 text-xs text-[var(--text-primary)]"
             >
               Disconnect
             </button>

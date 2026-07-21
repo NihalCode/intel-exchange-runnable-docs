@@ -23,7 +23,16 @@ import {
 
 function PlaceholderNotice() {
   return (
-    <p className="text-xs text-amber-700 dark:text-amber-300">{PLACEHOLDER_NOTICE}</p>
+    <p
+      className="rounded-[var(--radius-md)] border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100"
+      role="status"
+      data-testid="support-agent-placeholder"
+    >
+      <span className="mr-2 inline-block rounded bg-amber-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950 dark:bg-amber-900 dark:text-amber-50">
+        Mock — not live
+      </span>
+      {PLACEHOLDER_NOTICE}
+    </p>
   );
 }
 

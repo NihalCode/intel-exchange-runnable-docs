@@ -32,12 +32,12 @@ function ParamTable({ title, fields }: { title: string; fields?: ParamField[] })
   if (!fields || fields.length === 0) return null;
   return (
     <section className="my-5">
-      <h3 className="mb-2 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+      <h3 className="mb-2 text-sm font-semibold text-[var(--text-heading)]">
         {title}
       </h3>
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)]">
         <table className="w-full text-left text-sm">
-          <thead className="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-900">
+          <thead className="bg-[var(--surface-sunken)] text-xs uppercase tracking-wide text-[var(--text-muted)]">
             <tr>
               <th className="px-3 py-2 font-medium">Name</th>
               <th className="px-3 py-2 font-medium">Type</th>
@@ -49,10 +49,10 @@ function ParamTable({ title, fields }: { title: string; fields?: ParamField[] })
             {fields.map((f, i) => (
               <tr
                 key={`${f.name}-${i}`}
-                className="border-t border-zinc-100 align-top dark:border-zinc-800"
+                className="border-t border-[var(--border-subtle)] align-top"
               >
                 <td className="px-3 py-2 font-mono text-xs font-semibold">{f.name}</td>
-                <td className="px-3 py-2 text-xs text-zinc-500">
+                <td className="px-3 py-2 text-xs text-[var(--text-muted)]">
                   {f.valueType || "string"}
                 </td>
                 <td className="px-3 py-2 text-xs">
@@ -61,11 +61,11 @@ function ParamTable({ title, fields }: { title: string; fields?: ParamField[] })
                       required
                     </span>
                   ) : (
-                    <span className="text-zinc-400">optional</span>
+                    <span className="text-[var(--text-muted)]">optional</span>
                   )}
                 </td>
-                <td className="px-3 py-2 text-xs text-zinc-600 dark:text-zinc-400">
-                  <div className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0">
+                <td className="px-3 py-2 text-xs text-[var(--text-secondary)]">
+                  <div className="prose prose-sm prose-cyware max-w-none prose-p:my-0">
                     <Markdown>{f.description || ""}</Markdown>
                   </div>
                 </td>
@@ -95,22 +95,29 @@ export function EndpointView({
   const runnableRequest = useMemo(() => buildRunnableRequest(page, productId), [page, productId]);
 
   return (
-    <article className="mx-auto max-w-4xl">
+    <article className="mx-auto max-w-[var(--content-max)]">
       <div className="mb-3 flex flex-wrap items-center gap-3">
         <ProductBadge productId={productId} />
         <MethodBadge method={page.method} />
-        <h1 className="text-2xl font-bold tracking-tight">{page.title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-heading)]">
+          {page.title}
+        </h1>
         {docsUrl ? (
-          <a href={docsUrl} className="text-xs text-sky-600 underline" target="_blank" rel="noreferrer">
+          <a
+            href={docsUrl}
+            className="text-xs text-[var(--text-link)] underline"
+            target="_blank"
+            rel="noreferrer"
+          >
             Source docs
           </a>
         ) : null}
       </div>
 
-      <div className="mb-5 flex items-center gap-2 overflow-x-auto rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 font-mono text-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="mb-5 flex items-center gap-2 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-3 py-2 font-mono text-sm">
         <MethodBadge method={page.method} />
-        <span className="whitespace-nowrap text-zinc-500">{displayBase}</span>
-        <span className="whitespace-nowrap font-semibold">
+        <span className="whitespace-nowrap text-[var(--text-muted)]">{displayBase}</span>
+        <span className="whitespace-nowrap font-semibold text-[var(--text-heading)]">
           {page.path.startsWith("/") ? page.path : `/${page.path}`}
         </span>
       </div>
@@ -127,8 +134,8 @@ export function EndpointView({
       <ParamTable title="Body Parameters" fields={page.request?.body} />
 
       <section className="mt-8">
-        <h2 className="mb-1 text-lg font-semibold">Run it</h2>
-        <p className="mb-3 text-sm text-zinc-500">
+        <h2 className="mb-1 text-lg font-semibold text-[var(--text-heading)]">Run it</h2>
+        <p className="mb-3 text-sm text-[var(--text-secondary)]">
           Use the <strong>Request parameters</strong> panel to enter path IDs, query values, JSON
           body, and credentials. Then run any snippet below — all languages use the same values.
           Base URL: <code className="font-mono text-xs">{displayBase}</code> (change in API Settings).

@@ -31,6 +31,7 @@ export const DOCUMENTATION_FEATURE_KEYS = [
   "vercel_domain_automation",
   "production_query_metrics",
   "admin_deployment_management",
+  "enterprise_ui_v2",
 ] as const;
 
 export type DocumentationFeatureKey = (typeof DOCUMENTATION_FEATURE_KEYS)[number];
@@ -42,6 +43,8 @@ const DEFAULT_ENABLED = new Set<DocumentationFeatureKey>([
   "generated_code_examples",
   "public_changelog",
   "public_documentation_search",
+  /** Default on: new Cyware token system is the live visual system. */
+  "enterprise_ui_v2",
 ]);
 
 /** Short labels for Admin → Features (falls back to raw key). */
@@ -75,6 +78,7 @@ export const DOCUMENTATION_FEATURE_LABELS: Partial<
   vercel_domain_automation: "Vercel domain automation",
   host_based_product_routing: "Host-based product routing",
   cross_domain_sso: "Cross-domain SSO",
+  enterprise_ui_v2: "Enterprise UI (Cyware tokens)",
 };
 
 export function defaultDocumentationFeatureEnabled(
@@ -99,6 +103,7 @@ export const ADMIN_FEATURE_SECTIONS: ReadonlyArray<{
       "public_changelog",
       "public_documentation_search",
       "api_testing_console",
+      "enterprise_ui_v2",
     ],
   },
   {

@@ -109,17 +109,17 @@ export function DataTable<T>({
         <EmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)]">
             <table className={tableClass}>
               <caption className="sr-only">{caption}</caption>
-              <thead className="sticky top-0 bg-zinc-50 dark:bg-zinc-900">
-                <tr className="border-b border-zinc-300 dark:border-zinc-700">
+              <thead className="sticky top-0 bg-[var(--surface-sunken)]">
+                <tr className="border-b border-[var(--border-default)]">
                   {columns.map((col) => (
-                    <th key={col.key} scope="col" className="p-2 font-medium">
+                    <th key={col.key} scope="col" className="p-2 font-medium text-[var(--text-heading)]">
                       {col.sortable ? (
                         <button
                           type="button"
-                          className="inline-flex items-center gap-1 hover:text-sky-700 dark:hover:text-sky-300"
+                          className="inline-flex items-center gap-1 hover:text-[var(--text-link)]"
                           onClick={() => toggleSort(col.key)}
                         >
                           {col.header}
@@ -136,7 +136,7 @@ export function DataTable<T>({
                 {pageRows.map((row) => (
                   <tr
                     key={rowKey(row)}
-                    className="border-b border-zinc-200 dark:border-zinc-800"
+                    className="border-b border-[var(--border-subtle)]"
                   >
                     {columns.map((col) => (
                       <td key={col.key} className="p-2">
@@ -151,24 +151,24 @@ export function DataTable<T>({
 
           {totalPages > 1 ? (
             <div className="mt-3 flex items-center justify-between text-sm">
-              <span className="text-zinc-500">
+              <span className="text-[var(--text-muted)]">
                 {filtered.length} record{filtered.length === 1 ? "" : "s"}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="rounded-md border border-zinc-300 px-2 py-1 disabled:opacity-50 dark:border-zinc-700"
+                  className="rounded-[var(--radius-md)] border border-[var(--border-default)] px-2 py-1 disabled:opacity-50"
                   disabled={page === 0}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   Previous
                 </button>
-                <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
+                <span className="tabular-nums text-[var(--text-secondary)]">
                   {page + 1} / {totalPages}
                 </span>
                 <button
                   type="button"
-                  className="rounded-md border border-zinc-300 px-2 py-1 disabled:opacity-50 dark:border-zinc-700"
+                  className="rounded-[var(--radius-md)] border border-[var(--border-default)] px-2 py-1 disabled:opacity-50"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
                 >
