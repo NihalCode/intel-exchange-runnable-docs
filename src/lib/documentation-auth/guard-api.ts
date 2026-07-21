@@ -9,7 +9,7 @@ import {
 } from "@/lib/documentation-auth/session";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { verifyDeveloperRequest } from "@/lib/developer/access";
-import { hasValidCredential } from "@/lib/documentation-credentials/repository";
+import { canUseAgentWithoutStoredProductSecrets } from "@/lib/documentation-credentials/agent-access-policy";
 import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
 import type { DocumentationFeatureKey } from "@/lib/documentation-features";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
@@ -66,11 +66,12 @@ export async function guardAskAgent(request: NextRequest): Promise<AppSession | 
         { status: 403 }
       );
     }
-    const valid = await hasValidCredential(
-      context.organization.id,
-      session.user.id
-    );
-    if (!valid) {
+    const access = await canUseAgentWithoutStoredProductSecrets({
+      organizationId: context.organization.id,
+      userId: session.user.id,
+      role: context.principal.role,
+    });
+    if (!access.allowed) {
       return NextResponse.json(
         {
           error: "Authentication required",

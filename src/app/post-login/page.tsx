@@ -28,7 +28,12 @@ export default async function PostLoginPage({
     const target = await consumeAuthReturnTarget(returnTargetId);
     if (target) {
       const path = safeReturnTo(target.returnPath);
-      redirect(`https://${target.targetHostname}${path}`);
+      // Establish a session cookie on the target product host via Auth0 SSO
+      // (silent authorize), then land on the intended path — do not deep-link
+      // without a cookie or the other app will force another interactive sign-in.
+      const bounce = new URL(`https://${target.targetHostname}/auth/login`);
+      bounce.searchParams.set("returnTo", path);
+      redirect(bounce.toString());
     }
   }
 

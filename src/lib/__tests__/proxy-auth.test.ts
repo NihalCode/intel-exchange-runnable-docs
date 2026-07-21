@@ -56,7 +56,8 @@ describe("unauthorized API response (agent chat regression)", () => {
     expect(body.error).toBe("Session expired — sign in again");
     expect(body.code).toBe("SESSION_EXPIRED");
     expect(typeof body.signIn).toBe("string");
-    expect(body.signIn).toContain("/sign-in");
+    expect(body.signIn).toContain("/auth/login");
+    expect(body.signIn).toContain("returnTo=");
     // Must never regress to the opaque bare-string message.
     expect(body.error).not.toBe("Unauthorized");
   });

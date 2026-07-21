@@ -21,13 +21,30 @@ function returnToFromRequest(request: NextRequest): string {
     }
   }
   if (!returnTo.startsWith("/") || returnTo.startsWith("//")) return "/";
+  // Avoid bouncing auth routes back into themselves.
+  if (
+    returnTo.startsWith("/sign-in") ||
+    returnTo.startsWith("/auth/") ||
+    returnTo.startsWith("/post-login") ||
+    returnTo.startsWith("/access/")
+  ) {
+    return "/";
+  }
   return returnTo;
 }
 
+/** Same-origin Auth0 login that reuses the Auth0 SSO cookie (silent when already logged in). */
+export function auth0LoginPath(returnTo = "/"): string {
+  const path = returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/";
+  const params = new URLSearchParams({ returnTo: path });
+  return `/auth/login?${params.toString()}`;
+}
+
 /**
- * Builds a sign-in URL for the current request. When cross-domain SSO is enabled
- * and AUTH_DOMAIN is configured, stores a short-lived return target and sends
- * the user to the central auth origin.
+ * Builds a sign-in URL for the current request.
+ * Prefers `/auth/login` so Auth0 can silently resume SSO across product hosts
+ * after the first MFA/password login (one Auth0 session → one silent authorize per app origin).
+ * When cross-domain SSO + AUTH_DOMAIN are configured, sends the user to the central auth origin.
  */
 export async function buildSignInUrl(request: NextRequest): Promise<string> {
   const returnTo = returnToFromRequest(request);
@@ -40,7 +57,9 @@ export async function buildSignInUrl(request: NextRequest): Promise<string> {
       const normalizedAuth = normalizeHostname(authHost, { allowPrivateHosts: true });
       const normalizedCurrent = normalizeHostname(currentHost, { allowPrivateHosts: true });
       const authHostname = normalizedAuth.ok ? normalizedAuth.hostname : authHost.toLowerCase();
-      const currentHostname = normalizedCurrent.ok ? normalizedCurrent.hostname : currentHost.toLowerCase();
+      const currentHostname = normalizedCurrent.ok
+        ? normalizedCurrent.hostname
+        : currentHost.toLowerCase();
 
       if (currentHostname !== authHostname) {
         const targetId = await createAuthReturnTarget({
@@ -54,12 +73,10 @@ export async function buildSignInUrl(request: NextRequest): Promise<string> {
     }
   }
 
-  const login = new URL("/sign-in", request.url);
-  login.searchParams.set("returnTo", returnTo);
-  return login.pathname + login.search;
+  return auth0LoginPath(returnTo);
 }
 
-/** @deprecated Use buildSignInUrl for cross-domain SSO support. */
+/** Branded interstitial (connection buttons). Prefer buildSignInUrl for automatic SSO. */
 export function signInUrlFor(request: NextRequest): string {
   const login = new URL("/sign-in", request.url);
   login.searchParams.set("returnTo", returnToFromRequest(request));

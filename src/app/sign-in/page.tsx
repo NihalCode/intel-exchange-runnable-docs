@@ -5,6 +5,7 @@ import {
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
 import { buildAuthSetupStatus } from "@/lib/documentation-auth/setup-status";
 import { probeDatabase } from "@/lib/db/client";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -56,6 +57,12 @@ export default async function SignInPage({
     customMessage ||
     (errorCode ? (ERROR_COPY[errorCode] ?? ERROR_COPY.auth_failed) : null) ||
     (!authReady && configIssue ? configIssue : null);
+
+  // No error → Auth0 directly so SSO can complete silently across product hosts
+  // after the first password/MFA login (avoids a branded interstitial every tab).
+  if (authReady && !errorText) {
+    redirect(auth0LoginUrl(undefined, returnTo || "/"));
+  }
 
   const googleConnection = process.env.AUTH0_GOOGLE_CONNECTION?.trim();
   const emailConnection = process.env.AUTH0_EMAIL_CONNECTION?.trim();

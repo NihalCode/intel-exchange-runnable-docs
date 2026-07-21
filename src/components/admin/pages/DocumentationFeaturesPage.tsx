@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { ADMIN_FEATURE_SECTIONS } from "@/lib/documentation-features/keys";
+import { ADMIN_FEATURE_SECTIONS, DOCUMENTATION_FEATURE_LABELS } from "@/lib/documentation-features/keys";
 
 type Feature = {
   key: string;
@@ -107,7 +107,12 @@ export function DocumentationFeaturesPage({ canManage }: { canManage: boolean })
                   className="flex items-center justify-between gap-4 border-b border-zinc-200 px-4 py-3 last:border-0 dark:border-zinc-800"
                 >
                   <div>
-                    <p className="font-mono text-sm">{feature.key}</p>
+                    <p className="text-sm font-medium">
+                      {DOCUMENTATION_FEATURE_LABELS[
+                        feature.key as keyof typeof DOCUMENTATION_FEATURE_LABELS
+                      ] ?? feature.key}
+                    </p>
+                    <p className="font-mono text-xs text-zinc-500">{feature.key}</p>
                     <p className="mt-0.5 text-xs text-zinc-500">
                       DB: {feature.enabled ? "on" : "off"}
                       {" · "}

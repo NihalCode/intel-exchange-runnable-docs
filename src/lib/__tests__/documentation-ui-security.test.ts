@@ -19,6 +19,7 @@ describe("documentation UI credential boundaries", () => {
     const agentPage = source("src/app/agent/page.tsx");
     expect(agentPage).toContain("Connect a product to continue");
     expect(agentPage).toContain('href="/authentication"');
+    expect(agentPage).toContain("canUseAgentWithoutStoredProductSecrets");
     expect(agentPage.indexOf("credentialReady ?")).toBeLessThan(
       agentPage.indexOf("<AgentChat")
     );
@@ -28,6 +29,7 @@ describe("documentation UI credential boundaries", () => {
     const agentPage = source("src/app/agent/page.tsx");
     expect(agentPage).toContain("credentialedProducts");
     expect(agentPage).toContain("listValidCredentialProductIds");
+    expect(agentPage).toContain("mergeEnsuredProductIds");
   });
 
   it("protects docs and application areas behind authentication", () => {

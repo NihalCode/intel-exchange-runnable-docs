@@ -1,5 +1,6 @@
 export const DOCUMENTATION_FEATURE_KEYS = [
   "ai_documentation_assistant",
+  "require_product_credentials_for_agent",
   "app_builder",
   "project_workspace",
   "preview",
@@ -30,10 +31,39 @@ export type DocumentationFeatureKey = (typeof DOCUMENTATION_FEATURE_KEYS)[number
 
 const DEFAULT_ENABLED = new Set<DocumentationFeatureKey>([
   "ai_documentation_assistant",
+  /** Default on: Ask AI requires a connected Open API product (or host-pinned product). */
+  "require_product_credentials_for_agent",
   "generated_code_examples",
   "public_changelog",
   "public_documentation_search",
 ]);
+
+/** Short labels for Admin → Features (falls back to raw key). */
+export const DOCUMENTATION_FEATURE_LABELS: Partial<
+  Record<DocumentationFeatureKey, string>
+> = {
+  ai_documentation_assistant: "Ask AI assistant",
+  require_product_credentials_for_agent:
+    "Require Open API product credentials for Ask AI",
+  app_builder: "Build App",
+  project_workspace: "Project workspace",
+  preview: "Preview sandbox",
+  vercel_deployment: "Vercel deploy",
+  git_commit: "Git commit",
+  project_download: "Download zip",
+  vercel_import: "Import from Vercel",
+  api_testing_console: "API testing console",
+  generated_code_examples: "Generated code examples",
+  public_changelog: "Changelog",
+  public_documentation_search: "Documentation search",
+  query_analytics: "Query analytics",
+  unanswered_query_review: "Unanswered query review",
+  multi_project_deployment: "Multi-product deployment",
+  admin_deployment_management: "Admin deployment management",
+  vercel_domain_automation: "Vercel domain automation",
+  host_based_product_routing: "Host-based product routing",
+  cross_domain_sso: "Cross-domain SSO",
+};
 
 export function defaultDocumentationFeatureEnabled(
   key: DocumentationFeatureKey
@@ -53,7 +83,6 @@ export const ADMIN_FEATURE_SECTIONS: ReadonlyArray<{
     title: "Documentation workspace",
     description: "Core docs, search, changelog, and runnable API console.",
     keys: [
-      "ai_documentation_assistant",
       "generated_code_examples",
       "public_changelog",
       "public_documentation_search",
@@ -63,8 +92,11 @@ export const ADMIN_FEATURE_SECTIONS: ReadonlyArray<{
   {
     id: "agent",
     title: "Ask AI / app builder",
-    description: "Agent chat, preview, and deploy/import actions.",
+    description:
+      "Agent chat, credential gate, preview, and deploy/import actions. Turn off “Require Open API product credentials” to allow Ask AI with Auth0 only (docs answers; live Run still needs secrets).",
     keys: [
+      "ai_documentation_assistant",
+      "require_product_credentials_for_agent",
       "app_builder",
       "project_workspace",
       "preview",

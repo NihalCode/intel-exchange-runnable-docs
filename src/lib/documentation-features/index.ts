@@ -12,6 +12,7 @@ import {
 export {
   defaultDocumentationFeatureEnabled,
   DOCUMENTATION_FEATURE_KEYS,
+  DOCUMENTATION_FEATURE_LABELS,
   ADMIN_FEATURE_SECTIONS,
   ADMIN_VISIBLE_FEATURE_KEYS,
   type DocumentationFeatureKey,

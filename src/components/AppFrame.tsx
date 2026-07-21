@@ -124,7 +124,7 @@ function AuthHeaderControl() {
     const returnTo = encodeURIComponent(authReturnToFromPath(pathname));
     return (
       <Link
-        href={`/sign-in?returnTo=${returnTo}`}
+        href={`/auth/login?returnTo=${returnTo}`}
         data-testid="auth-header-sign-in"
         className="rounded-md px-2 py-1 text-xs font-medium text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
       >

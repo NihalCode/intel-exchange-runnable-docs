@@ -13,6 +13,7 @@ import {
   evaluateAdminAccess,
   type AdminAccessDenialReason,
 } from "@/lib/enterprise/admin-access";
+import { adminMfaStepUpHref, auth0StepUpLoginPath } from "@/lib/enterprise/mfa-step-up";
 import { ENTERPRISE_PERMISSIONS } from "@/lib/enterprise/types";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
 import { listResolvedEnabledFeatureKeys } from "@/lib/documentation-features/resolve-enabled";
@@ -39,7 +40,7 @@ export default async function AdminLayout({
   if (!result.session) {
     if (!result.auth0Authenticated && !result.accessDenied) {
       const { redirect } = await import("next/navigation");
-      redirect("/sign-in?returnTo=/admin");
+      redirect("/auth/login?returnTo=/admin");
     }
     return <ForbiddenState reason="no_session" />;
   }
@@ -153,10 +154,10 @@ function ForbiddenState({
       <div className="mt-6 flex flex-wrap gap-3">
         {copy.showSignInAgain ? (
           <Link
-            href="/auth/login?returnTo=/admin"
+            href={copy.stepUpHref ?? auth0StepUpLoginPath("/admin")}
             className="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white hover:bg-sky-800"
           >
-            Sign in again
+            {copy.signInLabel ?? "Sign in again"}
           </Link>
         ) : null}
         <Link
@@ -180,6 +181,8 @@ function denialCopy(
   body: string;
   steps: string[];
   showSignInAgain: boolean;
+  stepUpHref?: string;
+  signInLabel?: string;
 } {
   switch (reason) {
     case "mfa_required":
@@ -189,12 +192,14 @@ function denialCopy(
           "Your workspace role allows administration, but this session was not authenticated with MFA. The admin dashboard requires a fresh sign-in that completes MFA.",
         steps: [
           "Enable MFA for your Auth0 user if it is not already configured.",
-          "Sign out and sign in again, completing MFA when prompted.",
+          "Use “Sign out and complete MFA” below — a normal “Sign in again” can silently reuse a password-only Auth0 session and loop on this page.",
           mfaMethods?.length
             ? `Current session methods: ${mfaMethods.join(", ")}.`
             : "This session did not include MFA claims (amr/acr) from Auth0.",
         ].filter(Boolean) as string[],
         showSignInAgain: true,
+        stepUpHref: adminMfaStepUpHref("/admin"),
+        signInLabel: "Sign out and complete MFA",
       };
     case "organization_context":
       return {
@@ -241,6 +246,8 @@ function denialCopy(
           "Sign out and sign in again to refresh your authentication timestamp.",
         ],
         showSignInAgain: true,
+        stepUpHref: adminMfaStepUpHref("/admin"),
+        signInLabel: "Sign out and sign in again",
       };
     case "no_session":
       return {
@@ -248,6 +255,8 @@ function denialCopy(
         body: "Sign in to access the enterprise admin dashboard.",
         steps: [],
         showSignInAgain: true,
+        stepUpHref: auth0StepUpLoginPath("/admin"),
+        signInLabel: "Sign in",
       };
     default:
       return {

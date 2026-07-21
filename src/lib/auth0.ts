@@ -69,6 +69,43 @@ function createAuth0Client(): Auth0Client {
     authorizationParameters: {
       scope: "openid profile email",
     },
+    beforeSessionSaved: async (session, idToken) => {
+      // Ensure MFA / ACR claims from the ID token are present on session.user
+      // so adminLayoutRequiresMfa() can see them after step-up login.
+      try {
+        const token = idToken ?? session.tokenSet?.idToken;
+        if (!token) return session;
+        const parts = token.split(".");
+        if (parts.length < 2) return session;
+        const payload = parts[1]!.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = payload + "=".repeat((4 - (payload.length % 4)) % 4);
+        const claims = JSON.parse(
+          Buffer.from(padded, "base64").toString("utf8")
+        ) as Record<string, unknown>;
+        const nextUser = { ...session.user } as typeof session.user & {
+          amr?: string[];
+          acr?: string;
+          auth_time?: number;
+        };
+        if (Array.isArray(claims.amr) && !Array.isArray(nextUser.amr)) {
+          nextUser.amr = claims.amr.filter(
+            (value): value is string => typeof value === "string"
+          );
+        }
+        if (typeof claims.acr === "string" && typeof nextUser.acr !== "string") {
+          nextUser.acr = claims.acr;
+        }
+        if (
+          typeof claims.auth_time === "number" &&
+          typeof nextUser.auth_time !== "number"
+        ) {
+          nextUser.auth_time = claims.auth_time;
+        }
+        return { ...session, user: nextUser };
+      } catch {
+        return session;
+      }
+    },
     onCallback: async (error, ctx) => {
       const appBaseUrl = ctx.appBaseUrl ?? getAuthEnv().appBaseUrl ?? "http://localhost:3000";
 
