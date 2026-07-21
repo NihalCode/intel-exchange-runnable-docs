@@ -185,27 +185,43 @@ export function AppFrame({
 }) {
   const pathname = usePathname();
   const { productId } = useProduct();
-  const [nav, setNav] = useState<NavNode[]>(initialNav);
+  const [nav, setNav] = useState<NavNode[]>(() =>
+    productId === "ctix" ? initialNav : []
+  );
 
   useEffect(() => {
     let cancelled = false;
+    // Drop CTIX SSR nav immediately when the active product is not CTIX.
+    if (productId !== "ctix") {
+      setNav([]);
+    } else {
+      setNav(initialNav);
+    }
     async function loadNav() {
       try {
         const res = await fetch(`/api/products/${productId}`);
-        if (!res.ok) return;
+        if (!res.ok) {
+          if (!cancelled && productId === "ctix") setNav(initialNav);
+          else if (!cancelled) setNav([]);
+          return;
+        }
         const data = await res.json();
-        if (!cancelled && data.manifest?.nav) setNav(data.manifest.nav);
-        else if (!cancelled && productId === "ctix") setNav(initialNav);
-        else if (!cancelled) setNav([]);
+        if (cancelled) return;
+        if (data.manifest?.nav) setNav(data.manifest.nav);
+        else if (productId === "ctix") setNav(initialNav);
+        else setNav([]);
       } catch {
         if (!cancelled && productId === "ctix") setNav(initialNav);
+        else if (!cancelled) setNav([]);
       }
     }
     void loadNav();
     return () => {
       cancelled = true;
     };
-  }, [productId, initialNav]);
+    // Intentionally omit initialNav: a new array identity from the layout would
+    // cancel in-flight product nav fetches and leave the CTIX SSR tree stuck.
+  }, [productId]);
 
   const { currentSlug, activeProductId } = parseDocsPath(pathname);
   const sidebarProductId = activeProductId ?? productId;
