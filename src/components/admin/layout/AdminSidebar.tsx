@@ -69,20 +69,23 @@ export function AdminSidebar() {
     });
   }, []);
 
-  const navContent = (
-    <nav aria-label="Administration" className="flex flex-col gap-1 p-3">
-      {groups.map((group) => (
-        <NavGroup
-          key={group.id}
-          group={group}
-          pathname={pathname}
-          collapsed={!!collapsed[group.id]}
-          onToggle={() => toggleGroup(group.id)}
-          onNavigate={() => setMobileOpen(false)}
-        />
-      ))}
-    </nav>
-  );
+  function renderNav(tone: "default" | "inverse") {
+    return (
+      <nav aria-label="Administration" className="flex flex-col gap-1 p-3" data-nav-tone={tone}>
+        {groups.map((group) => (
+          <NavGroup
+            key={group.id}
+            group={group}
+            pathname={pathname}
+            collapsed={!!collapsed[group.id]}
+            tone={tone}
+            onToggle={() => toggleGroup(group.id)}
+            onNavigate={() => setMobileOpen(false)}
+          />
+        ))}
+      </nav>
+    );
+  }
 
   return (
     <>
@@ -100,10 +103,11 @@ export function AdminSidebar() {
       </button>
 
       <aside
-        className="hidden w-[16.5rem] shrink-0 border-r border-[var(--border-subtle)] lg:block"
+        className="hidden w-[16.5rem] shrink-0 border-r border-white/10 lg:block"
         data-layout="cx-admin-nav-rail"
+        data-tone="inverse"
       >
-        <div className="sticky top-0 flex h-screen flex-col bg-[var(--brand-navy-deep)] text-[var(--text-inverse)]">
+        <div className="sticky top-0 flex h-screen flex-col bg-[var(--brand-navy-deep)] text-white">
           <div className="border-b border-white/10 px-4 py-4">
             <Link href="/admin" className="flex items-center gap-2" data-testid="admin-brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -112,14 +116,12 @@ export function AdminSidebar() {
                 <span className="block text-sm font-semibold text-white">
                   CYWARE | Admin
                 </span>
-                <span className="block text-[10px] text-white/60">Control plane</span>
+                <span className="block text-[10px] text-white/70">Control plane</span>
               </span>
             </Link>
           </div>
-          <AdminAppExitNav variant="sidebar" />
-          <div className="flex-1 overflow-y-auto scroll-thin [&_a]:text-white/80 [&_button]:text-white/70 [&_a:hover]:bg-white/10 [&_button:hover]:bg-white/10 [&_a[aria-current=page]]:bg-white/15 [&_a[aria-current=page]]:text-white">
-            {navContent}
-          </div>
+          <AdminAppExitNav variant="sidebar" tone="inverse" />
+          <div className="flex-1 overflow-y-auto scroll-thin">{renderNav("inverse")}</div>
         </div>
       </aside>
 
@@ -143,8 +145,8 @@ export function AdminSidebar() {
             <div className="border-b border-[var(--border-subtle)] px-4 py-3">
               <p className="text-sm font-semibold text-[var(--text-heading)]">Enterprise Admin</p>
             </div>
-            <AdminAppExitNav variant="sidebar" />
-            <div className="overflow-y-auto scroll-thin">{navContent}</div>
+            <AdminAppExitNav variant="sidebar" tone="default" />
+            <div className="overflow-y-auto scroll-thin">{renderNav("default")}</div>
           </aside>
         </div>
       ) : null}
@@ -156,29 +158,39 @@ function NavGroup({
   group,
   pathname,
   collapsed,
+  tone,
   onToggle,
   onNavigate,
 }: {
   group: AdminNavGroup;
   pathname: string;
   collapsed: boolean;
+  tone: "default" | "inverse";
   onToggle: () => void;
   onNavigate: () => void;
 }) {
   const hasActive = group.items.some((item) => isNavItemActive(pathname, item));
+  const inverse = tone === "inverse";
 
   return (
     <div className="mb-2">
       <button
         type="button"
-        className="flex w-full items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
+        className={`flex w-full items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide ${
+          inverse
+            ? "text-white/65 hover:bg-white/10 hover:text-white"
+            : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
+        }`}
         aria-expanded={!collapsed}
         onClick={onToggle}
       >
         <ChevronIcon open={!collapsed} />
         {group.label}
         {hasActive && collapsed ? (
-          <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)]" aria-hidden="true" />
+          <span
+            className={`ml-auto h-1.5 w-1.5 rounded-full ${inverse ? "bg-white" : "bg-[var(--accent-primary)]"}`}
+            aria-hidden="true"
+          />
         ) : null}
       </button>
       {!collapsed ? (
@@ -192,9 +204,13 @@ function NavGroup({
                   aria-current={active ? "page" : undefined}
                   onClick={onNavigate}
                   className={`block rounded-[var(--radius-md)] px-3 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
-                    active
-                      ? "bg-[var(--surface-muted)] text-[var(--text-link)]"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
+                    inverse
+                      ? active
+                        ? "bg-white/15 text-white"
+                        : "text-white/85 hover:bg-white/10 hover:text-white"
+                      : active
+                        ? "bg-[var(--surface-muted)] text-[var(--text-link)]"
+                        : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {item.label}

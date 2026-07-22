@@ -72,6 +72,7 @@ export default async function Home() {
                   title={product.displayLabel}
                   description={product.description}
                   accentClass={productAccentClass(product.productId)}
+                  initial={product.productId === "orchestrate" ? "OR" : product.productId.slice(0, 2)}
                   badge={<ProductBadge productId={product.productId} />}
                   meta={
                     !indexed ? (

@@ -40,7 +40,8 @@
   --text-primary: #1d222f;
   --text-heading: var(--brand-heading);
   --text-secondary: var(--brand-subtext);
-  --text-muted: #8a8d95;
+  /* ~4.6:1 on white — AA for small UI labels (was #8a8d95 ~3.2:1) */
+  --text-muted: #6b7080;
   --text-inverse: #fafafa;
   --text-link: #1a3ee8;
   --text-link-hover: #1330b9;
@@ -315,16 +316,14 @@ body {
 }
 
 .cx-admin-shell {
-  display: grid;
+  display: flex;
   min-height: 100vh;
-  grid-template-columns: 1fr;
+  flex-direction: column;
   background: var(--background-page);
 }
 
-@media (min-width: 1024px) {
-  .cx-admin-shell {
-    grid-template-columns: 16.5rem minmax(0, 1fr);
-  }
+.cx-admin-nav-rail[data-tone="inverse"] {
+  color: #ffffff;
 }
 
 .cx-card {

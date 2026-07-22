@@ -7,7 +7,7 @@ import { ProductionBanner } from "@/components/admin/layout/ProductionBanner";
 export function AdminFrame({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="flex min-h-screen flex-col bg-[var(--background-page)]"
+      className="cx-admin-shell flex min-h-screen flex-col bg-[var(--background-page)]"
       data-testid="admin-frame"
       data-layout="cx-admin-shell"
     >

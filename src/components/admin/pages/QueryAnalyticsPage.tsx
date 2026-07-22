@@ -6,6 +6,11 @@ import { useRouter } from "next/navigation";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { MetricCard } from "@/components/admin/ui/MetricCard";
+import {
+  buttonPrimaryClass,
+  buttonSecondaryClass,
+  inputClass,
+} from "@/components/admin/ui/tokens";
 import { listProducts } from "@/lib/products/registry";
 import type { QueryAnalyticsMetrics } from "@/lib/query-analytics/repository";
 
@@ -95,30 +100,30 @@ export function QueryAnalyticsPage({
         className="flex flex-wrap items-end gap-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-4 text-xs shadow-[var(--shadow-card)]"
         data-layout="cx-analytics-toolbar"
       >
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
           From
           <input
             type="date"
             value={since}
             onChange={(e) => setSince(e.target.value)}
-            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
           To
           <input
             type="date"
             value={until}
             onChange={(e) => setUntil(e.target.value)}
-            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
           Product
           <select
             value={productId}
             onChange={(e) => setProductId(e.target.value)}
-            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
+            className={inputClass}
           >
             <option value="">All products</option>
             {products.map((p) => (
@@ -128,33 +133,26 @@ export function QueryAnalyticsPage({
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1">
+        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
           Hostname / environment
           <input
             type="text"
             value={hostname}
             onChange={(e) => setHostname(e.target.value)}
             placeholder="docs.example.com"
-            className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
+            className={inputClass}
           />
         </label>
-        <button
-          type="button"
-          onClick={applyFilters}
-          className="rounded bg-sky-600 px-3 py-1.5 font-semibold text-white"
-        >
+        <button type="button" onClick={applyFilters} className={buttonPrimaryClass}>
           Apply filters
         </button>
-        <a
-          href={exportUrl}
-          className="rounded border border-zinc-300 px-3 py-1.5 dark:border-zinc-600"
-        >
+        <a href={exportUrl} className={buttonSecondaryClass}>
           Export CSV
         </a>
         {canReadSensitive ? (
           <a
             href={sensitiveExportUrl}
-            className="rounded border border-amber-400 px-3 py-1.5 text-amber-800 dark:border-amber-700 dark:text-amber-200"
+            className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--warning)] bg-[var(--warning-soft)] px-3 py-2 text-sm font-medium text-[var(--text-heading)]"
           >
             Sensitive CSV
           </a>

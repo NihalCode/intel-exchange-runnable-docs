@@ -200,13 +200,13 @@ function AgentChatBody({
           />
         ) : null}
 
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-2.5">
           <div>
-            <h2 id="agent-chat-heading" className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Documentation Agent</h2>
-            <p className="text-[11px] text-zinc-500">
+            <h2 id="agent-chat-heading" className="text-sm font-semibold text-[var(--text-heading)]">Documentation Agent</h2>
+            <p className="text-[11px] text-[var(--text-secondary)]">
               Ask about endpoints, authentication, workflows, parameters, and code examples.
             </p>
-            <p className="text-[11px] text-sky-700 dark:text-sky-300">
+            <p className="text-[11px] text-[var(--text-link)]">
               {docsPreviewMode
                 ? "Documentation search covers all products in this preview. Connect credentials at Authentication to run live API calls."
                 : `Connected products: ${connectedLabels}`}
@@ -218,7 +218,7 @@ function AgentChatBody({
               onClick={() => setShowSettings((s) => !s)}
               aria-expanded={showSettings}
               aria-controls="agent-chat-settings"
-              className="rounded-lg px-2 py-1 text-xs text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              className="rounded-[var(--radius-md)] px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
             >
               {showSettings ? "Hide settings" : "Settings"}
             </button>
@@ -237,14 +237,14 @@ function AgentChatBody({
         ) : null}
 
         {showSettings ? (
-          <div id="agent-chat-settings" className="shrink-0 border-b border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div id="agent-chat-settings" className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-4 py-3">
             <div className="flex flex-wrap items-end gap-3">
               <label className="flex flex-col gap-1 text-xs">
-                <span className="font-semibold text-zinc-600 dark:text-zinc-400">Example code language</span>
+                <span className="font-semibold text-[var(--text-secondary)]">Example code language</span>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as typeof language)}
-                  className="rounded-md border border-zinc-300 bg-white px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-950"
+                  className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
                 >
                   {LANGUAGES.map((l) => (
                     <option key={l.value} value={l.value}>

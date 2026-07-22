@@ -90,6 +90,7 @@ export function CxProductCard({
   meta,
   footer,
   accentClass,
+  initial,
 }: {
   href: string;
   title: string;
@@ -98,7 +99,10 @@ export function CxProductCard({
   meta?: ReactNode;
   footer?: string;
   accentClass?: string;
+  /** Prefer a product-distinct mark (e.g. CT, CS, OR, CF) over title[0]. */
+  initial?: string;
 }) {
+  const mark = (initial?.trim() || title.trim().slice(0, 2) || "?").slice(0, 2).toUpperCase();
   return (
     <Link
       href={href}
@@ -109,14 +113,14 @@ export function CxProductCard({
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <span
-            className="flex h-10 w-10 items-center justify-center text-sm font-bold text-white"
+            className="flex h-10 w-10 items-center justify-center text-xs font-bold tracking-wide text-white"
             style={{
               background: "var(--product-accent, var(--accent-primary))",
               borderRadius: "var(--radius-md)",
             }}
             aria-hidden="true"
           >
-            {title.slice(0, 1)}
+            {mark}
           </span>
           <div>
             {badge}

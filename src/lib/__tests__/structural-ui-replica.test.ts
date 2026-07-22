@@ -95,7 +95,27 @@ describe("structural Cyware replica UI markers", () => {
     expect(admin).toContain('data-layout="cx-admin-shell"');
     expect(sidebar).toContain('data-layout="cx-admin-nav-rail"');
     expect(sidebar).toContain("CYWARE | Admin");
+    expect(sidebar).toContain('tone="inverse"');
+    expect(sidebar).toContain("text-white/85");
     expect(analytics).toContain('data-layout="cx-analytics-workbench"');
+  });
+
+  it("AdminAppExitNav supports inverse tone for dark rail", () => {
+    const exit = readFileSync(
+      path.join(process.cwd(), "src/components/admin/layout/AdminAppExitNav.tsx"),
+      "utf8"
+    );
+    expect(exit).toContain('tone?: "default" | "inverse"');
+    expect(exit).toContain("text-white/85");
+    expect(exit).not.toMatch(/text-sky-800/);
+  });
+
+  it("product hub cards use distinct initials instead of shared first letter", () => {
+    const home = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
+    const cx = readFileSync(path.join(process.cwd(), "src/components/cx/index.tsx"), "utf8");
+    expect(cx).toContain("initial?: string");
+    expect(home).toContain("initial=");
+    expect(home).toContain('product.productId === "orchestrate" ? "OR"');
   });
 
   it("structural replacement ledger documents dispositions", () => {
