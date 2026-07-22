@@ -120,22 +120,28 @@ WHERE organization_id = ?
 `;
 
 /**
- * Filtered analytics WHERE — fully static. Optional filters use
+ * Filtered analytics WHERE — fully static. Optional text filters use
  * `CAST(? AS TEXT) IS NULL OR col = CAST(? AS TEXT)` so no clause strings
  * are interpolated.
  *
  * CAST is required for Postgres: bare `? IS NULL` with a JS `null` binding
  * raises 42P18 ("could not determine data type of parameter $N"). SQLite
- * accepts the same CAST form. Text→timestamptz comparison still coerces.
+ * accepts the same CAST form.
+ *
+ * Date bounds are always concrete ISO strings (never null) so Postgres can
+ * compare `created_at` (timestamptz) without casting to text.
  */
 const FILTERED_ANALYTICS_WHERE_SQL = `
 organization_id = ?
 AND created_at >= ?
-AND (CAST(? AS TEXT) IS NULL OR created_at <= CAST(? AS TEXT))
+AND created_at <= ?
 AND (CAST(? AS TEXT) IS NULL OR product_id = CAST(? AS TEXT))
 AND (CAST(? AS TEXT) IS NULL OR hostname = CAST(? AS TEXT))
 AND (CAST(? AS TEXT) IS NULL OR outcome = CAST(? AS TEXT))
 `;
+
+/** Open-ended upper bound when callers omit untilIso. */
+const FILTER_UNTIL_OPEN_ENDED = "9999-12-31T23:59:59.999Z";
 
 const SUMMARIZE_FILTERED_SQL =
   "SELECT outcome,\n" +
@@ -178,7 +184,7 @@ LEFT JOIN unanswered_query_reviews r
   ON r.analytics_event_id = e.id AND r.organization_id = e.organization_id
 WHERE e.organization_id = ?
 AND e.created_at >= ?
-AND (CAST(? AS TEXT) IS NULL OR e.created_at <= CAST(? AS TEXT))
+AND e.created_at <= ?
 AND (CAST(? AS TEXT) IS NULL OR e.product_id = CAST(? AS TEXT))
 AND (CAST(? AS TEXT) IS NULL OR e.hostname = CAST(? AS TEXT))
 AND (CAST(? AS TEXT) IS NULL OR e.outcome = CAST(? AS TEXT))
@@ -201,14 +207,13 @@ function filteredParams(
   organizationId: string,
   filters: QueryAnalyticsFilters
 ): unknown[] {
-  const until = filters.untilIso ?? null;
+  const until = filters.untilIso ?? FILTER_UNTIL_OPEN_ENDED;
   const productId = filters.productId ?? null;
   const hostname = filters.hostname ?? null;
   const outcome = filters.outcome ?? null;
   return [
     organizationId,
     filters.sinceIso,
-    until,
     until,
     productId,
     productId,

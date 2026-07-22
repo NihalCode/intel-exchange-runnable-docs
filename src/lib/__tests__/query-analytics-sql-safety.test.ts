@@ -173,12 +173,16 @@ describe("query-analytics SQL injection / tenant isolation", () => {
       outcome: "answered",
       latencyMs: 9,
     });
-    // Reproduces prod 42P18 path: optional filter params bound as null.
+    // Reproduces prod 42P18 path: optional text filter params bound as null;
+    // omitted untilIso uses an open-ended concrete upper bound (not null).
     await expect(
       summarizeQueryAnalyticsFiltered(orgA, {
         sinceIso: "1970-01-01T00:00:00.000Z",
       })
-    ).resolves.toMatchObject({ totalAttempts: expect.any(Number) });
+    ).resolves.toMatchObject({
+      totalAttempts: expect.any(Number),
+      answered: expect.any(Number),
+    });
     const events = await listQueryAnalyticsEvents(
       orgA,
       { sinceIso: "1970-01-01T00:00:00.000Z" },
