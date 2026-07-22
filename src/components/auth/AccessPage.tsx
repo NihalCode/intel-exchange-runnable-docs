@@ -1,17 +1,22 @@
-import Link from "next/link";
 import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
+import { accessBackToSignInHref } from "@/lib/documentation-auth/access-sign-in";
 
 export function AccessPage({
   title,
   description,
   children,
   testId,
+  signInError = "auth_denied",
 }: {
   title: string;
   description: string;
   children?: React.ReactNode;
   testId?: string;
+  /** Maps to `/sign-in?error=` so the interstitial shows (no silent SSO bounce). */
+  signInError?: string;
 }) {
+  const signInHref = accessBackToSignInHref(signInError);
+
   return (
     <main
       data-testid={testId}
@@ -37,9 +42,14 @@ export function AccessPage({
         </p>
         {children}
         <div className="mt-8 flex flex-col gap-2">
-          <Link href="/sign-in" className={buttonPrimaryClass}>
+          {/* Hard <a> (not next/link): soft client nav fails after Auth0 redirects. */}
+          <a
+            href={signInHref}
+            data-testid="access-back-to-sign-in"
+            className={buttonPrimaryClass}
+          >
             Back to sign in
-          </Link>
+          </a>
         </div>
       </div>
     </main>

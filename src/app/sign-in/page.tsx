@@ -34,10 +34,19 @@ const ERROR_COPY: Record<string, string> = {
 };
 
 /** Auth0 SDK route — must not be a Next.js page or OAuth never starts. */
-function auth0LoginUrl(connection?: string, returnTo?: string): string {
+function auth0LoginUrl(
+  connection?: string,
+  returnTo?: string,
+  /** When true, force interactive login so silent SSO cannot reuse a denied session. */
+  forceLogin = false
+): string {
   const params = new URLSearchParams();
   if (connection) params.set("connection", connection);
   if (returnTo) params.set("returnTo", returnTo);
+  if (forceLogin) {
+    params.set("prompt", "login");
+    params.set("max_age", "0");
+  }
   const qs = params.toString();
   return qs ? `/auth/login?${qs}` : "/auth/login";
 }
@@ -156,14 +165,18 @@ export default async function SignInPage({
           {authReady ? (
             <div className="mt-6 flex flex-col gap-3">
               <a
-                href={auth0LoginUrl(googleConnection || "google-oauth2", returnTo)}
+                href={auth0LoginUrl(
+                  googleConnection || "google-oauth2",
+                  returnTo,
+                  Boolean(errorText)
+                )}
                 data-testid="login-continue-google"
                 className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
               >
                 Continue with Google
               </a>
               <a
-                href={auth0LoginUrl(emailConnection, returnTo)}
+                href={auth0LoginUrl(emailConnection, returnTo, Boolean(errorText))}
                 data-testid="login-continue-email"
                 className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
               >
