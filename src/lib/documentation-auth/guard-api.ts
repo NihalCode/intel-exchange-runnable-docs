@@ -9,6 +9,7 @@ import {
 } from "@/lib/documentation-auth/session";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { verifyDeveloperRequest } from "@/lib/developer/access";
+import { DEVELOPER_ACCESS_UNAVAILABLE_MESSAGE } from "@/lib/user-facing-errors";
 import { canUseAgentWithoutStoredProductSecrets } from "@/lib/documentation-credentials/agent-access-policy";
 import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
 import type { DocumentationFeatureKey } from "@/lib/documentation-features";
@@ -51,9 +52,17 @@ export async function guardDocumentationApi(
         authProvider: "disabled",
       };
     }
+    // Local preview (AUTH_DISABLED): allow docs + Ask AI without a developer token.
+    if (process.env.NODE_ENV !== "production") {
+      const local = await getAppSessionResult(request);
+      if (local.session) return local.session;
+    }
     const dev = verifyDeveloperRequest(request);
     if (!dev.ok) {
-      return NextResponse.json({ ok: false, error: dev.error }, { status: dev.status });
+      return NextResponse.json(
+        { ok: false, error: DEVELOPER_ACCESS_UNAVAILABLE_MESSAGE },
+        { status: dev.status }
+      );
     }
     return {
       user: {
@@ -207,7 +216,10 @@ export async function guardDeveloperDiagnostics(
   if (!isAuthEnabled()) {
     const dev = verifyDeveloperRequest(request);
     if (!dev.ok) {
-      return NextResponse.json({ ok: false, error: dev.error }, { status: dev.status });
+      return NextResponse.json(
+        { ok: false, error: DEVELOPER_ACCESS_UNAVAILABLE_MESSAGE },
+        { status: dev.status }
+      );
     }
     return {
       user: {

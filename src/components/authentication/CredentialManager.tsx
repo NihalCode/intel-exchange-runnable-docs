@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { useRunSettings } from "@/components/RunSettings";
 
 type ProductId = "ctix" | "cftr" | "orchestrate" | "csap";
@@ -104,6 +105,7 @@ function statusLabel(status: string | undefined): string {
 }
 
 export function CredentialManager() {
+  const { state: authState } = useDocumentationAuth();
   const { applyProductCredentials, clearCredentials } = useRunSettings();
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<ProductId>("ctix");
@@ -233,8 +235,23 @@ export function CredentialManager() {
     }
   }
 
+  const localPreview = authState.authProvider === "disabled";
+
   return (
-    <div className="max-w-xl space-y-4" data-testid="credential-manager">
+    <div
+      className="mx-auto max-w-2xl space-y-6"
+      data-testid="credential-manager"
+      data-layout="cx-credential-workspace"
+    >
+      {localPreview ? (
+        <p
+          className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-secondary)]"
+          role="status"
+        >
+          Local preview mode — credentials are optional for reading docs and Ask AI. Connect a
+          product here to run live API calls from code snippets.
+        </p>
+      ) : null}
       <div className="cx-card bg-[var(--surface-sunken)] p-4">
         <label className="block text-xs font-semibold text-[var(--text-secondary)]">
           Product

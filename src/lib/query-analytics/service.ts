@@ -147,6 +147,43 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+/** Drop FK refs that are not present so AUTH_DISABLED mock ids cannot block recording. */
+async function sanitizeAnalyticsFkRefs(input: {
+  userId?: string | null;
+  conversationId?: string | null;
+  turnId?: string | null;
+}): Promise<{
+  userId: string | null;
+  conversationId: string | null;
+  turnId: string | null;
+}> {
+  let userId = input.userId ?? null;
+  let conversationId = input.conversationId ?? null;
+  let turnId = input.turnId ?? null;
+  if (userId) {
+    const row = await db.queryOne<{ id: string }>(
+      `SELECT id FROM documentation_users WHERE id = ?`,
+      [userId]
+    );
+    if (!row) userId = null;
+  }
+  if (conversationId) {
+    const row = await db.queryOne<{ id: string }>(
+      `SELECT id FROM agent_conversations WHERE id = ?`,
+      [conversationId]
+    );
+    if (!row) conversationId = null;
+  }
+  if (turnId) {
+    const row = await db.queryOne<{ id: string }>(
+      `SELECT id FROM agent_turns WHERE id = ?`,
+      [turnId]
+    );
+    if (!row) turnId = null;
+  }
+  return { userId, conversationId, turnId };
+}
+
 export async function startLogicalQuery(
   input: StartLogicalQueryInput
 ): Promise<{ id: string; created: boolean }> {
@@ -187,6 +224,25 @@ export async function startLogicalQuery(
 
   const id = randomUUID();
   const now = nowIso();
+  const insertValues = (
+    userId: string | null,
+    conversationId: string | null,
+    turnId: string | null
+  ) => [
+    id,
+    input.organizationId,
+    input.logicalQueryId,
+    userId,
+    conversationId,
+    turnId,
+    input.hostname,
+    input.productId ?? null,
+    input.collectionId ?? null,
+    input.intent ?? null,
+    now,
+    now,
+    now,
+  ];
   try {
     await db.execute(
       `INSERT INTO query_logical_queries (
@@ -194,31 +250,49 @@ export async function startLogicalQuery(
         hostname, product_id, collection_id, intent, terminal_outcome, reason_code,
         status, started_at, completed_at, version, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, 'processing', ?, NULL, 1, ?, ?)`,
-      [
-        id,
-        input.organizationId,
-        input.logicalQueryId,
+      insertValues(
         input.userId ?? null,
         input.conversationId ?? null,
-        input.turnId ?? null,
-        input.hostname,
-        input.productId ?? null,
-        input.collectionId ?? null,
-        input.intent ?? null,
-        now,
-        now,
-        now,
-      ]
+        input.turnId ?? null
+      )
     );
     return { id, created: true };
-  } catch {
+  } catch (err) {
     const raced = await db.queryOne<{ id: string }>(
       `SELECT id FROM query_logical_queries
        WHERE organization_id = ? AND logical_query_id = ?`,
       [input.organizationId, input.logicalQueryId]
     );
     if (raced) return { id: raced.id, created: false };
-    throw new Error("Failed to start logical query");
+    // AUTH_DISABLED / stale sessions may pass non-persisted user/conversation ids.
+    // Retry once with nullable FK columns cleared so analytics still records.
+    const message = err instanceof Error ? err.message : String(err);
+    if (/FOREIGN KEY|foreign key/i.test(message)) {
+      try {
+        await db.execute(
+          `INSERT INTO query_logical_queries (
+            id, organization_id, logical_query_id, user_id, conversation_id, turn_id,
+            hostname, product_id, collection_id, intent, terminal_outcome, reason_code,
+            status, started_at, completed_at, version, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, 'processing', ?, NULL, 1, ?, ?)`,
+          insertValues(null, null, null)
+        );
+        return { id, created: true };
+      } catch (retryErr) {
+        const retryRaced = await db.queryOne<{ id: string }>(
+          `SELECT id FROM query_logical_queries
+           WHERE organization_id = ? AND logical_query_id = ?`,
+          [input.organizationId, input.logicalQueryId]
+        );
+        if (retryRaced) return { id: retryRaced.id, created: false };
+        throw new Error(
+          `Failed to start logical query: ${
+            retryErr instanceof Error ? retryErr.message : message
+          }`
+        );
+      }
+    }
+    throw new Error(`Failed to start logical query: ${message}`);
   }
 }
 
@@ -495,12 +569,17 @@ export async function materializeTerminalAnalytics(
   input: TerminalAnalyticsInput
 ): Promise<{ eventId: string }> {
   ensureMigrations();
-  await startLogicalQuery({
-    organizationId: input.organizationId,
-    logicalQueryId: input.logicalQueryId,
+  const fk = await sanitizeAnalyticsFkRefs({
     userId: input.userId,
     conversationId: input.conversationId,
     turnId: input.turnId,
+  });
+  await startLogicalQuery({
+    organizationId: input.organizationId,
+    logicalQueryId: input.logicalQueryId,
+    userId: fk.userId,
+    conversationId: fk.conversationId,
+    turnId: fk.turnId,
     hostname: input.hostname,
     productId: input.productId,
     collectionId: input.collectionId,
@@ -535,9 +614,9 @@ export async function materializeTerminalAnalytics(
 
   const projection: QueryAnalyticsEventInput = {
     organizationId: input.organizationId,
-    userId: input.userId,
-    conversationId: input.conversationId,
-    turnId: input.turnId,
+    userId: fk.userId,
+    conversationId: fk.conversationId,
+    turnId: fk.turnId,
     logicalQueryId: input.logicalQueryId,
     attemptId: input.attemptId,
     hostname: input.hostname,

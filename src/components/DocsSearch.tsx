@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { inputClass, buttonPrimaryClass } from "@/components/admin/ui/tokens";
+import { useProduct } from "@/components/ProductContext";
+import { docsSearchResultHref } from "@/lib/docs-search-href";
 
 export interface DocsSearchHit {
   id?: string;
@@ -15,32 +17,29 @@ export interface DocsSearchHit {
   score?: number;
 }
 
-function resultHref(hit: DocsSearchHit): string {
-  if (hit.href) return hit.href;
-  const product = hit.productId || "ctix";
-  const slug = (hit.slug || "").replace(/^\/+/, "");
-  if (!slug) return `/docs/${product}`;
-  // CTIX legacy routes may omit product prefix in [...slug]
-  if (product === "ctix" && !slug.includes("/")) {
-    return `/docs/${slug}`;
-  }
-  if (slug.startsWith(`${product}/`)) return `/docs/${slug}`;
-  return `/docs/${product}/${slug}`;
-}
-
 /**
  * Real documentation search against POST /api/docs/search.
- * Replaces the previous home form that POSTed to /docs/ctix without searching.
+ * Respects ProductContext search scope when `respectProductScope` is true.
  */
 export function DocsSearch({
-  productId,
+  productId: productIdProp,
+  respectProductScope = true,
   className = "",
   placeholder = "Search endpoints, guides, and concepts",
+  size = "default",
 }: {
   productId?: string;
+  respectProductScope?: boolean;
   className?: string;
   placeholder?: string;
+  /** Hub = large techdocs-style field; compact = header search. */
+  size?: "default" | "hub" | "compact";
 }) {
+  const router = useRouter();
+  const { productId: ctxProductId, searchScope } = useProduct();
+  const scopedProductId =
+    productIdProp ?? (respectProductScope && searchScope === "product" ? ctxProductId : undefined);
+
   const listId = useId();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<DocsSearchHit[]>([]);
@@ -70,7 +69,7 @@ export function DocsSearch({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             query: trimmed,
-            productId: productId || undefined,
+            productId: scopedProductId || undefined,
             limit: 10,
           }),
           signal: ac.signal,
@@ -88,7 +87,7 @@ export function DocsSearch({
         setLoading(false);
       }
     },
-    [productId]
+    [scopedProductId]
   );
 
   useEffect(() => {
@@ -100,19 +99,38 @@ export function DocsSearch({
     function onDocClick(e: MouseEvent) {
       if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
     }
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
+    document.addEventListener("click", onDocClick);
+    return () => document.removeEventListener("click", onDocClick);
   }, []);
 
+  const navigateToResult = useCallback(
+    (hit: DocsSearchHit) => {
+      const href = docsSearchResultHref(hit);
+      setOpen(false);
+      setQuery("");
+      router.push(href);
+    },
+    [router]
+  );
+
   return (
-    <div ref={wrapRef} className={`relative ${className}`} data-testid="docs-search">
+    <div
+      ref={wrapRef}
+      className={`relative ${size === "hub" ? "cx-search-hub" : ""} ${className}`}
+      data-testid="docs-search"
+      data-layout={size === "hub" ? "cx-search-hub" : size === "compact" ? "cx-search-compact" : "cx-search"}
+    >
       <form
         role="search"
         onSubmit={(e) => {
           e.preventDefault();
+          if (results[0]) {
+            navigateToResult(results[0]);
+            return;
+          }
           void runSearch(query);
         }}
-        className="flex max-w-2xl gap-2"
+        className={`flex gap-2 ${size === "hub" ? "max-w-3xl" : size === "compact" ? "max-w-none" : "max-w-2xl"}`}
       >
         <input
           type="search"
@@ -125,53 +143,86 @@ export function DocsSearch({
           aria-controls={listId}
           aria-autocomplete="list"
           placeholder={placeholder}
-          className={`${inputClass} min-w-0 flex-1 py-3`}
+          className={`${inputClass} min-w-0 flex-1 ${
+            size === "hub" ? "py-3.5 text-base" : size === "compact" ? "py-1.5 text-xs" : "py-3"
+          }`}
           autoComplete="off"
         />
-        <button type="submit" className={`${buttonPrimaryClass} px-5 py-3`}>
-          {loading ? "…" : "Search"}
-        </button>
+        {size !== "compact" ? (
+          <button
+            type="submit"
+            className={`${buttonPrimaryClass} ${size === "hub" ? "px-6 py-3.5" : "px-5 py-3"}`}
+          >
+            {loading ? "…" : "Search"}
+          </button>
+        ) : (
+          <button type="submit" className="sr-only">
+            Search
+          </button>
+        )}
       </form>
 
       {open ? (
         <div
           id={listId}
-          className="absolute z-20 mt-2 w-full max-w-2xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-drawer)]"
+          role="listbox"
+          data-layout="cx-search-overlay"
+          className={`absolute z-30 mt-2 overflow-hidden border border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-overlay)] ${
+            size === "compact" ? "w-full min-w-[18rem] right-0" : "w-full max-w-3xl"
+          }`}
+          style={{ borderRadius: "var(--radius-md)" }}
         >
           {error ? (
             <p className="px-4 py-3 text-sm text-red-700 dark:text-red-300" role="alert">
               {error}
             </p>
           ) : results.length === 0 ? (
-            <p className="px-4 py-3 text-sm text-[var(--text-secondary)]">
-              {loading ? "Searching…" : "No matching documentation."}
-            </p>
+            <div className="px-4 py-3 text-sm text-[var(--text-secondary)]">
+              <p>{loading ? "Searching…" : "No matching documentation."}</p>
+              {!loading ? (
+                <p className="mt-2">
+                  <a href="/agent" className="font-medium text-[var(--accent-ai)] hover:underline">
+                    Ask AI instead →
+                  </a>
+                </p>
+              ) : null}
+            </div>
           ) : (
             <ul className="max-h-80 overflow-y-auto scroll-thin py-1">
-              {results.map((hit, i) => {
-                const href = resultHref(hit);
-                return (
-                  <li key={hit.id || `${href}-${i}`}>
-                    <Link
-                      href={href}
-                      className="block px-4 py-2.5 hover:bg-[var(--surface-muted)]"
-                      onClick={() => setOpen(false)}
-                    >
-                      <span className="block text-sm font-medium text-[var(--text-heading)]">
-                        {hit.title}
-                      </span>
-                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)]">
-                        {hit.productId ? (
-                          <span className="uppercase tracking-wide">{hit.productId}</span>
-                        ) : null}
-                        {hit.excerpt || hit.snippet ? (
-                          <span className="line-clamp-1">{hit.excerpt || hit.snippet}</span>
-                        ) : null}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
+              {results.map((hit, i) => (
+                <li key={hit.id || `${docsSearchResultHref(hit)}-${i}`}>
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={false}
+                    className="block w-full px-4 py-2.5 text-left hover:bg-[var(--surface-muted)]"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => navigateToResult(hit)}
+                  >
+                    <span className="block text-sm font-medium text-[var(--text-heading)]">
+                      {hit.title}
+                    </span>
+                    <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)]">
+                      {hit.productId ? (
+                        <span className="rounded bg-[var(--surface-muted)] px-1.5 py-0.5 uppercase tracking-wide">
+                          {hit.productId}
+                        </span>
+                      ) : null}
+                      {hit.excerpt || hit.snippet ? (
+                        <span className="line-clamp-1">{hit.excerpt || hit.snippet}</span>
+                      ) : null}
+                    </span>
+                  </button>
+                </li>
+              ))}
+              <li className="border-t border-[var(--border-subtle)] px-4 py-2">
+                <a
+                  href="/agent"
+                  className="text-xs font-medium text-[var(--accent-ai)] hover:underline"
+                >
+                  Escalate to Ask AI →
+                </a>
+              </li>
             </ul>
           )}
         </div>

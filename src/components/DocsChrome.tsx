@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 
 export function DocsBreadcrumbs({
@@ -30,15 +28,45 @@ export function DocsBreadcrumbs({
 
 export function DocsToc({
   headings,
+  variant = "inline",
 }: {
   headings: Array<{ id: string; text: string; level: number }>;
+  /** `rail` = sticky right column (techdocs reader). */
+  variant?: "inline" | "rail";
 }) {
   if (headings.length < 2) return null;
+  if (variant === "rail") {
+    return (
+      <nav
+        aria-label="On this page"
+        className="sticky top-[calc(var(--header-height)+var(--product-strip-height)+1.5rem)] hidden max-h-[calc(100vh-8rem)] overflow-y-auto scroll-thin border-l border-[var(--border-subtle)] pl-4 xl:block"
+        data-testid="docs-toc"
+        data-layout="cx-toc-rail"
+      >
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+          On this page
+        </p>
+        <ul className="mt-3 space-y-2">
+          {headings.map((h) => (
+            <li key={h.id} style={{ paddingLeft: Math.max(0, h.level - 2) * 10 }}>
+              <a
+                href={`#${h.id}`}
+                className="text-xs leading-5 text-[var(--text-secondary)] hover:text-[var(--text-link)]"
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    );
+  }
   return (
     <nav
       aria-label="On this page"
-      className="mb-6 rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-sunken)] p-3"
+      className="mb-6 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-sunken)] p-3 xl:hidden"
       data-testid="docs-toc"
+      data-layout="cx-toc-inline"
     >
       <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
         On this page
@@ -103,23 +131,4 @@ export function DocsPrevNext({
       ) : null}
     </nav>
   );
-}
-
-/** Extract ## / ### headings from markdown for a lightweight TOC. */
-export function extractMarkdownHeadings(
-  markdown: string
-): Array<{ id: string; text: string; level: number }> {
-  const out: Array<{ id: string; text: string; level: number }> = [];
-  for (const line of markdown.split("\n")) {
-    const m = /^(#{2,3})\s+(.+)$/.exec(line.trim());
-    if (!m) continue;
-    const text = m[2].replace(/[#*`[\]]/g, "").trim();
-    if (!text) continue;
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-    out.push({ id, text, level: m[1].length });
-  }
-  return out;
 }

@@ -5,6 +5,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import type { DocumentationRole } from "@/lib/documentation-auth/types";
 import { DOCUMENTATION_ROLES } from "@/lib/documentation-auth/types";
+import {
+  USERS_UNAVAILABLE_LOCAL_MESSAGE,
+  USERS_UNAVAILABLE_MESSAGE,
+} from "@/lib/user-facing-errors";
 
 interface UserRow {
   id: string;
@@ -35,16 +39,20 @@ export function UsersManagementPanel() {
     setError(null);
     try {
       const response = await fetch("/api/users", { cache: "no-store", credentials: "include" });
-      if (!response.ok) return setError("Could not load users.");
+      if (!response.ok) {
+        const localPreview = state.authProvider === "disabled";
+        return setError(localPreview ? USERS_UNAVAILABLE_LOCAL_MESSAGE : USERS_UNAVAILABLE_MESSAGE);
+      }
       const data = (await response.json()) as { users: UserRow[]; csrfToken?: string };
       setUsers(data.users);
       if (data.csrfToken) csrfRef.current = data.csrfToken;
     } catch {
-      setError("Could not load users.");
+      const localPreview = state.authProvider === "disabled";
+      setError(localPreview ? USERS_UNAVAILABLE_LOCAL_MESSAGE : USERS_UNAVAILABLE_MESSAGE);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [state.authProvider]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -90,10 +98,10 @@ export function UsersManagementPanel() {
       }
       setStatus(
         data.setupStatus === "provider_invitation_sent"
-          ? "User added. Auth0 sent an organization invitation email."
+          ? "User added. An invitation email was sent."
           : data.setupStatus === "provider_setup_created"
-            ? "User added. Auth0 setup is ready for provider-managed completion."
-            : "User added. Provider setup is pending."
+            ? "User added. They can finish setup through your sign-in provider."
+            : "User added. Account setup is pending."
       );
       setEmail("");
       setName("");
@@ -140,7 +148,7 @@ export function UsersManagementPanel() {
       <form onSubmit={addUser} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
         <h2 className="text-sm font-semibold">Add user</h2>
         <p className="mt-1 text-xs text-zinc-500">
-          The account is provisioned in Auth0 (direct create or organization invitation). Password setup
+          New accounts are created through your organization&apos;s sign-in provider. Password setup
           remains provider-managed.
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">

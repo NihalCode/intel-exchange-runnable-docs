@@ -36,7 +36,10 @@ export function AgentProjectPanel({
   const mockPreview = !isLiveApiUiEnabled();
 
   return (
-    <aside className="flex w-[min(420px,38vw)] shrink-0 flex-col border-l border-zinc-200 bg-zinc-50/50 dark:border-zinc-800 dark:bg-zinc-900/30">
+    <aside
+      className="flex w-[min(420px,38vw)] shrink-0 flex-col border-l border-[var(--border-default)] bg-[var(--surface-sunken)]"
+      data-layout="cx-build-app-panel"
+    >
       <div className="flex flex-wrap items-center gap-1.5 border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
         <span className="mr-auto text-xs font-semibold text-zinc-600 dark:text-zinc-400">Project</span>
         {onPreview ? <button

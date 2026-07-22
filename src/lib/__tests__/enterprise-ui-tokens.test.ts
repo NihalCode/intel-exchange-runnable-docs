@@ -73,6 +73,7 @@ describe("enterprise UI tokens and frame naming", () => {
     expect(src).toContain("ThemeToggle");
     expect(src).toContain("Ask AI");
     expect(src).toContain('data-testid="app-frame"');
+    expect(src).toContain('data-testid="mobile-drawer-workspace"');
   });
 
   it("enterprise_ui_v2 feature key exists and defaults ON", () => {

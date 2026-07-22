@@ -43,11 +43,15 @@ export default async function GuidesPage() {
   const ctixTopics = topLevelSections(ctixManifest.nav).slice(0, 12);
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <section className="mb-10 max-w-3xl border-b border-zinc-200 pb-10 dark:border-zinc-800">
-        <p className="text-xs font-semibold uppercase tracking-wide text-sky-600">Guides</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Integration guides</h1>
-        <p className="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+    <div className="mx-auto max-w-6xl" data-layout="cx-guides-page">
+      <section className="mb-10 max-w-3xl border-b border-[var(--border-subtle)] pb-10">
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-primary)]">
+          Guides
+        </p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-[var(--text-heading)]">
+          Integration guides
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">
           Start with authentication, explore product-specific API references, and use runnable
           examples to validate requests before shipping integrations.
         </p>

@@ -6,8 +6,8 @@ import {
   DocsBreadcrumbs,
   DocsPrevNext,
   DocsToc,
-  extractMarkdownHeadings,
 } from "@/components/DocsChrome";
+import { extractMarkdownHeadings } from "@/lib/extract-markdown-headings";
 import {
   allSlugsForProduct,
   getPage,
@@ -130,46 +130,60 @@ export default async function ProductDocPage({
   if (page.kind === "endpoint") {
     const snippets = buildEndpointSnippets(page as EndpointPage, productId);
     return (
-      <>
-        <div className="mx-auto max-w-[var(--content-max)]">
-          <DocsBreadcrumbs items={crumbs} />
+      <div className="cx-docs-reader" data-layout="cx-docs-reader" data-has-toc="false">
+        <div className="min-w-0">
+          <div className="mx-auto max-w-[var(--content-max)]">
+            <DocsBreadcrumbs items={crumbs} />
+          </div>
+          <div data-layout="cx-endpoint-reference">
+            <EndpointView
+              page={page as EndpointPage}
+              snippets={snippets}
+              productId={productId}
+              docsUrl={product.docsUrl}
+            />
+          </div>
+          <div className="mx-auto max-w-[var(--content-max)]">
+            <DocsPrevNext prev={prev} next={next} />
+          </div>
         </div>
-        <EndpointView
-          page={page as EndpointPage}
-          snippets={snippets}
-          productId={productId}
-          docsUrl={product.docsUrl}
-        />
-        <div className="mx-auto max-w-[var(--content-max)]">
-          <DocsPrevNext prev={prev} next={next} />
-        </div>
-      </>
+      </div>
     );
   }
 
   const markdown = page.markdown || "_No content._";
   const headings = extractMarkdownHeadings(markdown);
+  const hasToc = headings.length >= 2;
 
   return (
-    <article className="mx-auto max-w-[var(--content-max)]">
-      <DocsBreadcrumbs items={crumbs} />
-      <div className="mb-2 flex items-center gap-2">
-        <ProductBadge productId={productId} />
-        <a
-          href={product.docsUrl}
-          className="text-xs text-[var(--text-link)] underline"
-          target="_blank"
-          rel="noreferrer"
-        >
-          View source docs
-        </a>
-      </div>
-      <h1 className="mb-4 text-2xl font-bold tracking-tight text-[var(--text-heading)]">
-        {page.title}
-      </h1>
-      <DocsToc headings={headings} />
-      <Markdown>{markdown}</Markdown>
-      <DocsPrevNext prev={prev} next={next} />
-    </article>
+    <div
+      className="cx-docs-reader"
+      data-layout="cx-docs-reader"
+      data-has-toc={hasToc ? "true" : "false"}
+    >
+      <article className="min-w-0 max-w-[var(--article-max)] xl:max-w-none xl:pr-6">
+        <DocsBreadcrumbs items={crumbs} />
+        <div className="mb-2 flex items-center gap-2">
+          <ProductBadge productId={productId} />
+          <a
+            href={product.docsUrl}
+            className="text-xs text-[var(--text-link)] underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View source docs
+          </a>
+        </div>
+        <h1 className="mb-4 text-3xl font-semibold tracking-tight text-[var(--text-heading)]">
+          {page.title}
+        </h1>
+        <DocsToc headings={headings} variant="inline" />
+        <div className="prose-cyware prose max-w-none">
+          <Markdown>{markdown}</Markdown>
+        </div>
+        <DocsPrevNext prev={prev} next={next} />
+      </article>
+      {hasToc ? <DocsToc headings={headings} variant="rail" /> : null}
+    </div>
   );
 }

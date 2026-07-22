@@ -29,6 +29,7 @@ import {
 } from "@/lib/agent/file-extract-client";
 import { createAgentRequestId } from "@/lib/agent/events";
 import { withCsrfHeaders } from "@/lib/csrf-client";
+import { mapAgentApiError } from "@/lib/user-facing-errors";
 import {
   appendSessionLog,
   createSession as createWorkspaceSession,
@@ -650,10 +651,14 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           const raw = data.error;
           const msg =
             typeof raw === "string"
-              ? raw
+              ? mapAgentApiError(raw, res.status)
               : typeof raw === "object" && raw !== null
-                ? (raw.message ?? raw.code ?? JSON.stringify(raw))
-                : `Request failed (${res.status})`;
+                ? mapAgentApiError(
+                    (raw as { message?: string }).message ??
+                      (raw as { code?: string }).code,
+                    res.status
+                  )
+                : mapAgentApiError(undefined, res.status);
           throw new Error(msg);
         }
 
@@ -864,7 +869,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
             role: "error",
             content:
               data.error ??
-              "Saving to Git requires developer access. Ask your admin to configure DEVELOPER_ACCESS_TOKEN, or download the project zip.",
+              "Saving to Git isn't available in this environment. Download the project zip instead.",
           },
         ]);
         return;

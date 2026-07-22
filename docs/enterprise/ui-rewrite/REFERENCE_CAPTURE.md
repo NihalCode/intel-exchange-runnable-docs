@@ -2,14 +2,38 @@
 
 Captured 2026-07-21 via live observation of [cyware.com](https://www.cyware.com/) and [techdocs.cyware.com](https://techdocs.cyware.com/). Values are measured/observed CSS custom properties and computed styles (not scraped assets).
 
+**Structural rebuild note (2026-07-21):** Token capture alone is insufficient. This file now includes **structural geometry** targets for the corrective Cyware replica rebuild (`ui/structural-cyware-replica`). Marketing mega-menu / floating pill chrome from cyware.com is adapted only for brand quality on authenticated surfaces — techdocs supplies docs page grammar.
+
 ## Viewports observed
 
 | Site | Viewport (approx.) | Notes |
 |------|--------------------|-------|
 | cyware.com | 2381×1339 | Marketing dark hero; floating pill header |
 | techdocs.cyware.com | 2381×1339 | Light docs hub; product card grid |
+| Structural targets | 1600 / 1440 / 1280 / 1024 / 768 / 430 / 390 / 360 | Rebuild evidence viewports |
 
-Mobile density was inferred from CSS (`radius`, card padding) rather than a separate mobile capture session.
+Mobile density was inferred from CSS (`radius`, card padding) plus structural rebuild responsive passes.
+
+## Structural geometry (techdocs-first)
+
+| Measure | Target (desktop ~1440) | Role |
+|---------|------------------------|------|
+| Header height | 52–56px | Sticky brand + nav strip |
+| Logo mark | ~28×28 | Wordmark adjacent |
+| Brand wordmark | `CYWARE \| Documentation` | Split identity like TECHDOCS |
+| Outer gutter | 24–32px | Page edge padding |
+| Hub content max | ~1120–1152px | Product hub |
+| Article max | ~720–800px | Readable column |
+| Left nav rail | ~288px (18rem) | Docs tree |
+| Right TOC rail | ~220–240px | On-this-page (≥ xl) |
+| Card radius | 8px | Product / resource cards |
+| Card padding | 12–20px | Dense techdocs cards |
+| Card shadow | `0 4px 12px rgba(0,0,0,0.04)` | Subtle lift |
+| Section rhythm | 40–64px | Hub section gaps |
+| Tree row height | ~32–36px | Nav disclosure rows |
+| Search field (hub) | Full hub width, ~48px tall | Primary discovery |
+| Search field (header) | Compact ~240–320px | Global find |
+| Footer | Multi-column links | Enterprise footer |
 
 ---
 

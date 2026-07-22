@@ -55,7 +55,7 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
     return {
       code: "auth_config",
       message:
-        "Sign-in is misconfigured for this deployment. Ask an administrator to verify Auth0 env vars and callback URLs.",
+        "Sign-in isn't set up for this environment. Contact your administrator.",
     };
   }
 

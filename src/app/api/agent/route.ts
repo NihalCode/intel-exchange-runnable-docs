@@ -80,6 +80,8 @@ export async function POST(req: Request) {
   }
 
   let organizationId: string | undefined;
+  /** Persisted documentation_users.id (FK-safe); mock session ids are not. */
+  let analyticsUserId: string | undefined;
   let logicalQueryId: string | undefined;
   let attemptId: string | undefined;
   let analyticsHostname: string | undefined;
@@ -175,6 +177,7 @@ export async function POST(req: Request) {
     if (isAuthEnabled() || process.env.NODE_ENV === "production") {
       const context = await resolveOrganizationContext(session);
       organizationId = context.organization.id;
+      analyticsUserId = context.principal.userId;
       const ensureProductId =
         pinnedProduct ??
         (hostContext?.productId && isProductKey(hostContext.productId)
@@ -182,12 +185,21 @@ export async function POST(req: Request) {
           : null);
       const access = await getAgentProductAccess(
         organizationId,
-        session.user.id,
+        analyticsUserId,
         { ensureProductId }
       );
       allowedProductIds = access.productIds;
-    } else if (hasTurnId) {
-      organizationId = (await resolveOrganizationContext(session)).organization.id;
+    } else {
+      // AUTH_DISABLED local preview: still resolve org + persisted user so
+      // Query Analytics / unanswered recording can satisfy user_id FKs.
+      try {
+        const context = await resolveOrganizationContext(session);
+        organizationId = context.organization.id;
+        analyticsUserId = context.principal.userId;
+      } catch {
+        organizationId = undefined;
+        analyticsUserId = undefined;
+      }
     }
 
     analyticsHostname = trustedHostnameFromHeaders(req.headers);
@@ -240,7 +252,7 @@ export async function POST(req: Request) {
         const owned = await getOwnedTurn(
           body.turnId!,
           organizationId,
-          session.user.id,
+          analyticsUserId ?? session.user.id,
           body.conversationId
         );
         if (owned) {
@@ -281,7 +293,7 @@ export async function POST(req: Request) {
         organizationId,
         logicalQueryId,
         attemptId,
-        userId: session.user.id,
+        userId: analyticsUserId ?? session.user.id,
         conversationId: analyticsConversationId,
         turnId: analyticsTurnId,
         hostname: analyticsHostname,
@@ -304,7 +316,7 @@ export async function POST(req: Request) {
         turnId: body.turnId!,
         conversationId: body.conversationId!,
         organizationId,
-        userId: session.user.id,
+        userId: analyticsUserId ?? session.user.id,
         contentText: result.workflow,
         metadata: {
           ...agentLifecycleEvent("turn_final", requestId, {
@@ -354,7 +366,7 @@ export async function POST(req: Request) {
         organizationId,
         logicalQueryId: logicalQueryIdForAnalytics(analyticsTurnId, logicalQueryId),
         attemptId,
-        userId: session.user.id,
+        userId: analyticsUserId ?? session.user.id,
         conversationId: analyticsConversationId,
         turnId: analyticsTurnId,
         hostname: analyticsHostname,

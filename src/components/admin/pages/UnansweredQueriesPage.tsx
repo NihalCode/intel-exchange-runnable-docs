@@ -25,11 +25,14 @@ export function UnansweredQueriesPage({
   refreshedAt: string;
   realtimeEnabled?: boolean;
 }) {
-  const { organization, hasPermission, csrfToken } = useAdmin();
+  const { organization, hasPermission, csrfToken, enabledFeatures } = useAdmin();
   const canManage = hasPermission("unanswered_queries.manage");
   const canReadSensitive =
     hasPermission("query_analytics.read_sensitive") ||
     hasPermission("unanswered_queries.read_sensitive");
+  const weeklyAnalyticsEnabled = enabledFeatures.includes(
+    "unanswered_query_weekly_analytics"
+  );
   const [rows, setRows] = useState(initialRows);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [summary, setSummary] = useState<UnansweredSummary | null>(null);
@@ -108,7 +111,10 @@ export function UnansweredQueriesPage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-6"
+      data-layout="cx-unanswered-workbench"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="Unanswered queries"
@@ -119,12 +125,14 @@ export function UnansweredQueriesPage({
           List refreshed {new Date(refreshedAt).toLocaleString()} · Exact query text requires
           sensitive permission
         </span>
-        <Link
-          href="/admin/documentation-agent/unanswered/weekly"
-          className="underline-offset-2 hover:underline"
-        >
-          Weekly analytics
-        </Link>
+        {weeklyAnalyticsEnabled ? (
+          <Link
+            href="/admin/documentation-agent/unanswered/weekly"
+            className="underline-offset-2 hover:underline"
+          >
+            Weekly analytics
+          </Link>
+        ) : null}
       </div>
 
       {realtimeEnabled && summary ? (

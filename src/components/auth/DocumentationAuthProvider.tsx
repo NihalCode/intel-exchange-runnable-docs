@@ -27,6 +27,7 @@ interface AuthState {
   loading: boolean;
   authenticated: boolean;
   auth0Authenticated: boolean;
+  authProvider?: string | null;
   user: AuthUser | null;
   permissions: DocumentationPermission[];
   enterpriseCapabilities: string[];
@@ -60,6 +61,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
       const data = (await res.json()) as {
         authenticated?: boolean;
         auth0Authenticated?: boolean;
+        authProvider?: string | null;
         user?: AuthUser | null;
         permissions?: DocumentationPermission[];
         enterpriseCapabilities?: string[];
@@ -70,6 +72,7 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
         loading: false,
         authenticated: Boolean(data.authenticated),
         auth0Authenticated: Boolean(data.auth0Authenticated),
+        authProvider: data.authProvider ?? null,
         user: data.user ?? null,
         permissions: data.permissions ?? [],
         enterpriseCapabilities: data.enterpriseCapabilities ?? [],

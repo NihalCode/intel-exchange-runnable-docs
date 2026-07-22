@@ -36,6 +36,7 @@ const LANGUAGES: { value: import("@/lib/agent/types").AgentLanguage; label: stri
 export function AgentChat({
   credentialedProducts,
   features = {},
+  docsPreviewMode = false,
 }: {
   credentialedProducts: readonly string[];
   features?: Partial<Record<
@@ -49,6 +50,8 @@ export function AgentChat({
     | "chat_feedback",
     boolean
   >>;
+  /** Local AUTH_DISABLED: docs answers work without stored credentials. */
+  docsPreviewMode?: boolean;
 }) {
   const quickStarts = useMemo(
     () => quickStartsForProducts(QUICK_STARTS, credentialedProducts, inferProductsFromQuery),
@@ -67,6 +70,7 @@ export function AgentChat({
       <AgentChatBody
         quickStarts={quickStarts}
         connectedLabels={connectedLabels}
+        docsPreviewMode={docsPreviewMode}
         features={features}
       />
     </AgentProductAccessProvider>
@@ -76,10 +80,12 @@ export function AgentChat({
 function AgentChatBody({
   quickStarts,
   connectedLabels,
+  docsPreviewMode = false,
   features = {},
 }: {
   quickStarts: string[];
   connectedLabels: string;
+  docsPreviewMode?: boolean;
   features?: Partial<Record<
     | "app_builder"
     | "project_workspace"
@@ -159,7 +165,9 @@ function AgentChatBody({
   return (
     <section
       aria-labelledby="agent-chat-heading"
-      className="flex h-[calc(100vh-8rem)] min-h-[560px] overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-card)]"
+      className="cx-ask-workspace"
+      data-testid="agent-chat"
+      data-layout="cx-ask-workspace"
     >
       <div className="sr-only" aria-live="polite" aria-atomic="true">
         {loading
@@ -199,7 +207,9 @@ function AgentChatBody({
               Ask about endpoints, authentication, workflows, parameters, and code examples.
             </p>
             <p className="text-[11px] text-sky-700 dark:text-sky-300">
-              Connected products: {connectedLabels}
+              {docsPreviewMode
+                ? "Documentation search covers all products in this preview. Connect credentials at Authentication to run live API calls."
+                : `Connected products: ${connectedLabels}`}
             </p>
           </div>
           <div className="flex items-center gap-2">

@@ -75,19 +75,26 @@ export function QueryAnalyticsPage({
     denom > 0 ? `${Math.round((summary.unanswered / denom) * 100)}% of answer-quality` : "—";
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5" data-testid="query-analytics-page">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-testid="query-analytics-page"
+      data-layout="cx-analytics-workbench"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="Query analytics"
-        description="Server-recorded Ask AI outcomes with date range, latency percentiles, and CSV export."
+        description="Customer questions, answer outcomes, latency, and exports for the selected range."
       />
 
-      <p className="text-xs text-zinc-500">
-        Refreshed {new Date(refreshedAt).toLocaleString()} · Answer-quality denominator = answered +
+      <p className="text-xs text-[var(--text-muted)]">
+        Last updated {new Date(refreshedAt).toLocaleString()} · Answer-quality denominator = answered +
         partially answered + no verified solution + no results + clarification required ({denom})
       </p>
 
-      <section className="flex flex-wrap items-end gap-3 rounded-lg border border-zinc-200 p-4 text-xs dark:border-zinc-800">
+      <section
+        className="flex flex-wrap items-end gap-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-4 text-xs shadow-[var(--shadow-card)]"
+        data-layout="cx-analytics-toolbar"
+      >
         <label className="flex flex-col gap-1">
           From
           <input

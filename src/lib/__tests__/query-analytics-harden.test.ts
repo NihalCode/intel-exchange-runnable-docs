@@ -103,6 +103,32 @@ describe("query analytics harden", () => {
   });
 
   describe("logical counting and idempotency", () => {
+    it("records when userId is not a persisted documentation_users row", async () => {
+      await materializeTerminalAnalytics({
+        organizationId,
+        logicalQueryId: "lq-orphan-user",
+        attemptId: "att-orphan-user",
+        userId: "local-dev-user",
+        hostname: "localhost",
+        productId: "ctix",
+        outcome: "answered",
+        latencyMs: 9,
+      });
+      const summary = await summarizeQueryAnalytics(
+        organizationId,
+        "1970-01-01T00:00:00.000Z"
+      );
+      expect(summary.totalLogicalQueries).toBe(1);
+      expect(summary.totalAttempts).toBe(1);
+      expect(summary.answered).toBe(1);
+      const row = await db.queryOne<{ user_id: string | null }>(
+        `SELECT user_id FROM query_logical_queries
+         WHERE organization_id = ? AND logical_query_id = ?`,
+        [organizationId, "lq-orphan-user"]
+      );
+      expect(row?.user_id).toBeNull();
+    });
+
     it("upserts projection by attempt_id without inflating attempts", async () => {
       await materializeTerminalAnalytics({
         organizationId,

@@ -19,8 +19,11 @@ export function AdminHeader({ titleSlot }: { titleSlot?: React.ReactNode }) {
   const title = pageTitleForPath(pathname);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-[var(--border-subtle)] bg-[var(--surface-header)] backdrop-blur">
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-6">
+    <header
+      className="sticky top-0 z-20 border-b border-[var(--border-subtle)] bg-[var(--surface-header)] backdrop-blur"
+      data-layout="cx-admin-header"
+    >
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
         <div className="min-w-0 flex-1">
           <nav aria-label="Breadcrumb" className="text-xs text-[var(--text-muted)]">
             <ol className="flex flex-wrap items-center gap-1">
@@ -41,8 +44,8 @@ export function AdminHeader({ titleSlot }: { titleSlot?: React.ReactNode }) {
               ))}
             </ol>
           </nav>
-          <div className="mt-0.5 flex items-center gap-2">
-            <h1 className="text-base font-semibold text-[var(--text-heading)]">
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <h1 className="text-lg font-semibold text-[var(--text-heading)]">
               {titleSlot ?? title}
             </h1>
             <span className="rounded-[var(--radius-sm)] bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--text-secondary)]">
@@ -51,9 +54,11 @@ export function AdminHeader({ titleSlot }: { titleSlot?: React.ReactNode }) {
           </div>
           <p className="text-[11px] text-[var(--text-muted)]">{organization.name}</p>
         </div>
-        <AdminAppExitNav variant="header" />
-        <EnvironmentSelector />
-        <ThemeToggle />
+        <div className="flex flex-wrap items-center gap-2" data-layout="cx-admin-toolbar">
+          <AdminAppExitNav variant="header" />
+          <EnvironmentSelector />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

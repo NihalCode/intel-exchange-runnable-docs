@@ -13,8 +13,11 @@ const PRODUCTS = listProducts();
 
 export function DocumentationAgentDomainsPage({
   mappings,
+  routingEnabled = true,
 }: {
   mappings: DomainCollectionMapping[];
+  /** When false, mappings can still be edited; runtime host routing is off. */
+  routingEnabled?: boolean;
 }) {
   const { organization, hasPermission } = useAdmin();
   const canManage = hasPermission("domains.manage");
@@ -58,12 +61,28 @@ export function DocumentationAgentDomainsPage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-5xl space-y-6" data-testid="admin-domains-page">
       <PageHeader
         eyebrow={organization.name}
         title="Domains"
-        description="Verified custom-domain to product collection mappings."
+        description="Map verified custom hostnames to product documentation collections."
       />
+
+      {!routingEnabled ? (
+        <div
+          role="status"
+          className="rounded-[var(--radius-md)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
+          data-testid="domains-routing-disabled-banner"
+        >
+          <p className="font-medium">Host-based product routing is currently off</p>
+          <p className="mt-1 text-xs leading-relaxed opacity-90">
+            You can still create and edit domain mappings here. To activate routing at runtime,
+            enable <strong>Host-based product routing</strong> under Admin → Features, or set{" "}
+            <code className="rounded bg-black/5 px-1 dark:bg-white/10">DOMAIN_ROUTING_ENABLED=true</code>{" "}
+            for this deployment.
+          </p>
+        </div>
+      ) : null}
 
       {canManage ? (
         <section className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
@@ -122,7 +141,9 @@ export function DocumentationAgentDomainsPage({
       )}
 
       {mappings.length === 0 ? (
-        <p className="text-sm text-zinc-500">No domain mappings configured yet.</p>
+        <p className="text-sm text-zinc-500" data-testid="domains-empty">
+          No domain mappings configured yet.
+        </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
           <table className="min-w-full text-left text-sm">

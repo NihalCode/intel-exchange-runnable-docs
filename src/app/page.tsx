@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProductBadge } from "@/components/ProductContext";
 import { DocsSearch } from "@/components/DocsSearch";
+import { CxPage, CxProductCard, CxSection } from "@/components/cx";
 import { listProductManifests } from "@/lib/content";
 import { listProducts } from "@/lib/products/registry";
 import { productAccentClass } from "@/components/admin/ui/tokens";
@@ -10,113 +11,116 @@ export default async function Home() {
   const products = listProducts();
 
   return (
-    <div className="mx-auto max-w-[var(--hub-max)]">
-      <section className="mb-10 border-b border-[var(--border-subtle)] pb-10 text-center sm:text-left">
-        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-primary)]">
-          Cyware developer platform
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-4xl">
-          Cyware Technical Documentation
-        </h1>
-        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-[var(--text-secondary)] sm:mx-0">
-          Search, browse, and explore API references, integration guides, and runnable
-          examples for CTIX, CFTR, CSAP, and Cyware Orchestrate.
-        </p>
-        <div className="mt-6 flex flex-col items-stretch gap-3 sm:items-start">
-          <DocsSearch className="w-full" />
-          <Link
-            href="/agent"
-            className="inline-flex w-fit items-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent-ai)] px-4 py-2 text-sm font-medium text-white hover:opacity-90"
-            data-testid="home-ask-ai"
-          >
-            <AssistantIcon />
-            Ask the Documentation Agent
-          </Link>
-        </div>
+    <div data-layout="cx-home-hub">
+      <section className="cx-hub-hero" data-layout="cx-hub-hero">
+        <CxPage layout="hub" className="px-4 sm:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
+            Cyware Technical Documentation
+          </p>
+          <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-5xl">
+            Find product docs, API references, and release notes
+          </h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
+            Search across Intel Exchange, Respond, Collaborate, and Orchestrate — then open
+            runnable examples or ask the Documentation Agent.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+            <DocsSearch
+              className="w-full flex-1"
+              size="hub"
+              placeholder="Search documentation, endpoints, and concepts"
+            />
+            <Link
+              href="/agent"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent-ai)] px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+              data-testid="home-ask-ai"
+            >
+              <AssistantIcon />
+              Ask AI
+            </Link>
+          </div>
+        </CxPage>
       </section>
 
-      <div className="mb-4 flex items-end justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Products</h2>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            Choose a product to browse its complete reference.
-          </p>
-        </div>
-        <Link
-          href="/authentication"
-          className="shrink-0 text-sm font-medium text-[var(--text-link)] hover:underline"
-        >
-          Configure authentication →
-        </Link>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2" data-testid="product-hub">
-        {products.map((product) => {
-          const summary = summaries.find((s) => s.product.productId === product.productId);
-          const count = summary?.manifest?.count ?? 0;
-          const indexed = summary?.indexed ?? false;
-          return (
+      <CxPage layout="hub" className="px-4 sm:px-8">
+        <CxSection
+          eyebrow="Products"
+          title="Documentation by product"
+          description="Open the API reference for each Cyware product. Page counts reflect the currently indexed corpus."
+          actions={
             <Link
-              key={product.productId}
-              href={`/docs/${product.productId}`}
-              className={`cx-card group block p-5 transition hover:shadow-md ${productAccentClass(product.productId)}`}
+              href="/authentication"
+              className="text-sm font-medium text-[var(--text-link)] hover:underline"
             >
-              <div className="mb-3 flex items-center gap-2">
-                <span
-                  className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-sm font-bold text-white"
-                  style={{ background: "var(--product-accent)" }}
-                  aria-hidden="true"
-                >
-                  {product.displayLabel.slice(0, 1)}
-                </span>
-                <ProductBadge productId={product.productId} />
-                {!indexed ? (
-                  <span className="text-[10px] text-[var(--warning)]">Not indexed</span>
-                ) : (
-                  <span className="text-[10px] text-[var(--text-muted)]">{count} pages</span>
-                )}
-              </div>
-              <h2 className="font-semibold text-[var(--text-heading)] group-hover:text-[var(--text-link)]">
-                {product.displayLabel}
+              Configure authentication →
+            </Link>
+          }
+        >
+          <div
+            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+            data-testid="product-hub"
+            data-layout="cx-product-collection"
+          >
+            {products.map((product) => {
+              const summary = summaries.find((s) => s.product.productId === product.productId);
+              const count = summary?.manifest?.count ?? 0;
+              const indexed = summary?.indexed ?? false;
+              return (
+                <CxProductCard
+                  key={product.productId}
+                  href={`/docs/${product.productId}`}
+                  title={product.displayLabel}
+                  description={product.description}
+                  accentClass={productAccentClass(product.productId)}
+                  badge={<ProductBadge productId={product.productId} />}
+                  meta={
+                    !indexed ? (
+                      <span className="text-[10px] text-[var(--warning)]">Not indexed</span>
+                    ) : (
+                      <span className="text-[10px] text-[var(--text-muted)]">{count} pages</span>
+                    )
+                  }
+                  footer="API documentation →"
+                />
+              );
+            })}
+          </div>
+        </CxSection>
+
+        <CxSection
+          eyebrow="API documentation"
+          title="Start from a common path"
+          description="Jump into guides, agent answers, or recent product changes."
+        >
+          <div className="grid gap-4 md:grid-cols-3" data-layout="cx-resource-grid">
+            <Link href="/guides" className="cx-card block p-5" data-layout="cx-resource-card">
+              <p className="text-xs font-semibold text-[var(--accent-primary)]">Guides</p>
+              <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
+                Make your first API request
               </h2>
-              <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">
-                {product.description}
-              </p>
-              <p className="mt-3 text-xs font-medium text-[var(--text-link)]">
-                API Documentation →
+              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                Configure product authentication and run a documented request safely.
               </p>
             </Link>
-          );
-        })}
-      </div>
-
-      <div className="mt-10 grid gap-4 md:grid-cols-3">
-        <Link href="/guides" className="cx-card block p-5">
-          <p className="text-xs font-semibold text-[var(--accent-primary)]">Quick start</p>
-          <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
-            Make your first API request
-          </h2>
-          <p className="mt-2 text-xs leading-5 text-[var(--text-secondary)]">
-            Configure product authentication and run a documented request safely.
-          </p>
-        </Link>
-        <Link href="/agent" className="cx-card block p-5">
-          <p className="text-xs font-semibold text-[var(--accent-ai)]">Documentation Agent</p>
-          <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
-            Ask across product documentation
-          </h2>
-          <p className="mt-2 text-xs leading-5 text-[var(--text-secondary)]">
-            A connected product credential is required for per-user AI access.
-          </p>
-        </Link>
-        <Link href="/changelog" className="cx-card block p-5">
-          <p className="text-xs font-semibold text-[var(--accent-primary)]">Recently updated</p>
-          <h2 className="mt-2 font-semibold text-[var(--text-heading)]">Product changelog</h2>
-          <p className="mt-2 text-xs leading-5 text-[var(--text-secondary)]">
-            Review new endpoints, behavior changes, and deprecations.
-          </p>
-        </Link>
-      </div>
+            <Link href="/agent" className="cx-card block p-5" data-layout="cx-resource-card">
+              <p className="text-xs font-semibold text-[var(--accent-ai)]">Ask AI</p>
+              <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
+                Ask across product documentation
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                Get plain-language answers with sources from the indexed docs.
+              </p>
+            </Link>
+            <Link href="/changelog" className="cx-card block p-5" data-layout="cx-resource-card">
+              <p className="text-xs font-semibold text-[var(--accent-primary)]">Release notes</p>
+              <h2 className="mt-2 font-semibold text-[var(--text-heading)]">Product changelog</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
+                Review new endpoints, behavior changes, and deprecations.
+              </p>
+            </Link>
+          </div>
+        </CxSection>
+      </CxPage>
     </div>
   );
 }

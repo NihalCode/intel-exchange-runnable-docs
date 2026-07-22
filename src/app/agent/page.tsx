@@ -114,6 +114,8 @@ export default async function AgentPage() {
     }
   }
 
+  const docsPreviewMode = !isAuthEnabled() && process.env.NODE_ENV !== "production";
+
   return (
     <div className="mx-auto max-w-5xl">
       <h1 className="mb-1 text-2xl font-bold tracking-tight">Documentation Agent</h1>
@@ -124,7 +126,11 @@ export default async function AgentPage() {
           : ". Open API product credentials are optional for docs answers (admins can require them under Features)."}
       </p>
       {credentialReady ? (
-        <AgentChat features={features} credentialedProducts={credentialedProducts} />
+        <AgentChat
+          features={features}
+          credentialedProducts={credentialedProducts}
+          docsPreviewMode={docsPreviewMode}
+        />
       ) : (
         <section className="mt-8 rounded-xl border border-zinc-200 p-8 text-center dark:border-zinc-800">
           <div

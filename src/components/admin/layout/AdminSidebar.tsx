@@ -99,22 +99,27 @@ export function AdminSidebar() {
         </svg>
       </button>
 
-      <aside className="hidden w-[var(--sidebar-width)] shrink-0 border-r border-[var(--border-subtle)] lg:block">
-        <div className="sticky top-0 flex h-screen flex-col bg-[var(--surface-raised)]">
-          <div className="border-b border-[var(--border-subtle)] px-4 py-3">
+      <aside
+        className="hidden w-[16.5rem] shrink-0 border-r border-[var(--border-subtle)] lg:block"
+        data-layout="cx-admin-nav-rail"
+      >
+        <div className="sticky top-0 flex h-screen flex-col bg-[var(--brand-navy-deep)] text-[var(--text-inverse)]">
+          <div className="border-b border-white/10 px-4 py-4">
             <Link href="/admin" className="flex items-center gap-2" data-testid="admin-brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/cyware_logo.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
+              <img src="/cyware_logo.png" alt="" width={24} height={24} className="h-6 w-6 object-contain brightness-0 invert" />
               <span>
-                <span className="block text-sm font-semibold text-[var(--text-heading)]">
-                  Enterprise Admin
+                <span className="block text-sm font-semibold text-white">
+                  CYWARE | Admin
                 </span>
-                <span className="block text-[10px] text-[var(--text-muted)]">Control plane</span>
+                <span className="block text-[10px] text-white/60">Control plane</span>
               </span>
             </Link>
           </div>
           <AdminAppExitNav variant="sidebar" />
-          <div className="flex-1 overflow-y-auto scroll-thin">{navContent}</div>
+          <div className="flex-1 overflow-y-auto scroll-thin [&_a]:text-white/80 [&_button]:text-white/70 [&_a:hover]:bg-white/10 [&_button:hover]:bg-white/10 [&_a[aria-current=page]]:bg-white/15 [&_a[aria-current=page]]:text-white">
+            {navContent}
+          </div>
         </div>
       </aside>
 
