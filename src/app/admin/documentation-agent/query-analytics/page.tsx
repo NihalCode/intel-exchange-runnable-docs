@@ -5,7 +5,10 @@ import {
   requirePermission,
 } from "@/lib/admin/page-data";
 import { resolveProductionQueryMetricsEnabled } from "@/lib/domains/feature-gates-resolve";
-import { isProductKey } from "@/lib/products/registry";
+import {
+  classifyAnalyticsQueryError,
+  parseAnalyticsFiltersFromParams,
+} from "@/lib/query-analytics/filters";
 import {
   emptyQueryAnalyticsMetrics,
   listQueryAnalyticsEvents,
@@ -13,13 +16,6 @@ import {
 } from "@/lib/query-analytics/repository";
 
 export const dynamic = "force-dynamic";
-
-function parseIsoParam(raw: string | undefined, fallbackMs: number): string {
-  if (!raw?.trim()) return new Date(fallbackMs).toISOString();
-  const ms = Date.parse(raw);
-  if (Number.isNaN(ms)) return new Date(fallbackMs).toISOString();
-  return new Date(ms).toISOString();
-}
 
 export default async function Page({
   searchParams,
@@ -36,20 +32,14 @@ export default async function Page({
   await requireAdminFeature(context.organization.id, "query_analytics");
 
   const params = await searchParams;
-  const nowMs = Date.now();
-  const untilIso = parseIsoParam(params.until, nowMs);
-  const sinceIso = parseIsoParam(params.since, nowMs - 30 * 24 * 60 * 60 * 1000);
-  const productId =
-    params.productId && isProductKey(params.productId) ? params.productId : undefined;
-  const hostname = params.hostname?.trim() || undefined;
-
-  const filters = { sinceIso, untilIso, productId, hostname };
+  const filters = parseAnalyticsFiltersFromParams(params);
   const orgId = context.organization.id;
 
   let summary = emptyQueryAnalyticsMetrics();
   let recent: Awaited<ReturnType<typeof listQueryAnalyticsEvents>> = [];
   let showProductionMetrics = false;
   let loadError: string | null = null;
+  let loadErrorCode: string | null = null;
 
   try {
     const [summaryResult, recentResult, productionMetrics] = await Promise.all([
@@ -64,12 +54,15 @@ export default async function Page({
     recent = recentResult;
     showProductionMetrics = productionMetrics;
   } catch (err) {
-    loadError = err instanceof Error ? err.message : "analytics_query_failed";
+    const classified = classifyAnalyticsQueryError(err);
+    loadError = classified.message;
+    loadErrorCode = classified.code;
     console.error(
       JSON.stringify({
         level: "error",
         message: "query_analytics_page_load_failed",
         organizationId: orgId,
+        code: loadErrorCode,
         error: loadError,
       })
     );
@@ -79,13 +72,14 @@ export default async function Page({
     <QueryAnalyticsPage
       summary={summary}
       recent={recent}
-      initialSince={sinceIso}
-      initialUntil={untilIso}
-      initialProductId={productId}
-      initialHostname={hostname}
+      initialSince={filters.sinceIso}
+      initialUntil={filters.untilIso ?? new Date().toISOString()}
+      initialProductId={filters.productId ?? undefined}
+      initialHostname={filters.hostname ?? undefined}
       refreshedAt={new Date().toISOString()}
       showProductionMetrics={showProductionMetrics}
       loadError={loadError}
+      loadErrorCode={loadErrorCode}
     />
   );
 }

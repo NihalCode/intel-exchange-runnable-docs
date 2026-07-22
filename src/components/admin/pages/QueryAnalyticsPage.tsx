@@ -27,6 +27,7 @@ export function QueryAnalyticsPage({
   refreshedAt,
   showProductionMetrics,
   loadError,
+  loadErrorCode,
 }: {
   summary: QueryAnalyticsMetrics;
   recent: QueryAnalyticsEventListItem[];
@@ -37,6 +38,7 @@ export function QueryAnalyticsPage({
   refreshedAt: string;
   showProductionMetrics?: boolean;
   loadError?: string | null;
+  loadErrorCode?: string | null;
 }) {
   const { organization, hasPermission } = useAdmin();
   const router = useRouter();
@@ -100,9 +102,14 @@ export function QueryAnalyticsPage({
         <p
           className="rounded-[var(--radius-md)] border border-[var(--warning)] bg-[var(--warning-soft)] px-3 py-2 text-sm text-[var(--text-heading)]"
           role="status"
+          data-testid="query-analytics-load-error"
         >
-          Analytics data could not be loaded right now. Showing an empty summary — try Reload or
+          Analytics data could not be loaded
+          {loadErrorCode ? ` (${loadErrorCode})` : ""}. Showing an empty summary — try Reload or
           Apply filters again.
+          <span className="mt-1 block font-mono text-xs text-[var(--text-muted)]">
+            {loadError}
+          </span>
         </p>
       ) : null}
 
@@ -154,8 +161,9 @@ export function QueryAnalyticsPage({
             type="text"
             value={hostname}
             onChange={(e) => setHostname(e.target.value)}
-            placeholder="docs.example.com"
+            placeholder="All hosts (optional)"
             className={inputClass}
+            autoComplete="off"
           />
         </label>
         <button type="button" onClick={applyFilters} className={buttonPrimaryClass}>

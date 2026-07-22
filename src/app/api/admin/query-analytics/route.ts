@@ -5,51 +5,36 @@ import { randomUUID } from "node:crypto";
 import { appendEnterpriseAuditEvent } from "@/lib/enterprise/audit";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
-import { isProductKey } from "@/lib/products/registry";
+import {
+  classifyAnalyticsQueryError,
+  parseAnalyticsFiltersFromParams,
+} from "@/lib/query-analytics/filters";
 import {
   emptyQueryAnalyticsMetrics,
   exportQueryAnalyticsCsv,
   listQueryAnalyticsEvents,
   summarizeQueryAnalyticsFiltered,
-  type QueryAnalyticsFilters,
 } from "@/lib/query-analytics/repository";
 
 export const runtime = "nodejs";
-
-function parseFilters(request: NextRequest): QueryAnalyticsFilters {
-  const { searchParams } = request.nextUrl;
-  const sinceParam = searchParams.get("since");
-  const untilParam = searchParams.get("until");
-  const sinceIso =
-    sinceParam && !Number.isNaN(Date.parse(sinceParam))
-      ? new Date(sinceParam).toISOString()
-      : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
-  const untilIso =
-    untilParam && !Number.isNaN(Date.parse(untilParam))
-      ? new Date(untilParam).toISOString()
-      : undefined;
-  const productRaw = searchParams.get("productId")?.trim();
-  const hostname = searchParams.get("hostname")?.trim() || undefined;
-  const outcome = searchParams.get("outcome")?.trim() || undefined;
-  return {
-    sinceIso,
-    untilIso,
-    productId: productRaw && isProductKey(productRaw) ? productRaw : undefined,
-    hostname,
-    outcome,
-  };
-}
 
 export async function GET(request: NextRequest) {
   const access = await guardEnterpriseApi(request, "query_analytics.read");
   if (access instanceof NextResponse) return access;
 
-  const filters = parseFilters(request);
+  const { searchParams } = request.nextUrl;
+  const filters = parseAnalyticsFiltersFromParams({
+    since: searchParams.get("since"),
+    until: searchParams.get("until"),
+    productId: searchParams.get("productId"),
+    hostname: searchParams.get("hostname"),
+    outcome: searchParams.get("outcome"),
+  });
   const orgId = access.context.organization.id;
-  const sensitive = request.nextUrl.searchParams.get("sensitive") === "1";
-  const timezone = request.nextUrl.searchParams.get("tz")?.trim() || "UTC";
+  const sensitive = searchParams.get("sensitive") === "1";
+  const timezone = searchParams.get("tz")?.trim() || "UTC";
 
-  if (request.nextUrl.searchParams.get("export") === "csv") {
+  if (searchParams.get("export") === "csv") {
     if (sensitive) {
       if (
         !authorizeEnterprise(
@@ -89,19 +74,36 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const csv = await exportQueryAnalyticsCsv(orgId, filters, {
-      timezone,
-      sensitive,
-    });
-    return new NextResponse(csv, {
-      headers: {
-        "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": `attachment; filename="${
-          sensitive ? "query-analytics-sensitive.csv" : "query-analytics.csv"
-        }"`,
-        "Cache-Control": "no-store",
-      },
-    });
+    try {
+      const csv = await exportQueryAnalyticsCsv(orgId, filters, {
+        timezone,
+        sensitive,
+      });
+      return new NextResponse(csv, {
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="${
+            sensitive ? "query-analytics-sensitive.csv" : "query-analytics.csv"
+          }"`,
+          "Cache-Control": "no-store",
+        },
+      });
+    } catch (err) {
+      const classified = classifyAnalyticsQueryError(err);
+      console.error(
+        JSON.stringify({
+          level: "error",
+          message: "query_analytics_export_failed",
+          organizationId: orgId,
+          code: classified.code,
+          error: classified.message,
+        })
+      );
+      return NextResponse.json(
+        { error: classified.message, code: classified.code },
+        { status: 503 }
+      );
+    }
   }
 
   try {
@@ -117,12 +119,14 @@ export async function GET(request: NextRequest) {
       refreshedAt: new Date().toISOString(),
     });
   } catch (err) {
+    const classified = classifyAnalyticsQueryError(err);
     console.error(
       JSON.stringify({
         level: "error",
         message: "query_analytics_api_failed",
         organizationId: orgId,
-        error: err instanceof Error ? err.message : "unknown",
+        code: classified.code,
+        error: classified.message,
       })
     );
     return NextResponse.json(
@@ -132,8 +136,10 @@ export async function GET(request: NextRequest) {
         filters,
         refreshedAt: new Date().toISOString(),
         degraded: true,
+        error: classified.message,
+        code: classified.code,
       },
-      { status: 200 }
+      { status: 503 }
     );
   }
 }

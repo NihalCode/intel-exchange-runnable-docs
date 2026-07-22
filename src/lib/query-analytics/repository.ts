@@ -8,7 +8,9 @@ import {
   isUnansweredOutcome,
   type QueryOutcome,
 } from "@/lib/agent/query-outcome";
-import { db, ensureMigrations } from "@/lib/db/client";
+import { db, ensureMigrations, isPostgresConfigured } from "@/lib/db/client";
+import type { QueryAnalyticsFilters } from "@/lib/query-analytics/filters";
+export type { QueryAnalyticsFilters } from "@/lib/query-analytics/filters";
 import {
   decryptSecret,
   type EncryptedSecret,
@@ -203,6 +205,19 @@ function assertReviewStatus(status: string): UnansweredQueryReviewStatus {
   return status as UnansweredQueryReviewStatus;
 }
 
+/**
+ * Bind date bounds as Date on Postgres so node-pg sends timestamptz (not text).
+ * SQLite stores created_at as TEXT ISO strings, so keep strings there.
+ */
+function boundTimestamp(iso: string): Date | string {
+  if (!isPostgresConfigured()) return iso;
+  const value = new Date(iso);
+  if (Number.isNaN(value.getTime())) {
+    throw new Error("invalid_analytics_timestamp");
+  }
+  return value;
+}
+
 function filteredParams(
   organizationId: string,
   filters: QueryAnalyticsFilters
@@ -213,8 +228,8 @@ function filteredParams(
   const outcome = filters.outcome ?? null;
   return [
     organizationId,
-    filters.sinceIso,
-    until,
+    boundTimestamp(filters.sinceIso),
+    boundTimestamp(until),
     productId,
     productId,
     hostname,
@@ -602,14 +617,6 @@ export async function updateUnansweredQueryReview(input: {
     Number(existing.version),
   ]);
   return true;
-}
-
-export interface QueryAnalyticsFilters {
-  sinceIso: string;
-  untilIso?: string;
-  productId?: ProductKey | null;
-  hostname?: string | null;
-  outcome?: string | null;
 }
 
 export interface QueryAnalyticsMetrics extends QueryAnalyticsSummary {

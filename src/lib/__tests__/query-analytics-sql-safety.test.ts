@@ -207,7 +207,35 @@ describe("query-analytics SQL injection / tenant isolation", () => {
     // Postgres 42P18 guard: typed null checks (digest 442483457 regression).
     expect(source).toContain("CAST(? AS TEXT) IS NULL");
     expect(source).not.toMatch(/AND \(\? IS NULL OR/);
+    // Prod regression: timestamptz <= CAST(? AS TEXT) → 42883.
+    expect(source).not.toMatch(/created_at\s*<=\s*CAST\(\?\s+AS\s+TEXT\)/i);
+    expect(source).toContain("created_at <= ?");
+    expect(source).toContain("FILTER_UNTIL_OPEN_ENDED");
     expect(source).not.toMatch(/WHERE \$\{/);
     expect(source).not.toMatch(/\$\{clause\}/);
+  });
+
+  it("default filters match CTIX product without placeholder hostname", async () => {
+    await recordQueryAnalyticsEvent({
+      organizationId: orgA,
+      logicalQueryId: "ctix-default-filters",
+      hostname: "apitest1.cyninjadev.com",
+      productId: "ctix",
+      outcome: "answered",
+      latencyMs: 11,
+    });
+    const summary = await summarizeQueryAnalyticsFiltered(orgA, {
+      sinceIso: "1970-01-01T00:00:00.000Z",
+      productId: "ctix",
+    });
+    expect(summary.totalAttempts).toBeGreaterThanOrEqual(1);
+    expect(summary.answered).toBeGreaterThanOrEqual(1);
+
+    const filteredOut = await summarizeQueryAnalyticsFiltered(orgA, {
+      sinceIso: "1970-01-01T00:00:00.000Z",
+      productId: "ctix",
+      hostname: "docs.example.com",
+    });
+    expect(filteredOut.totalAttempts).toBe(0);
   });
 });
