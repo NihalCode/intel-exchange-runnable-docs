@@ -164,6 +164,35 @@ describe("query-analytics SQL injection / tenant isolation", () => {
     }
   });
 
+  it("accepts omitted optional filters (null until/product/hostname/outcome)", async () => {
+    await recordQueryAnalyticsEvent({
+      organizationId: orgA,
+      logicalQueryId: "null-filters",
+      hostname: "docs.example.com",
+      productId: "ctix",
+      outcome: "answered",
+      latencyMs: 9,
+    });
+    // Reproduces prod 42P18 path: optional filter params bound as null.
+    await expect(
+      summarizeQueryAnalyticsFiltered(orgA, {
+        sinceIso: "1970-01-01T00:00:00.000Z",
+      })
+    ).resolves.toMatchObject({ totalAttempts: expect.any(Number) });
+    const events = await listQueryAnalyticsEvents(
+      orgA,
+      { sinceIso: "1970-01-01T00:00:00.000Z" },
+      10
+    );
+    expect(events[0]).toMatchObject({
+      id: expect.any(String),
+      hostname: expect.any(String),
+      outcome: expect.any(String),
+      createdAt: expect.any(String),
+    });
+    expect(events[0]).not.toHaveProperty("created_at");
+  });
+
   it("repository source uses static SQL constants (no user clause interpolation)", () => {
     const source = readFileSync(
       path.join(process.cwd(), "src/lib/query-analytics/repository.ts"),
@@ -171,6 +200,9 @@ describe("query-analytics SQL injection / tenant isolation", () => {
     );
     expect(source).toContain("UPDATE_REVIEW_SQL");
     expect(source).toContain("FILTERED_ANALYTICS_WHERE_SQL");
+    // Postgres 42P18 guard: typed null checks (digest 442483457 regression).
+    expect(source).toContain("CAST(? AS TEXT) IS NULL");
+    expect(source).not.toMatch(/AND \(\? IS NULL OR/);
     expect(source).not.toMatch(/WHERE \$\{/);
     expect(source).not.toMatch(/\$\{clause\}/);
   });

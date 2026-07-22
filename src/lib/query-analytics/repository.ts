@@ -18,6 +18,10 @@ import {
   UNANSWERED_QUERY_REVIEW_STATUSES,
   type UnansweredQueryReviewStatus,
 } from "@/lib/domains/types";
+import {
+  classifyDecryptError,
+  type SensitiveFieldStatus,
+} from "@/lib/query-analytics/reveal-ui";
 
 /** Static INSERT — all values bound. Idempotent via unique (org, attempt_id). */
 const UPSERT_ANALYTICS_EVENT_SQL = `
@@ -117,15 +121,20 @@ WHERE organization_id = ?
 
 /**
  * Filtered analytics WHERE — fully static. Optional filters use
- * `? IS NULL OR col = ?` so no clause strings are interpolated.
+ * `CAST(? AS TEXT) IS NULL OR col = CAST(? AS TEXT)` so no clause strings
+ * are interpolated.
+ *
+ * CAST is required for Postgres: bare `? IS NULL` with a JS `null` binding
+ * raises 42P18 ("could not determine data type of parameter $N"). SQLite
+ * accepts the same CAST form. Text→timestamptz comparison still coerces.
  */
 const FILTERED_ANALYTICS_WHERE_SQL = `
 organization_id = ?
 AND created_at >= ?
-AND (? IS NULL OR created_at <= ?)
-AND (? IS NULL OR product_id = ?)
-AND (? IS NULL OR hostname = ?)
-AND (? IS NULL OR outcome = ?)
+AND (CAST(? AS TEXT) IS NULL OR created_at <= CAST(? AS TEXT))
+AND (CAST(? AS TEXT) IS NULL OR product_id = CAST(? AS TEXT))
+AND (CAST(? AS TEXT) IS NULL OR hostname = CAST(? AS TEXT))
+AND (CAST(? AS TEXT) IS NULL OR outcome = CAST(? AS TEXT))
 `;
 
 const SUMMARIZE_FILTERED_SQL =
@@ -169,10 +178,10 @@ LEFT JOIN unanswered_query_reviews r
   ON r.analytics_event_id = e.id AND r.organization_id = e.organization_id
 WHERE e.organization_id = ?
 AND e.created_at >= ?
-AND (? IS NULL OR e.created_at <= ?)
-AND (? IS NULL OR e.product_id = ?)
-AND (? IS NULL OR e.hostname = ?)
-AND (? IS NULL OR e.outcome = ?)
+AND (CAST(? AS TEXT) IS NULL OR e.created_at <= CAST(? AS TEXT))
+AND (CAST(? AS TEXT) IS NULL OR e.product_id = CAST(? AS TEXT))
+AND (CAST(? AS TEXT) IS NULL OR e.hostname = CAST(? AS TEXT))
+AND (CAST(? AS TEXT) IS NULL OR e.outcome = CAST(? AS TEXT))
 ORDER BY e.created_at DESC
 LIMIT ?
 `;
@@ -208,6 +217,48 @@ function filteredParams(
     outcome,
     outcome,
   ];
+}
+
+/** Plain-object rows safe to pass from RSC → Client Components (no Date instances). */
+export interface QueryAnalyticsEventListItem {
+  id: string;
+  logicalQueryId: string;
+  attemptId: string;
+  hostname: string;
+  productId: string | null;
+  outcome: string;
+  latencyMs: number | null;
+  createdAt: string;
+}
+
+function asIsoTimestamp(value: unknown): string {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? "" : value.toISOString();
+  }
+  if (typeof value === "string" || typeof value === "number") {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) return parsed.toISOString();
+    return String(value);
+  }
+  return value == null ? "" : String(value);
+}
+
+export function serializeQueryAnalyticsEvents(
+  rows: Record<string, unknown>[]
+): QueryAnalyticsEventListItem[] {
+  return rows.map((row) => ({
+    id: String(row.id ?? ""),
+    logicalQueryId: String(row.logical_query_id ?? ""),
+    attemptId: String(row.attempt_id ?? ""),
+    hostname: String(row.hostname ?? ""),
+    productId: row.product_id == null ? null : String(row.product_id),
+    outcome: String(row.outcome ?? ""),
+    latencyMs:
+      row.latency_ms == null || row.latency_ms === ""
+        ? null
+        : Number(row.latency_ms),
+    createdAt: asIsoTimestamp(row.created_at),
+  }));
 }
 
 /** Escape CSV cell against formula injection (=, +, -, @, tab, CR). */
@@ -470,7 +521,12 @@ export async function listUnansweredQueryReviews(
 export async function getUnansweredReviewSensitive(input: {
   organizationId: string;
   reviewId: string;
-}): Promise<{ queryText: string | null; clientIp: string | null } | null> {
+}): Promise<{
+  queryText: string | null;
+  clientIp: string | null;
+  queryStatus: SensitiveFieldStatus;
+  ipStatus: SensitiveFieldStatus;
+} | null> {
   ensureMigrations();
   const row = await db.queryOne<Record<string, unknown>>(
     `SELECT logical_query_id, query_ciphertext, query_iv, query_tag,
@@ -485,6 +541,8 @@ export async function getUnansweredReviewSensitive(input: {
   const aad = `unanswered:${input.organizationId}:${logicalQueryId}`;
   let queryText: string | null = null;
   let clientIp: string | null = null;
+  let queryStatus: SensitiveFieldStatus = "not_captured";
+  let ipStatus: SensitiveFieldStatus = "not_captured";
 
   if (row.query_ciphertext && row.query_iv && row.query_tag) {
     const enc: EncryptedSecret = {
@@ -494,8 +552,10 @@ export async function getUnansweredReviewSensitive(input: {
     };
     try {
       queryText = decryptSecret(enc, aad);
-    } catch {
+      queryStatus = "ok";
+    } catch (error) {
       queryText = null;
+      queryStatus = classifyDecryptError(error);
     }
   }
   if (row.ip_ciphertext && row.ip_iv && row.ip_tag) {
@@ -506,11 +566,13 @@ export async function getUnansweredReviewSensitive(input: {
     };
     try {
       clientIp = decryptSecret(enc, aad);
-    } catch {
+      ipStatus = "ok";
+    } catch (error) {
       clientIp = null;
+      ipStatus = classifyDecryptError(error);
     }
   }
-  return { queryText, clientIp };
+  return { queryText, clientIp, queryStatus, ipStatus };
 }
 
 export async function updateUnansweredQueryReview(input: {
@@ -605,11 +667,22 @@ export async function listQueryAnalyticsEvents(
   organizationId: string,
   filters: QueryAnalyticsFilters,
   limit = 100
-): Promise<Record<string, unknown>[]> {
-  return db.query(LIST_FILTERED_SQL, [
+): Promise<QueryAnalyticsEventListItem[]> {
+  const rows = await db.query<Record<string, unknown>>(LIST_FILTERED_SQL, [
     ...filteredParams(organizationId, filters),
     limit,
   ]);
+  return serializeQueryAnalyticsEvents(rows);
+}
+
+/** Empty metrics for degraded admin UI when analytics queries fail. */
+export function emptyQueryAnalyticsMetrics(): QueryAnalyticsMetrics {
+  return {
+    ...emptySummary(),
+    p50LatencyMs: null,
+    p95LatencyMs: null,
+    avgLatencyMs: null,
+  };
 }
 
 export async function exportQueryAnalyticsCsv(

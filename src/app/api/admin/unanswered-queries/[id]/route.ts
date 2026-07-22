@@ -16,6 +16,20 @@ export const runtime = "nodejs";
 
 const STATUSES = new Set<string>(UNANSWERED_QUERY_REVIEW_STATUSES);
 
+const SENSITIVE_READ_PERMISSIONS = [
+  "query_analytics.read_sensitive",
+  "unanswered_queries.read_sensitive",
+] as const;
+
+function statusCodeForQuery(
+  queryStatus: "ok" | "not_captured" | "decrypt_failed" | "encryption_key_missing"
+): string | undefined {
+  if (queryStatus === "not_captured") return "NOT_CAPTURED";
+  if (queryStatus === "decrypt_failed") return "DECRYPT_FAILED";
+  if (queryStatus === "encryption_key_missing") return "ENCRYPTION_KEY_MISSING";
+  return undefined;
+}
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -24,7 +38,7 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const access = await guardEnterpriseApi(request, "query_analytics.read_sensitive");
+  const access = await guardEnterpriseApi(request, SENSITIVE_READ_PERMISSIONS);
   if (access instanceof NextResponse) return access;
 
   const { id } = await context.params;
@@ -50,6 +64,9 @@ export async function GET(
   return NextResponse.json({
     queryText: sensitive.queryText,
     clientIp: sensitive.clientIp,
+    queryStatus: sensitive.queryStatus,
+    ipStatus: sensitive.ipStatus,
+    code: statusCodeForQuery(sensitive.queryStatus),
   });
 }
 

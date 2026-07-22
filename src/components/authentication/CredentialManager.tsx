@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { useRunSettings } from "@/components/RunSettings";
+import { clearCsrfTokenCache, getCsrfToken } from "@/lib/csrf-client";
 
 type ProductId = "ctix" | "cftr" | "orchestrate" | "csap";
 type Credential = {
@@ -92,10 +93,21 @@ function connectFailureMessage(
   return "Connection could not be validated. Check the URL and credentials.";
 }
 
+/**
+ * Credentials live on the product auth surface (not admin control-plane).
+ * Fetch CSRF from /api/auth/csrf — control-plane/context is admin-gated and
+ * returns 403 for non-admin users, which previously surfaced as a generic
+ * "Connection could not be validated" for Orchestrate Test & connect.
+ */
 async function csrfToken(): Promise<string> {
-  const response = await fetch("/api/admin/control-plane/context", { cache: "no-store" });
-  if (!response.ok) throw new Error("Could not initialize secure request");
-  return ((await response.json()) as { csrfToken: string }).csrfToken;
+  clearCsrfTokenCache();
+  const token = await getCsrfToken(true);
+  if (!token) {
+    throw new Error(
+      "Could not initialize a secure request token. Sign in again, then retry Test & connect."
+    );
+  }
+  return token;
 }
 
 function statusLabel(status: string | undefined): string {
@@ -206,10 +218,14 @@ export function CredentialManager() {
         }));
       }
       await load();
-    } catch {
+    } catch (err) {
+      const detail =
+        err instanceof Error && err.message.trim()
+          ? err.message.trim()
+          : "Connection could not be validated. Check the URL and credentials.";
       setMessage((value) => ({
         ...value,
-        [productId]: "Connection could not be validated.",
+        [productId]: detail,
       }));
     } finally {
       setBusy(null);

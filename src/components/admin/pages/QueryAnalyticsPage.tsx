@@ -12,7 +12,10 @@ import {
   inputClass,
 } from "@/components/admin/ui/tokens";
 import { listProducts } from "@/lib/products/registry";
-import type { QueryAnalyticsMetrics } from "@/lib/query-analytics/repository";
+import type {
+  QueryAnalyticsEventListItem,
+  QueryAnalyticsMetrics,
+} from "@/lib/query-analytics/repository";
 
 export function QueryAnalyticsPage({
   summary,
@@ -23,15 +26,17 @@ export function QueryAnalyticsPage({
   initialHostname,
   refreshedAt,
   showProductionMetrics,
+  loadError,
 }: {
   summary: QueryAnalyticsMetrics;
-  recent: Record<string, unknown>[];
+  recent: QueryAnalyticsEventListItem[];
   initialSince: string;
   initialUntil: string;
   initialProductId?: string;
   initialHostname?: string;
   refreshedAt: string;
   showProductionMetrics?: boolean;
+  loadError?: string | null;
 }) {
   const { organization, hasPermission } = useAdmin();
   const router = useRouter();
@@ -90,6 +95,16 @@ export function QueryAnalyticsPage({
         title="Query analytics"
         description="Customer questions, answer outcomes, latency, and exports for the selected range."
       />
+
+      {loadError ? (
+        <p
+          className="rounded-[var(--radius-md)] border border-[var(--warning)] bg-[var(--warning-soft)] px-3 py-2 text-sm text-[var(--text-heading)]"
+          role="status"
+        >
+          Analytics data could not be loaded right now. Showing an empty summary — try Reload or
+          Apply filters again.
+        </p>
+      ) : null}
 
       <p className="text-xs text-[var(--text-muted)]">
         Last updated {new Date(refreshedAt).toLocaleString()} · Answer-quality denominator = answered +
@@ -212,17 +227,17 @@ export function QueryAnalyticsPage({
           <ul className="space-y-2 text-xs">
             {recent.map((row) => (
               <li
-                key={String(row.id)}
+                key={row.id}
                 className="rounded border border-zinc-200 px-3 py-2 dark:border-zinc-800"
               >
-                <span className="font-mono">{String(row.outcome)}</span>
+                <span className="font-mono">{row.outcome}</span>
                 {" · "}
-                {String(row.product_id ?? "—")}
+                {row.productId ?? "—"}
                 {" · "}
-                {String(row.hostname)}
+                {row.hostname}
                 {" · "}
-                {row.latency_ms != null ? `${row.latency_ms} ms · ` : ""}
-                {new Date(String(row.created_at)).toLocaleString()}
+                {row.latencyMs != null ? `${row.latencyMs} ms · ` : ""}
+                {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
               </li>
             ))}
           </ul>

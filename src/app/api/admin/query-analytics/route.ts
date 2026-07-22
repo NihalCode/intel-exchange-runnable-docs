@@ -7,6 +7,7 @@ import { guardEnterpriseApi } from "@/lib/enterprise/guard";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
 import { isProductKey } from "@/lib/products/registry";
 import {
+  emptyQueryAnalyticsMetrics,
   exportQueryAnalyticsCsv,
   listQueryAnalyticsEvents,
   summarizeQueryAnalyticsFiltered,
@@ -103,15 +104,36 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const [summary, events] = await Promise.all([
-    summarizeQueryAnalyticsFiltered(orgId, filters),
-    listQueryAnalyticsEvents(orgId, filters, 100),
-  ]);
+  try {
+    const [summary, events] = await Promise.all([
+      summarizeQueryAnalyticsFiltered(orgId, filters),
+      listQueryAnalyticsEvents(orgId, filters, 100),
+    ]);
 
-  return NextResponse.json({
-    summary,
-    events,
-    filters,
-    refreshedAt: new Date().toISOString(),
-  });
+    return NextResponse.json({
+      summary,
+      events,
+      filters,
+      refreshedAt: new Date().toISOString(),
+    });
+  } catch (err) {
+    console.error(
+      JSON.stringify({
+        level: "error",
+        message: "query_analytics_api_failed",
+        organizationId: orgId,
+        error: err instanceof Error ? err.message : "unknown",
+      })
+    );
+    return NextResponse.json(
+      {
+        summary: emptyQueryAnalyticsMetrics(),
+        events: [],
+        filters,
+        refreshedAt: new Date().toISOString(),
+        degraded: true,
+      },
+      { status: 200 }
+    );
+  }
 }

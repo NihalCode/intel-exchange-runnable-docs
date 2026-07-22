@@ -8,6 +8,12 @@ import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
 import { UNANSWERED_QUERY_REVIEW_STATUSES } from "@/lib/domains/types";
 import type { UnansweredQueryReviewRow } from "@/lib/query-analytics/repository";
+import {
+  revealStateFromApiResponse,
+  shouldHideRevealButton,
+  type RevealUiState,
+  type SensitiveFieldStatus,
+} from "@/lib/query-analytics/reveal-ui";
 import type { UnansweredSummary } from "@/lib/query-analytics/unanswered-types";
 
 const WORKFLOW_STATUSES = UNANSWERED_QUERY_REVIEW_STATUSES.filter(
@@ -38,9 +44,7 @@ export function UnansweredQueriesPage({
   const [summary, setSummary] = useState<UnansweredSummary | null>(null);
   const [summaryAt, setSummaryAt] = useState(refreshedAt);
   const [summaryStale, setSummaryStale] = useState(false);
-  const [revealed, setRevealed] = useState<
-    Record<string, { queryText: string | null; clientIp: string | null }>
-  >({});
+  const [revealById, setRevealById] = useState<Record<string, RevealUiState>>({});
 
   useEffect(() => {
     if (!realtimeEnabled) return;
@@ -99,12 +103,25 @@ export function UnansweredQueriesPage({
     setBusyId(id);
     try {
       const res = await fetch(`/api/admin/unanswered-queries/${id}?sensitive=1`);
-      if (!res.ok) throw new Error("Reveal failed");
-      const data = (await res.json()) as {
-        queryText: string | null;
-        clientIp: string | null;
-      };
-      setRevealed((prev) => ({ ...prev, [id]: data }));
+      let body: {
+        queryText?: string | null;
+        clientIp?: string | null;
+        queryStatus?: SensitiveFieldStatus;
+        code?: string;
+        error?: string;
+      } = {};
+      try {
+        body = (await res.json()) as typeof body;
+      } catch {
+        body = {};
+      }
+      const next = revealStateFromApiResponse(res.status, body);
+      setRevealById((prev) => ({ ...prev, [id]: next }));
+    } catch {
+      setRevealById((prev) => ({
+        ...prev,
+        [id]: revealStateFromApiResponse(500, { error: "Reveal failed" }),
+      }));
     } finally {
       setBusyId(null);
     }
@@ -159,62 +176,83 @@ export function UnansweredQueriesPage({
         <p className="text-sm text-zinc-500">No unanswered query reviews yet.</p>
       ) : (
         <ul className="space-y-2">
-          {rows.map((row) => (
-            <li
-              key={row.id}
-              className="rounded border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800"
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={row.status} />
-                <span className="font-mono text-xs">{row.outcome ?? "unknown"}</span>
-                <span className="text-xs text-zinc-500">{row.productId ?? "—"}</span>
-                <span className="text-xs text-zinc-500">{row.hostname ?? "—"}</span>
-                <span className="text-xs text-zinc-400">
-                  {new Date(row.updatedAt).toLocaleString()}
-                </span>
-              </div>
-              {row.sanitizedTopic ? (
-                <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
-                  Topic: {row.sanitizedTopic}
-                </p>
-              ) : null}
-              {revealed[row.id]?.queryText ? (
-                <pre className="mt-2 max-h-32 overflow-auto rounded bg-zinc-100 p-2 text-xs dark:bg-zinc-900">
-                  {revealed[row.id]!.queryText}
-                </pre>
-              ) : null}
-              {revealed[row.id]?.clientIp ? (
-                <p className="mt-1 font-mono text-xs text-zinc-500">
-                  IP: {revealed[row.id]!.clientIp}
-                </p>
-              ) : null}
-              <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                {canReadSensitive && !revealed[row.id] ? (
-                  <button
-                    type="button"
-                    disabled={busyId === row.id}
-                    onClick={() => void revealSensitive(row.id)}
-                    className="rounded border border-amber-400 px-2 py-0.5 disabled:opacity-50 dark:border-amber-700"
-                  >
-                    Reveal exact query
-                  </button>
+          {rows.map((row) => {
+            const reveal = revealById[row.id];
+            return (
+              <li
+                key={row.id}
+                className="rounded border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800"
+              >
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusBadge status={row.status} />
+                  <span className="font-mono text-xs">{row.outcome ?? "unknown"}</span>
+                  <span className="text-xs text-zinc-500">{row.productId ?? "—"}</span>
+                  <span className="text-xs text-zinc-500">{row.hostname ?? "—"}</span>
+                  <span className="text-xs text-zinc-400">
+                    {new Date(row.updatedAt).toLocaleString()}
+                  </span>
+                </div>
+                {row.sanitizedTopic ? (
+                  <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                    Topic: {row.sanitizedTopic}
+                  </p>
                 ) : null}
-                {canManage
-                  ? WORKFLOW_STATUSES.map((status) => (
-                      <button
-                        key={status}
-                        type="button"
-                        disabled={busyId === row.id || row.status === status}
-                        onClick={() => void updateStatus(row.id, status)}
-                        className="rounded border border-zinc-300 px-2 py-0.5 disabled:opacity-50 dark:border-zinc-600"
-                      >
-                        {status.replace(/_/g, " ")}
-                      </button>
-                    ))
-                  : null}
-              </div>
-            </li>
-          ))}
+                {reveal?.kind === "revealed" ? (
+                  <div
+                    className="mt-2 rounded border border-amber-300 bg-amber-50 p-2 dark:border-amber-800 dark:bg-amber-950/40"
+                    data-testid="revealed-exact-query"
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
+                      Exact query
+                    </p>
+                    <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-words font-mono text-xs text-zinc-900 dark:text-zinc-100">
+                      {reveal.queryText}
+                    </pre>
+                    {reveal.clientIp ? (
+                      <p className="mt-1 font-mono text-xs text-zinc-500">
+                        IP: {reveal.clientIp}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+                {reveal?.kind === "unavailable" ? (
+                  <p
+                    className="mt-2 rounded border border-rose-300 bg-rose-50 px-2 py-1.5 text-xs text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200"
+                    data-testid="reveal-exact-query-error"
+                    role="alert"
+                  >
+                    {reveal.message}
+                  </p>
+                ) : null}
+                <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                  {canReadSensitive && !shouldHideRevealButton(reveal) ? (
+                    <button
+                      type="button"
+                      disabled={busyId === row.id}
+                      onClick={() => void revealSensitive(row.id)}
+                      className="rounded border border-amber-400 px-2 py-0.5 disabled:opacity-50 dark:border-amber-700"
+                      data-testid="reveal-exact-query"
+                    >
+                      Reveal exact query
+                    </button>
+                  ) : null}
+                  {canManage
+                    ? WORKFLOW_STATUSES.map((status) => (
+                        <button
+                          key={status}
+                          type="button"
+                          disabled={busyId === row.id || row.status === status}
+                          onClick={() => void updateStatus(row.id, status)}
+                          className="rounded border border-zinc-300 px-2 py-0.5 disabled:opacity-50 dark:border-zinc-600"
+                        >
+                          {status.replace(/_/g, " ")}
+                        </button>
+                      ))
+                    : null}
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

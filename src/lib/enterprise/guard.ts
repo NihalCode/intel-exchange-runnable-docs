@@ -53,7 +53,7 @@ function forbidden(): NextResponse {
  */
 export async function guardEnterpriseApi(
   request: NextRequest,
-  permission: EnterprisePermission,
+  permission: EnterprisePermission | readonly EnterprisePermission[],
   options: EnterpriseGuardOptions = {}
 ): Promise<EnterpriseAccess | NextResponse> {
   const result = await getAppSessionResult(request);
@@ -66,7 +66,11 @@ export async function guardEnterpriseApi(
     const resource = options.resource ?? {
       organizationId: context.organization.id,
     };
-    if (!authorizeEnterprise(context.principal, permission, resource)) {
+    const required = Array.isArray(permission) ? permission : [permission];
+    const allowed = required.some((p) =>
+      authorizeEnterprise(context.principal, p, resource)
+    );
+    if (!allowed) {
       return forbidden();
     }
 
