@@ -21,30 +21,46 @@ describe("admin navigation", () => {
     const capabilities = [
       "admin_dashboard.access",
       "resources.read",
-      "security_settings.manage",
+      "query_analytics.read",
+      "deployments.read",
     ] as const;
     const disabled = filterNavByCapabilities(capabilities);
     const enabled = filterNavByCapabilities(capabilities, [
-      "support_agent",
-      "placeholder_admin_modules",
+      "query_analytics",
+      "admin_deployment_management",
     ]);
 
     expect(
-      disabled.flatMap((group) => group.items).some((item) => item.href === "/admin/support-agent")
+      disabled
+        .flatMap((group) => group.items)
+        .some((item) => item.href === "/admin/documentation-agent/query-analytics")
     ).toBe(false);
     expect(
       disabled
         .flatMap((group) => group.items)
-        .some((item) => item.href === "/admin/documentation-agent/sources")
+        .some((item) => item.href === "/admin/documentation-agent/deployments")
     ).toBe(false);
     expect(
-      enabled.flatMap((group) => group.items).some((item) => item.href === "/admin/support-agent")
+      enabled
+        .flatMap((group) => group.items)
+        .some((item) => item.href === "/admin/documentation-agent/query-analytics")
     ).toBe(true);
     expect(
       enabled
         .flatMap((group) => group.items)
-        .some((item) => item.href === "/admin/documentation-agent/sources")
+        .some((item) => item.href === "/admin/documentation-agent/deployments")
     ).toBe(true);
+  });
+
+  it("does not expose Support Agent or placeholder admin modules in nav", () => {
+    const allHrefs = ADMIN_NAV_GROUPS.flatMap((group) => group.items.map((item) => item.href));
+    expect(allHrefs.some((href) => href.startsWith("/admin/support-agent"))).toBe(false);
+    expect(allHrefs).not.toContain("/admin/documentation-agent/sources");
+    expect(allHrefs).not.toContain("/admin/documentation-agent/webhooks");
+    expect(allHrefs).not.toContain("/admin/rate-limits");
+    expect(allHrefs).not.toContain("/admin/security/roles");
+    expect(allHrefs).not.toContain("/admin/security/service-accounts");
+    expect(ADMIN_NAV_GROUPS.some((group) => group.id === "support-agent")).toBe(false);
   });
 
   it("matches exact overview routes", () => {
@@ -66,7 +82,7 @@ describe("admin navigation", () => {
 
   it("resolves page titles from pathname", () => {
     expect(pageTitleForPath("/admin/security/settings")).toBe("Settings");
-    expect(pageTitleForPath("/admin/support-agent/apis")).toBe("API Endpoints");
-    expect(pageTitleForPath("/admin/support-agent/escalation")).toBe("Escalation");
+    expect(pageTitleForPath("/admin/documentation-agent/apis")).toBe("APIs");
+    expect(pageTitleForPath("/admin/documentation-agent/sync-jobs")).toBe("Sync Jobs");
   });
 });

@@ -6,14 +6,12 @@ import { useAdmin } from "@/components/admin/context/AdminContext";
 import { MetricCard } from "@/components/admin/ui/MetricCard";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { cardClass, linkClass } from "@/components/admin/ui/tokens";
-import { PLACEHOLDER_NOTICE } from "@/lib/admin/mock-data";
 
 export function DocumentationAgentOverviewPage() {
   const { organization, hasPermission } = useAdmin();
 
   const allLinks = [
     { href: "/admin/documentation-agent/apis", label: "APIs", permission: "resources.read" as const },
-    { href: "/admin/documentation-agent/sources", label: "Sources", permission: "resources.read" as const },
     { href: "/admin/documentation-agent/sync-jobs", label: "Sync Jobs", permission: "jobs.read" as const },
     { href: "/admin/documentation-agent/keys", label: "API Keys", permission: "credentials.read_metadata" as const },
   ];
@@ -45,8 +43,6 @@ export function DocumentationAgentOverviewPage() {
           ))}
         </ul>
       </section>
-
-      <p className="text-xs text-zinc-500">{PLACEHOLDER_NOTICE}</p>
     </div>
   );
 }

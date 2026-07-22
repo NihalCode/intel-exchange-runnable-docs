@@ -91,12 +91,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         permission: "resources.read",
       },
       {
-        href: "/admin/documentation-agent/sources",
-        label: "Sources",
-        permission: "resources.read",
-        featureFlag: "placeholder_admin_modules",
-      },
-      {
         href: "/admin/documentation-agent/sync-jobs",
         label: "Sync Jobs",
         permission: "jobs.read",
@@ -130,82 +124,9 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         featureFlag: "unanswered_query_weekly_analytics",
       },
       {
-        href: "/admin/documentation-agent/webhooks",
-        label: "Webhooks",
-        permission: "resources.read",
-        featureFlag: "placeholder_admin_modules",
-      },
-      {
         href: "/admin/documentation-agent/logs",
         label: "Logs",
         permission: "audit.read",
-      },
-    ],
-  },
-  {
-    id: "support-agent",
-    label: "Support Agent",
-    items: [
-      {
-        href: "/admin/support-agent",
-        label: "Overview",
-        permission: "admin_dashboard.access",
-        featureFlag: "support_agent",
-        exact: true,
-      },
-      {
-        href: "/admin/support-agent/apis",
-        label: "API Endpoints",
-        permission: "admin_dashboard.access",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/integrations",
-        label: "Integrations",
-        permission: "admin_dashboard.access",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/channels",
-        label: "Channels",
-        permission: "admin_dashboard.access",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/actions",
-        label: "Agent Actions",
-        permission: "admin_dashboard.access",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/escalation",
-        label: "Escalation",
-        permission: "admin_dashboard.access",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/keys",
-        label: "API Keys",
-        permission: "credentials.read_metadata",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/domains",
-        label: "Domains",
-        permission: "resources.read",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/webhooks",
-        label: "Webhooks",
-        permission: "resources.read",
-        featureFlag: "support_agent",
-      },
-      {
-        href: "/admin/support-agent/logs",
-        label: "Logs",
-        permission: "audit.read",
-        featureFlag: "support_agent",
       },
     ],
   },
@@ -217,12 +138,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         href: "/admin/environments",
         label: "Environments",
         permission: "resources.read",
-      },
-      {
-        href: "/admin/rate-limits",
-        label: "Rate Limits",
-        permission: "security_settings.manage",
-        featureFlag: "placeholder_admin_modules",
       },
       {
         href: "/admin/change-requests",
@@ -240,18 +155,6 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     id: "security",
     label: "Security",
     items: [
-      {
-        href: "/admin/security/roles",
-        label: "Roles",
-        permission: "security_settings.manage",
-        featureFlag: "placeholder_admin_modules",
-      },
-      {
-        href: "/admin/security/service-accounts",
-        label: "Service Accounts",
-        permission: "credentials.read_metadata",
-        featureFlag: "placeholder_admin_modules",
-      },
       {
         href: "/admin/security/settings",
         label: "Settings",
