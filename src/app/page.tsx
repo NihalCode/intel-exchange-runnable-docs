@@ -76,9 +76,13 @@ export default async function Home() {
                   badge={<ProductBadge productId={product.productId} />}
                   meta={
                     !indexed ? (
-                      <span className="text-[10px] text-[var(--warning)]">Not indexed</span>
+                      <span className="text-[10px] font-medium leading-none text-[var(--warning)]">
+                        Not indexed
+                      </span>
                     ) : (
-                      <span className="text-[10px] text-[var(--text-muted)]">{count} pages</span>
+                      <span className="text-[10px] font-medium leading-none text-[var(--text-muted)]">
+                        {count} pages
+                      </span>
                     )
                   }
                   footer="API documentation →"

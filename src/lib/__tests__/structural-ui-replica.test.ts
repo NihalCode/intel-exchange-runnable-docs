@@ -124,6 +124,18 @@ describe("structural Cyware replica UI markers", () => {
     expect(home).toContain('product.productId === "orchestrate" ? "OR"');
   });
 
+  it("product hub cards keep a symmetric mark + badge + meta row", () => {
+    const cx = readFileSync(path.join(process.cwd(), "src/components/cx/index.tsx"), "utf8");
+    const badge = readFileSync(path.join(process.cwd(), "src/components/ProductContext.tsx"), "utf8");
+    expect(cx).toContain('data-layout="cx-product-card-mark-row"');
+    expect(cx).toContain("flex min-h-10 items-center gap-3");
+    expect(cx).toContain("min-h-[2.75rem]");
+    expect(cx).toContain("line-clamp-2");
+    expect(cx).toContain("line-clamp-3");
+    expect(badge).toContain("h-6 max-w-full items-center truncate");
+    expect(badge).toContain("(label ?? productId).trim().toUpperCase()");
+  });
+
   it("structural replacement ledger documents dispositions", () => {
     const ledger = readFileSync(
       path.join(process.cwd(), "docs/enterprise/ui-rewrite/STRUCTURAL_REPLACEMENT_LEDGER.md"),

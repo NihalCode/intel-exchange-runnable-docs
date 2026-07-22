@@ -156,19 +156,28 @@ export function ProductSelector({ className = "" }: { className?: string }) {
   );
 }
 
-export function ProductBadge({ productId }: { productId: string }) {
+export function ProductBadge({
+  productId,
+  /** Prefer short product keys (CTIX/CSAP/ORCHESTRATE/CFTR) for equal-weight chips. */
+  label,
+}: {
+  productId: string;
+  label?: string;
+}) {
   const p = getProduct(productId);
   if (!p) return null;
+  const text = (label ?? productId).trim().toUpperCase() || p.displayLabel;
   return (
     <span
-      className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+      className="inline-flex h-6 max-w-full items-center truncate rounded-full border px-2 text-[10px] font-semibold uppercase tracking-wide"
       style={{
         borderColor: `color-mix(in srgb, ${productAccent(productId)} 45%, transparent)`,
         color: productAccent(productId),
         background: `color-mix(in srgb, ${productAccent(productId)} 10%, transparent)`,
       }}
+      title={p.displayLabel}
     >
-      {p.displayLabel}
+      {text}
     </span>
   );
 }

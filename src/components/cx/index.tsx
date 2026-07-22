@@ -110,28 +110,33 @@ export function CxProductCard({
       className={`group flex h-full flex-col border border-[var(--border-default)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--accent-primary)] hover:shadow-md ${accentClass ?? ""}`}
       style={{ borderRadius: "var(--radius-md)" }}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span
-            className="flex h-10 w-10 items-center justify-center text-xs font-bold tracking-wide text-white"
-            style={{
-              background: "var(--product-accent, var(--accent-primary))",
-              borderRadius: "var(--radius-md)",
-            }}
-            aria-hidden="true"
-          >
-            {mark}
-          </span>
-          <div>
-            {badge}
-            <h3 className="text-base font-semibold text-[var(--text-heading)] group-hover:text-[var(--text-link)]">
-              {title}
-            </h3>
-          </div>
-        </div>
-        {meta}
+      <div
+        data-layout="cx-product-card-mark-row"
+        className="flex min-h-10 items-center gap-3"
+      >
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center text-xs font-bold tracking-wide text-white"
+          style={{
+            background: "var(--product-accent, var(--accent-primary))",
+            borderRadius: "var(--radius-md)",
+          }}
+          aria-hidden="true"
+        >
+          {mark}
+        </span>
+        {badge ? (
+          <div className="min-w-0 flex-1 overflow-hidden">{badge}</div>
+        ) : (
+          <div className="min-w-0 flex-1" />
+        )}
+        {meta ? <div className="shrink-0 whitespace-nowrap">{meta}</div> : null}
       </div>
-      <p className="flex-1 text-sm leading-6 text-[var(--text-secondary)]">{description}</p>
+      <h3 className="mt-4 min-h-[2.75rem] text-base font-semibold leading-snug text-[var(--text-heading)] group-hover:text-[var(--text-link)] line-clamp-2">
+        {title}
+      </h3>
+      <p className="mt-2 flex-1 text-sm leading-6 text-[var(--text-secondary)] line-clamp-3">
+        {description}
+      </p>
       {footer ? (
         <p className="mt-4 text-sm font-medium text-[var(--text-link)]">{footer}</p>
       ) : null}
