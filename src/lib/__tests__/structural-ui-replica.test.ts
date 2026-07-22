@@ -77,6 +77,9 @@ describe("structural Cyware replica UI markers", () => {
     expect(signIn).toContain("cx-split-auth");
     expect(signIn).toContain('data-layout="cx-sign-in-brand"');
     expect(signIn).toContain('data-layout="cx-sign-in-form"');
+    // Opaque JPEG logo + brightness-0 invert collapses to a blank white tile on navy.
+    expect(signIn).toContain('src="/cyware_logo.png"');
+    expect(signIn).not.toMatch(/cyware_logo\.png[^>]*brightness-0\s+invert/);
   });
 
   it("admin control plane and analytics expose workbench markers", () => {
@@ -97,6 +100,9 @@ describe("structural Cyware replica UI markers", () => {
     expect(sidebar).toContain("CYWARE | Admin");
     expect(sidebar).toContain('tone="inverse"');
     expect(sidebar).toContain("text-white/85");
+    // Opaque JPEG logo + brightness-0 invert collapses to a blank white tile on navy.
+    expect(sidebar).toContain('src="/cyware_logo.png"');
+    expect(sidebar).not.toMatch(/cyware_logo\.png[^>]*brightness-0\s+invert/);
     expect(analytics).toContain('data-layout="cx-analytics-workbench"');
   });
 

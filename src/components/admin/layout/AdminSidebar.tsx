@@ -111,7 +111,7 @@ export function AdminSidebar() {
           <div className="border-b border-white/10 px-4 py-4">
             <Link href="/admin" className="flex items-center gap-2" data-testid="admin-brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/cyware_logo.png" alt="" width={24} height={24} className="h-6 w-6 object-contain brightness-0 invert" />
+              <img src="/cyware_logo.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
               <span>
                 <span className="block text-sm font-semibold text-white">
                   CYWARE | Admin

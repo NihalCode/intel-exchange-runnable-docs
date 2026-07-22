@@ -95,7 +95,7 @@ export default async function SignInPage({
             alt=""
             width={40}
             height={40}
-            className="h-10 w-10 object-contain brightness-0 invert"
+            className="h-10 w-10 object-contain"
           />
           <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-white/70">
             CYWARE | Documentation
