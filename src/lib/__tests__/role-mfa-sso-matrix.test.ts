@@ -12,6 +12,7 @@ import {
 import type { EnterprisePrincipal } from "@/lib/enterprise/types";
 import {
   adminMfaStepUpHref,
+  auth0LogoutToOriginPath,
   auth0StepUpLoginPath,
 } from "@/lib/enterprise/mfa-step-up";
 import { auth0LoginPath } from "@/lib/documentation-auth/sign-in-url";
@@ -92,10 +93,12 @@ describe("one-time login vs one-time MFA (path contracts)", () => {
 
   it("admin MFA step-up always logs out then forces re-auth", () => {
     const href = adminMfaStepUpHref("/admin");
-    expect(href.startsWith("/auth/logout?returnTo=")).toBe(true);
-    const login = decodeURIComponent(href.split("returnTo=")[1]!);
-    expect(login).toBe(auth0StepUpLoginPath("/admin"));
-    expect(login).toContain("prompt=login");
-    expect(login).toContain("max_age=0");
+    expect(href.startsWith("/access/mfa-step-up?returnTo=")).toBe(true);
+    const logout = auth0LogoutToOriginPath("https://cyware-docs-orchestrate.vercel.app");
+    expect(logout.startsWith("/auth/logout?returnTo=")).toBe(true);
+    const origin = decodeURIComponent(logout.split("returnTo=")[1]!);
+    expect(origin).toBe("https://cyware-docs-orchestrate.vercel.app");
+    expect(auth0StepUpLoginPath("/admin")).toContain("prompt=login");
+    expect(auth0StepUpLoginPath("/admin")).toContain("max_age=0");
   });
 });

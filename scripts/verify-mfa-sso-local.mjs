@@ -21,7 +21,11 @@ function auth0StepUpLoginPath(returnTo = "/admin") {
 }
 
 function adminMfaStepUpHref(returnTo = "/admin") {
-  return `/auth/logout?returnTo=${encodeURIComponent(auth0StepUpLoginPath(returnTo))}`;
+  return `/access/mfa-step-up?returnTo=${encodeURIComponent(returnTo)}`;
+}
+
+function auth0LogoutToOriginPath(appOrigin) {
+  return `/auth/logout?returnTo=${encodeURIComponent(appOrigin.replace(/\/+$/, ""))}`;
 }
 
 function auth0LoginPath(returnTo = "/") {
@@ -30,15 +34,26 @@ function auth0LoginPath(returnTo = "/") {
 
 /** Old broken loop: plain login reuses password-only Auth0 SSO → no amr → MFA page again */
 const OLD_LOOP = "/auth/login?returnTo=/admin";
-/** Fixed: clear app cookie, force re-auth + MFA ACR */
+/** Nested login-in-logout returnTo — Auth0 Oops (relative / non-allowlisted path) */
+const OLD_OOPS = `/auth/logout?returnTo=${encodeURIComponent(auth0StepUpLoginPath("/admin"))}`;
+/** Fixed: app bridge → logout to exact origin → forced MFA login */
 const FIXED = adminMfaStepUpHref("/admin");
+const FIXED_LOGOUT = auth0LogoutToOriginPath("https://apitest1.cyninjadev.com");
 /** Normal tab/product visit: silent SSO, never force MFA again */
 const SILENT = auth0LoginPath("/agent");
 
 assert.equal(OLD_LOOP.includes("prompt="), false, "old path had no prompt=login");
-assert.match(FIXED, /^\/auth\/logout\?returnTo=/);
-assert.match(decodeURIComponent(FIXED.split("returnTo=")[1]), /prompt=login/);
-assert.match(decodeURIComponent(FIXED.split("returnTo=")[1]), /max_age=0/);
+assert.match(FIXED, /^\/access\/mfa-step-up\?returnTo=/);
+assert.match(FIXED_LOGOUT, /^\/auth\/logout\?returnTo=/);
+assert.equal(
+  decodeURIComponent(FIXED_LOGOUT.split("returnTo=")[1]),
+  "https://apitest1.cyninjadev.com"
+);
+assert.equal(
+  decodeURIComponent(OLD_OOPS.split("returnTo=")[1]).startsWith("/auth/login"),
+  true,
+  "documents the broken nested shape"
+);
 assert.equal(SILENT.includes("prompt="), false);
 assert.equal(SILENT.includes("max_age="), false);
 
@@ -48,9 +63,11 @@ console.log(
       status: "PASS",
       mfaLoop: {
         oldBrokenCta: OLD_LOOP,
+        oldAuth0OopsCta: OLD_OOPS,
         fixedCta: FIXED,
+        fixedLogoutReturnTo: FIXED_LOGOUT,
         why:
-          "Plain /auth/login reuses Auth0 SSO without MFA claims (amr/acr) → same page. Logout + prompt=login&max_age=0 forces a fresh MFA.",
+          "Nesting /auth/login?... inside logout returnTo sends Auth0 a relative or non-allowlisted path → Oops. Bridge sets a cookie, logs out to the exact app origin, then forces prompt=login&max_age=0.",
       },
       oneTimeLogin: {
         silentPerOrigin: SILENT,

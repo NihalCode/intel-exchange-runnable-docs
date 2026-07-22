@@ -53,6 +53,9 @@ function createAuth0Client(): Auth0Client {
     clientSecret: env.clientSecret!,
     secret: env.secret!,
     appBaseUrl: env.appBaseUrl!,
+    // `/v2/logout` supports wildcard Allowed Logout URLs; OIDC logout is stricter
+    // about exact post_logout_redirect_uri matches (breaks MFA step-up flows).
+    logoutStrategy: "v2",
     enableParallelTransactions: false,
     session: {
       cookie: {

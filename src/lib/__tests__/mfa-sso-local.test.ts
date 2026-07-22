@@ -7,8 +7,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { buildSignInUrl, auth0LoginPath, signInUrlFor } from "@/lib/documentation-auth/sign-in-url";
 import {
   adminMfaStepUpHref,
+  auth0LogoutToOriginPath,
   auth0StepUpLoginPath,
   MFA_ACR_VALUES,
+  MFA_STEP_UP_START_PATH,
 } from "@/lib/enterprise/mfa-step-up";
 
 function source(relative: string): string {
@@ -32,9 +34,13 @@ describe("MFA loop regression (local)", () => {
 
   it("MFA step-up clears app session then forces Auth0 re-auth + MFA ACR", () => {
     const href = adminMfaStepUpHref("/admin");
-    expect(href.startsWith("/auth/logout?returnTo=")).toBe(true);
-    const login = decodeURIComponent(href.slice("/auth/logout?returnTo=".length));
-    expect(login).toBe(auth0StepUpLoginPath("/admin"));
+    expect(href).toBe(`${MFA_STEP_UP_START_PATH}?returnTo=${encodeURIComponent("/admin")}`);
+    const logout = auth0LogoutToOriginPath("https://cyware-docs-csap.vercel.app");
+    expect(logout.startsWith("/auth/logout?returnTo=")).toBe(true);
+    const returnTo = decodeURIComponent(logout.slice("/auth/logout?returnTo=".length));
+    expect(returnTo).toBe("https://cyware-docs-csap.vercel.app");
+    expect(returnTo).not.toContain("/auth/login");
+    const login = auth0StepUpLoginPath("/admin");
     expect(login).toContain("prompt=login");
     expect(login).toContain("max_age=0");
     expect(login).toContain(encodeURIComponent(MFA_ACR_VALUES));

@@ -10,8 +10,48 @@ export function isAuthLoginPath(pathname: string): boolean {
   return pathname === "/auth/login" || pathname.endsWith("/auth/login");
 }
 
+export function isAuthLogoutPath(pathname: string): boolean {
+  return pathname === "/auth/logout" || pathname.endsWith("/auth/logout");
+}
+
 export function isAuthCallbackPath(pathname: string): boolean {
   return pathname === "/auth/callback" || pathname.endsWith("/auth/callback");
+}
+
+/**
+ * Auth0 logout `returnTo` / `post_logout_redirect_uri` must be an absolute URL
+ * on Allowed Logout URLs. The SDK forwards the query param as-is, so relative
+ * paths (e.g. `/auth/login?...`) produce the tenant “Oops!” error page.
+ */
+export function withAbsoluteLogoutReturnTo(
+  request: NextRequest,
+  appBaseUrl: string
+): NextRequest {
+  if (!isAuthLogoutPath(request.nextUrl.pathname)) return request;
+
+  const returnTo = request.nextUrl.searchParams.get("returnTo");
+  if (!returnTo) return request;
+  if (/^https?:\/\//i.test(returnTo)) return request;
+
+  const base = appBaseUrl.replace(/\/+$/, "");
+  let absolute: string;
+  try {
+    if (returnTo.startsWith("/") && !returnTo.startsWith("//")) {
+      absolute = new URL(returnTo, `${base}/`).toString();
+    } else {
+      const url = request.nextUrl.clone();
+      url.searchParams.delete("returnTo");
+      return new NextRequest(url, request);
+    }
+  } catch {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete("returnTo");
+    return new NextRequest(url, request);
+  }
+
+  const url = request.nextUrl.clone();
+  url.searchParams.set("returnTo", absolute);
+  return new NextRequest(url, request);
 }
 
 export function extractStateFromAuthorizeUrl(location: string | null): string | null {

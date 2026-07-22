@@ -7,10 +7,12 @@ import {
   injectTransactionCookieIfMissing,
   isAuthLoginPath,
   persistTransactionFromAuthResponse,
+  withAbsoluteLogoutReturnTo,
 } from "@/lib/documentation-auth/oauth-route-handlers";
 import {
   authConfigSignInUrl,
   authEnvValidationError,
+  getAuthEnv,
 } from "@/lib/documentation-auth/env";
 import { getAuth0 } from "@/lib/auth0";
 
@@ -42,7 +44,10 @@ async function handleAuth(request: NextRequest): Promise<NextResponse> {
       return authConfigRedirect();
     }
 
-    const req = await injectTransactionCookieIfMissing(request);
+    const withTxn = await injectTransactionCookieIfMissing(request);
+    const appBaseUrl =
+      getAuthEnv().appBaseUrl ?? withTxn.nextUrl.origin;
+    const req = withAbsoluteLogoutReturnTo(withTxn, appBaseUrl);
     const authResponse = await auth0.middleware(req);
 
     if (isAuthLoginPath(request.nextUrl.pathname)) {

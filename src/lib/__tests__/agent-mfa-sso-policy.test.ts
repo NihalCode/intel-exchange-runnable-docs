@@ -6,6 +6,7 @@ import {
 } from "@/lib/documentation-credentials/agent-access-policy";
 import {
   adminMfaStepUpHref,
+  auth0LogoutToOriginPath,
   auth0StepUpLoginPath,
   MFA_ACR_VALUES,
 } from "@/lib/enterprise/mfa-step-up";
@@ -22,10 +23,14 @@ describe("mfa step-up URLs", () => {
 
   it("logout then step-up login to break password-only SSO loops", () => {
     const href = adminMfaStepUpHref("/admin");
-    expect(href.startsWith("/auth/logout?returnTo=")).toBe(true);
-    const returnTo = decodeURIComponent(href.split("returnTo=")[1]!);
-    expect(returnTo).toContain("/auth/login?");
-    expect(returnTo).toContain("prompt=login");
+    expect(href.startsWith("/access/mfa-step-up?returnTo=")).toBe(true);
+    expect(decodeURIComponent(href.split("returnTo=")[1]!)).toBe("/admin");
+    // Logout returnTo must be the allowlisted origin only — never /auth/login?...
+    const logout = auth0LogoutToOriginPath("https://apitest1.cyninjadev.com");
+    expect(logout).toBe(
+      `/auth/logout?returnTo=${encodeURIComponent("https://apitest1.cyninjadev.com")}`
+    );
+    expect(decodeURIComponent(logout.split("returnTo=")[1]!)).not.toContain("/auth/login");
   });
 });
 

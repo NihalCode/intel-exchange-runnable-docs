@@ -40,10 +40,21 @@ Never commit real credentials. Never log Auth0 tokens or invite tokens.
 4. Set **Allowed Callback URLs**:
    - `https://your-app.example/auth/callback`
    - `http://localhost:3000/auth/callback` (development)
-5. Set **Allowed Logout URLs**:
-   - `https://your-app.example`
+5. Set **Allowed Logout URLs** (exact origins — required for MFA step-up and normal logout):
+   - `https://apitest1.cyninjadev.com`
+   - `https://cyware-docs-ctix.vercel.app`
+   - `https://cyware-docs-cftr.vercel.app`
+   - `https://cyware-docs-csap.vercel.app`
+   - `https://cyware-docs-orchestrate.vercel.app`
    - `http://localhost:3000`
+   - Optional wildcards (recommended): `https://*.vercel.app`, `https://apitest1.cyninjadev.com/*`
 6. Set **Allowed Web Origins** to your app base URL
+
+### MFA step-up (“Sign out and complete MFA”)
+
+Admin MFA uses `/access/mfa-step-up` → Auth0 `/v2/logout?returnTo={APP_ORIGIN}` (origin only, no path) → then `/auth/login?prompt=login&max_age=0&acr_values=…`.
+
+Do **not** put `/auth/login?...` in logout `returnTo` — Auth0 rejects relative or non-allowlisted paths and shows **Oops!, something went wrong**. Each product’s `APP_BASE_URL` / `AUTH0_BASE_URL` must equal that host’s origin above.
 
 ## OAuth transaction cookie fix (`invalid_state`)
 

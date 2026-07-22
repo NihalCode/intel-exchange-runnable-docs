@@ -13,6 +13,11 @@ import {
   isMiddlewareAuthEnabled,
 } from "@/lib/documentation-auth/middleware-auth";
 import { buildSignInUrl } from "@/lib/documentation-auth/sign-in-url";
+import {
+  auth0StepUpLoginPath,
+  MFA_STEP_UP_COOKIE,
+  MFA_STEP_UP_START_PATH,
+} from "@/lib/enterprise/mfa-step-up";
 
 export function isPublicDocumentationApiPath(pathname: string): boolean {
   return isPublicApiPath(pathname);
@@ -157,6 +162,28 @@ async function runDocumentationAuthProxyInner(
   if (hostRouted) return hostRouted;
 
   const { pathname } = request.nextUrl;
+
+  // After Auth0 logout for admin MFA step-up, continue into forced re-auth.
+  const pendingMfaReturnTo = request.cookies.get(MFA_STEP_UP_COOKIE)?.value;
+  if (
+    pendingMfaReturnTo &&
+    !pathname.startsWith("/auth/") &&
+    pathname !== MFA_STEP_UP_START_PATH &&
+    !pathname.startsWith(`${MFA_STEP_UP_START_PATH}/`)
+  ) {
+    const safePath =
+      pendingMfaReturnTo.startsWith("/") && !pendingMfaReturnTo.startsWith("//")
+        ? pendingMfaReturnTo
+        : "/admin";
+    const destination = new URL(auth0StepUpLoginPath(safePath), request.url);
+    const response = NextResponse.redirect(destination);
+    response.cookies.set(MFA_STEP_UP_COOKIE, "", {
+      httpOnly: true,
+      path: "/",
+      maxAge: 0,
+    });
+    return mergeAuthHeaders(response, authResponse);
+  }
 
   if (isPublicPagePath(pathname)) {
     const requestHeaders = new Headers(request.headers);
