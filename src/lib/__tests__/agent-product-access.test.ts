@@ -11,6 +11,7 @@ import {
   buildProductAccessDeniedResponse,
   buildProductClarificationQuestions,
   mergeEnsuredProductIds,
+  scopeProductIdsForDeployment,
 } from "@/lib/documentation-credentials/access";
 import {
   resetDatabaseConnection,
@@ -126,6 +127,22 @@ describe("mergeEnsuredProductIds", () => {
     expect(mergeEnsuredProductIds(["ctix"], "cftr").sort()).toEqual(["cftr", "ctix"]);
     expect(mergeEnsuredProductIds([], "cftr")).toEqual(["cftr"]);
     expect(mergeEnsuredProductIds(["cftr"], "cftr")).toEqual(["cftr"]);
+  });
+});
+
+describe("scopeProductIdsForDeployment", () => {
+  it("isolates allowlist to the pinned product on single-product hosts", () => {
+    expect(scopeProductIdsForDeployment(["ctix", "orchestrate"], "ctix")).toEqual([
+      "ctix",
+    ]);
+    expect(scopeProductIdsForDeployment(["orchestrate"], "ctix")).toEqual(["ctix"]);
+  });
+
+  it("keeps connected products when deployment is not pinned", () => {
+    expect(scopeProductIdsForDeployment(["ctix", "orchestrate"], null)).toEqual([
+      "ctix",
+      "orchestrate",
+    ]);
   });
 });
 

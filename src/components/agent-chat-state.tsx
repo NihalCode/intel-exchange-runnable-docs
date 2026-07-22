@@ -28,8 +28,8 @@ import {
   type AgentAttachment,
 } from "@/lib/agent/file-extract-client";
 import { createAgentRequestId } from "@/lib/agent/events";
-import { withCsrfHeaders } from "@/lib/csrf-client";
-import { mapAgentApiError } from "@/lib/user-facing-errors";
+import { withCsrfHeaders, clearCsrfTokenCache } from "@/lib/csrf-client";
+import { classifyAgentHttpFailure } from "@/lib/user-facing-errors";
 import {
   appendSessionLog,
   createSession as createWorkspaceSession,
@@ -598,6 +598,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
               const preview = await res.clone().json();
               if (preview?.code === "SESSION_EXPIRED") {
                 logPanel("Session refreshed — retrying once.");
+                clearCsrfTokenCache();
                 await new Promise((resolve) => setTimeout(resolve, 150));
                 return postAgent(1);
               }
@@ -633,33 +634,27 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
                   "If this is a timeout, try a shorter or more specific edit request."
           );
         }
-        if (res.status === 401) {
-          const fallbackSignIn = `/auth/login?returnTo=${encodeURIComponent(
-            typeof window !== "undefined"
-              ? window.location.pathname + window.location.search
-              : "/agent"
-          )}`;
-          const signIn =
-            typeof data.signIn === "string" && data.signIn ? data.signIn : fallbackSignIn;
-          logPanel("Session expired — redirecting to sign in.");
-          if (typeof window !== "undefined") {
-            window.location.assign(signIn);
-          }
-          throw new Error("Your session has expired. Redirecting you to sign in…");
-        }
         if (!res.ok) {
-          const raw = data.error;
-          const msg =
-            typeof raw === "string"
-              ? mapAgentApiError(raw, res.status)
-              : typeof raw === "object" && raw !== null
-                ? mapAgentApiError(
-                    (raw as { message?: string }).message ??
-                      (raw as { code?: string }).code,
-                    res.status
-                  )
-                : mapAgentApiError(undefined, res.status);
-          throw new Error(msg);
+          const classified = classifyAgentHttpFailure({
+            status: res.status,
+            code: data.code,
+            error: data.error,
+          });
+          if (classified.shouldRedirectToSignIn) {
+            const fallbackSignIn = `/auth/login?returnTo=${encodeURIComponent(
+              typeof window !== "undefined"
+                ? window.location.pathname + window.location.search
+                : "/agent"
+            )}`;
+            const signIn =
+              typeof data.signIn === "string" && data.signIn ? data.signIn : fallbackSignIn;
+            logPanel("Session expired — redirecting to sign in.");
+            if (typeof window !== "undefined") {
+              window.location.assign(signIn);
+            }
+            throw new Error(classified.message);
+          }
+          throw new Error(classified.message);
         }
 
         persistAppResponse(data);

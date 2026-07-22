@@ -59,3 +59,59 @@ export function mapAgentApiError(raw: string | undefined, status?: number): stri
   }
   return sanitizeUserFacingMessage(msg, ASK_AI_UNAVAILABLE_MESSAGE);
 }
+
+export const SESSION_EXPIRED_USER_MESSAGE =
+  "Your session has expired. Redirecting you to sign in…";
+
+/**
+ * Classify Ask AI HTTP failures so product/auth 403s are not treated as
+ * session expiry, and only explicit SESSION_EXPIRED 401s trigger sign-in redirect.
+ */
+export function classifyAgentHttpFailure(input: {
+  status: number;
+  code?: string | null;
+  error?: string | { message?: string; code?: string } | null;
+}): {
+  kind: "session_expired" | "api_error";
+  message: string;
+  shouldRedirectToSignIn: boolean;
+} {
+  const code =
+    (typeof input.code === "string" && input.code) ||
+    (typeof input.error === "object" &&
+    input.error &&
+    typeof input.error.code === "string"
+      ? input.error.code
+      : "") ||
+    "";
+
+  if (input.status === 401 && code === "SESSION_EXPIRED") {
+    return {
+      kind: "session_expired",
+      message: SESSION_EXPIRED_USER_MESSAGE,
+      shouldRedirectToSignIn: true,
+    };
+  }
+
+  if (input.status === 401 && !code) {
+    // Legacy/bare 401 from auth middleware without a machine code.
+    return {
+      kind: "session_expired",
+      message: SESSION_EXPIRED_USER_MESSAGE,
+      shouldRedirectToSignIn: true,
+    };
+  }
+
+  const raw =
+    typeof input.error === "string"
+      ? input.error
+      : typeof input.error === "object" && input.error !== null
+        ? input.error.message ?? input.error.code ?? code
+        : code || undefined;
+
+  return {
+    kind: "api_error",
+    message: mapAgentApiError(raw, input.status),
+    shouldRedirectToSignIn: false,
+  };
+}

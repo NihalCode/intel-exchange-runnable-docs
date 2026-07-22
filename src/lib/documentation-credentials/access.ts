@@ -20,22 +20,45 @@ export function mergeEnsuredProductIds(
 }
 
 /**
+ * On APP_PRODUCT_ID-pinned deploys, Ask AI may only target that product —
+ * even if the user has other Open API credentials connected elsewhere.
+ */
+export function scopeProductIdsForDeployment(
+  productIds: readonly DocumentationProduct[],
+  isolateToProductId?: string | null
+): DocumentationProduct[] {
+  const isolate = isolateToProductId?.trim();
+  if (isolate && isProductKey(isolate)) {
+    return [isolate];
+  }
+  return [...productIds];
+}
+
+/**
  * Products the user may ask about in Ask AI.
  * Connected Open API credentials unlock multi-product scope.
- * On a single-product deployment, the pinned host product is always allowed for
- * documentation answers (runnable live calls still need that product connected).
+ * On a single-product deployment, only the pinned host product is askable
+ * (runnable live calls still need that product connected).
  */
 export async function getAgentProductAccess(
   organizationId: string,
   userId: string,
-  options?: { ensureProductId?: string | null }
+  options?: {
+    ensureProductId?: string | null;
+    /** When set (APP_PRODUCT_ID pin), restrict allowlist to this product only. */
+    isolateToProductId?: string | null;
+  }
 ): Promise<{
   productIds: DocumentationProduct[];
   hasAny: boolean;
   labels: string[];
 }> {
   const connected = await listValidCredentialProductIds(organizationId, userId);
-  const productIds = mergeEnsuredProductIds(connected, options?.ensureProductId);
+  const merged = mergeEnsuredProductIds(connected, options?.ensureProductId);
+  const productIds = scopeProductIdsForDeployment(
+    merged,
+    options?.isolateToProductId
+  );
   return {
     productIds,
     hasAny: productIds.length > 0,

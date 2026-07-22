@@ -28,7 +28,7 @@ import {
   mintLogicalQueryId,
   recordTerminalAnalyticsSafe,
 } from "@/lib/query-analytics/service";
-import { resolveAppProductId, assertProductAccess } from "@/lib/deployment/resolve-app-product-id";
+import { resolveAppProductId, coerceAgentProductId } from "@/lib/deployment/resolve-app-product-id";
 import { isProductKey, type ProductKey } from "@/lib/products/registry";
 import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
 import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
@@ -152,19 +152,12 @@ export async function POST(req: Request) {
 
     const pinnedProduct = resolveAppProductId();
     if (pinnedProduct) {
-      try {
-        const requested =
-          typeof agentRequest.productId === "string" ? agentRequest.productId : pinnedProduct;
-        agentRequest = {
-          ...agentRequest,
-          productId: assertProductAccess(requested === "all" ? pinnedProduct : requested),
-        };
-      } catch {
-        return Response.json(
-          { error: "Product not available on this deployment", code: "PRODUCT_ISOLATION" },
-          { status: 403, headers: responseHeaders }
-        );
-      }
+      // Coerce — never 403 PRODUCT_ISOLATION for a stale/wrong client productId.
+      // Isolation is enforced by forcing the pinned product + allowlist below.
+      agentRequest = {
+        ...agentRequest,
+        productId: coerceAgentProductId(agentRequest.productId),
+      };
     } else if (
       hostContext?.productId &&
       isProductKey(hostContext.productId) &&
@@ -186,7 +179,10 @@ export async function POST(req: Request) {
       const access = await getAgentProductAccess(
         organizationId,
         analyticsUserId,
-        { ensureProductId }
+        {
+          ensureProductId,
+          isolateToProductId: pinnedProduct,
+        }
       );
       allowedProductIds = access.productIds;
     } else {

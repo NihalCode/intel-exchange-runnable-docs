@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   ASK_AI_UNAVAILABLE_MESSAGE,
   DEVELOPER_ACCESS_UNAVAILABLE_MESSAGE,
+  SESSION_EXPIRED_USER_MESSAGE,
   SIGN_IN_NOT_CONFIGURED_MESSAGE,
+  classifyAgentHttpFailure,
   mapAgentApiError,
   sanitizeUserFacingMessage,
 } from "../user-facing-errors";
@@ -41,5 +43,54 @@ describe("user-facing error copy", () => {
   it("maps empty developer errors to unavailable copy", () => {
     expect(DEVELOPER_ACCESS_UNAVAILABLE_MESSAGE).not.toMatch(/[A-Z]{3,}_[A-Z0-9_]+/);
     expect(SIGN_IN_NOT_CONFIGURED_MESSAGE).not.toMatch(/AUTH0/);
+  });
+});
+
+describe("classifyAgentHttpFailure", () => {
+  it("redirects only on SESSION_EXPIRED 401", () => {
+    const result = classifyAgentHttpFailure({
+      status: 401,
+      code: "SESSION_EXPIRED",
+      error: "Session expired — sign in again",
+    });
+    expect(result.kind).toBe("session_expired");
+    expect(result.shouldRedirectToSignIn).toBe(true);
+    expect(result.message).toBe(SESSION_EXPIRED_USER_MESSAGE);
+  });
+
+  it("does not treat PRODUCT_ISOLATION 403 as session expiry", () => {
+    const result = classifyAgentHttpFailure({
+      status: 403,
+      code: "PRODUCT_ISOLATION",
+      error: "Product not available on this deployment",
+    });
+    expect(result.kind).toBe("api_error");
+    expect(result.shouldRedirectToSignIn).toBe(false);
+    expect(result.message).toMatch(/Product not available/);
+  });
+
+  it("does not treat PRODUCT_AUTH_REQUIRED 403 as session expiry", () => {
+    const result = classifyAgentHttpFailure({
+      status: 403,
+      code: "PRODUCT_AUTH_REQUIRED",
+      error: "Authentication required",
+    });
+    expect(result.shouldRedirectToSignIn).toBe(false);
+    expect(result.message).toMatch(/Authentication required/);
+  });
+
+  it("treats bare 401 without code as session expiry", () => {
+    const result = classifyAgentHttpFailure({ status: 401 });
+    expect(result.shouldRedirectToSignIn).toBe(true);
+  });
+
+  it("does not redirect on non-session 401 codes", () => {
+    const result = classifyAgentHttpFailure({
+      status: 401,
+      code: "OTHER_UNAUTHORIZED",
+      error: "Not allowed",
+    });
+    expect(result.shouldRedirectToSignIn).toBe(false);
+    expect(result.message).toMatch(/Not allowed/);
   });
 });

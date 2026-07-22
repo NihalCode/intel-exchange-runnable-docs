@@ -36,3 +36,21 @@ export function assertProductAccess(requestedProduct: string): ProductKey {
   }
   return requestedProduct;
 }
+
+/**
+ * Ask AI on a pinned deployment always answers for the host product.
+ * Coerce instead of 403 so a stale client productId (or multi-credential UI)
+ * cannot false-trigger "Product not available on this deployment".
+ */
+export function coerceAgentProductId(requestedProduct: string | undefined | null): ProductKey {
+  const pinned = resolveAppProductId();
+  if (pinned) return pinned;
+  const raw = typeof requestedProduct === "string" ? requestedProduct.trim() : "";
+  if (!raw || raw === "all") {
+    return effectiveDeploymentProductId();
+  }
+  if (!isProductKey(raw)) {
+    throw new Error(`Invalid product: ${raw}`);
+  }
+  return raw;
+}

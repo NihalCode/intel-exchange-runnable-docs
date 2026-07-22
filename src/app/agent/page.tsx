@@ -77,10 +77,10 @@ export default async function AgentPage() {
             connected,
             access.pinnedProductId
           );
-          if (credentialedProducts.length === 0 && access.pinnedProductId) {
+          // Pinned product hosts must not advertise other connected products.
+          if (access.pinnedProductId) {
             credentialedProducts = [access.pinnedProductId];
-          }
-          if (credentialedProducts.length === 0) {
+          } else if (credentialedProducts.length === 0) {
             credentialedProducts = listProducts().map((p) => p.productId);
           }
         }

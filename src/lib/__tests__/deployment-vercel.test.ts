@@ -2,6 +2,7 @@ import { describe, expect, it, afterEach } from "vitest";
 
 import {
   assertProductAccess,
+  coerceAgentProductId,
   effectiveDeploymentProductId,
   isSingleProductDeployment,
   resolveAppProductId,
@@ -30,6 +31,19 @@ describe("resolveAppProductId", () => {
     process.env.APP_PRODUCT_ID = "ctix";
     expect(assertProductAccess("ctix")).toBe("ctix");
     expect(() => assertProductAccess("cftr")).toThrow(/not served/);
+  });
+
+  it("coerceAgentProductId remaps wrong client product to pinned host", () => {
+    process.env.APP_PRODUCT_ID = "ctix";
+    expect(coerceAgentProductId("orchestrate")).toBe("ctix");
+    expect(coerceAgentProductId("all")).toBe("ctix");
+    expect(coerceAgentProductId(undefined)).toBe("ctix");
+    expect(coerceAgentProductId("ctix")).toBe("ctix");
+  });
+
+  it("coerceAgentProductId keeps requested product when unpinned", () => {
+    delete process.env.APP_PRODUCT_ID;
+    expect(coerceAgentProductId("csap")).toBe("csap");
   });
 
   it("pinned deploy filters product list to one product", async () => {
