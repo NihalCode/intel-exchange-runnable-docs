@@ -1,5 +1,3 @@
-import "server-only";
-
 /**
  * Auth0 Username-Password (Database) connection name for the clean email/password UL.
  * Always pass this as `connection=` so Auth0 does not show Google / Okta buttons.

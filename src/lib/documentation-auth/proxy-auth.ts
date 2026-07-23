@@ -18,6 +18,11 @@ import {
   MFA_STEP_UP_COOKIE,
   MFA_STEP_UP_START_PATH,
 } from "@/lib/enterprise/mfa-step-up";
+import {
+  FRESH_LOGIN_COOKIE,
+  FRESH_LOGIN_START_PATH,
+  freshPasswordLoginPath,
+} from "@/lib/documentation-auth/fresh-login";
 
 export function isPublicDocumentationApiPath(pathname: string): boolean {
   return isPublicApiPath(pathname);
@@ -178,6 +183,24 @@ async function runDocumentationAuthProxyInner(
     const destination = new URL(auth0StepUpLoginPath(safePath), request.url);
     const response = NextResponse.redirect(destination);
     response.cookies.set(MFA_STEP_UP_COOKIE, "", {
+      httpOnly: true,
+      path: "/",
+      maxAge: 0,
+    });
+    return mergeAuthHeaders(response, authResponse);
+  }
+
+  // After Auth0 logout for branded Sign in/up, continue into email/password UL.
+  const pendingFreshLogin = request.cookies.get(FRESH_LOGIN_COOKIE)?.value;
+  if (
+    pendingFreshLogin &&
+    !pathname.startsWith("/auth/") &&
+    pathname !== FRESH_LOGIN_START_PATH &&
+    !pathname.startsWith(`${FRESH_LOGIN_START_PATH}/`)
+  ) {
+    const destination = new URL(freshPasswordLoginPath(pendingFreshLogin), request.url);
+    const response = NextResponse.redirect(destination);
+    response.cookies.set(FRESH_LOGIN_COOKIE, "", {
       httpOnly: true,
       path: "/",
       maxAge: 0,

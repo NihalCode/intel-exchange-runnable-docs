@@ -6,6 +6,12 @@ import {
   getPasswordConnectionOrDefault,
   passwordLoginPath,
 } from "@/lib/documentation-auth/password-connection";
+import {
+  encodeFreshLoginCookie,
+  freshLoginStartHref,
+  freshPasswordLoginPath,
+  parseFreshLoginCookie,
+} from "@/lib/documentation-auth/fresh-login";
 
 describe("passwordLoginPath", () => {
   it("forces Database connection, prompt=login, and supports signup screen_hint", () => {
@@ -17,23 +23,38 @@ describe("passwordLoginPath", () => {
   });
 });
 
+describe("freshLogin", () => {
+  it("encodes cookie and builds password login after logout-to-origin", () => {
+    expect(encodeFreshLoginCookie("login", "/agent")).toBe("login|/agent");
+    expect(parseFreshLoginCookie("signup|/docs")).toEqual({
+      mode: "signup",
+      returnTo: "/docs",
+    });
+    expect(freshLoginStartHref("login", "/agent")).toBe(
+      "/access/fresh-login?mode=login&returnTo=%2Fagent"
+    );
+    const path = freshPasswordLoginPath("login|/agent");
+    expect(path).toContain("connection=Username-Password-Authentication");
+    expect(path).toContain("prompt=login");
+    expect(path).toContain("returnTo=%2Fagent");
+  });
+});
+
 describe("sign-in clean email/password UX", () => {
   const source = readFileSync(join(process.cwd(), "src/app/sign-in/page.tsx"), "utf8");
 
-  it("clears sticky Auth0 session before Sign in/up then forces password login", () => {
-    expect(source).toContain("passwordLoginPath");
-    expect(source).toContain("/auth/logout?returnTo=");
+  it("starts Sign in/up via fresh-login (logout origin only — no Auth0 Oops)", () => {
+    expect(source).toContain("freshLoginStartHref");
     expect(source).toContain('data-testid="login-continue-password"');
     expect(source).toContain('data-testid="login-signup"');
     expect(source).not.toContain("login-continue-google");
-    expect(source).not.toContain("login-continue-okta");
   });
 });
 
 describe("sign-up page", () => {
-  it("redirects to Auth0 Database signup", () => {
+  it("redirects through fresh-login signup", () => {
     const source = readFileSync(join(process.cwd(), "src/app/sign-up/page.tsx"), "utf8");
-    expect(source).toContain("passwordLoginPath");
-    expect(source).toContain("signUp: true");
+    expect(source).toContain("freshLoginStartHref");
+    expect(source).toContain('"signup"');
   });
 });

@@ -1,20 +1,16 @@
 import { redirect } from "next/navigation";
 
-import { passwordLoginPath } from "@/lib/documentation-auth/password-connection";
+import { freshLoginStartHref } from "@/lib/documentation-auth/fresh-login";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-/**
- * First-time users: Auth0 Universal Login signup (email + password only).
- * `connection=` forces Database so Google / Okta buttons do not appear.
- */
+/** First-time users: clear session, then Auth0 Database signup (email + password). */
 export default async function SignUpPage({
   searchParams,
 }: {
-  searchParams: Promise<{ returnTo?: string; email?: string }>;
+  searchParams: Promise<{ returnTo?: string }>;
 }) {
   const params = await searchParams;
-  const returnTo = params.returnTo?.trim();
-  redirect(passwordLoginPath({ returnTo, signUp: true, forceLogin: true }));
+  redirect(freshLoginStartHref("signup", params.returnTo?.trim()));
 }
