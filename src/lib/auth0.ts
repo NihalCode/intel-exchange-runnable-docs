@@ -18,6 +18,7 @@ import {
   isAuthEnvComplete,
 } from "@/lib/documentation-auth/env";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
+import { getAuthCookieDomain } from "@/lib/auth0-management/invite-provision";
 
 function loginErrorRedirect(appBaseUrl: string, code: string, message: string): NextResponse {
   const url = new URL("/sign-in", appBaseUrl);
@@ -47,6 +48,9 @@ function createAuth0Client(): Auth0Client {
     throw new Error(validationError);
   }
 
+  const cookieDomain = getAuthCookieDomain();
+  const secureCookie = env.appBaseUrl!.startsWith("https://");
+
   return new Auth0Client({
     domain: env.domain!,
     clientId: env.clientId!,
@@ -59,15 +63,17 @@ function createAuth0Client(): Auth0Client {
     enableParallelTransactions: false,
     session: {
       cookie: {
-        secure: env.appBaseUrl!.startsWith("https://"),
+        secure: secureCookie,
         sameSite: "lax",
         path: "/",
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
     transactionCookie: {
       maxAge: 60 * 60 * 2,
       sameSite: "lax",
-      secure: env.appBaseUrl!.startsWith("https://"),
+      secure: secureCookie,
+      ...(cookieDomain ? { domain: cookieDomain } : {}),
     },
     authorizationParameters: {
       scope: "openid profile email",

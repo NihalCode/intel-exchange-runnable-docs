@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isAnonymousHubPath,
   isProtectedPath,
   isPublicApiPath,
   isPublicPagePath,
@@ -23,6 +24,13 @@ describe("documentation route policy — Auth0-gated app", () => {
       expect(isPublicPagePath(pathname)).toBe(false);
       expect(isProtectedPath(pathname)).toBe(true);
     }
+  });
+
+  it("marks only the product hub as anonymously browsable", () => {
+    expect(isAnonymousHubPath("/")).toBe(true);
+    expect(isAnonymousHubPath("")).toBe(true);
+    expect(isAnonymousHubPath("/docs")).toBe(false);
+    expect(isAnonymousHubPath("/access/wrong-email")).toBe(false);
   });
 
   it("allows authentication UX paths only", () => {

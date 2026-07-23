@@ -197,10 +197,25 @@ function AuthHeaderControl() {
   }
 
   if (!state.authenticated || !state.user) {
-    const returnTo = encodeURIComponent(authReturnToFromPath(pathname));
+    // Invite/identity failures leave an Auth0 cookie; silent /auth/login would
+    // bounce straight back to /access/*. Prefer the branded interstitial.
+    const deniedReason = state.accessDenied?.reason;
+    const signInHref = deniedReason
+      ? `/sign-in?error=${encodeURIComponent(
+          deniedReason === "wrong_invite_email"
+            ? "wrong_email"
+            : deniedReason === "expired_invite"
+              ? "expired_invite"
+              : deniedReason === "disabled"
+                ? "disabled"
+                : deniedReason === "invite_required"
+                  ? "invite_required"
+                  : "auth_denied"
+        )}`
+      : `/auth/login?returnTo=${encodeURIComponent(authReturnToFromPath(pathname))}`;
     return (
       <Link
-        href={`/auth/login?returnTo=${returnTo}`}
+        href={signInHref}
         data-testid="auth-header-sign-in"
         className="inline-flex h-8 items-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 text-xs font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
       >

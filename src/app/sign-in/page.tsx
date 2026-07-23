@@ -84,8 +84,10 @@ export default async function SignInPage({
 
   // No error → Auth0 directly so SSO can complete silently across product hosts
   // after the first password/MFA login (avoids a branded interstitial every tab).
+  // When Okta federation is configured, prefer that connection for silent SSO.
+  const oktaConnection = process.env.AUTH0_OKTA_CONNECTION?.trim();
   if (authReady && !errorText) {
-    redirect(auth0LoginUrl(undefined, returnTo || "/"));
+    redirect(auth0LoginUrl(oktaConnection || undefined, returnTo || "/"));
   }
 
   const googleConnection = process.env.AUTH0_GOOGLE_CONNECTION?.trim();
@@ -126,7 +128,9 @@ export default async function SignInPage({
         <div className="w-full max-w-md" data-layout="cx-sign-in-form">
           <h2 className="text-xl font-semibold text-[var(--text-heading)]">Continue</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            Sign in with your invited company email.
+            {oktaConnection
+              ? "Sign in with Okta using your invited company email."
+              : "Sign in with your invited company email."}
           </p>
           {errorText ? (
             <div
@@ -164,6 +168,15 @@ export default async function SignInPage({
           ) : null}
           {authReady ? (
             <div className="mt-6 flex flex-col gap-3">
+              {oktaConnection ? (
+                <a
+                  href={auth0LoginUrl(oktaConnection, returnTo, Boolean(errorText))}
+                  data-testid="login-continue-okta"
+                  className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                >
+                  Continue with Okta
+                </a>
+              ) : null}
               <a
                 href={auth0LoginUrl(
                   googleConnection || "google-oauth2",
@@ -171,7 +184,11 @@ export default async function SignInPage({
                   Boolean(errorText)
                 )}
                 data-testid="login-continue-google"
-                className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                className={
+                  oktaConnection
+                    ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                    : "inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                }
               >
                 Continue with Google
               </a>

@@ -8,6 +8,7 @@ import {
   isProvisionalAuth0UserId,
   provisionalAuth0UserIdForEmail,
 } from "@/lib/auth0-management/errors";
+import { shouldSkipIdpProvision } from "@/lib/auth0-management/invite-provision";
 
 interface Auth0User {
   user_id: string;
@@ -265,6 +266,19 @@ export async function provisionAuth0User(input: {
   displayName?: string | null;
   auth0OrganizationId?: string | null;
 }): Promise<{ user: Auth0User; created: boolean; setupStatus: string }> {
+  // Okta federation: invitee must already exist in Okta; app only creates DocumentationUser.
+  if (shouldSkipIdpProvision()) {
+    return {
+      user: {
+        user_id: provisionalAuth0UserIdForEmail(input.email),
+        email: input.email,
+        name: input.displayName ?? undefined,
+      },
+      created: true,
+      setupStatus: "okta_invite_pending",
+    };
+  }
+
   const token = await managementToken();
 
   if (input.auth0OrganizationId) {

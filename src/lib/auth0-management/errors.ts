@@ -32,14 +32,29 @@ export function provisionalAuth0UserIdForEmail(email: string): string {
   return `auth0|invited|${hash.toString(16)}`;
 }
 
+/**
+ * Decide which Auth0 `sub` should be stored after a successful login.
+ *
+ * Invite-only authZ is email-based. Dual login (Auth0 Database password + Okta
+ * Enterprise) produces different `sub` values for the same email — always prefer
+ * the live session identity so Okta SSO can take over a previously provisioned
+ * Database user (and vice versa) instead of failing as "wrong email".
+ */
 export function auth0UserIdForLoginLink(
   storedAuth0UserId: string,
   email: string,
   liveSub: string
 ): string {
+  if (!liveSub) return storedAuth0UserId;
   if (storedAuth0UserId === liveSub) return liveSub;
-  const expected = provisionalAuth0UserIdForEmail(email);
-  if (storedAuth0UserId === expected) return liveSub;
+  if (isProvisionalAuth0UserId(storedAuth0UserId)) {
+    const expected = provisionalAuth0UserIdForEmail(email);
+    if (storedAuth0UserId === expected) return liveSub;
+    return storedAuth0UserId;
+  }
+  // Same normalized email already exists under another Auth0 identity
+  // (e.g. auth0|… from Management provision, oidc|… from Okta).
+  if (email.trim()) return liveSub;
   return storedAuth0UserId;
 }
 

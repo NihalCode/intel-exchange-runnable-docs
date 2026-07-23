@@ -1,5 +1,8 @@
 import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
-import { accessBackToSignInHref } from "@/lib/documentation-auth/access-sign-in";
+import {
+  accessBackToSignInHref,
+  accessBrowseHomeAfterLogoutHref,
+} from "@/lib/documentation-auth/access-sign-in";
 
 export function AccessPage({
   title,
@@ -16,6 +19,7 @@ export function AccessPage({
   signInError?: string;
 }) {
   const signInHref = accessBackToSignInHref(signInError);
+  const browseHomeHref = accessBrowseHomeAfterLogoutHref();
 
   return (
     <main
@@ -49,6 +53,13 @@ export function AccessPage({
             className={buttonPrimaryClass}
           >
             Back to sign in
+          </a>
+          <a
+            href={browseHomeHref}
+            data-testid="access-browse-home"
+            className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+          >
+            Browse documentation home
           </a>
         </div>
       </div>

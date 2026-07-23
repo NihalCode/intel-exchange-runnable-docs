@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { accessBackToSignInHref } from "@/lib/documentation-auth/access-sign-in";
+import {
+  accessBackToSignInHref,
+  accessBrowseHomeAfterLogoutHref,
+} from "@/lib/documentation-auth/access-sign-in";
 
 function source(relativePath: string): string {
   return readFileSync(path.join(process.cwd(), relativePath), "utf8");
@@ -18,11 +21,19 @@ describe("access gate → Back to sign in", () => {
     expect(accessBackToSignInHref()).toBe("/sign-in?error=auth_denied");
   });
 
+  it("offers logout-to-hub so leftover Auth0 sessions cannot trap browsing", () => {
+    expect(accessBrowseHomeAfterLogoutHref()).toBe(
+      `/auth/logout?returnTo=${encodeURIComponent("/")}`
+    );
+  });
+
   it("AccessPage hard-navigates via <a>, not next/link soft nav", () => {
     const page = source("src/components/auth/AccessPage.tsx");
     expect(page).not.toMatch(/from ["']next\/link["']/);
     expect(page).toContain('data-testid="access-back-to-sign-in"');
+    expect(page).toContain('data-testid="access-browse-home"');
     expect(page).toContain("accessBackToSignInHref");
+    expect(page).toContain("accessBrowseHomeAfterLogoutHref");
     expect(page).toMatch(/<a[\s\S]*href=\{signInHref\}/);
   });
 
@@ -39,7 +50,17 @@ describe("access gate → Back to sign in", () => {
     expect(source("src/app/access/wrong-email/page.tsx")).toContain(
       'signInError="wrong_email"'
     );
+    expect(source("src/app/access/wrong-email/page.tsx")).toContain(
+      "!result.auth0Authenticated"
+    );
   });
+
+  it("does not client-redirect accessDenied away from the anonymous hub", () => {
+    const provider = source("src/components/auth/DocumentationAuthProvider.tsx");
+    expect(provider).toContain("isAnonymousHubPath");
+    expect(provider).toContain("if (isAnonymousHubPath(pathname)) return;");
+  });
+
 
   it("sign-in Continue forces prompt=login when an error interstitial is shown", () => {
     const signIn = source("src/app/sign-in/page.tsx");

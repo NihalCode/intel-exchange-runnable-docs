@@ -247,15 +247,31 @@ export async function getAppSessionResult(
   const existingByEmail = await findUserByEmail(authUser.email);
 
   let activeUser = existingById;
+  // Link when the workspace already has this email under a different Auth0
+  // identity (provisional invite placeholder, or Database user → Okta SSO).
   if (
     !activeUser &&
     existingByEmail &&
-    isProvisionalAuth0UserId(existingByEmail.auth0UserId) &&
+    existingByEmail.auth0UserId !== authUser.sub &&
     auth0UserIdForLoginLink(existingByEmail.auth0UserId, authUser.email, authUser.sub) ===
       authUser.sub
   ) {
-    await linkDocumentationUserAuth0Id(existingByEmail.id, authUser.sub);
-    activeUser = await findUserByAuth0Id(authUser.sub);
+    // Avoid stealing an identity already bound to another DocumentationUser.
+    const subTaken = await findUserByAuth0Id(authUser.sub);
+    if (!subTaken) {
+      await linkDocumentationUserAuth0Id(existingByEmail.id, authUser.sub);
+      activeUser = await findUserByAuth0Id(authUser.sub);
+      await logDocumentationAuthEvent({
+        action: "auth.auth0_identity_linked",
+        userId: existingByEmail.id,
+        actorEmail: authUser.email,
+        metadata: {
+          previousAuth0UserId: existingByEmail.auth0UserId,
+          linkedAuth0UserId: authUser.sub,
+          provisional: isProvisionalAuth0UserId(existingByEmail.auth0UserId),
+        },
+      });
+    }
   }
 
   if (activeUser) {
@@ -334,15 +350,17 @@ export async function getAppSessionResult(
     };
   }
 
-  if (
-    existingByEmail &&
-    existingByEmail.auth0UserId !== authUser.sub &&
-    !isProvisionalAuth0UserId(existingByEmail.auth0UserId)
-  ) {
+  // Same email still on a different Auth0 identity after a failed link attempt
+  // (provisional hash mismatch, or live sub already owned by another row).
+  if (existingByEmail && existingByEmail.auth0UserId !== authUser.sub) {
     await logDocumentationAuthEvent({
       action: "auth.wrong_email_invite_attempt",
       actorEmail: authUser.email,
-      metadata: { invitedEmail: existingByEmail.email },
+      metadata: {
+        invitedEmail: existingByEmail.email,
+        storedAuth0UserId: existingByEmail.auth0UserId,
+        liveAuth0UserId: authUser.sub,
+      },
     });
     return {
       session: null,

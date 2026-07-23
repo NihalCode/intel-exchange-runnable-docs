@@ -28,15 +28,21 @@ INITIAL_OWNER_EMAIL=
 DATABASE_URL=                            # Required on Vercel (Postgres). SQLite used locally when unset
 AUTH0_GOOGLE_CONNECTION=google-oauth2    # Optional — connection name for Google button
 AUTH0_EMAIL_CONNECTION=                  # Optional — connection name for company email button
+# Okta → Auth0 federation (see docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md)
+# AUTH0_OKTA_CONNECTION=okta
+# INVITE_SKIP_IDP_PROVISION=true
+# AUTH_COOKIE_DOMAIN=.cyninjadev.com
 ```
 
 Never commit real credentials. Never log Auth0 tokens or invite tokens.
+
+For Okta federation (Auth0 stays as broker), follow **[docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md)**.
 
 ## Auth0 application settings
 
 1. Create a **Regular Web Application** in Auth0
 2. **Disable public signup** on database connections (Settings → Authentication → Database → Disable Sign Ups)
-3. Enable **Google** and your **company email** connection (database, passwordless, or enterprise SSO)
+3. Enable **Google**, your **company email** connection, and (for federation) an **Okta** enterprise connection — see [OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md).
 4. Set **Allowed Callback URLs**:
    - `https://your-app.example/auth/callback`
    - `http://localhost:3000/auth/callback` (development)
@@ -177,11 +183,12 @@ If email is not configured, admins still get a copyable invite link in the UI.
 2. User opens invite link, then signs in via **Continue with company email**
 3. User should land in docs with `viewer` role
 
-### Wrong email
+### Wrong email / identity conflict
 
-1. Invite `user@company.com`
-2. Sign in with a different email
-3. App blocks with `/access/wrong-email`
+1. Invite `user@company.com` and complete Add user (Auth0 Database `auth0|…` row in the app DB)
+2. Sign in via **Continue with Okta** with the **same** email → app relinks to the Okta `sub` (should succeed)
+3. `/access/wrong-email` is reserved for rare cases where that email cannot be linked (e.g. Auth0 `sub` already owned by another workspace user)
+4. Signing in with a **different** email than any invite → usually `/access/invite-required`
 
 ## Roles
 
