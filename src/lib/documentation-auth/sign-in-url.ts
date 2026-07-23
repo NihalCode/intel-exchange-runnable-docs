@@ -24,6 +24,7 @@ function returnToFromRequest(request: NextRequest): string {
   // Avoid bouncing auth routes back into themselves.
   if (
     returnTo.startsWith("/sign-in") ||
+    returnTo.startsWith("/sign-up") ||
     returnTo.startsWith("/auth/") ||
     returnTo.startsWith("/post-login") ||
     returnTo.startsWith("/access/")

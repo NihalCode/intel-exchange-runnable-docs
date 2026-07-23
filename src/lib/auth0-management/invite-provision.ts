@@ -1,12 +1,15 @@
 import "server-only";
 
+import { isOktaProvisioningConfigured } from "@/lib/okta/config";
+
 /**
  * Skip Auth0 Management user create / password tickets on Add user.
- * Only when INVITE_SKIP_IDP_PROVISION is explicitly true.
- * Having AUTH0_OKTA_CONNECTION set alone does NOT skip — so Okta SSO and
- * Cyware email/password (database) invites can both work.
+ * True when:
+ * - INVITE_SKIP_IDP_PROVISION is explicitly true, or
+ * - Okta Users API provisioning is configured (Okta-only UX).
  */
 export function shouldSkipIdpProvision(): boolean {
+  if (isOktaProvisioningConfigured()) return true;
   const explicit = process.env.INVITE_SKIP_IDP_PROVISION?.trim().toLowerCase();
   return explicit === "true" || explicit === "1";
 }

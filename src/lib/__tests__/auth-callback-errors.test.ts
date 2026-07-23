@@ -83,4 +83,14 @@ describe("mapAuthCallbackError", () => {
     );
     expect(mapped.code).toBe("expired_invite");
   });
+
+  it("maps password-related access_denied to set_password hint", () => {
+    const mapped = mapAuthCallbackError(
+      new OAuth2Error({
+        code: "access_denied",
+        message: "Unable to sign in",
+      })
+    );
+    expect(mapped.code).toBe("set_password");
+  });
 });

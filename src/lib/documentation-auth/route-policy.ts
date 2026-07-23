@@ -2,6 +2,7 @@
 const PUBLIC_PAGE_PREFIXES = [
   "/auth",
   "/sign-in",
+  "/sign-up",
   "/access",
   "/invite",
   "/post-login",
@@ -20,6 +21,7 @@ const PUBLIC_API_EXACT = [
   "/api/auth/session",
   "/api/auth/me",
   "/api/auth/setup-status",
+  "/api/auth/okta-signup",
   "/api/invites/validate",
   "/api/health/live",
   "/api/health/ready",

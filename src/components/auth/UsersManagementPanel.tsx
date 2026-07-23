@@ -97,13 +97,18 @@ export function UsersManagementPanel() {
         return;
       }
       setStatus(
-        data.setupStatus === "okta_invite_pending"
-          ? "User added. They can sign in with Okta using this email after their IdP account exists."
-          : data.setupStatus === "provider_invitation_sent"
-            ? "User added. An invitation email was sent."
-            : data.setupStatus === "provider_setup_created"
-              ? "User added. They can finish setup through your sign-in provider."
-              : "User added. Account setup is pending."
+        data.setupStatus === "okta_activation_sent"
+          ? "User added in docs and Okta. They should open Sign up to set a password (check email), then Sign in with password and Okta Verify."
+          : data.setupStatus === "okta_provisioned" ||
+              data.setupStatus === "okta_activation_pending"
+            ? "User added in docs and Okta. Ask them to use Sign up if they need a password setup email, then Sign in."
+            : data.setupStatus === "okta_invite_pending"
+              ? "User added. Configure OKTA_ORG_URL, OKTA_API_TOKEN, and OKTA_APP_ID so Add user can create Okta accounts automatically."
+              : data.setupStatus === "provider_invitation_sent"
+                ? "User added. An invitation email was sent."
+                : data.setupStatus === "provider_setup_created"
+                  ? "User added. They can finish setup through your sign-in provider."
+                  : "User added. Account setup is pending."
       );
       setEmail("");
       setName("");
@@ -150,8 +155,9 @@ export function UsersManagementPanel() {
       <form onSubmit={addUser} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
         <h2 className="text-sm font-semibold">Add user</h2>
         <p className="mt-1 text-xs text-zinc-500">
-          Adds the user to this documentation workspace. They can sign in with Okta (if configured)
-          and/or with their Cyware email and password after completing Auth0 account setup.
+          Adds the user to this documentation workspace and creates them in Okta (when Okta API is
+          configured). They use Sign up once to set a password, then Sign in with password and Okta
+          Verify.
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
           <label className="text-xs"><span>Email</span><input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>

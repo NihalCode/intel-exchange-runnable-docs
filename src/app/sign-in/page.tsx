@@ -10,14 +10,15 @@ import {
   SIGN_IN_NOT_CONFIGURED_MESSAGE,
   sanitizeUserFacingMessage,
 } from "@/lib/user-facing-errors";
+import { isOktaOnlySignIn } from "@/lib/okta/config";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const ERROR_COPY: Record<string, string> = {
   invalid_state:
-    "Sign-in could not be verified. Click a sign-in option below and complete login in this same tab.",
-  auth_failed: "Sign-in could not be completed. Choose a sign-in option below to try again.",
+    "Sign-in could not be verified. Click Sign in below and complete login in this same tab.",
+  auth_failed: "Sign-in could not be completed. Try Sign in again, or Sign up first if you have not set a password.",
   auth_denied: "Sign-in was cancelled or denied.",
   auth_config: SIGN_IN_NOT_CONFIGURED_MESSAGE,
   invite_required:
@@ -30,17 +31,24 @@ const ERROR_COPY: Record<string, string> = {
     "You signed in with a different email than the one that was invited. Use the invited email address.",
   not_invited:
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
+  set_password:
+    "You need to set a password first. Use Sign up, then return here to Sign in.",
+};
+
+const HINT_COPY: Record<string, string> = {
+  set_password:
+    "You need to set a password first. Use Sign up, then return here to Sign in.",
+  set_password_done:
+    "Password setup email sent (or completed). Sign in with your new password, then enter your Okta Verify code.",
 };
 
 /**
  * Auth0 SDK route — must not be a Next.js page or OAuth never starts.
- * Always pass `connection=` from the branded buttons so Auth0 Universal Login
- * does not show every enabled connection (Okta / Google / Database).
+ * Okta-only UX: always pass connection= so Universal Login does not show Google/DB.
  */
 function auth0LoginUrl(
   connection?: string,
   returnTo?: string,
-  /** When true, force interactive login so silent SSO cannot reuse a denied session. */
   forceLogin = false
 ): string {
   const params = new URLSearchParams();
@@ -57,12 +65,18 @@ function auth0LoginUrl(
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; message?: string; returnTo?: string }>;
+  searchParams: Promise<{
+    error?: string;
+    message?: string;
+    returnTo?: string;
+    hint?: string;
+  }>;
 }) {
   const params = await searchParams;
   const errorCode = params.error?.trim();
   const customMessage = params.message?.trim();
   const returnTo = params.returnTo?.trim();
+  const hint = params.hint?.trim();
   const authReady = isAuthDisabled() || isAuthEnvComplete();
   const configIssue = authEnvValidationError();
 
@@ -85,10 +99,11 @@ export default async function SignInPage({
       ? sanitizeUserFacingMessage(configIssue, SIGN_IN_NOT_CONFIGURED_MESSAGE)
       : null);
 
-  // Always show branded connection buttons (Okta / Google / email). Do not
-  // auto-forward to Auth0 — that either skips choice or lands on Universal
-  // Login with every connection. Returning users still silent-SSO via
-  // middleware → `/auth/login` (no connection picker when a session exists).
+  const hintText = hint ? HINT_COPY[hint] ?? null : null;
+  const highlightSignUp =
+    hint === "set_password" || errorCode === "set_password" || errorCode === "auth_failed";
+
+  const oktaOnly = isOktaOnlySignIn();
   const oktaConnection = process.env.AUTH0_OKTA_CONNECTION?.trim();
   const googleConnection =
     process.env.AUTH0_GOOGLE_CONNECTION?.trim() || "google-oauth2";
@@ -96,6 +111,7 @@ export default async function SignInPage({
     process.env.AUTH0_EMAIL_CONNECTION?.trim() ||
     process.env.AUTH0_DATABASE_CONNECTION?.trim() ||
     undefined;
+  // prompt=login only on errors — avoids Sign in ↔ IdP loops on every visit
   const forceLogin = Boolean(errorText);
 
   return (
@@ -131,12 +147,21 @@ export default async function SignInPage({
 
       <main className="flex items-center justify-center bg-[var(--background-page)] px-4 py-12">
         <div className="w-full max-w-md" data-layout="cx-sign-in-form">
-          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Continue</h2>
+          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Welcome</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            {oktaConnection
-              ? "Choose Okta SSO, Google, or your invited company email."
+            {oktaOnly
+              ? "Invite-only. First time? Sign up to set your password. Returning? Sign in (password, then Okta Verify)."
               : "Sign in with Google or your invited company email."}
           </p>
+          {hintText ? (
+            <div
+              role="status"
+              data-testid="login-hint"
+              className="mt-4 rounded-[var(--radius-md)] border border-sky-200 bg-sky-50 px-4 py-3 text-left text-sm text-sky-950 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-100"
+            >
+              {hintText}
+            </div>
+          ) : null}
           {errorText ? (
             <div
               role="alert"
@@ -173,33 +198,58 @@ export default async function SignInPage({
           ) : null}
           {authReady ? (
             <div className="mt-6 flex flex-col gap-3">
-              {oktaConnection ? (
-                <a
-                  href={auth0LoginUrl(oktaConnection, returnTo, forceLogin)}
-                  data-testid="login-continue-okta"
-                  className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
-                >
-                  Continue with Okta
-                </a>
-              ) : null}
-              <a
-                href={auth0LoginUrl(googleConnection, returnTo, forceLogin)}
-                data-testid="login-continue-google"
-                className={
-                  oktaConnection
-                    ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-                    : "inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
-                }
-              >
-                Continue with Google
-              </a>
-              <a
-                href={auth0LoginUrl(emailConnection, returnTo, forceLogin)}
-                data-testid="login-continue-email"
-                className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-              >
-                Continue with company email
-              </a>
+              {oktaOnly && oktaConnection ? (
+                <>
+                  <a
+                    href={auth0LoginUrl(oktaConnection, returnTo, forceLogin)}
+                    data-testid="login-continue-okta"
+                    className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                  >
+                    Sign in
+                  </a>
+                  <a
+                    href="/sign-up"
+                    data-testid="login-signup"
+                    className={
+                      highlightSignUp
+                        ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-semibold text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                        : "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                    }
+                  >
+                    Sign up
+                  </a>
+                </>
+              ) : (
+                <>
+                  {oktaConnection ? (
+                    <a
+                      href={auth0LoginUrl(oktaConnection, returnTo, forceLogin)}
+                      data-testid="login-continue-okta"
+                      className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                    >
+                      Continue with Okta
+                    </a>
+                  ) : null}
+                  <a
+                    href={auth0LoginUrl(googleConnection, returnTo, forceLogin)}
+                    data-testid="login-continue-google"
+                    className={
+                      oktaConnection
+                        ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                        : "inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                    }
+                  >
+                    Continue with Google
+                  </a>
+                  <a
+                    href={auth0LoginUrl(emailConnection, returnTo, forceLogin)}
+                    data-testid="login-continue-email"
+                    className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                  >
+                    Continue with company email
+                  </a>
+                </>
+              )}
             </div>
           ) : (
             <p className="mt-6 text-left text-xs text-[var(--text-muted)]">
@@ -211,8 +261,9 @@ export default async function SignInPage({
             className="mt-6 text-xs leading-relaxed text-[var(--text-muted)]"
             data-testid="login-invite-note"
           >
-            Need access? Ask a documentation workspace administrator for an invite. Public sign-up
-            is disabled — invited users set a password from the invite email (company email path).
+            {oktaOnly
+              ? "Need access? Ask a workspace administrator to Add user. First visit: Sign up to set your password, then Sign in."
+              : "Need access? Ask a documentation workspace administrator for an invite. Public sign-up is disabled — invited users set a password from the invite email (company email path)."}
           </p>
         </div>
       </main>

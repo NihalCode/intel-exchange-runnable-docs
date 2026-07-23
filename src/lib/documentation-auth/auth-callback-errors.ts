@@ -100,9 +100,34 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
       };
     }
     if (code === "access_denied") {
+      // First-time Okta users who have not set a password often abort or fail here.
+      if (
+        message.includes("password") ||
+        message.includes("locked") ||
+        message.includes("unable to sign in") ||
+        message.includes("user is not assigned")
+      ) {
+        return {
+          code: "set_password",
+          message:
+            "You need to set a password first. Use Sign up, then return here to Sign in.",
+        };
+      }
       return {
         code: "auth_denied",
-        message: "Sign-in was cancelled or denied.",
+        message: "Sign-in was cancelled or denied. If you have not set a password yet, use Sign up first.",
+      };
+    }
+    if (
+      code === "invalid_user_password" ||
+      code === "password_leaked" ||
+      message.includes("wrong email or password") ||
+      message.includes("incorrect username or password")
+    ) {
+      return {
+        code: "set_password",
+        message:
+          "Sign-in failed. If this is your first time, use Sign up to set a password, then try Sign in again.",
       };
     }
   }

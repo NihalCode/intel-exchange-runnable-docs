@@ -28,21 +28,24 @@ INITIAL_OWNER_EMAIL=
 DATABASE_URL=                            # Required on Vercel (Postgres). SQLite used locally when unset
 AUTH0_GOOGLE_CONNECTION=google-oauth2    # Optional — connection name for Google button
 AUTH0_EMAIL_CONNECTION=Username-Password-Authentication  # Optional — falls back to AUTH0_DATABASE_CONNECTION
-# Okta → Auth0 federation (see docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md)
+# Okta-only UX (see docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md)
 # AUTH0_OKTA_CONNECTION=okta
 # INVITE_SKIP_IDP_PROVISION=true
+# OKTA_ORG_URL=https://integrator-XXXX.okta.com
+# OKTA_API_TOKEN=
+# OKTA_APP_ID=0oa...
 # AUTH_COOKIE_DOMAIN=.cyninjadev.com
 ```
 
 Never commit real credentials. Never log Auth0 tokens or invite tokens.
 
-For Okta federation (Auth0 stays as broker), follow **[docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md)** — includes the three login paths, MFA Action snippet, and Okta 1-factor policy.
+For **Okta-only** sign-in (recommended): follow **[docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md)** — Add user provisions Okta; Sign up sets password; Sign in uses password + Okta Verify. Auth0 MFA stays **Never**.
 
 ## Auth0 application settings
 
 1. Create a **Regular Web Application** in Auth0
-2. **Disable public signup** on database connections (Settings → Authentication → Database → Disable Sign Ups). Invited users set a password via Management API **password change ticket** (docs admin → Add user), not UL Sign up.
-3. Enable **Google**, your **company email** (Database) connection, and (for federation) an **Okta** enterprise connection — see [OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md).
+2. For Okta-only UX: enable **only** the Okta enterprise connection; disable Google and Database on the app. Set Auth0 MFA to **Never**.
+3. If not Okta-only: **Disable public signup** on database connections; enable Google/Database as needed — see [OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md).
 4. Set **Allowed Callback URLs**:
    - `https://your-app.example/auth/callback`
    - `http://localhost:3000/auth/callback` (development)
@@ -55,7 +58,7 @@ For Okta federation (Auth0 stays as broker), follow **[docs/enterprise/auth/OKTA
    - `http://localhost:3000`
    - Optional wildcards (recommended): `https://*.vercel.app`, `https://apitest1.cyninjadev.com/*`
 6. Set **Allowed Web Origins** to your app base URL
-7. **MFA (product login):** set tenant MFA to **Never**, then use a Post-Login Action that calls `api.multifactor.enable` **only** for `google-oauth2` and Database (`auth0` strategy) — **never** for the Okta enterprise connection. Full snippet and Okta 1-factor policy: [OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md). Leaving MFA on **Always** forces Auth0 OTP after Okta (wrong for path 1).
+7. **MFA (Okta-only):** tenant MFA **Never**; do **not** enable Post-Login `api.multifactor.enable`. Password + Okta Verify happen at Okta.
 
 ### MFA step-up (“Sign out and complete MFA”)
 

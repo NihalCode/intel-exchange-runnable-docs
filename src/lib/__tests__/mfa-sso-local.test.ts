@@ -88,10 +88,11 @@ describe("one-time login URL contracts (local)", () => {
     );
   });
 
-  it("sign-in page shows branded connection buttons (no silent Auth0 auto-forward)", () => {
+  it("sign-in page shows Okta Sign in / Sign up (and legacy Google/email when not Okta-only)", () => {
     const page = source("src/app/sign-in/page.tsx");
     expect(page).not.toMatch(/redirect\(auth0LoginUrl/);
     expect(page).toContain('data-testid="login-continue-okta"');
+    expect(page).toContain('data-testid="login-signup"');
     expect(page).toContain('data-testid="login-continue-google"');
     expect(page).toContain('data-testid="login-continue-email"');
   });

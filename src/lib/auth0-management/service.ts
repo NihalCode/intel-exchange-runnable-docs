@@ -9,6 +9,9 @@ import {
   provisionalAuth0UserIdForEmail,
 } from "@/lib/auth0-management/errors";
 import { shouldSkipIdpProvision } from "@/lib/auth0-management/invite-provision";
+import { isOktaProvisioningConfigured } from "@/lib/okta/config";
+import { OktaProvisioningError } from "@/lib/okta/errors";
+import { provisionOktaUser } from "@/lib/okta/users";
 
 interface Auth0User {
   user_id: string;
@@ -266,7 +269,32 @@ export async function provisionAuth0User(input: {
   displayName?: string | null;
   auth0OrganizationId?: string | null;
 }): Promise<{ user: Auth0User; created: boolean; setupStatus: string }> {
-  // Okta federation: invitee must already exist in Okta; app only creates DocumentationUser.
+  // Okta-only UX: create/assign in Okta via Users API; app stores provisional id until first SSO.
+  if (isOktaProvisioningConfigured()) {
+    try {
+      const okta = await provisionOktaUser({
+        email: input.email,
+        displayName: input.displayName,
+      });
+      return {
+        user: {
+          user_id: provisionalAuth0UserIdForEmail(input.email),
+          email: input.email.trim().toLowerCase(),
+          name: input.displayName ?? undefined,
+        },
+        created: okta.user.created,
+        setupStatus: okta.setupStatus,
+      };
+    } catch (error) {
+      if (error instanceof OktaProvisioningError) throw error;
+      throw new OktaProvisioningError(
+        "OKTA_USER_PROVISIONING_FAILED",
+        error instanceof Error ? error.message : undefined
+      );
+    }
+  }
+
+  // Skip Auth0 Management (no Okta API): provisional invite only.
   if (shouldSkipIdpProvision()) {
     return {
       user: {

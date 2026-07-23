@@ -3,6 +3,7 @@ export function authReturnToFromPath(pathname: string): string {
   if (!pathname.startsWith("/") || pathname.startsWith("//")) return "/";
   if (
     pathname.startsWith("/sign-in") ||
+    pathname.startsWith("/sign-up") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/access") ||
     pathname.startsWith("/post-login") ||

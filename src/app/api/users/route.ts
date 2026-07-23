@@ -25,6 +25,10 @@ import {
   Auth0ProvisioningError,
   userFacingProvisioningMessage,
 } from "@/lib/auth0-management/errors";
+import {
+  OktaProvisioningError,
+  userFacingOktaProvisioningMessage,
+} from "@/lib/okta/errors";
 
 export const runtime = "nodejs";
 
@@ -108,6 +112,13 @@ export async function POST(request: NextRequest) {
       { status: provisioned.created ? 201 : 200 }
     );
   } catch (error) {
+    if (error instanceof OktaProvisioningError) {
+      const mapped = userFacingOktaProvisioningMessage(error.code, error.detail);
+      return NextResponse.json(
+        { error: mapped.error, hint: mapped.hint, code: error.code },
+        { status: mapped.status }
+      );
+    }
     if (error instanceof Auth0ProvisioningError) {
       const mapped = userFacingProvisioningMessage(error.code, error.detail);
       return NextResponse.json(
