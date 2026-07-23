@@ -8,19 +8,21 @@ import {
 } from "@/lib/documentation-auth/password-connection";
 
 describe("passwordLoginPath", () => {
-  it("forces Database connection and supports signup screen_hint", () => {
+  it("forces Database connection, prompt=login, and supports signup screen_hint", () => {
     expect(getPasswordConnectionOrDefault()).toBe("Username-Password-Authentication");
     expect(passwordLoginPath()).toContain("connection=Username-Password-Authentication");
+    expect(passwordLoginPath()).toContain("prompt=login");
     expect(passwordLoginPath({ signUp: true })).toContain("screen_hint=signup");
-    expect(passwordLoginPath()).not.toContain("screen_hint");
+    expect(passwordLoginPath({ forceLogin: false })).not.toContain("prompt=");
   });
 });
 
 describe("sign-in clean email/password UX", () => {
   const source = readFileSync(join(process.cwd(), "src/app/sign-in/page.tsx"), "utf8");
 
-  it("only offers Sign in and Sign up via passwordLoginPath", () => {
+  it("clears sticky Auth0 session before Sign in/up then forces password login", () => {
     expect(source).toContain("passwordLoginPath");
+    expect(source).toContain("/auth/logout?returnTo=");
     expect(source).toContain('data-testid="login-continue-password"');
     expect(source).toContain('data-testid="login-signup"');
     expect(source).not.toContain("login-continue-google");

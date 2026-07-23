@@ -26,7 +26,10 @@ export function passwordLoginPath(options?: {
   const params = new URLSearchParams();
   params.set("connection", getPasswordConnectionOrDefault());
   if (options?.returnTo) params.set("returnTo", options.returnTo);
-  if (options?.forceLogin) {
+  // Default true for branded CTAs: without prompt=login Auth0 resumes SSO and
+  // jumps straight to MFA ("Verify Your Identity") skipping email/password.
+  const forceLogin = options?.forceLogin !== false;
+  if (forceLogin) {
     params.set("prompt", "login");
     params.set("max_age", "0");
   }

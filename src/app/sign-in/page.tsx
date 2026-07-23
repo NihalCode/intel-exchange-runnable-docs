@@ -1,5 +1,6 @@
 import {
   authEnvValidationError,
+  getAppBaseUrl,
   isAuthEnvComplete,
 } from "@/lib/documentation-auth/env";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
@@ -11,6 +12,7 @@ import {
   sanitizeUserFacingMessage,
 } from "@/lib/user-facing-errors";
 import { passwordLoginPath } from "@/lib/documentation-auth/password-connection";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -43,6 +45,15 @@ const HINT_COPY: Record<string, string> = {
     "Password set. Sign in with your email and password, then enter the code from Okta Verify.",
 };
 
+/** Logout first (clears sticky Auth0/MFA session), then land back here to start password login. */
+function freshAuthHref(kind: "login" | "signup", returnTo?: string): string {
+  const origin = getAppBaseUrl().replace(/\/+$/, "");
+  const next = new URL("/sign-in", `${origin}/`);
+  next.searchParams.set("continue", kind === "signup" ? "signup" : "login");
+  if (returnTo) next.searchParams.set("returnTo", returnTo);
+  return `/auth/logout?returnTo=${encodeURIComponent(next.toString())}`;
+}
+
 export default async function SignInPage({
   searchParams,
 }: {
@@ -51,6 +62,7 @@ export default async function SignInPage({
     message?: string;
     returnTo?: string;
     hint?: string;
+    continue?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -58,6 +70,16 @@ export default async function SignInPage({
   const customMessage = params.message?.trim();
   const returnTo = params.returnTo?.trim();
   const hint = params.hint?.trim();
+  const cont = params.continue?.trim();
+
+  // After logout, start Auth0 with prompt=login so email/password appears (not MFA-only).
+  if (cont === "login") {
+    redirect(passwordLoginPath({ returnTo, forceLogin: true }));
+  }
+  if (cont === "signup") {
+    redirect(passwordLoginPath({ returnTo, forceLogin: true, signUp: true }));
+  }
+
   const authReady = isAuthDisabled() || isAuthEnvComplete();
   const configIssue = authEnvValidationError();
 
@@ -83,10 +105,9 @@ export default async function SignInPage({
   const hintText = hint ? HINT_COPY[hint] ?? null : null;
   const highlightSignUp =
     hint === "set_password" || errorCode === "set_password" || errorCode === "auth_failed";
-  const forceLogin = Boolean(errorText);
 
-  const signInHref = passwordLoginPath({ returnTo, forceLogin });
-  const signUpHref = passwordLoginPath({ returnTo, forceLogin, signUp: true });
+  const signInHref = freshAuthHref("login", returnTo);
+  const signUpHref = freshAuthHref("signup", returnTo);
 
   return (
     <div className="cx-split-auth" data-layout="cx-split-auth">

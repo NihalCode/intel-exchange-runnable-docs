@@ -84,7 +84,7 @@ describe("one-time login URL contracts (local)", () => {
       "/auth/login?returnTo="
     );
     expect(source("src/lib/admin/page-data.ts")).toContain("/auth/login?returnTo=/admin");
-    expect(source("src/components/AppFrame.tsx")).toContain("/auth/login?returnTo=");
+    expect(source("src/components/AppFrame.tsx")).toContain("/sign-in?returnTo=");
     expect(source("src/components/agent-chat-state.tsx")).toContain(
       "/auth/login?returnTo="
     );

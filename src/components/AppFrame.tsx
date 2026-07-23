@@ -212,7 +212,7 @@ function AuthHeaderControl() {
                   ? "invite_required"
                   : "auth_denied"
         )}`
-      : `/auth/login?returnTo=${encodeURIComponent(authReturnToFromPath(pathname))}`;
+      : `/sign-in?returnTo=${encodeURIComponent(authReturnToFromPath(pathname))}`;
     return (
       <Link
         href={signInHref}
