@@ -14,7 +14,16 @@ describe("sign-in Okta federation CTA", () => {
     expect(source).toContain("Continue with Okta");
   });
 
-  it("uses Okta connection for silent redirect when configured", () => {
-    expect(source).toContain("auth0LoginUrl(oktaConnection || undefined");
+  it("shows branded connection buttons instead of silent Auth0 auto-forward", () => {
+    expect(source).not.toMatch(/redirect\(auth0LoginUrl/);
+    expect(source).toContain('data-testid="login-continue-google"');
+    expect(source).toContain('data-testid="login-continue-email"');
+    expect(source).toContain("AUTH0_DATABASE_CONNECTION");
+  });
+
+  it("passes connection= on each CTA and forces login after errors", () => {
+    expect(source).toContain('params.set("connection", connection)');
+    expect(source).toContain("Boolean(errorText)");
+    expect(source).toContain('params.set("prompt", "login")');
   });
 });

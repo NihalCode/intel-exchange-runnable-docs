@@ -10,7 +10,6 @@ import {
   SIGN_IN_NOT_CONFIGURED_MESSAGE,
   sanitizeUserFacingMessage,
 } from "@/lib/user-facing-errors";
-import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -33,7 +32,11 @@ const ERROR_COPY: Record<string, string> = {
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
 };
 
-/** Auth0 SDK route — must not be a Next.js page or OAuth never starts. */
+/**
+ * Auth0 SDK route — must not be a Next.js page or OAuth never starts.
+ * Always pass `connection=` from the branded buttons so Auth0 Universal Login
+ * does not show every enabled connection (Okta / Google / Database).
+ */
 function auth0LoginUrl(
   connection?: string,
   returnTo?: string,
@@ -82,16 +85,18 @@ export default async function SignInPage({
       ? sanitizeUserFacingMessage(configIssue, SIGN_IN_NOT_CONFIGURED_MESSAGE)
       : null);
 
-  // No error → Auth0 directly so SSO can complete silently across product hosts
-  // after the first password/MFA login (avoids a branded interstitial every tab).
-  // When Okta federation is configured, prefer that connection for silent SSO.
+  // Always show branded connection buttons (Okta / Google / email). Do not
+  // auto-forward to Auth0 — that either skips choice or lands on Universal
+  // Login with every connection. Returning users still silent-SSO via
+  // middleware → `/auth/login` (no connection picker when a session exists).
   const oktaConnection = process.env.AUTH0_OKTA_CONNECTION?.trim();
-  if (authReady && !errorText) {
-    redirect(auth0LoginUrl(oktaConnection || undefined, returnTo || "/"));
-  }
-
-  const googleConnection = process.env.AUTH0_GOOGLE_CONNECTION?.trim();
-  const emailConnection = process.env.AUTH0_EMAIL_CONNECTION?.trim();
+  const googleConnection =
+    process.env.AUTH0_GOOGLE_CONNECTION?.trim() || "google-oauth2";
+  const emailConnection =
+    process.env.AUTH0_EMAIL_CONNECTION?.trim() ||
+    process.env.AUTH0_DATABASE_CONNECTION?.trim() ||
+    undefined;
+  const forceLogin = Boolean(errorText);
 
   return (
     <div className="cx-split-auth" data-layout="cx-split-auth">
@@ -129,8 +134,8 @@ export default async function SignInPage({
           <h2 className="text-xl font-semibold text-[var(--text-heading)]">Continue</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
             {oktaConnection
-              ? "Sign in with Okta using your invited company email."
-              : "Sign in with your invited company email."}
+              ? "Choose Okta SSO, Google, or your invited company email."
+              : "Sign in with Google or your invited company email."}
           </p>
           {errorText ? (
             <div
@@ -170,7 +175,7 @@ export default async function SignInPage({
             <div className="mt-6 flex flex-col gap-3">
               {oktaConnection ? (
                 <a
-                  href={auth0LoginUrl(oktaConnection, returnTo, Boolean(errorText))}
+                  href={auth0LoginUrl(oktaConnection, returnTo, forceLogin)}
                   data-testid="login-continue-okta"
                   className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
                 >
@@ -178,11 +183,7 @@ export default async function SignInPage({
                 </a>
               ) : null}
               <a
-                href={auth0LoginUrl(
-                  googleConnection || "google-oauth2",
-                  returnTo,
-                  Boolean(errorText)
-                )}
+                href={auth0LoginUrl(googleConnection, returnTo, forceLogin)}
                 data-testid="login-continue-google"
                 className={
                   oktaConnection
@@ -193,7 +194,7 @@ export default async function SignInPage({
                 Continue with Google
               </a>
               <a
-                href={auth0LoginUrl(emailConnection, returnTo, Boolean(errorText))}
+                href={auth0LoginUrl(emailConnection, returnTo, forceLogin)}
                 data-testid="login-continue-email"
                 className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
               >
@@ -210,7 +211,8 @@ export default async function SignInPage({
             className="mt-6 text-xs leading-relaxed text-[var(--text-muted)]"
             data-testid="login-invite-note"
           >
-            Need access? Ask a documentation workspace administrator for an invite.
+            Need access? Ask a documentation workspace administrator for an invite. Public sign-up
+            is disabled — invited users set a password from the invite email (company email path).
           </p>
         </div>
       </main>

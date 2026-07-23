@@ -88,9 +88,12 @@ describe("one-time login URL contracts (local)", () => {
     );
   });
 
-  it("sign-in page auto-forwards to Auth0 when there is no error", () => {
+  it("sign-in page shows branded connection buttons (no silent Auth0 auto-forward)", () => {
     const page = source("src/app/sign-in/page.tsx");
-    expect(page).toContain("redirect(auth0LoginUrl(undefined, returnTo || \"/\")");
+    expect(page).not.toMatch(/redirect\(auth0LoginUrl/);
+    expect(page).toContain('data-testid="login-continue-okta"');
+    expect(page).toContain('data-testid="login-continue-google"');
+    expect(page).toContain('data-testid="login-continue-email"');
   });
 
   it("cross-host post-login bounces through target /auth/login for cookie minting", () => {

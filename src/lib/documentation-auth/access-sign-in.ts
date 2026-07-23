@@ -1,11 +1,11 @@
 /**
  * Access-gate → sign-in navigation.
  *
- * Bare `/sign-in` auto-forwards to `/auth/login`, which silent-SSOs the same
- * Auth0 session and bounces the user back to the access page. Soft Next.js
- * `<Link>` can also fail after Auth0 redirects. Access pages must hard-navigate
- * to `/sign-in?error=…` so the branded interstitial renders (no auto-forward).
- * Continue then uses `prompt=login` so the denied Auth0 session is not reused.
+ * Access pages must hard-navigate to `/sign-in?error=…` (not soft `<Link>`).
+ * The error query shows the denial message and forces Continue buttons to use
+ * `prompt=login` so a leftover Auth0 SSO cookie cannot silently reuse the
+ * denied identity. Prefer logout (`accessBrowseHomeAfterLogoutHref`) when the
+ * user wants to browse anonymously.
  *
  * Do not nest this path inside `/auth/logout?returnTo=` — Auth0 Allowed Logout
  * URLs are typically origin-only (same Oops regression as MFA step-up).
