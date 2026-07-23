@@ -10,7 +10,7 @@ import {
   SIGN_IN_NOT_CONFIGURED_MESSAGE,
   sanitizeUserFacingMessage,
 } from "@/lib/user-facing-errors";
-import { isOktaOnlySignIn } from "@/lib/okta/config";
+import { passwordLoginPath } from "@/lib/documentation-auth/password-connection";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -18,7 +18,8 @@ export const runtime = "nodejs";
 const ERROR_COPY: Record<string, string> = {
   invalid_state:
     "Sign-in could not be verified. Click Sign in below and complete login in this same tab.",
-  auth_failed: "Sign-in could not be completed. Try Sign in again, or Sign up first if you have not set a password.",
+  auth_failed:
+    "Sign-in could not be completed. Try Sign in again, or Sign up first if you have not set a password.",
   auth_denied: "Sign-in was cancelled or denied.",
   auth_config: SIGN_IN_NOT_CONFIGURED_MESSAGE,
   invite_required:
@@ -39,28 +40,8 @@ const HINT_COPY: Record<string, string> = {
   set_password:
     "You need to set a password first. Use Sign up, then return here to Sign in.",
   set_password_done:
-    "Password setup email sent (or completed). Sign in with your new password, then enter your Okta Verify code.",
+    "Password set. Sign in with your email and password, then enter the code from Okta Verify.",
 };
-
-/**
- * Auth0 SDK route — must not be a Next.js page or OAuth never starts.
- * Okta-only UX: always pass connection= so Universal Login does not show Google/DB.
- */
-function auth0LoginUrl(
-  connection?: string,
-  returnTo?: string,
-  forceLogin = false
-): string {
-  const params = new URLSearchParams();
-  if (connection) params.set("connection", connection);
-  if (returnTo) params.set("returnTo", returnTo);
-  if (forceLogin) {
-    params.set("prompt", "login");
-    params.set("max_age", "0");
-  }
-  const qs = params.toString();
-  return qs ? `/auth/login?${qs}` : "/auth/login";
-}
 
 export default async function SignInPage({
   searchParams,
@@ -102,17 +83,10 @@ export default async function SignInPage({
   const hintText = hint ? HINT_COPY[hint] ?? null : null;
   const highlightSignUp =
     hint === "set_password" || errorCode === "set_password" || errorCode === "auth_failed";
-
-  const oktaOnly = isOktaOnlySignIn();
-  const oktaConnection = process.env.AUTH0_OKTA_CONNECTION?.trim();
-  const googleConnection =
-    process.env.AUTH0_GOOGLE_CONNECTION?.trim() || "google-oauth2";
-  const emailConnection =
-    process.env.AUTH0_EMAIL_CONNECTION?.trim() ||
-    process.env.AUTH0_DATABASE_CONNECTION?.trim() ||
-    undefined;
-  // prompt=login only on errors — avoids Sign in ↔ IdP loops on every visit
   const forceLogin = Boolean(errorText);
+
+  const signInHref = passwordLoginPath({ returnTo, forceLogin });
+  const signUpHref = passwordLoginPath({ returnTo, forceLogin, signUp: true });
 
   return (
     <div className="cx-split-auth" data-layout="cx-split-auth">
@@ -134,8 +108,7 @@ export default async function SignInPage({
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
-            Access product documentation, Ask AI, and workspace settings with your invited
-            company account.
+            Invite-only. Email and password, then your Okta Verify code.
           </p>
         </div>
         <p className="text-xs text-white/50">
@@ -149,9 +122,8 @@ export default async function SignInPage({
         <div className="w-full max-w-md" data-layout="cx-sign-in-form">
           <h2 className="text-xl font-semibold text-[var(--text-heading)]">Welcome</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            {oktaOnly
-              ? "Invite-only. First time? Sign up to set your password. Returning? Sign in (password, then Okta Verify)."
-              : "Sign in with Google or your invited company email."}
+            First time? <strong>Sign up</strong> to create your password. Returning?{" "}
+            <strong>Sign in</strong> with email and password, then the code from Okta Verify.
           </p>
           {hintText ? (
             <div
@@ -198,58 +170,24 @@ export default async function SignInPage({
           ) : null}
           {authReady ? (
             <div className="mt-6 flex flex-col gap-3">
-              {oktaOnly && oktaConnection ? (
-                <>
-                  <a
-                    href={auth0LoginUrl(oktaConnection, returnTo, forceLogin)}
-                    data-testid="login-continue-okta"
-                    className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
-                  >
-                    Sign in
-                  </a>
-                  <a
-                    href="/sign-up"
-                    data-testid="login-signup"
-                    className={
-                      highlightSignUp
-                        ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-semibold text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-                        : "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-                    }
-                  >
-                    Sign up
-                  </a>
-                </>
-              ) : (
-                <>
-                  {oktaConnection ? (
-                    <a
-                      href={auth0LoginUrl(oktaConnection, returnTo, forceLogin)}
-                      data-testid="login-continue-okta"
-                      className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
-                    >
-                      Continue with Okta
-                    </a>
-                  ) : null}
-                  <a
-                    href={auth0LoginUrl(googleConnection, returnTo, forceLogin)}
-                    data-testid="login-continue-google"
-                    className={
-                      oktaConnection
-                        ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-                        : "inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
-                    }
-                  >
-                    Continue with Google
-                  </a>
-                  <a
-                    href={auth0LoginUrl(emailConnection, returnTo, forceLogin)}
-                    data-testid="login-continue-email"
-                    className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-                  >
-                    Continue with company email
-                  </a>
-                </>
-              )}
+              <a
+                href={signInHref}
+                data-testid="login-continue-password"
+                className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+              >
+                Sign in
+              </a>
+              <a
+                href={signUpHref}
+                data-testid="login-signup"
+                className={
+                  highlightSignUp
+                    ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-semibold text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                    : "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                }
+              >
+                Sign up
+              </a>
             </div>
           ) : (
             <p className="mt-6 text-left text-xs text-[var(--text-muted)]">
@@ -261,9 +199,8 @@ export default async function SignInPage({
             className="mt-6 text-xs leading-relaxed text-[var(--text-muted)]"
             data-testid="login-invite-note"
           >
-            {oktaOnly
-              ? "Need access? Ask a workspace administrator to Add user. First visit: Sign up to set your password, then Sign in."
-              : "Need access? Ask a documentation workspace administrator for an invite. Public sign-up is disabled — invited users set a password from the invite email (company email path)."}
+            Need access? Ask a workspace administrator to Add user with your email. No Google or
+            other providers — email, password, and Okta Verify only.
           </p>
         </div>
       </main>

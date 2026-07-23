@@ -7,6 +7,8 @@ import { normalizeHostname } from "@/lib/domains/normalize";
 import { trustedRequestHostname } from "@/lib/domains/request-host";
 import { authSignInUrl } from "@/lib/domains/urls";
 
+import { getPasswordConnectionOrDefault } from "@/lib/documentation-auth/password-connection";
+
 function returnToFromRequest(request: NextRequest): string {
   const referer = request.headers.get("referer");
   let returnTo = request.nextUrl.pathname + request.nextUrl.search;
@@ -34,10 +36,13 @@ function returnToFromRequest(request: NextRequest): string {
   return returnTo;
 }
 
-/** Same-origin Auth0 login that reuses the Auth0 SSO cookie (silent when already logged in). */
+/** Same-origin Auth0 login — always Database connection (email/password UL only). */
 export function auth0LoginPath(returnTo = "/"): string {
   const path = returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/";
-  const params = new URLSearchParams({ returnTo: path });
+  const params = new URLSearchParams({
+    returnTo: path,
+    connection: getPasswordConnectionOrDefault(),
+  });
   return `/auth/login?${params.toString()}`;
 }
 

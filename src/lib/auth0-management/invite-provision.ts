@@ -1,15 +1,11 @@
 import "server-only";
 
-import { isOktaProvisioningConfigured } from "@/lib/okta/config";
-
 /**
  * Skip Auth0 Management user create / password tickets on Add user.
- * True when:
- * - INVITE_SKIP_IDP_PROVISION is explicitly true, or
- * - Okta Users API provisioning is configured (Okta-only UX).
+ * Only when INVITE_SKIP_IDP_PROVISION is explicitly true (invite row only;
+ * user sets password via Auth0 Sign up).
  */
 export function shouldSkipIdpProvision(): boolean {
-  if (isOktaProvisioningConfigured()) return true;
   const explicit = process.env.INVITE_SKIP_IDP_PROVISION?.trim().toLowerCase();
   return explicit === "true" || explicit === "1";
 }

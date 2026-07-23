@@ -48,7 +48,9 @@ describe("MFA loop regression (local)", () => {
 
   it("normal product login never forces prompt=login (one MFA for all tabs/SSO)", () => {
     const silent = auth0LoginPath("/agent");
-    expect(silent).toBe("/auth/login?returnTo=%2Fagent");
+    expect(silent).toContain("/auth/login?");
+    expect(silent).toContain("returnTo=%2Fagent");
+    expect(silent).toContain("connection=Username-Password-Authentication");
     expect(silent).not.toContain("prompt=");
     expect(silent).not.toContain("max_age=");
     expect(silent).not.toContain("acr_values=");
@@ -88,13 +90,12 @@ describe("one-time login URL contracts (local)", () => {
     );
   });
 
-  it("sign-in page shows Okta Sign in / Sign up (and legacy Google/email when not Okta-only)", () => {
+  it("sign-in page shows Sign in / Sign up only (password connection)", () => {
     const page = source("src/app/sign-in/page.tsx");
     expect(page).not.toMatch(/redirect\(auth0LoginUrl/);
-    expect(page).toContain('data-testid="login-continue-okta"');
+    expect(page).toContain('data-testid="login-continue-password"');
     expect(page).toContain('data-testid="login-signup"');
-    expect(page).toContain('data-testid="login-continue-google"');
-    expect(page).toContain('data-testid="login-continue-email"');
+    expect(page).not.toContain("login-continue-google");
   });
 
   it("cross-host post-login bounces through target /auth/login for cookie minting", () => {

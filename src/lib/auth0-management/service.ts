@@ -269,22 +269,17 @@ export async function provisionAuth0User(input: {
   displayName?: string | null;
   auth0OrganizationId?: string | null;
 }): Promise<{ user: Auth0User; created: boolean; setupStatus: string }> {
-  // Okta-only UX: create/assign in Okta via Users API; app stores provisional id until first SSO.
-  if (isOktaProvisioningConfigured()) {
+  // Optional: also create the person in Okta Directory (does not replace Auth0 password login).
+  if (
+    isOktaProvisioningConfigured() &&
+    (process.env.OKTA_PROVISION_ON_INVITE?.trim().toLowerCase() === "true" ||
+      process.env.OKTA_PROVISION_ON_INVITE?.trim() === "1")
+  ) {
     try {
-      const okta = await provisionOktaUser({
+      await provisionOktaUser({
         email: input.email,
         displayName: input.displayName,
       });
-      return {
-        user: {
-          user_id: provisionalAuth0UserIdForEmail(input.email),
-          email: input.email.trim().toLowerCase(),
-          name: input.displayName ?? undefined,
-        },
-        created: okta.user.created,
-        setupStatus: okta.setupStatus,
-      };
     } catch (error) {
       if (error instanceof OktaProvisioningError) throw error;
       throw new OktaProvisioningError(
@@ -294,7 +289,7 @@ export async function provisionAuth0User(input: {
     }
   }
 
-  // Skip Auth0 Management (no Okta API): provisional invite only.
+  // Invite-only: provisional local row; user sets password via Auth0 Sign up.
   if (shouldSkipIdpProvision()) {
     return {
       user: {
@@ -303,7 +298,7 @@ export async function provisionAuth0User(input: {
         name: input.displayName ?? undefined,
       },
       created: true,
-      setupStatus: "okta_invite_pending",
+      setupStatus: "invite_pending_signup",
     };
   }
 

@@ -28,6 +28,7 @@ describe("Okta-first invite provision", () => {
       "OKTA_ORG_URL",
       "OKTA_API_TOKEN",
       "OKTA_APP_ID",
+      "OKTA_PROVISION_ON_INVITE",
     ]) {
       delete process.env[key];
     }
@@ -47,11 +48,13 @@ describe("Okta-first invite provision", () => {
     expect(shouldSkipIdpProvision()).toBe(true);
   });
 
-  it("skips Auth0 IdP provision when Okta Users API is configured", () => {
+  it("skips Auth0 IdP provision only when INVITE_SKIP_IDP_PROVISION=true (not merely Okta API env)", () => {
     process.env.OKTA_ORG_URL = "https://example.okta.com";
     process.env.OKTA_API_TOKEN = "ssws-test";
     process.env.OKTA_APP_ID = "0oaTestApp";
     expect(isOktaProvisioningConfigured()).toBe(true);
+    expect(shouldSkipIdpProvision()).toBe(false);
+    process.env.INVITE_SKIP_IDP_PROVISION = "true";
     expect(shouldSkipIdpProvision()).toBe(true);
   });
 
@@ -66,15 +69,17 @@ describe("Okta-first invite provision", () => {
       email: "alice@example.com",
       displayName: "Alice",
     });
-    expect(result.setupStatus).toBe("okta_invite_pending");
+    expect(result.setupStatus).toBe("invite_pending_signup");
     expect(result.user.user_id).toBe(provisionalAuth0UserIdForEmail("alice@example.com"));
     expect(result.user.email).toBe("alice@example.com");
   });
 
-  it("provisionAuth0User uses Okta API when configured", async () => {
+  it("provisionAuth0User uses Okta API only when OKTA_PROVISION_ON_INVITE=true", async () => {
     process.env.OKTA_ORG_URL = "https://example.okta.com";
     process.env.OKTA_API_TOKEN = "ssws-test";
     process.env.OKTA_APP_ID = "0oaTestApp";
+    process.env.OKTA_PROVISION_ON_INVITE = "true";
+    process.env.INVITE_SKIP_IDP_PROVISION = "true";
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
@@ -103,9 +108,9 @@ describe("Okta-first invite provision", () => {
       email: "alice@example.com",
       displayName: "Alice Example",
     });
-    expect(result.setupStatus).toBe("okta_activation_sent");
+    expect(result.setupStatus).toBe("invite_pending_signup");
     expect(result.created).toBe(true);
-    expect(result.user.user_id).toBe(provisionalAuth0UserIdForEmail("alice@example.com"));
+    expect(fetchMock).toHaveBeenCalled();
   });
 
   it("exposes AUTH_COOKIE_DOMAIN only when CROSS_DOMAIN_SSO_ENABLED", () => {
