@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   authenticatedFetch,
@@ -34,23 +34,27 @@ describe("UsersManagementPanel session recovery wiring", () => {
     );
   });
 
-  it("surfaces recovery UX and keeps Okta/403 errors distinct", () => {
+  it("surfaces recovery UX copy and does not treat Okta/403/409 as session expiry", () => {
     expect(panelSource).toContain("SESSION_RECOVERY_IN_PROGRESS_MESSAGE");
     expect(panelSource).toContain("SESSION_RECOVERY_FAILED_MESSAGE");
-    expect(panelSource).toContain("onRecoveryStateChange");
+    expect(panelSource).toContain("recoveryState");
+    expect(panelSource).toContain("recovering");
     expect(panelSource).toContain('data.error ?? "User provisioning failed."');
-    expect(panelSource).toContain("You do not have permission to add users.");
+    expect(panelSource).toContain("response.status === 403");
   });
 
   it("refreshes CSRF via prepareRetry after session recovery", () => {
-    expect(panelSource).toContain("prepareRetry");
-    expect(panelSource).toContain("clearCsrf");
+    expect(panelSource).toContain("prepareRetry:");
+    expect(panelSource).toContain("clearCsrf()");
     expect(panelSource).toContain("ensureCsrfToken");
     expect(panelSource).toContain("X-CSRF-Token");
+    expect(panelSource).toContain("fetchUsersList");
   });
 
-  it("does not persist CSRF in localStorage", () => {
-    expect(panelSource).toMatch(/\/api\/users/);
+  it("loads CSRF from GET /api/users and clears cache on recovery", () => {
+    expect(panelSource).toMatch(/authenticatedFetch\(\s*["']\/api\/users["']/);
+    expect(panelSource).toContain('if (next === "recovering")');
+    expect(panelSource).toContain("clearCsrf()");
     expect(panelSource).not.toMatch(/localStorage.*csrf/i);
   });
 });
@@ -58,11 +62,10 @@ describe("UsersManagementPanel session recovery wiring", () => {
 describe("Users mutation recovery behavior (authenticatedFetch contract)", () => {
   beforeEach(() => {
     resetAuthenticatedFetchStateForTests();
-    vi.useFakeTimers();
+    vi.stubGlobal("fetch", vi.fn());
   });
 
   afterEach(() => {
-    vi.useRealTimers();
     vi.unstubAllGlobals();
     resetAuthenticatedFetchStateForTests();
   });
@@ -70,46 +73,46 @@ describe("Users mutation recovery behavior (authenticatedFetch contract)", () =>
   it("retries Add user once after SESSION_EXPIRED and refreshes CSRF before replay", async () => {
     const states: string[] = [];
     let postCount = 0;
-    const fetchMock = vi.fn(
-      async (input: RequestInfo | URL, init?: RequestInit) => {
-        const url = String(input);
-        if (url === "/api/auth/me") {
-          return jsonResponse({ authenticated: true });
-        }
-        if (url === "/api/users" && (!init?.method || init.method === "GET")) {
-          return jsonResponse({ users: [], csrfToken: "csrf-from-get" });
-        }
-        if (url === "/api/users" && init?.method === "POST") {
-          postCount += 1;
-          if (postCount === 1) {
-            return jsonResponse(
-              {
-                error: "Session expired — sign in again",
-                code: "SESSION_EXPIRED",
-              },
-              401
-            );
-          }
-          const headers = new Headers(init.headers);
-          expect(headers.get("X-CSRF-Token")).toBe("csrf-fresh");
-          return jsonResponse({ message: "User added successfully." }, 201);
-        }
-        throw new Error(`unexpected ${url} ${init?.method}`);
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockImplementation(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      if (url === "/api/auth/me") {
+        return jsonResponse({ authenticated: true });
       }
-    );
-    vi.stubGlobal("fetch", fetchMock);
+      if (url === "/api/users" && (!init?.method || init.method === "GET")) {
+        return jsonResponse({ users: [], csrfToken: "csrf-from-get" });
+      }
+      if (url === "/api/users" && init?.method === "POST") {
+        postCount += 1;
+        if (postCount === 1) {
+          return jsonResponse(
+            {
+              error: "Session expired — sign in again",
+              code: "SESSION_EXPIRED",
+            },
+            401
+          );
+        }
+        const headers = new Headers(init.headers);
+        expect(headers.get("X-CSRF-Token")).toBe("csrf-fresh");
+        return jsonResponse({ message: "User added successfully." }, 201);
+      }
+      throw new Error(`unexpected ${url} ${init?.method}`);
+    });
 
-    const pending = authenticatedFetch("/api/users", {
+    const res = await authenticatedFetch("/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-CSRF-Token": "csrf-stale",
       },
       body: JSON.stringify({ email: "new@example.com", role: "viewer" }),
+      redirectOnFailure: false,
       onRecoveryStateChange: (s) => states.push(s),
       prepareRetry: async (init) => {
         const csrfRes = await authenticatedFetch("/api/users", {
           method: "GET",
+          redirectOnFailure: false,
         });
         const data = (await csrfRes.json()) as { csrfToken?: string };
         const headers = new Headers(init.headers);
@@ -121,15 +124,14 @@ describe("Users mutation recovery behavior (authenticatedFetch contract)", () =>
       },
     });
 
-    await vi.advanceTimersByTimeAsync(200);
-    const res = await pending;
     expect(res.status).toBe(201);
     expect(postCount).toBe(2);
     expect(states).toEqual(["recovering", "idle"]);
   });
 
   it("does not double-submit when first response is 409 Okta conflict", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue(
       jsonResponse(
         {
           error: "User already exists in Okta",
@@ -139,7 +141,6 @@ describe("Users mutation recovery behavior (authenticatedFetch contract)", () =>
         409
       )
     );
-    vi.stubGlobal("fetch", fetchMock);
 
     const res = await authenticatedFetch("/api/users", {
       method: "POST",
@@ -152,10 +153,8 @@ describe("Users mutation recovery behavior (authenticatedFetch contract)", () =>
   });
 
   it("does not double-submit when first response is 403", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(jsonResponse({ error: "Forbidden" }, 403));
-    vi.stubGlobal("fetch", fetchMock);
+    const fetchMock = vi.mocked(fetch);
+    fetchMock.mockResolvedValue(jsonResponse({ error: "Forbidden" }, 403));
 
     const res = await authenticatedFetch("/api/users", {
       method: "POST",
@@ -165,9 +164,12 @@ describe("Users mutation recovery behavior (authenticatedFetch contract)", () =>
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("exports recovery UX constants used by the panel", () => {
-    expect(SESSION_RECOVERY_IN_PROGRESS_MESSAGE).toMatch(/Refreshing/);
+  it("exports the failed-recovery message used by the panel", () => {
     expect(SESSION_RECOVERY_FAILED_MESSAGE).toMatch(/Redirecting to sign in/);
+    expect(SESSION_RECOVERY_IN_PROGRESS_MESSAGE).toMatch(
+      /Refreshing your secure session/
+    );
     expect(panelSource).toContain("SESSION_RECOVERY_FAILED_MESSAGE");
+    expect(panelSource).toContain("SESSION_RECOVERY_IN_PROGRESS_MESSAGE");
   });
 });
