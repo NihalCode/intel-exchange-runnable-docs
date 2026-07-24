@@ -89,15 +89,26 @@ export default function InvitePageClient() {
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
           This invite was issued for{" "}
           <strong className="font-medium text-zinc-900 dark:text-zinc-100">{state.email}</strong>.
-          Sign in with that email to access the documentation workspace.
+          First-time users must set an Okta password before Sign in. Signing in too early fails
+          on Okta with Authentication failed (E0000004).
         </p>
         <Link
-          href={`/sign-in?returnTo=${encodeURIComponent("/")}`}
-          data-testid="invite-continue-login"
+          href={`/sign-up?returnTo=${encodeURIComponent("/")}`}
+          data-testid="invite-continue-signup"
           className="mt-6 inline-flex items-center justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white dark:bg-zinc-100 dark:text-zinc-900"
         >
-          Continue to sign in
+          Set up your account
         </Link>
+        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">
+          Already set your password?{" "}
+          <Link
+            href={`/sign-in?returnTo=${encodeURIComponent("/")}`}
+            data-testid="invite-continue-login"
+            className="font-medium text-sky-700 underline dark:text-sky-400"
+          >
+            Sign in
+          </Link>
+        </p>
       </div>
     </main>
   );

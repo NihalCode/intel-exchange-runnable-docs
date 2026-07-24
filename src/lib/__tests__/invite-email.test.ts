@@ -36,14 +36,17 @@ describe("invite email", () => {
     expect(html).toContain("https://docs.example.com/invite?token=abc");
     expect(html).toContain("viewer");
     expect(html).toContain("invite?token=");
-    expect(html).toContain("verification code");
+    expect(html).toContain("set up account");
+    expect(html).toContain("E0000004");
+    expect(html).toContain("Okta Verify");
     expect(html).not.toContain("Google");
   });
 
   it("builds text without Google SSO wording", () => {
     const text = buildInviteEmailText(payload);
     expect(text).toContain("user@company.com");
-    expect(text).toContain("verification code");
+    expect(text).toContain("set up account");
+    expect(text).toContain("E0000004");
     expect(text).not.toMatch(/Google/);
   });
 

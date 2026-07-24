@@ -101,11 +101,14 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
     }
     if (code === "access_denied") {
       // First-time Okta users who have not set a password often abort or fail here.
+      // Okta also surfaces E0000004 ("Authentication failed") for STAGED/PROVISIONED users.
       if (
         message.includes("password") ||
         message.includes("locked") ||
         message.includes("unable to sign in") ||
-        message.includes("user is not assigned")
+        message.includes("user is not assigned") ||
+        message.includes("authentication failed") ||
+        message.includes("e0000004")
       ) {
         return {
           code: "set_password",
@@ -122,7 +125,9 @@ export function mapAuthCallbackError(error: unknown): AuthCallbackFailure {
       code === "invalid_user_password" ||
       code === "password_leaked" ||
       message.includes("wrong email or password") ||
-      message.includes("incorrect username or password")
+      message.includes("incorrect username or password") ||
+      message.includes("authentication failed") ||
+      message.includes("e0000004")
     ) {
       return {
         code: "set_password",

@@ -49,9 +49,9 @@ export function buildInviteEmailHtml(payload: InviteEmailPayload): string {
   <p><strong>Role:</strong> ${escapeHtml(payload.role)}<br/>
   <strong>Invited by:</strong> ${escapeHtml(inviter)}<br/>
   <strong>Expires:</strong> ${escapeHtml(expiry)}</p>
-  <p>Sign up or Sign in with <strong>${escapeHtml(payload.toEmail)}</strong> — use that exact email, set a password, then enter the verification code from your authenticator app.</p>
+  <p>Use <strong>${escapeHtml(payload.toEmail)}</strong> (exact email). First-time users: open this invite, choose <strong>Set up your account</strong>, complete Okta&apos;s password email, then Sign in with password + Okta Verify. Signing in before activation fails with Authentication failed (E0000004).</p>
   <p style="margin:24px 0;">
-    <a href="${escapeHtml(payload.inviteUrl)}" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:600;">Accept invite &amp; sign in</a>
+    <a href="${escapeHtml(payload.inviteUrl)}" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:600;">Accept invite &amp; set up account</a>
   </p>
   <p style="font-size:12px;color:#71717a;">If the button doesn't work, copy this link:<br/>
   <span style="word-break:break-all;">${escapeHtml(payload.inviteUrl)}</span></p>
@@ -75,9 +75,10 @@ export function buildInviteEmailText(payload: InviteEmailPayload): string {
     `Invited by: ${inviter}`,
     `Expires: ${expiry}`,
     "",
-    `Sign up or Sign in with ${payload.toEmail} (exact email; password + verification code).`,
+    `Use ${payload.toEmail} (exact email). First-time: set up your account via the invite link, complete Okta's password email, then Sign in with password + Okta Verify.`,
+    `Signing in before activation fails with Authentication failed (E0000004).`,
     "",
-    `Accept invite: ${payload.inviteUrl}`,
+    `Accept invite & set up account: ${payload.inviteUrl}`,
   ].join("\n");
 }
 

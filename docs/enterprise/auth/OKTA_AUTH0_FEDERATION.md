@@ -68,3 +68,21 @@ OKTA_DOCS_GROUP_ID=00g...
 3. **Sign in** → `/access/fresh-login` (clear sticky broker session) → Auth0 → Okta password → Okta Verify code → invite gate → app.
 
 Branded `/sign-in` shows only **Sign in** and **Sign up** (no Google / connection chooser). Email and password appear on the Okta-hosted login after Sign in.
+
+---
+
+## Troubleshooting: Okta `E0000004` (Authentication failed)
+
+Okta returns **E0000004** for invalid credentials, locked accounts, policy denials, **and** when the user is not yet **ACTIVE** (still `STAGED` or `PROVISIONED`). Okta intentionally uses the same generic summary so callers cannot enumerate account state.
+
+**Most common for invited users:** they open the docs invite and click Sign in before completing Okta’s password-setup / activation email. Until status is `ACTIVE`, Okta login fails with E0000004.
+
+| Check | What to do |
+|---|---|
+| Okta Admin → Directory → People → user **Status** | Must be **Active**. If Staged/Provisioned, resend activation (or use branded **Sign up**) and complete the password email. |
+| User skipped Sign up | Use **Sign up** → Okta email → set password → enroll Okta Verify → then **Sign in**. |
+| Wrong password / lockout | Reset or unlock in Okta Admin; do not invent a password on the Okta form before activation. |
+| Not in **Cyware Docs Users** | Confirm group membership (`OKTA_DOCS_GROUP_ID`). Under Federation Broker Mode, group membership is required for app access. |
+| Sign-on policy | App must allow password + Okta Verify passcode for this user/group. |
+
+The app invite link primary CTA is **Set up your account** (`/sign-up`), not Sign in, to avoid this failure mode.

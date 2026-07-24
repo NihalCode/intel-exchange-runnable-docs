@@ -169,4 +169,29 @@ describe("Auth0Client + UI contracts", () => {
     expect(source).not.toMatch(/Auth0 MFA/i);
     expect(source).not.toMatch(/Okta SSO/i);
   });
+
+  it("invite acceptance primary CTA sends first-time users to Sign up", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/app/invite/InvitePageClient.tsx"),
+      "utf8"
+    );
+    expect(source).toContain('data-testid="invite-continue-signup"');
+    expect(source).toContain("/sign-up");
+    expect(source).toContain("E0000004");
+    expect(source).toContain('data-testid="invite-continue-login"');
+  });
+
+  it("Sign up success redirects with check_email hint, not set_password_done", () => {
+    const route = readFileSync(
+      join(process.cwd(), "src/app/api/auth/okta-signup/route.ts"),
+      "utf8"
+    );
+    const form = readFileSync(
+      join(process.cwd(), "src/components/auth/OktaSignUpForm.tsx"),
+      "utf8"
+    );
+    expect(route).toContain("hint=check_email");
+    expect(form).toContain("hint=check_email");
+    expect(route).not.toContain("hint=set_password_done");
+  });
 });

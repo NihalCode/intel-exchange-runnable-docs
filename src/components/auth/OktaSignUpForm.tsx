@@ -35,7 +35,7 @@ export function OktaSignUpForm({ returnTo }: { returnTo?: string }) {
       }
       const next =
         data.next ||
-        `/sign-in?hint=set_password_done${
+        `/sign-in?hint=check_email${
           returnTo ? `&returnTo=${encodeURIComponent(returnTo)}` : ""
         }`;
       router.replace(next);

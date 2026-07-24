@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
       setupStatus: "okta_activation_sent",
       message:
         "Check your email to set your password. When you are done, return here and use Sign in.",
-      next: "/sign-in?hint=set_password_done",
+      next: "/sign-in?hint=check_email",
     });
   } catch (error) {
     if (error instanceof OktaProvisioningError) {

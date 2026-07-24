@@ -40,8 +40,10 @@ const ERROR_COPY: Record<string, string> = {
 const HINT_COPY: Record<string, string> = {
   set_password:
     "Set up your account first. You have been added, but your password has not been created yet. Select Sign up to set your password.",
+  check_email:
+    "Check your email for Okta's password setup link. Finish that step first — signing in before activation fails on Okta (Authentication failed / E0000004). Then return here and Sign in.",
   set_password_done:
-    "Your account is ready. Sign in with the password you just created.",
+    "Your Okta password is set. Sign in with that password and your Okta Verify code.",
 };
 
 export default async function SignInPage({
@@ -83,7 +85,10 @@ export default async function SignInPage({
 
   const hintText = hint ? HINT_COPY[hint] ?? null : null;
   const highlightSignUp =
-    hint === "set_password" || errorCode === "set_password" || errorCode === "auth_failed";
+    hint === "set_password" ||
+    hint === "check_email" ||
+    errorCode === "set_password" ||
+    errorCode === "auth_failed";
 
   // Clear sticky Auth0/Okta broker session, then Okta Workforce email/password + Verify.
   const signInHref = freshLoginStartHref("login", returnTo);

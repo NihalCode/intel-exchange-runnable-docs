@@ -93,4 +93,14 @@ describe("mapAuthCallbackError", () => {
     );
     expect(mapped.code).toBe("set_password");
   });
+
+  it("maps Okta E0000004 / Authentication failed to set_password hint", () => {
+    const mapped = mapAuthCallbackError(
+      new OAuth2Error({
+        code: "access_denied",
+        message: "Authentication failed E0000004",
+      })
+    );
+    expect(mapped.code).toBe("set_password");
+  });
 });
