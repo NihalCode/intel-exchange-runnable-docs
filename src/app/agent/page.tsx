@@ -35,6 +35,8 @@ export default async function AgentPage() {
     credentialReady = true;
     requiresProductCredentials = false;
     credentialedProducts = listProducts().map((p) => p.productId);
+    // Empty feature maps previously hid thumbs; always show for open Ask AI.
+    features = { chat_feedback: true };
   } else if (session.user.role === "viewer") {
     // Fail closed for signed-in Viewer before credential shortcuts.
     try {
@@ -57,6 +59,8 @@ export default async function AgentPage() {
               flag.allowedRoles.includes(context.principal.role)),
         ])
       );
+      // Ask AI is available for viewers → always show thumbs.
+      features.chat_feedback = true;
     } catch {
       notFound();
     }
@@ -98,6 +102,7 @@ export default async function AgentPage() {
               flag.allowedRoles.includes(context.principal.role)),
         ])
       );
+      features.chat_feedback = true;
     } catch {
       credentialReady = false;
       credentialedProducts = [];
@@ -113,10 +118,15 @@ export default async function AgentPage() {
               flag.allowedRoles.includes(context.principal.role)),
         ])
       );
+      features.chat_feedback = true;
     } catch {
       /* keep AUTH_DISABLED credential shortcut */
+      features = { ...features, chat_feedback: true };
     }
   }
+
+  // Belt-and-suspenders: Ask AI page always exposes thumbs controls.
+  features = { ...features, chat_feedback: true };
 
   const docsPreviewMode = !isAuthEnabled() && process.env.NODE_ENV !== "production";
 

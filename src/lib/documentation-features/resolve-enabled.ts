@@ -66,7 +66,8 @@ export async function resolveDocumentationFeatureEnabled(
     if (isUnansweredSensitiveCaptureEnabled()) return true;
   }
   if (input.key === "chat_feedback") {
-    if (isChatFeedbackEnabled()) return true;
+    // Product hosts and CHAT_FEEDBACK_ENABLED always expose thumbs controls.
+    if (isChatFeedbackEnabled() || multiProject) return true;
   }
   if (input.key === "recaptcha_protection") {
     if (isRecaptchaProtectionEnabled()) return true;

@@ -43,6 +43,8 @@ const DEFAULT_ENABLED = new Set<DocumentationFeatureKey>([
   "generated_code_examples",
   "public_changelog",
   "public_documentation_search",
+  /** Default on: thumbs on every Ask AI answer (anonymous + signed-in). */
+  "chat_feedback",
   /** Default on: new Cyware token system is the live visual system. */
   "enterprise_ui_v2",
 ]);

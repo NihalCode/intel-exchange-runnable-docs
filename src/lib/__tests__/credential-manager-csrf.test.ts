@@ -61,3 +61,15 @@ describe("AgentFeedbackControl CSRF / session recovery", () => {
     );
   });
 });
+
+describe("AgentChat feedback visibility", () => {
+  it("shows thumbs unless chat_feedback is explicitly false", () => {
+    const source = fs.readFileSync(
+      path.join(process.cwd(), "src/components/AgentChat.tsx"),
+      "utf8"
+    );
+    expect(source).toContain("AgentFeedbackControl");
+    expect(source).toContain("features.chat_feedback !== false");
+    expect(source).not.toContain("enabled={Boolean(features.chat_feedback)}");
+  });
+});

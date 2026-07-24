@@ -51,7 +51,7 @@ describe("feedback / unanswered / recaptcha / viewer", () => {
 
   describe("feature flags default OFF", () => {
     it("keeps new flags out of DEFAULT_ENABLED", () => {
-      expect(defaultDocumentationFeatureEnabled("chat_feedback")).toBe(false);
+      expect(defaultDocumentationFeatureEnabled("chat_feedback")).toBe(true);
       expect(defaultDocumentationFeatureEnabled("viewer_ask_ai_access_enabled")).toBe(false);
       expect(defaultDocumentationFeatureEnabled("recaptcha_protection")).toBe(false);
       expect(defaultDocumentationFeatureEnabled("unanswered_query_realtime_summary")).toBe(false);

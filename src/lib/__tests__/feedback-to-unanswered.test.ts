@@ -172,15 +172,23 @@ describe("negative feedback → unanswered queue", () => {
     expect(after?.internal_note).toMatch(/unhelpful/i);
   });
 
-  it("enqueue helper fails soft when no analytics event exists", async () => {
+  it("enqueue helper mints analytics + triage when no event exists", async () => {
     const result = await enqueueUnansweredFromNegativeFeedback({
       organizationId,
       logicalQueryId: "lq-missing",
       feedbackId: "fb-x",
+      userId: "user-fb",
       comment: "no event",
     });
-    expect(result.reviewId).toBeNull();
-    expect(result.createdOrReopened).toBe(false);
+    expect(result.reviewId).toBeTruthy();
+    expect(result.createdOrReopened).toBe(true);
+    const review = await db.queryOne<{ status: string; logical_query_id: string }>(
+      `SELECT status, logical_query_id FROM unanswered_query_reviews
+       WHERE organization_id = ? AND id = ?`,
+      [organizationId, result.reviewId]
+    );
+    expect(review?.status).toBe("NEW");
+    expect(review?.logical_query_id).toBe("lq-missing");
   });
 
   it("feedback still succeeds if unanswered enqueue throws", async () => {

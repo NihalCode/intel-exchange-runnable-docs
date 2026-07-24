@@ -516,26 +516,47 @@ export async function linkFeedback(input: LinkFeedbackInput): Promise<void> {
 /**
  * Thumbs-down / unsatisfied feedback → open (or reopen) an unanswered triage row
  * for the latest analytics event on this logical query. Idempotent per event.
- * Does not invent analytics events when none exist.
+ * When no analytics event exists yet (anonymous Ask AI / analytics off), mint a
+ * terminal "no_verified_solution" projection so triage still receives the row.
  */
 export async function enqueueUnansweredFromNegativeFeedback(input: {
   organizationId: string;
   logicalQueryId: string;
   feedbackId: string;
   comment?: string | null;
+  userId?: string | null;
+  hostname?: string | null;
+  productId?: ProductKey | null;
 }): Promise<{ reviewId: string | null; createdOrReopened: boolean }> {
   ensureMigrations();
   const logicalQueryId = input.logicalQueryId.trim();
   if (!logicalQueryId) return { reviewId: null, createdOrReopened: false };
 
-  const event = await db.queryOne<{ id: string }>(
+  let event = await db.queryOne<{ id: string }>(
     `SELECT id FROM query_analytics_events
      WHERE organization_id = ? AND logical_query_id = ?
      ORDER BY created_at DESC
      LIMIT 1`,
     [input.organizationId, logicalQueryId]
   );
-  if (!event) return { reviewId: null, createdOrReopened: false };
+  if (!event) {
+    const { eventId } = await materializeTerminalAnalytics({
+      organizationId: input.organizationId,
+      logicalQueryId,
+      attemptId: `fb-${input.feedbackId}`.slice(0, 64),
+      userId: input.userId ?? null,
+      hostname: input.hostname?.trim() || "feedback",
+      productId: input.productId ?? null,
+      outcome: "no_verified_solution",
+      reasonCode: "user_thumbs_down",
+      latencyMs: 0,
+      metadata: {
+        source: "chat_feedback_thumbs_down",
+        feedbackId: input.feedbackId,
+      },
+    });
+    event = { id: eventId };
+  }
 
   const sanitizedComment = input.comment?.trim()
     ? sanitizeTopic(input.comment.trim())

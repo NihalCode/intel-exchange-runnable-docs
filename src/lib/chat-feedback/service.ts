@@ -36,6 +36,9 @@ async function linkAnalyticsAndUnanswered(input: {
   feedbackId: string;
   rating: FeedbackRating;
   comment?: string | null;
+  userId?: string | null;
+  hostname?: string | null;
+  productId?: ProductKey | null;
 }): Promise<void> {
   await linkFeedback({
     organizationId: input.organizationId,
@@ -53,6 +56,9 @@ async function linkAnalyticsAndUnanswered(input: {
       logicalQueryId: input.logicalQueryId,
       feedbackId: input.feedbackId,
       comment: input.comment,
+      userId: input.userId,
+      hostname: input.hostname,
+      productId: input.productId,
     });
   } catch (err) {
     console.warn(
@@ -83,9 +89,15 @@ export async function submitChatFeedback(input: {
   const messageId = input.messageId.trim().slice(0, 128);
   if (!messageId) throw new FeedbackValidationError("messageId is required");
 
+  // Prefer analytics id; fall back to message id so thumbs-down still triages.
+  const logicalQueryId =
+    input.logicalQueryId?.trim().slice(0, 128) ||
+    (input.rating === "down" ? messageId : null);
+
   const row = await upsertChatFeedback({
     ...input,
     messageId,
+    logicalQueryId,
   });
 
   if (row.logicalQueryId) {
@@ -95,6 +107,9 @@ export async function submitChatFeedback(input: {
       feedbackId: row.id,
       rating: row.rating,
       comment: input.comment,
+      userId: input.userId,
+      hostname: input.hostname,
+      productId: input.productId,
     });
   }
 

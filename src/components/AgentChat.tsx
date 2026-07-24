@@ -395,9 +395,11 @@ function AgentChatBody({
                         messageId={msg.id}
                         conversationId={msg.conversationId}
                         turnId={msg.turnId}
-                        logicalQueryId={msg.logicalQueryId}
+                        logicalQueryId={msg.logicalQueryId ?? msg.id}
                         productId={msg.response.productContext?.products[0]?.id}
-                        enabled={Boolean(features.chat_feedback)}
+                        // Show unless an admin explicitly disabled chat_feedback.
+                        // Anonymous Ask AI often has an empty features map.
+                        enabled={features.chat_feedback !== false}
                       />
                     </div>
                   </div>
