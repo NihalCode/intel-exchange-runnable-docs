@@ -2,7 +2,7 @@ import "server-only";
 
 import { randomUUID } from "node:crypto";
 
-import { db, ensureMigrations } from "@/lib/db/client";
+import { db, ensureMigrations, type DbExecutor } from "@/lib/db/client";
 import {
   decryptSecret,
   encryptSecret,
@@ -63,13 +63,16 @@ function mapRow(row: Record<string, unknown>): ChatFeedbackRow {
   };
 }
 
-export async function findFeedbackByMessage(input: {
-  organizationId: string;
-  userId: string;
-  messageId: string;
-}): Promise<ChatFeedbackRow | null> {
+export async function findFeedbackByMessage(
+  input: {
+    organizationId: string;
+    userId: string;
+    messageId: string;
+  },
+  executor: DbExecutor = db
+): Promise<ChatFeedbackRow | null> {
   ensureMigrations();
-  const row = await db.queryOne<Record<string, unknown>>(
+  const row = await executor.queryOne<Record<string, unknown>>(
     `SELECT id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
             message_id, hostname, product_id, rating, version, created_at, updated_at
      FROM chat_feedback
@@ -79,13 +82,16 @@ export async function findFeedbackByMessage(input: {
   return row ? mapRow(row) : null;
 }
 
-export async function getOwnedFeedback(input: {
-  organizationId: string;
-  userId: string;
-  id: string;
-}): Promise<ChatFeedbackRow | null> {
+export async function getOwnedFeedback(
+  input: {
+    organizationId: string;
+    userId: string;
+    id: string;
+  },
+  executor: DbExecutor = db
+): Promise<ChatFeedbackRow | null> {
   ensureMigrations();
-  const row = await db.queryOne<Record<string, unknown>>(
+  const row = await executor.queryOne<Record<string, unknown>>(
     `SELECT id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
             message_id, hostname, product_id, rating, version, created_at, updated_at
      FROM chat_feedback
@@ -96,15 +102,19 @@ export async function getOwnedFeedback(input: {
 }
 
 export async function upsertChatFeedback(
-  input: UpsertChatFeedbackInput
+  input: UpsertChatFeedbackInput,
+  executor: DbExecutor = db
 ): Promise<ChatFeedbackRow> {
   ensureMigrations();
   const now = nowIso();
-  const existing = await findFeedbackByMessage({
-    organizationId: input.organizationId,
-    userId: input.userId,
-    messageId: input.messageId,
-  });
+  const existing = await findFeedbackByMessage(
+    {
+      organizationId: input.organizationId,
+      userId: input.userId,
+      messageId: input.messageId,
+    },
+    executor
+  );
 
   const comment =
     input.comment != null && String(input.comment).trim()
@@ -114,12 +124,14 @@ export async function upsertChatFeedback(
   // Drop stale client conversation/turn ids that are not present (FK would 500).
   const conversationId = await sanitizeConversationRef(
     input.organizationId,
-    input.conversationId
+    input.conversationId,
+    executor
   );
   const turnId = await sanitizeTurnRef(
     input.organizationId,
     conversationId,
-    input.turnId
+    input.turnId,
+    executor
   );
 
   if (existing) {
@@ -131,7 +143,7 @@ export async function upsertChatFeedback(
     }
     const aad = `feedback:${input.organizationId}:${existing.id}`;
     const enc = comment ? encryptSecret(comment, aad) : null;
-    await db.execute(
+    await executor.execute(
       `UPDATE chat_feedback
        SET rating = ?,
            comment_ciphertext = ?,
@@ -162,11 +174,14 @@ export async function upsertChatFeedback(
         existing.version,
       ]
     );
-    const updated = await getOwnedFeedback({
-      organizationId: input.organizationId,
-      userId: input.userId,
-      id: existing.id,
-    });
+    const updated = await getOwnedFeedback(
+      {
+        organizationId: input.organizationId,
+        userId: input.userId,
+        id: existing.id,
+      },
+      executor
+    );
     if (!updated) throw new FeedbackConflictError();
     return updated;
   }
@@ -175,7 +190,7 @@ export async function upsertChatFeedback(
   const aad = `feedback:${input.organizationId}:${id}`;
   const enc = comment ? encryptSecret(comment, aad) : null;
   try {
-    await db.execute(
+    await executor.execute(
       `INSERT INTO chat_feedback (
          id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
          message_id, hostname, product_id, rating,
@@ -204,7 +219,7 @@ export async function upsertChatFeedback(
     // Last-resort: persist rating without optional FKs if a constraint still fires.
     const message = err instanceof Error ? err.message : String(err);
     if (!/FOREIGN KEY|foreign key/i.test(message)) throw err;
-    await db.execute(
+    await executor.execute(
       `INSERT INTO chat_feedback (
          id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
          message_id, hostname, product_id, rating,
@@ -228,22 +243,26 @@ export async function upsertChatFeedback(
       ]
     );
   }
-  const created = await getOwnedFeedback({
-    organizationId: input.organizationId,
-    userId: input.userId,
-    id,
-  });
+  const created = await getOwnedFeedback(
+    {
+      organizationId: input.organizationId,
+      userId: input.userId,
+      id,
+    },
+    executor
+  );
   if (!created) throw new Error("Failed to create feedback");
   return created;
 }
 
 async function sanitizeConversationRef(
   organizationId: string,
-  conversationId: string | null | undefined
+  conversationId: string | null | undefined,
+  executor: DbExecutor = db
 ): Promise<string | null> {
   const id = conversationId?.trim();
   if (!id) return null;
-  const row = await db.queryOne<{ id: string }>(
+  const row = await executor.queryOne<{ id: string }>(
     `SELECT id FROM agent_conversations WHERE organization_id = ? AND id = ?`,
     [organizationId, id]
   );
@@ -253,11 +272,12 @@ async function sanitizeConversationRef(
 async function sanitizeTurnRef(
   organizationId: string,
   conversationId: string | null,
-  turnId: string | null | undefined
+  turnId: string | null | undefined,
+  executor: DbExecutor = db
 ): Promise<string | null> {
   const id = turnId?.trim();
   if (!id || !conversationId) return null;
-  const row = await db.queryOne<{ id: string }>(
+  const row = await executor.queryOne<{ id: string }>(
     `SELECT id FROM agent_turns
      WHERE organization_id = ? AND conversation_id = ? AND id = ?`,
     [organizationId, conversationId, id]
@@ -265,16 +285,19 @@ async function sanitizeTurnRef(
   return row?.id ?? null;
 }
 
-export async function updateOwnedFeedback(input: {
-  organizationId: string;
-  userId: string;
-  id: string;
-  rating?: FeedbackRating;
-  comment?: string | null;
-  expectedVersion?: number;
-}): Promise<ChatFeedbackRow | null> {
+export async function updateOwnedFeedback(
+  input: {
+    organizationId: string;
+    userId: string;
+    id: string;
+    rating?: FeedbackRating;
+    comment?: string | null;
+    expectedVersion?: number;
+  },
+  executor: DbExecutor = db
+): Promise<ChatFeedbackRow | null> {
   ensureMigrations();
-  const existing = await getOwnedFeedback(input);
+  const existing = await getOwnedFeedback(input, executor);
   if (!existing) return null;
   if (
     input.expectedVersion != null &&
@@ -302,7 +325,7 @@ export async function updateOwnedFeedback(input: {
       encTag = enc.tag;
     }
   } else {
-    const prior = await db.queryOne<{
+    const prior = await executor.queryOne<{
       comment_ciphertext: string | null;
       comment_iv: string | null;
       comment_tag: string | null;
@@ -316,7 +339,7 @@ export async function updateOwnedFeedback(input: {
   }
 
   const now = nowIso();
-  await db.execute(
+  await executor.execute(
     `UPDATE chat_feedback
      SET rating = ?,
          comment_ciphertext = ?,
@@ -337,7 +360,7 @@ export async function updateOwnedFeedback(input: {
       existing.version,
     ]
   );
-  return getOwnedFeedback(input);
+  return getOwnedFeedback(input, executor);
 }
 
 export async function deleteOwnedFeedback(input: {

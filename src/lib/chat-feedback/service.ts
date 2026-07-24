@@ -1,5 +1,6 @@
 import "server-only";
 
+import { withOrganizationTransaction, type DbExecutor } from "@/lib/db/client";
 import { isProductKey, type ProductKey } from "@/lib/products/registry";
 import {
   enqueueUnansweredFromNegativeFeedback,
@@ -30,36 +31,45 @@ export function parseProductId(value: unknown): ProductKey | null {
   return isProductKey(value) ? value : null;
 }
 
-async function linkAnalyticsAndUnanswered(input: {
-  organizationId: string;
-  logicalQueryId: string;
-  feedbackId: string;
-  rating: FeedbackRating;
-  comment?: string | null;
-  userId?: string | null;
-  hostname?: string | null;
-  productId?: ProductKey | null;
-}): Promise<void> {
-  await linkFeedback({
-    organizationId: input.organizationId,
-    logicalQueryId: input.logicalQueryId,
-    feedbackId: input.feedbackId,
-    rating: input.rating,
-    note: input.comment?.trim() ? "comment_present" : null,
-  });
+async function linkAnalyticsAndUnanswered(
+  input: {
+    organizationId: string;
+    logicalQueryId: string;
+    feedbackId: string;
+    rating: FeedbackRating;
+    comment?: string | null;
+    userId?: string | null;
+    hostname?: string | null;
+    productId?: ProductKey | null;
+  },
+  executor: DbExecutor
+): Promise<void> {
+  await linkFeedback(
+    {
+      organizationId: input.organizationId,
+      logicalQueryId: input.logicalQueryId,
+      feedbackId: input.feedbackId,
+      rating: input.rating,
+      note: input.comment?.trim() ? "comment_present" : null,
+    },
+    executor
+  );
 
   if (input.rating !== "down") return;
 
   try {
-    await enqueueUnansweredFromNegativeFeedback({
-      organizationId: input.organizationId,
-      logicalQueryId: input.logicalQueryId,
-      feedbackId: input.feedbackId,
-      comment: input.comment,
-      userId: input.userId,
-      hostname: input.hostname,
-      productId: input.productId,
-    });
+    await enqueueUnansweredFromNegativeFeedback(
+      {
+        organizationId: input.organizationId,
+        logicalQueryId: input.logicalQueryId,
+        feedbackId: input.feedbackId,
+        comment: input.comment,
+        userId: input.userId,
+        hostname: input.hostname,
+        productId: input.productId,
+      },
+      executor
+    );
   } catch (err) {
     console.warn(
       JSON.stringify({
@@ -71,6 +81,58 @@ async function linkAnalyticsAndUnanswered(input: {
       })
     );
   }
+}
+
+async function submitChatFeedbackInTx(
+  input: {
+    organizationId: string;
+    userId: string;
+    messageId: string;
+    rating: FeedbackRating;
+    comment?: string | null;
+    conversationId?: string | null;
+    turnId?: string | null;
+    logicalQueryId?: string | null;
+    hostname?: string | null;
+    productId?: ProductKey | null;
+    expectedVersion?: number;
+  },
+  executor: DbExecutor
+): Promise<ChatFeedbackRow> {
+  const messageId = input.messageId.trim().slice(0, 128);
+  if (!messageId) throw new FeedbackValidationError("messageId is required");
+
+  // Prefer analytics id; fall back to message id so thumbs-down still triages.
+  const logicalQueryId =
+    input.logicalQueryId?.trim().slice(0, 128) ||
+    (input.rating === "down" ? messageId : null);
+
+  const row = await upsertChatFeedback(
+    {
+      ...input,
+      messageId,
+      logicalQueryId,
+    },
+    executor
+  );
+
+  if (row.logicalQueryId) {
+    await linkAnalyticsAndUnanswered(
+      {
+        organizationId: input.organizationId,
+        logicalQueryId: row.logicalQueryId,
+        feedbackId: row.id,
+        rating: row.rating,
+        comment: input.comment,
+        userId: input.userId,
+        hostname: input.hostname,
+        productId: input.productId,
+      },
+      executor
+    );
+  }
+
+  return row;
 }
 
 export async function submitChatFeedback(input: {
@@ -86,34 +148,10 @@ export async function submitChatFeedback(input: {
   productId?: ProductKey | null;
   expectedVersion?: number;
 }): Promise<ChatFeedbackRow> {
-  const messageId = input.messageId.trim().slice(0, 128);
-  if (!messageId) throw new FeedbackValidationError("messageId is required");
-
-  // Prefer analytics id; fall back to message id so thumbs-down still triages.
-  const logicalQueryId =
-    input.logicalQueryId?.trim().slice(0, 128) ||
-    (input.rating === "down" ? messageId : null);
-
-  const row = await upsertChatFeedback({
-    ...input,
-    messageId,
-    logicalQueryId,
-  });
-
-  if (row.logicalQueryId) {
-    await linkAnalyticsAndUnanswered({
-      organizationId: input.organizationId,
-      logicalQueryId: row.logicalQueryId,
-      feedbackId: row.id,
-      rating: row.rating,
-      comment: input.comment,
-      userId: input.userId,
-      hostname: input.hostname,
-      productId: input.productId,
-    });
-  }
-
-  return row;
+  return withOrganizationTransaction(
+    { organizationId: input.organizationId, userId: input.userId },
+    (tx) => submitChatFeedbackInTx(input, tx)
+  );
 }
 
 export async function patchChatFeedback(input: {
@@ -124,21 +162,26 @@ export async function patchChatFeedback(input: {
   comment?: string | null;
   expectedVersion?: number;
 }): Promise<ChatFeedbackRow | null> {
-  const row = await updateOwnedFeedback(input);
-  if (!row) return null;
-  if (row.logicalQueryId) {
-    await linkAnalyticsAndUnanswered({
-      organizationId: input.organizationId,
-      logicalQueryId: row.logicalQueryId,
-      feedbackId: row.id,
-      rating: row.rating,
-      comment:
-        input.comment !== undefined
-          ? input.comment
-          : undefined,
-    });
-  }
-  return row;
+  return withOrganizationTransaction(
+    { organizationId: input.organizationId, userId: input.userId },
+    async (tx) => {
+      const row = await updateOwnedFeedback(input, tx);
+      if (!row) return null;
+      if (row.logicalQueryId) {
+        await linkAnalyticsAndUnanswered(
+          {
+            organizationId: input.organizationId,
+            logicalQueryId: row.logicalQueryId,
+            feedbackId: row.id,
+            rating: row.rating,
+            comment: input.comment !== undefined ? input.comment : undefined,
+          },
+          tx
+        );
+      }
+      return row;
+    }
+  );
 }
 
 export async function removeChatFeedback(input: {

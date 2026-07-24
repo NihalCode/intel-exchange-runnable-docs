@@ -8,7 +8,7 @@ import {
   isUnansweredOutcome,
   type QueryOutcome,
 } from "@/lib/agent/query-outcome";
-import { db, ensureMigrations, isPostgresConfigured } from "@/lib/db/client";
+import { db, ensureMigrations, isPostgresConfigured, type DbExecutor } from "@/lib/db/client";
 import type { QueryAnalyticsFilters } from "@/lib/query-analytics/filters";
 export type { QueryAnalyticsFilters } from "@/lib/query-analytics/filters";
 import {
@@ -406,17 +406,18 @@ export interface QueryAnalyticsEventInput {
  * Requires migration 010 unique index.
  */
 export async function upsertQueryAnalyticsEvent(
-  input: QueryAnalyticsEventInput
+  input: QueryAnalyticsEventInput,
+  executor: DbExecutor = db
 ): Promise<string> {
   ensureMigrations();
   const attemptId = input.attemptId ?? randomUUID();
-  const existing = await db.queryOne<{ id: string }>(SELECT_EVENT_ID_BY_ATTEMPT_SQL, [
+  const existing = await executor.queryOne<{ id: string }>(SELECT_EVENT_ID_BY_ATTEMPT_SQL, [
     input.organizationId,
     attemptId,
   ]);
   const id = existing?.id ?? randomUUID();
   const now = new Date().toISOString();
-  await db.execute(UPSERT_ANALYTICS_EVENT_SQL, [
+  await executor.execute(UPSERT_ANALYTICS_EVENT_SQL, [
     id,
     input.organizationId,
     input.userId ?? null,
@@ -440,7 +441,7 @@ export async function upsertQueryAnalyticsEvent(
     JSON.stringify(input.metadata ?? {}),
     now,
   ]);
-  const row = await db.queryOne<{ id: string }>(SELECT_EVENT_ID_BY_ATTEMPT_SQL, [
+  const row = await executor.queryOne<{ id: string }>(SELECT_EVENT_ID_BY_ATTEMPT_SQL, [
     input.organizationId,
     attemptId,
   ]);
@@ -556,15 +557,16 @@ export async function listRecentQueryAnalytics(
 
 export async function ensureUnansweredReviewForEvent(
   organizationId: string,
-  analyticsEventId: string
+  analyticsEventId: string,
+  executor: DbExecutor = db
 ): Promise<void> {
-  const existing = await db.queryOne(SELECT_REVIEW_BY_EVENT_SQL, [
+  const existing = await executor.queryOne(SELECT_REVIEW_BY_EVENT_SQL, [
     organizationId,
     analyticsEventId,
   ]);
   if (existing) return;
   const now = new Date().toISOString();
-  await db.execute(INSERT_REVIEW_SQL, [
+  await executor.execute(INSERT_REVIEW_SQL, [
     randomUUID(),
     organizationId,
     analyticsEventId,

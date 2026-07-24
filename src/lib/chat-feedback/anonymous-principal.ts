@@ -49,7 +49,7 @@ export async function ensureAnonymousFeedbackPrincipal(
   }
 
   const organizations = await listOrganizations();
-  if (organizations.length !== 1) {
+  if (organizations.length === 0) {
     throw new OrganizationContextError();
   }
   const organization = organizations[0]!;
@@ -90,7 +90,7 @@ export async function ensureAnonymousFeedbackPrincipal(
       permissions: membership.permissions,
     },
     principal: {
-      userId: ANONYMOUS_VIEWER_USER_ID,
+      userId: membership.userId,
       organizationId: organization.id,
       role: "viewer",
       status: "active",

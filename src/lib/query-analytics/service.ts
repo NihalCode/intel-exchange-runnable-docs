@@ -7,7 +7,7 @@ import {
   isUnansweredOutcome,
   type QueryOutcome,
 } from "@/lib/agent/query-outcome";
-import { db, ensureMigrations } from "@/lib/db/client";
+import { db, ensureMigrations, type DbExecutor } from "@/lib/db/client";
 import {
   encryptSecret,
 } from "@/lib/documentation-credentials/encryption";
@@ -476,17 +476,20 @@ export async function finalizeLogicalQuery(
   return true;
 }
 
-export async function linkFeedback(input: LinkFeedbackInput): Promise<void> {
+export async function linkFeedback(
+  input: LinkFeedbackInput,
+  executor: DbExecutor = db
+): Promise<void> {
   ensureMigrations();
   const now = nowIso();
-  const logical = await db.queryOne<{ id: string; metadata?: unknown }>(
+  const logical = await executor.queryOne<{ id: string; metadata?: unknown }>(
     `SELECT id FROM query_logical_queries
      WHERE organization_id = ? AND logical_query_id = ?`,
     [input.organizationId, input.logicalQueryId]
   );
   if (!logical) return;
 
-  const attempt = await db.queryOne<{ id: string; metadata_json: string }>(
+  const attempt = await executor.queryOne<{ id: string; metadata_json: string }>(
     `SELECT id, metadata_json FROM query_attempts
      WHERE organization_id = ? AND logical_query_id = ?
      ORDER BY started_at DESC LIMIT 1`,
@@ -507,7 +510,7 @@ export async function linkFeedback(input: LinkFeedbackInput): Promise<void> {
     note: input.note ?? null,
     linkedAt: now,
   };
-  await db.execute(
+  await executor.execute(
     `UPDATE query_attempts SET metadata_json = ?, updated_at = ? WHERE id = ?`,
     [JSON.stringify(metadata), now, attempt.id]
   );
@@ -519,20 +522,23 @@ export async function linkFeedback(input: LinkFeedbackInput): Promise<void> {
  * When no analytics event exists yet (anonymous Ask AI / analytics off), mint a
  * terminal "no_verified_solution" projection so triage still receives the row.
  */
-export async function enqueueUnansweredFromNegativeFeedback(input: {
-  organizationId: string;
-  logicalQueryId: string;
-  feedbackId: string;
-  comment?: string | null;
-  userId?: string | null;
-  hostname?: string | null;
-  productId?: ProductKey | null;
-}): Promise<{ reviewId: string | null; createdOrReopened: boolean }> {
+export async function enqueueUnansweredFromNegativeFeedback(
+  input: {
+    organizationId: string;
+    logicalQueryId: string;
+    feedbackId: string;
+    comment?: string | null;
+    userId?: string | null;
+    hostname?: string | null;
+    productId?: ProductKey | null;
+  },
+  executor: DbExecutor = db
+): Promise<{ reviewId: string | null; createdOrReopened: boolean }> {
   ensureMigrations();
   const logicalQueryId = input.logicalQueryId.trim();
   if (!logicalQueryId) return { reviewId: null, createdOrReopened: false };
 
-  let event = await db.queryOne<{ id: string }>(
+  let event = await executor.queryOne<{ id: string }>(
     `SELECT id FROM query_analytics_events
      WHERE organization_id = ? AND logical_query_id = ?
      ORDER BY created_at DESC
@@ -540,21 +546,25 @@ export async function enqueueUnansweredFromNegativeFeedback(input: {
     [input.organizationId, logicalQueryId]
   );
   if (!event) {
-    const { eventId } = await materializeTerminalAnalytics({
-      organizationId: input.organizationId,
-      logicalQueryId,
-      attemptId: `fb-${input.feedbackId}`.slice(0, 64),
-      userId: input.userId ?? null,
-      hostname: input.hostname?.trim() || "feedback",
-      productId: input.productId ?? null,
-      outcome: "no_verified_solution",
-      reasonCode: "user_thumbs_down",
-      latencyMs: 0,
-      metadata: {
-        source: "chat_feedback_thumbs_down",
-        feedbackId: input.feedbackId,
+    const attemptId = `fb-${input.feedbackId}`.slice(0, 64);
+    const eventId = await upsertQueryAnalyticsEvent(
+      {
+        organizationId: input.organizationId,
+        userId: input.userId ?? null,
+        logicalQueryId,
+        attemptId,
+        hostname: input.hostname?.trim() || "feedback",
+        productId: input.productId ?? null,
+        outcome: "no_verified_solution",
+        latencyMs: 0,
+        metadata: {
+          source: "chat_feedback_thumbs_down",
+          feedbackId: input.feedbackId,
+          reasonCode: "user_thumbs_down",
+        },
       },
-    });
+      executor
+    );
     event = { id: eventId };
   }
 
@@ -572,7 +582,7 @@ export async function enqueueUnansweredFromNegativeFeedback(input: {
     sanitizedComment ?? "User marked Ask AI answer unhelpful";
   const now = nowIso();
 
-  const existingByLogical = await db.queryOne<{ id: string }>(
+  const existingByLogical = await executor.queryOne<{ id: string }>(
     `SELECT id FROM unanswered_query_reviews
      WHERE organization_id = ? AND logical_query_id = ?
      ORDER BY updated_at DESC
@@ -581,7 +591,7 @@ export async function enqueueUnansweredFromNegativeFeedback(input: {
   );
 
   if (existingByLogical) {
-    await db.execute(
+    await executor.execute(
       `UPDATE unanswered_query_reviews
        SET status = 'NEW',
            resolved_by_logical_query_id = NULL,
@@ -606,9 +616,9 @@ export async function enqueueUnansweredFromNegativeFeedback(input: {
     return { reviewId: existingByLogical.id, createdOrReopened: true };
   }
 
-  await ensureUnansweredReviewForEvent(input.organizationId, event.id);
+  await ensureUnansweredReviewForEvent(input.organizationId, event.id, executor);
 
-  await db.execute(
+  await executor.execute(
     `UPDATE unanswered_query_reviews
      SET status = 'NEW',
          resolved_by_logical_query_id = NULL,
@@ -622,7 +632,7 @@ export async function enqueueUnansweredFromNegativeFeedback(input: {
     [note, topic, logicalQueryId, now, input.organizationId, event.id]
   );
 
-  const review = await db.queryOne<{ id: string }>(
+  const review = await executor.queryOne<{ id: string }>(
     `SELECT id FROM unanswered_query_reviews
      WHERE organization_id = ? AND analytics_event_id = ?`,
     [input.organizationId, event.id]

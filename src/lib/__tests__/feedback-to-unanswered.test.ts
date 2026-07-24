@@ -209,4 +209,17 @@ describe("negative feedback → unanswered queue", () => {
     expect(row.rating).toBe("down");
     spy.mockRestore();
   });
+
+  it("thumbs-down without prior analytics still opens unanswered review", async () => {
+    const row = await submitChatFeedback({
+      organizationId,
+      userId: "user-fb",
+      messageId: "msg-no-analytics",
+      rating: "down",
+      productId: "ctix",
+    });
+    expect(row.rating).toBe("down");
+    const reviews = await listUnansweredQueryReviews(organizationId, 20);
+    expect(reviews.some((r) => r.logicalQueryId === "msg-no-analytics")).toBe(true);
+  });
 });

@@ -55,7 +55,7 @@ function contextFrom(
       permissions: membership.permissions,
     },
     principal: {
-      userId: session.user.id,
+      userId: membership.userId,
       organizationId: organization.id,
       role: membership.role,
       status: membership.status,
