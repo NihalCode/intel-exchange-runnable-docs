@@ -214,7 +214,7 @@ export async function authenticatedFetch(
     if (redirectOnFailure) {
       redirectToSignInOnce(signInUrlFromPreview(preview, currentReturnPath()));
     }
-    onRecoveryStateChange?.("idle");
+    // Stay on "failed" so UI can show restore copy until navigation completes.
     return first;
   }
 

@@ -114,6 +114,16 @@ describe("Okta-first invite provision", () => {
     process.env.CROSS_DOMAIN_SSO_ENABLED = "true";
     expect(getAuthCookieDomain()).toBe(".cyninjadev.com");
   });
+
+  it("rejects invalid AUTH_COOKIE_DOMAIN values even when SSO is enabled", () => {
+    process.env.CROSS_DOMAIN_SSO_ENABLED = "true";
+    process.env.AUTH_COOKIE_DOMAIN = "https://bad.example.com/path";
+    expect(getAuthCookieDomain()).toBeUndefined();
+    process.env.AUTH_COOKIE_DOMAIN = "localhost";
+    expect(getAuthCookieDomain()).toBeUndefined();
+    process.env.AUTH_COOKIE_DOMAIN = ".cyninjadev.com";
+    expect(getAuthCookieDomain()).toBe(".cyninjadev.com");
+  });
 });
 
 describe("auth0UserIdForLoginLink", () => {

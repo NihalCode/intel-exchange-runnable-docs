@@ -235,6 +235,14 @@ export function UsersManagementPanel() {
       });
       if (!response.ok) {
         const data = (await response.json().catch(() => ({}))) as UsersMutationPayload;
+        if (response.status === 401 || data.code === "SESSION_EXPIRED") {
+          setError(SESSION_RECOVERY_FAILED_MESSAGE);
+          return;
+        }
+        if (response.status === 403) {
+          setError(data.error ?? "You do not have permission to update roles.");
+          return;
+        }
         setError(data.error ?? "Could not update role.");
         return;
       }
@@ -269,6 +277,14 @@ export function UsersManagementPanel() {
       });
       if (!response.ok) {
         const data = (await response.json().catch(() => ({}))) as UsersMutationPayload;
+        if (response.status === 401 || data.code === "SESSION_EXPIRED") {
+          setError(SESSION_RECOVERY_FAILED_MESSAGE);
+          return;
+        }
+        if (response.status === 403) {
+          setError(data.error ?? "You do not have permission to disable users.");
+          return;
+        }
         setError(data.error ?? "Could not disable user.");
         return;
       }
