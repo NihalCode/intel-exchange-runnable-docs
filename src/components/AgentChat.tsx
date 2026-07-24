@@ -200,8 +200,22 @@ function AgentChatBody({
           />
         ) : null}
 
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-2.5">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-3"
+          style={{
+            background:
+              "linear-gradient(90deg, color-mix(in srgb, var(--accent-ai) 8%, transparent), transparent 55%)",
+          }}
+        >
           <div>
+            <div className="mb-1 inline-flex items-center gap-2">
+              <span
+                className="h-1.5 w-1.5 rounded-full bg-[var(--accent-ai)] sf-signal-pulse"
+                aria-hidden="true"
+              />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-ai)]">
+                Intelligence workspace
+              </p>
+            </div>
             <h2 id="agent-chat-heading" className="text-sm font-semibold text-[var(--text-heading)]">Documentation Agent</h2>
             <p className="text-[11px] text-[var(--text-secondary)]">
               Ask about endpoints, authentication, workflows, parameters, and code examples.

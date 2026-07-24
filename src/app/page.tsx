@@ -2,6 +2,11 @@ import Link from "next/link";
 import { ProductBadge } from "@/components/ProductContext";
 import { DocsSearch } from "@/components/DocsSearch";
 import { CxPage, CxProductCard, CxSection } from "@/components/cx";
+import {
+  SignalTopologyArt,
+  VerificationNode,
+  WorkflowRibbon,
+} from "@/components/fabric/SignalField";
 import { listProductManifests } from "@/lib/content";
 import { listProducts } from "@/lib/products/registry";
 import { productAccentClass } from "@/components/admin/ui/tokens";
@@ -12,32 +17,48 @@ export default async function Home() {
 
   return (
     <div data-layout="cx-home-hub">
-      <section className="cx-hub-hero" data-layout="cx-hub-hero">
-        <CxPage layout="hub" className="px-4 sm:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
-            Cyware Technical Documentation
-          </p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-5xl">
-            Find product docs, API references, and release notes
-          </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
-            Search across Intel Exchange, Respond, Collaborate, and Orchestrate — then open
-            runnable examples or ask the Documentation Agent.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-            <DocsSearch
-              className="w-full flex-1"
-              size="hub"
-              placeholder="Search documentation, endpoints, and concepts"
-            />
-            <Link
-              href="/agent"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent-ai)] px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
-              data-testid="home-ask-ai"
-            >
-              <AssistantIcon />
-              Ask AI
-            </Link>
+      <section className="cx-hub-hero sf-atmosphere" data-layout="cx-hub-hero">
+        <div className="sf-grid-plane" aria-hidden="true" />
+        <CxPage layout="hub" className="relative z-[1] px-4 sm:px-8">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,22rem)] lg:items-end">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-primary)]">
+                Cyware Signal Fabric
+              </p>
+              <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-5xl">
+                Controlled intelligence for every product surface
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
+                Search across Intel Exchange, Respond, Collaborate, and Orchestrate — then open
+                runnable examples or ask the Documentation Agent.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <VerificationNode label="Indexed docs" active />
+                <VerificationNode label="Runnable API" active />
+                <VerificationNode label="Invite-gated workspace" />
+              </div>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                <DocsSearch
+                  className="w-full flex-1"
+                  size="hub"
+                  placeholder="Search documentation, endpoints, and concepts"
+                />
+                <Link
+                  href="/agent"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent-ai)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-focused)] transition hover:opacity-90"
+                  data-testid="home-ask-ai"
+                >
+                  <AssistantIcon />
+                  Ask AI
+                </Link>
+              </div>
+            </div>
+            <div className="hidden lg:block">
+              <SignalTopologyArt
+                className="h-auto w-full max-w-md opacity-90"
+                accent="var(--brand-blue)"
+              />
+            </div>
           </div>
         </CxPage>
       </section>
@@ -97,8 +118,22 @@ export default async function Home() {
           title="Start from a common path"
           description="Jump into guides, agent answers, or recent product changes."
         >
-          <div className="grid gap-4 md:grid-cols-3" data-layout="cx-resource-grid">
-            <Link href="/guides" className="cx-card block p-5" data-layout="cx-resource-card">
+          <WorkflowRibbon>
+            <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+              Primary paths
+            </span>
+            <Link href="/guides" className="text-sm font-medium text-[var(--text-link)] hover:underline">
+              Guides
+            </Link>
+            <Link href="/agent" className="text-sm font-medium text-[var(--text-link)] hover:underline">
+              Ask AI
+            </Link>
+            <Link href="/changelog" className="text-sm font-medium text-[var(--text-link)] hover:underline">
+              Release notes
+            </Link>
+          </WorkflowRibbon>
+          <div className="mt-4 grid gap-4 md:grid-cols-3" data-layout="cx-resource-grid">
+            <Link href="/guides" className="cx-card block p-5 transition hover:shadow-[var(--shadow-focused)]" data-layout="cx-resource-card">
               <p className="text-xs font-semibold text-[var(--accent-primary)]">Guides</p>
               <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
                 Make your first API request
@@ -107,7 +142,7 @@ export default async function Home() {
                 Configure product authentication and run a documented request safely.
               </p>
             </Link>
-            <Link href="/agent" className="cx-card block p-5" data-layout="cx-resource-card">
+            <Link href="/agent" className="cx-card block p-5 transition hover:shadow-[var(--shadow-focused)]" data-layout="cx-resource-card">
               <p className="text-xs font-semibold text-[var(--accent-ai)]">Ask AI</p>
               <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
                 Ask across product documentation
@@ -116,7 +151,7 @@ export default async function Home() {
                 Get plain-language answers with sources from the indexed docs.
               </p>
             </Link>
-            <Link href="/changelog" className="cx-card block p-5" data-layout="cx-resource-card">
+            <Link href="/changelog" className="cx-card block p-5 transition hover:shadow-[var(--shadow-focused)]" data-layout="cx-resource-card">
               <p className="text-xs font-semibold text-[var(--accent-primary)]">Release notes</p>
               <h2 className="mt-2 font-semibold text-[var(--text-heading)]">Product changelog</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">

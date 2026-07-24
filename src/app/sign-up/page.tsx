@@ -23,7 +23,7 @@ export default async function SignUpPage({
   return (
     <div className="cx-split-auth" data-layout="cx-split-auth">
       <aside
-        className="flex flex-col justify-between bg-[var(--brand-navy-deep)] px-8 py-12 text-white"
+        className="flex flex-col justify-between px-8 py-12 text-white"
         data-layout="cx-sign-up-brand"
       >
         <div>
@@ -35,18 +35,35 @@ export default async function SignUpPage({
             height={40}
             className="h-10 w-10 object-contain"
           />
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-white/70">
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">
             CYWARE | Documentation
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Set up your account</h1>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
             Use the email your administrator added. Create your password, then return to Sign in.
           </p>
+          <ul className="mt-8 space-y-3 text-sm text-white/70">
+            <li className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]" aria-hidden="true" />
+              Email-only setup request
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-blue)]" aria-hidden="true" />
+              Okta sends the password setup email
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-white/50" aria-hidden="true" />
+              No automatic app session is created
+            </li>
+          </ul>
         </div>
       </aside>
 
-      <main className="flex items-center justify-center bg-[var(--background-page)] px-4 py-12">
-        <div className="w-full max-w-md" data-layout="cx-sign-up-form">
+      <main className="flex items-center justify-center bg-[var(--canvas-atmospheric)] px-4 py-12">
+        <div
+          className="w-full max-w-md rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-floating)] p-7 shadow-[var(--shadow-floating)]"
+          data-layout="cx-sign-up-form"
+        >
           <h2 className="text-xl font-semibold text-[var(--text-heading)]">Set up your account</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
             First-time invited users set their password here. You will get an email from Okta to

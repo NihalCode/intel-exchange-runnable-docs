@@ -11,17 +11,17 @@ import { Markdown } from "./Markdown";
 import { RequestPlaygroundPanel, RequestPlaygroundProvider } from "./RequestPlayground";
 
 const METHOD_COLORS: Record<string, string> = {
-  GET: "bg-emerald-600",
-  POST: "bg-sky-600",
-  PUT: "bg-amber-600",
-  PATCH: "bg-violet-600",
-  DELETE: "bg-red-600",
+  GET: "text-emerald-700 dark:text-emerald-300",
+  POST: "text-sky-700 dark:text-sky-300",
+  PUT: "text-amber-700 dark:text-amber-300",
+  PATCH: "text-violet-700 dark:text-violet-300",
+  DELETE: "text-red-700 dark:text-red-300",
 };
 
 function MethodBadge({ method }: { method: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-bold text-white ${METHOD_COLORS[method] || "bg-zinc-600"}`}
+      className={`sf-method-badge ${METHOD_COLORS[method] || "text-[var(--text-muted)]"}`}
     >
       {method}
     </span>
@@ -95,8 +95,8 @@ export function EndpointView({
   const runnableRequest = useMemo(() => buildRunnableRequest(page, productId), [page, productId]);
 
   return (
-    <article className="mx-auto max-w-[var(--content-max)]">
-      <div className="mb-3 flex flex-wrap items-center gap-3">
+    <article className="mx-auto max-w-[var(--content-max)]" data-layout="sf-endpoint-explorer">
+      <div className="sf-endpoint-identity">
         <ProductBadge productId={productId} />
         <MethodBadge method={page.method} />
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-heading)]">
@@ -114,10 +114,10 @@ export function EndpointView({
         ) : null}
       </div>
 
-      <div className="mb-5 flex items-center gap-2 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-3 py-2 font-mono text-sm">
+      <div className="mb-5 flex items-center gap-2 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-code)] px-3 py-2.5 font-mono text-sm text-[#e5e7eb] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
         <MethodBadge method={page.method} />
-        <span className="whitespace-nowrap text-[var(--text-muted)]">{displayBase}</span>
-        <span className="whitespace-nowrap font-semibold text-[var(--text-heading)]">
+        <span className="whitespace-nowrap text-white/55">{displayBase}</span>
+        <span className="whitespace-nowrap font-semibold text-white">
           {page.path.startsWith("/") ? page.path : `/${page.path}`}
         </span>
       </div>

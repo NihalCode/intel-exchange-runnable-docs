@@ -14,6 +14,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useFocusTrap } from "./useFocusTrap";
 import { DocsSearch } from "@/components/DocsSearch";
 import { CxFooter } from "@/components/cx";
+import { CommandPalette } from "@/components/fabric/CommandPalette";
 import {
   navLinkActiveClass,
   navLinkClass,
@@ -336,6 +337,7 @@ export function AppFrame({
   return (
     <div className="cx-app-shell" data-testid="app-frame" data-layout="cx-app-shell">
       <ProductRunSettingsSync />
+      <CommandPalette />
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
@@ -361,14 +363,24 @@ export function AppFrame({
               data-testid="brand-home"
               data-layout="cx-brand"
             >
-              <Image
-                src="/cyware_logo.png"
-                alt=""
-                width={28}
-                height={28}
-                className="h-7 w-7 object-contain"
-                priority
-              />
+              <span className="relative flex h-8 w-8 items-center justify-center">
+                <span
+                  className="absolute inset-0 rounded-[var(--radius-md)]"
+                  style={{
+                    background:
+                      "color-mix(in srgb, var(--product-accent, var(--brand-blue)) 14%, transparent)",
+                  }}
+                  aria-hidden="true"
+                />
+                <Image
+                  src="/cyware_logo.png"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="relative h-7 w-7 object-contain"
+                  priority
+                />
+              </span>
               <span className="hidden items-center gap-1.5 sm:flex">
                 <span className="text-sm font-semibold tracking-tight text-[var(--text-heading)]">
                   CYWARE
@@ -407,18 +419,27 @@ export function AppFrame({
       </header>
 
       <div className="cx-product-strip" data-layout="cx-product-strip">
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-          Product
+        <span
+          className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--product-accent,var(--accent-primary))] sf-signal-pulse"
+          aria-hidden="true"
+        />
+        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+          Product context
         </span>
         <ProductSelector className="flex" />
-        {isDocsRoute ? (
-          <Link
-            href={`/docs/${sidebarProductId}`}
-            className="ml-auto hidden text-xs font-medium text-[var(--text-link)] hover:underline sm:inline"
-          >
-            API documentation
-          </Link>
-        ) : null}
+        <span className="ml-auto hidden items-center gap-3 sm:flex">
+          <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+            Ctrl+K
+          </kbd>
+          {isDocsRoute ? (
+            <Link
+              href={`/docs/${sidebarProductId}`}
+              className="text-xs font-medium text-[var(--text-link)] hover:underline"
+            >
+              API documentation
+            </Link>
+          ) : null}
+        </span>
       </div>
 
       <div className="cx-docs-body">

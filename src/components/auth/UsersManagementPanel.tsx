@@ -298,11 +298,11 @@ export function UsersManagementPanel() {
   }
 
   if (state.loading || loading) {
-    return <p className="text-sm text-zinc-500">Loading users…</p>;
+    return <p className="text-sm text-[var(--text-muted)]">Loading users…</p>;
   }
   if (!canManage) {
     return (
-      <p className="text-sm text-red-600">
+      <p className="text-sm text-[var(--danger)]">
         You do not have permission to manage users.
       </p>
     );
@@ -312,19 +312,31 @@ export function UsersManagementPanel() {
   const recoveryFailed = recoveryState === "failed";
 
   return (
-    <div data-testid="users-management" className="space-y-8">
+    <div data-testid="users-management" className="space-y-8" data-layout="sf-identity-command">
+      <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-operational)] p-4">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
+          Identity access
+        </p>
+        <h2 className="mt-1 text-lg font-semibold text-[var(--text-heading)]">
+          Okta + documentation membership
+        </h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
+          New users receive an Okta setup email. Existing ACTIVE same-tenant users keep password and
+          Okta Verify; no setup email is sent. Target group: Cyware Docs Users.
+        </p>
+      </div>
       <form
         onSubmit={addUser}
-        className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+        className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-resting)]"
       >
-        <h2 className="text-sm font-semibold">Add user</h2>
-        <p className="mt-1 text-xs text-zinc-500">
+        <h2 className="text-sm font-semibold text-[var(--text-heading)]">Add user</h2>
+        <p className="mt-1 text-xs text-[var(--text-muted)]">
           Creates the person in Okta, adds them to the docs Okta group, and adds a
           documentation invitation. They select Sign up to set their Okta password,
           then Sign in with email, password, and the code shown in Okta Verify.
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
-          <label className="text-xs">
+          <label className="text-xs text-[var(--text-secondary)]">
             <span>Email</span>
             <input
               type="email"
@@ -332,25 +344,25 @@ export function UsersManagementPanel() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
             />
           </label>
-          <label className="text-xs">
+          <label className="text-xs text-[var(--text-secondary)]">
             <span>Display name</span>
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
               disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
             />
           </label>
-          <label className="text-xs">
+          <label className="text-xs text-[var(--text-secondary)]">
             <span>Role</span>
             <select
               value={role}
               onChange={(event) => setRole(event.target.value as DocumentationRole)}
               disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
             >
               {DOCUMENTATION_ROLES.filter(
                 (value) => state.user?.role === "owner" || value !== "owner"
@@ -359,20 +371,20 @@ export function UsersManagementPanel() {
               ))}
             </select>
           </label>
-          <label className="text-xs">
+          <label className="text-xs text-[var(--text-secondary)]">
             <span>Access expiry</span>
             <input
               type="date"
               value={expiresAt}
               onChange={(event) => setExpiresAt(event.target.value)}
               disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
             />
           </label>
         </div>
         <button
           disabled={busy === "add" || recovering}
-          className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="mt-3 rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--accent-primary-hover)] disabled:opacity-50"
         >
           {recovering
             ? "Refreshing session…"
@@ -381,25 +393,25 @@ export function UsersManagementPanel() {
               : "Add user"}
         </button>
         {recovering ? (
-          <p className="mt-3 text-xs text-sky-700" role="status">
+          <p className="mt-3 text-xs text-[var(--info)]" role="status">
             {SESSION_RECOVERY_IN_PROGRESS_MESSAGE}
           </p>
         ) : null}
         {recoveryFailed ? (
-          <p className="mt-3 text-xs text-amber-700" role="status">
+          <p className="mt-3 text-xs text-[var(--warning)]" role="status">
             {SESSION_RECOVERY_FAILED_MESSAGE}
           </p>
         ) : null}
         {status ? (
-          <p className="mt-3 text-xs text-emerald-700" role="status">
+          <p className="mt-3 text-xs text-[var(--success)]" role="status">
             {status}
           </p>
         ) : null}
-        {error ? <p className="mt-3 text-xs text-red-600">{error}</p> : null}
-        {hint ? <p className="mt-1 text-xs text-zinc-500">{hint}</p> : null}
+        {error ? <p className="mt-3 text-xs text-[var(--danger)]">{error}</p> : null}
+        {hint ? <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p> : null}
       </form>
       <section>
-        <h2 className="text-sm font-semibold">Documentation users</h2>
+        <h2 className="text-sm font-semibold text-[var(--text-heading)]">Documentation users</h2>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

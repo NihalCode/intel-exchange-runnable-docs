@@ -40,13 +40,20 @@ export function AgentProjectPanel({
       className="flex w-[min(420px,38vw)] shrink-0 flex-col border-l border-[var(--border-default)] bg-[var(--surface-sunken)]"
       data-layout="cx-build-app-panel"
     >
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
-        <span className="mr-auto text-xs font-semibold text-zinc-600 dark:text-zinc-400">Project</span>
+      <div className="flex flex-wrap items-center gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5"
+        style={{
+          background:
+            "linear-gradient(90deg, color-mix(in srgb, var(--product-orchestrate) 10%, transparent), transparent 50%)",
+        }}
+      >
+        <span className="mr-auto text-xs font-semibold tracking-wide text-[var(--text-heading)]">
+          Build studio
+        </span>
         {onPreview ? <button
           type="button"
           disabled={!app}
           onClick={onPreview}
-          className="rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-white disabled:opacity-40 dark:border-zinc-700"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:opacity-40"
         >
           Preview
         </button> : null}
@@ -54,7 +61,7 @@ export function AgentProjectPanel({
           type="button"
           disabled={!app || deploying}
           onClick={onDeploy}
-          className="rounded-md bg-indigo-600 px-2 py-0.5 text-[11px] font-semibold text-white hover:bg-indigo-700 disabled:opacity-40"
+          className="rounded-[var(--radius-sm)] bg-[var(--accent-primary)] px-2 py-0.5 text-[11px] font-semibold text-white hover:bg-[var(--accent-primary-hover)] disabled:opacity-40"
         >
           {deploying ? "Deploying…" : "Deploy"}
         </button> : null}
@@ -62,7 +69,7 @@ export function AgentProjectPanel({
           type="button"
           disabled={!app || committing}
           onClick={onCommit}
-          className="rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-white disabled:opacity-40 dark:border-zinc-700"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:opacity-40"
         >
           {committing ? "Saving…" : "Commit"}
         </button> : null}
@@ -70,14 +77,14 @@ export function AgentProjectPanel({
           type="button"
           disabled={!app}
           onClick={onDownloadZip}
-          className="rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-white disabled:opacity-40 dark:border-zinc-700"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:opacity-40"
         >
           Download
         </button> : null}
       </div>
 
       {!app ? (
-        <div className="flex flex-1 items-center justify-center p-6 text-center text-xs text-zinc-500">
+        <div className="flex flex-1 items-center justify-center p-6 text-center text-xs text-[var(--text-muted)]">
           Ask me to build an app or fetch API examples — your project files will appear here.
         </div>
       ) : (

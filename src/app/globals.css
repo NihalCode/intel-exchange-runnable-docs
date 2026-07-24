@@ -5,9 +5,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
-  Cyware enterprise design tokens
-  Sources: cyware.com (--cyw-*) + techdocs.cyware.com (docs surfaces)
-  See docs/enterprise/ui-rewrite/REFERENCE_CAPTURE.md
+  Cyware Signal Fabric 2.0
+  Controlled intelligence fabric — canvas layers, signal motifs, product light signatures.
+  Legacy token names retained for tests and downstream components.
+  See docs/enterprise/ui-max-v2/DESIGN_SYSTEM.md
 */
 :root {
   /* Brand primitives */
@@ -20,48 +21,95 @@
   --brand-purple-deep: #790894;
   --brand-heading: #3f375e;
   --brand-subtext: #6d6882;
+  --brand-primary: var(--brand-blue);
 
-  /* Product accents */
+  /* Product accents — light signatures */
   --product-ctix: #004efc;
   --product-csap: #00c689;
   --product-orchestrate: #ac0796;
   --product-cftr: #790894;
+  --product-accent: var(--brand-blue);
+  --product-accent-soft: color-mix(in srgb, var(--product-accent) 12%, var(--background-page));
 
-  /* Semantic surfaces (light / techdocs) */
-  --background-page: #ffffff;
+  /* Signal motif tokens */
+  --signal-line: color-mix(in srgb, var(--product-accent) 55%, transparent);
+  --signal-node: var(--product-accent);
+  --signal-glow: color-mix(in srgb, var(--product-accent) 28%, transparent);
+
+  /* Canvas / surface materials */
+  --canvas-base: #f4f6fb;
+  --canvas-elevated: #ffffff;
+  --canvas-atmospheric: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--brand-blue) 6%, #ffffff) 0%,
+    #f7f8fc 38%,
+    #ffffff 100%
+  );
+  --background-page: var(--canvas-elevated);
   --background: var(--background-page);
   --surface-raised: #ffffff;
-  --surface-sunken: #f7f7fb;
-  --surface-muted: #eef0fb;
-  --surface-header: rgba(255, 255, 255, 0.92);
-  --surface-overlay: rgba(15, 23, 42, 0.4);
+  --surface-sunken: #eef1f8;
+  --surface-muted: #e8ecf6;
+  --surface-editorial: #ffffff;
+  --surface-operational: #f8f9fd;
+  --surface-focused: #ffffff;
+  --surface-floating: #ffffff;
+  --surface-header: rgba(255, 255, 255, 0.88);
+  --surface-overlay: rgba(15, 23, 42, 0.42);
+  --surface-code: #0f172a;
+  --surface-critical: #fef2f2;
+  --surface-inverse: var(--brand-navy-deep);
 
   --foreground: #1d222f;
   --text-primary: #1d222f;
   --text-heading: var(--brand-heading);
   --text-secondary: var(--brand-subtext);
-  /* ~4.6:1 on white — AA for small UI labels (was #8a8d95 ~3.2:1) */
   --text-muted: #6b7080;
   --text-inverse: #fafafa;
   --text-link: #1a3ee8;
   --text-link-hover: #1330b9;
 
-  --border-default: #d5d5d5;
-  --border-subtle: #e8e8ee;
+  --border-default: #d5d8e4;
+  --border-subtle: #e4e7f0;
   --border-strong: #8a8d95;
+  --line-subtle: var(--border-subtle);
+  --line-default: var(--border-default);
+  --line-strong: var(--border-strong);
+  --line-active: var(--brand-blue);
 
   --focus-ring: var(--brand-blue);
   --danger: #e40014;
   --danger-soft: #fef2f2;
-  --warning: #f2ac59;
+  --warning: #c47a1a;
   --warning-soft: #fdf7ec;
   --success: var(--brand-green);
   --success-soft: #ebf5e5;
+  --info: #1a56db;
+  --info-soft: #eef4ff;
 
   --accent-primary: var(--brand-blue);
   --accent-primary-hover: var(--brand-blue-deep);
-  --accent-ai: #6b10ff;
-  --accent-ai-soft: #e2d4ff;
+  --accent-ai: #4a2d8a;
+  --accent-ai-soft: #ebe4f8;
+
+  /* Elevation scale */
+  --shadow-resting: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-focused: 0 0 0 1px color-mix(in srgb, var(--accent-primary) 22%, transparent),
+    0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-floating: 0 12px 32px rgba(15, 23, 42, 0.1), 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-modal: 0 24px 64px rgba(15, 23, 42, 0.16), 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-card: var(--shadow-resting);
+  --shadow-drawer: var(--shadow-floating);
+  --shadow-overlay: var(--shadow-modal);
+
+  /* Motion */
+  --motion-instant: 80ms;
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+  --motion-slow: 360ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
   /* Spacing / layout */
   --space-1: 0.25rem;
@@ -75,6 +123,7 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.625rem;
   --radius-xl: 0.75rem;
+  --radius-pill: 9999px;
   --header-height: 3.5rem;
   --product-strip-height: 2.5rem;
   --sidebar-width: 18rem;
@@ -84,22 +133,34 @@
   --hub-max: 72rem;
   --workbench-max: 90rem;
   --section-gap: 3rem;
-  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.04);
-  --shadow-drawer: 0 12px 40px rgba(15, 23, 42, 0.18);
-  --shadow-overlay: 0 16px 48px rgba(15, 23, 42, 0.2);
 
   --font-sans: var(--font-geist-sans), Inter, ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
 }
 
 .dark {
-  --background-page: #0d1020;
+  --canvas-base: #0a0d18;
+  --canvas-elevated: #0d1020;
+  --canvas-atmospheric: linear-gradient(
+    165deg,
+    #12162a 0%,
+    #0d1020 42%,
+    #0a0d18 100%
+  );
+  --background-page: var(--canvas-elevated);
   --background: var(--background-page);
   --surface-raised: #151a2e;
   --surface-sunken: #0a0d18;
   --surface-muted: #1c2340;
-  --surface-header: rgba(13, 16, 32, 0.92);
-  --surface-overlay: rgba(0, 0, 0, 0.55);
+  --surface-editorial: #12162a;
+  --surface-operational: #141929;
+  --surface-focused: #181e34;
+  --surface-floating: #1a2038;
+  --surface-header: rgba(13, 16, 32, 0.9);
+  --surface-overlay: rgba(0, 0, 0, 0.58);
+  --surface-code: #0a0f1a;
+  --surface-critical: #3b1218;
+  --surface-inverse: #eef0f7;
 
   --foreground: #e8eaf2;
   --text-primary: #e8eaf2;
@@ -114,13 +175,24 @@
   --border-subtle: #1f2744;
   --border-strong: #3d4a73;
 
+  --product-accent-soft: color-mix(in srgb, var(--product-accent) 18%, var(--background-page));
+  --signal-line: color-mix(in srgb, var(--product-accent) 45%, transparent);
+  --signal-glow: color-mix(in srgb, var(--product-accent) 22%, transparent);
+
   --danger-soft: #3b1218;
   --warning-soft: #3a2a12;
   --success-soft: #0f2e24;
+  --info-soft: #152040;
+  --accent-ai: #9b7fd4;
   --accent-ai-soft: #2a1848;
 
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
-  --shadow-drawer: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-resting: 0 1px 2px rgba(0, 0, 0, 0.28), 0 4px 16px rgba(0, 0, 0, 0.22);
+  --shadow-focused: 0 0 0 1px color-mix(in srgb, var(--accent-primary) 35%, transparent),
+    0 8px 28px rgba(0, 0, 0, 0.35);
+  --shadow-floating: 0 12px 40px rgba(0, 0, 0, 0.42);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.55);
+  --shadow-card: var(--shadow-resting);
+  --shadow-drawer: var(--shadow-floating);
 }
 
 @theme inline {
@@ -150,7 +222,7 @@ html {
 }
 
 body {
-  background: var(--background-page);
+  background: var(--canvas-base);
   color: var(--text-primary);
   font-family: var(--font-sans);
 }
@@ -178,13 +250,11 @@ body {
   transform: translateY(0);
 }
 
-/* Keep highlight.js code readable on its dark surface regardless of theme. */
 .hljs {
   background: transparent;
   padding: 0;
 }
 
-/* Thin scrollbars for the nav + code areas. */
 .scroll-thin {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--text-muted) 40%, transparent) transparent;
@@ -198,7 +268,6 @@ body {
   border-radius: 9999px;
 }
 
-/* Docs prose — token-aware typography */
 .prose-cyware {
   --tw-prose-body: var(--text-primary);
   --tw-prose-headings: var(--text-heading);
@@ -217,12 +286,227 @@ body {
   --tw-prose-td-borders: var(--border-subtle);
 }
 
-/* Frame chrome helpers — structural shell (v2 geometry) */
+/* ── Signal Fabric materials ── */
+
+.sf-atmosphere {
+  position: relative;
+  isolation: isolate;
+  background: var(--canvas-atmospheric);
+}
+
+.sf-atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 80% 60% at 18% 0%,
+    color-mix(in srgb, var(--product-accent, var(--brand-blue)) 10%, transparent),
+    transparent 68%
+  );
+  z-index: 0;
+}
+
+.sf-grid-plane {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--line-subtle) 65%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--line-subtle) 65%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 20%, black 20%, transparent 78%);
+}
+
+@keyframes sf-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes sf-trace-flow {
+  0% {
+    stroke-dashoffset: 120;
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.35;
+  }
+}
+
+.sf-signal-pulse {
+  animation: sf-pulse var(--motion-slow) var(--ease-standard) infinite;
+  transform-origin: center;
+}
+
+.sf-signal-trace {
+  stroke-dasharray: 120;
+  animation: sf-trace-flow calc(var(--motion-slow) * 4) var(--ease-standard) infinite;
+}
+
+.sf-product-module {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-resting);
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-emphasized);
+}
+
+.sf-product-module::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--product-accent, var(--accent-primary)) 40%,
+    transparent
+  );
+  opacity: 0.85;
+}
+
+.sf-product-module:hover {
+  border-color: color-mix(in srgb, var(--product-accent, var(--accent-primary)) 45%, var(--line-default));
+  box-shadow: var(--shadow-focused);
+  transform: translateY(-2px);
+}
+
+.sf-signal-metric {
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-operational);
+  box-shadow: var(--shadow-resting);
+  padding: 1rem 1.25rem;
+}
+
+.sf-signal-metric::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 2px;
+  margin-bottom: 0.75rem;
+  border-radius: 9999px;
+  background: var(--product-accent, var(--accent-primary));
+  opacity: 0.75;
+}
+
+.sf-workflow-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--line-subtle);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-raised) 92%, var(--product-accent, var(--accent-primary)) 8%);
+  box-shadow: var(--shadow-resting);
+}
+
+.sf-code-surface {
+  border: 1px solid color-mix(in srgb, var(--line-default) 80%, var(--product-accent, var(--accent-primary)) 20%);
+  border-radius: var(--radius-md);
+  background: var(--surface-code);
+  box-shadow: var(--shadow-resting);
+}
+
+.sf-endpoint-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line-subtle);
+  background: var(--surface-operational);
+}
+
+.sf-method-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-inverse);
+  background: var(--product-accent, var(--accent-primary));
+}
+
+.sf-access-plane {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background:
+    radial-gradient(
+      ellipse 70% 50% at 50% 0%,
+      color-mix(in srgb, var(--brand-blue) 8%, var(--canvas-base)),
+      transparent 70%
+    ),
+    var(--canvas-base);
+}
+
+.sf-access-panel {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+  padding: 2rem;
+  border: 1px solid var(--line-default);
+  border-radius: var(--radius-xl);
+  background: var(--surface-floating);
+  box-shadow: var(--shadow-floating);
+}
+
+.sf-access-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  background: linear-gradient(90deg, var(--brand-blue), var(--brand-green));
+  opacity: 0.75;
+}
+
+.sf-telemetry-strip {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+}
+
+/* ── Frame chrome — structural shell (v2 geometry) ── */
+
 .cx-header {
   min-height: var(--header-height);
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-header);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px) saturate(1.25);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--line-subtle) 80%, transparent);
 }
 
 .cx-app-shell {
@@ -255,7 +539,13 @@ body {
   align-items: center;
   gap: 0.75rem;
   border-bottom: 1px solid var(--border-subtle);
-  background: var(--surface-sunken);
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--product-accent, var(--accent-primary)) 6%, var(--surface-sunken)),
+      var(--surface-sunken) 28%,
+      var(--surface-sunken)
+    );
   padding: 0 1rem;
 }
 
@@ -285,14 +575,36 @@ body {
 }
 
 .cx-hub-hero {
+  position: relative;
+  overflow: hidden;
   border-bottom: 1px solid var(--border-subtle);
+  background: var(--canvas-atmospheric);
+  padding: 3rem 0 3.5rem;
+}
+
+.cx-hub-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--surface-muted) 80%, transparent) 0%,
-      var(--background-page) 100%
+    radial-gradient(
+      ellipse 55% 45% at 12% 8%,
+      color-mix(in srgb, var(--brand-blue) 14%, transparent),
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 40% 35% at 88% 18%,
+      color-mix(in srgb, var(--product-orchestrate) 8%, transparent),
+      transparent 58%
     );
-  padding: 2.5rem 0 3rem;
+}
+
+.cx-hub-hero .sf-grid-plane {
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 .cx-search-hub input {
@@ -306,7 +618,8 @@ body {
   overflow: hidden;
   border: 1px solid var(--border-default);
   background: var(--surface-raised);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-floating);
 }
 
 @media (min-width: 1024px) {
@@ -324,6 +637,11 @@ body {
 
 .cx-admin-nav-rail[data-tone="inverse"] {
   color: #ffffff;
+  background: linear-gradient(
+    180deg,
+    var(--brand-navy-deep) 0%,
+    color-mix(in srgb, var(--brand-navy) 88%, #000) 100%
+  );
 }
 
 .cx-card {
@@ -346,6 +664,38 @@ body {
   .cx-split-auth {
     grid-template-columns: minmax(18rem, 28rem) minmax(0, 1fr);
   }
+}
+
+.cx-split-auth [data-layout="cx-sign-in-brand"] {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    165deg,
+    var(--brand-navy-deep) 0%,
+    color-mix(in srgb, var(--brand-navy) 92%, #000) 55%,
+    var(--brand-navy-deep) 100%
+  );
+}
+
+.cx-split-auth [data-layout="cx-sign-in-brand"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--brand-blue) 12%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--brand-blue) 12%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 28px 28px;
+  mask-image: linear-gradient(180deg, black 0%, transparent 85%);
+  opacity: 0.45;
 }
 
 .product-accent-ctix {

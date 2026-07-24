@@ -11,6 +11,7 @@ import {
   sanitizeUserFacingMessage,
 } from "@/lib/user-facing-errors";
 import { freshLoginStartHref } from "@/lib/documentation-auth/fresh-login";
+import { SecurityBrandPanel } from "@/components/fabric/SignalField";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -93,35 +94,45 @@ export default async function SignInPage({
   return (
     <div className="cx-split-auth" data-layout="cx-split-auth">
       <aside
-        className="flex flex-col justify-between bg-[var(--brand-navy-deep)] px-8 py-12 text-white"
+        className="flex flex-col justify-between px-8 py-12 text-white"
         data-layout="cx-sign-in-brand"
       >
-        <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/cyware_logo.png"
-            alt=""
-            width={40}
-            height={40}
-            className="h-10 w-10 object-contain"
-          />
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-white/70">
-            CYWARE | Documentation
+        <SecurityBrandPanel className="flex flex-1 flex-col justify-between">
+          <div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/cyware_logo.png"
+              alt=""
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+            />
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-white/70">
+              CYWARE | Documentation
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in</h1>
+            <p className="mt-3 max-w-sm text-sm leading-6 text-white/80">
+              Auth0 brokers session continuity for this workspace. Okta owns your password and
+              Verify — complete both steps after you continue.
+            </p>
+            <p className="mt-4 max-w-sm text-sm leading-6 text-white/65">
+              This docs workspace is invite-only. Administrators must add your email before you
+              can sign in or set a password.
+            </p>
+          </div>
+          <p className="text-xs text-white/50">
+            {setup.deployment.productId
+              ? `Product context: ${setup.deployment.productId}`
+              : "Enterprise documentation workspace"}
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in</h1>
-          <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
-            Invite-only. Email and password, then the code shown in Okta Verify.
-          </p>
-        </div>
-        <p className="text-xs text-white/50">
-          {setup.deployment.productId
-            ? `Product context: ${setup.deployment.productId}`
-            : "Enterprise documentation workspace"}
-        </p>
+        </SecurityBrandPanel>
       </aside>
 
-      <main className="flex items-center justify-center bg-[var(--background-page)] px-4 py-12">
-        <div className="w-full max-w-md" data-layout="cx-sign-in-form">
+      <main className="sf-atmosphere flex items-center justify-center px-4 py-12">
+        <div
+          className="sf-access-panel w-full max-w-md"
+          data-layout="cx-sign-in-form"
+        >
           <h2 className="text-xl font-semibold text-[var(--text-heading)]">Sign in</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
             First-time invited users set their password with <strong>Sign up</strong>, then return

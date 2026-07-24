@@ -14,10 +14,19 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4">
-      <div className="min-w-0 flex-1">
+    <header
+      className="relative flex flex-wrap items-start justify-between gap-4 border-b border-[var(--border-subtle)] pb-5"
+      data-layout="sf-operational-header"
+    >
+      <div
+        className="pointer-events-none absolute -left-1 top-1 h-8 w-1 rounded-full bg-[var(--product-accent,var(--accent-primary))]"
+        aria-hidden="true"
+      />
+      <div className="min-w-0 flex-1 pl-3">
         {eyebrow ? (
-          <p className="text-sm font-medium text-[var(--accent-primary)]">{eyebrow}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
+            {eyebrow}
+          </p>
         ) : null}
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-3xl">
           {title}

@@ -22,11 +22,8 @@ export function AccessPage({
   const browseHomeHref = accessBrowseHomeAfterLogoutHref();
 
   return (
-    <main
-      data-testid={testId}
-      className="flex min-h-screen items-center justify-center bg-[var(--background-page)] px-4 py-12"
-    >
-      <div className="cx-card w-full max-w-md p-8">
+    <main data-testid={testId} className="sf-access-plane">
+      <div className="sf-access-panel">
         <div className="mb-3 flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

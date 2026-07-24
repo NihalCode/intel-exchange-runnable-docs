@@ -107,8 +107,7 @@ export function CxProductCard({
     <Link
       href={href}
       data-layout="cx-product-card"
-      className={`group flex h-full flex-col border border-[var(--border-default)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-card)] transition hover:-translate-y-0.5 hover:border-[var(--accent-primary)] hover:shadow-md ${accentClass ?? ""}`}
-      style={{ borderRadius: "var(--radius-md)" }}
+      className={`sf-product-module group flex h-full flex-col p-5 ${accentClass ?? ""}`}
     >
       <div
         data-layout="cx-product-card-mark-row"

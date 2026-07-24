@@ -22,7 +22,7 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
   const { organization, selectedEnvironment } = useAdmin();
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl space-y-8" data-layout="sf-admin-dashboard">
       <PageHeader
         eyebrow={organization.name}
         title="Dashboard"
@@ -30,10 +30,15 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
       />
 
       <section aria-labelledby="metrics-heading">
-        <h2 id="metrics-heading" className="sr-only">
-          Key metrics
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 id="metrics-heading" className="text-sm font-semibold text-[var(--text-heading)]">
+            Telemetry strip
+          </h2>
+          <p className="text-xs text-[var(--text-muted)]">
+            Environment: {selectedEnvironment}
+          </p>
+        </div>
+        <div className="sf-telemetry-strip">
           {metrics.map((metric) => (
             <MetricCard key={metric.label} {...metric} />
           ))}
@@ -41,12 +46,17 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <section className={cardClass} aria-labelledby="health-heading">
-          <h2 id="health-heading" className="font-semibold">
-            Service health
+        <section
+          className={`${cardClass} border-l-[3px] border-l-[var(--accent-primary)]`}
+          aria-labelledby="health-heading"
+        >
+          <h2 id="health-heading" className="font-semibold text-[var(--text-heading)]">
+            Service health topology
           </h2>
-          <p className="mt-1 text-xs text-zinc-500">Environment: {selectedEnvironment}</p>
-          <div className="mt-4 divide-y divide-zinc-200 dark:divide-zinc-800">
+          <p className="mt-1 text-xs text-[var(--text-muted)]">
+            Real control-plane health for {selectedEnvironment}. Unknown stays unknown.
+          </p>
+          <div className="mt-4 divide-y divide-[var(--border-subtle)]">
             {health.map((service) => (
               <HealthStatusRow
                 key={service.name}
@@ -59,23 +69,23 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
         </section>
 
         <section className={cardClass} aria-labelledby="activity-heading">
-          <h2 id="activity-heading" className="font-semibold">
-            Activity feed
+          <h2 id="activity-heading" className="font-semibold text-[var(--text-heading)]">
+            Operational timeline
           </h2>
           {activity.length === 0 ? (
-            <p className="mt-4 text-sm text-zinc-500">No audit events recorded yet.</p>
+            <p className="mt-4 text-sm text-[var(--text-muted)]">No audit events recorded yet.</p>
           ) : (
-            <ol className="mt-4 max-h-72 space-y-2 overflow-y-auto">
+            <ol className="mt-4 max-h-72 space-y-2 overflow-y-auto scroll-thin">
               {activity.map((item) => (
                 <li
                   key={item.id}
-                  className="rounded-md border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+                  className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-operational)] p-3 text-sm"
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-medium">{item.action}</span>
+                    <span className="font-medium text-[var(--text-heading)]">{item.action}</span>
                     <StatusBadge status={item.outcome} />
                   </div>
-                  <p className="mt-1 text-xs text-zinc-500">
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">
                     {item.actor} ·{" "}
                     <time dateTime={item.timestamp}>
                       {new Date(item.timestamp).toLocaleString()}

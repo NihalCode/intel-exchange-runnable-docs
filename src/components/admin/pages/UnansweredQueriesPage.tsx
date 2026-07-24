@@ -181,7 +181,7 @@ export function UnansweredQueriesPage({
             return (
               <li
                 key={row.id}
-                className="rounded border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800"
+                className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm shadow-[var(--shadow-resting)]"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={row.status} />
@@ -269,10 +269,12 @@ function SummaryCard({
   hint?: string;
 }) {
   return (
-    <div className="rounded border border-zinc-200 px-3 py-2 dark:border-zinc-800">
-      <p className="text-[10px] uppercase tracking-wide text-zinc-400">{label}</p>
-      <p className="text-lg font-semibold tabular-nums">{value}</p>
-      {hint ? <p className="text-[10px] text-zinc-500">{hint}</p> : null}
+    <div className="sf-signal-metric">
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
+        {label}
+      </p>
+      <p className="mt-1 text-lg font-semibold tabular-nums text-[var(--text-heading)]">{value}</p>
+      {hint ? <p className="text-[10px] text-[var(--text-muted)]">{hint}</p> : null}
     </div>
   );
 }

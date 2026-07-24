@@ -1,7 +1,5 @@
 "use client";
 
-import { cardClass } from "@/components/admin/ui/tokens";
-
 export function Sparkline({ values }: { values: number[] }) {
   const max = Math.max(...values, 1);
   const min = Math.min(...values, 0);
@@ -46,17 +44,19 @@ export function MetricCard({
 }) {
   const trendColor =
     trend === "up"
-      ? "text-emerald-600 dark:text-emerald-400"
+      ? "text-[var(--success)]"
       : trend === "down"
-        ? "text-red-600 dark:text-red-400"
+        ? "text-[var(--danger)]"
         : "text-[var(--text-muted)]";
 
   return (
-    <div className={cardClass} data-testid="metric-card">
-      <p className="text-sm text-[var(--text-secondary)]">{label}</p>
+    <div className="sf-signal-metric" data-testid="metric-card" data-layout="sf-signal-metric">
+      <p className="pr-4 text-sm text-[var(--text-secondary)]">{label}</p>
       <div className="mt-2 flex items-end justify-between gap-2">
         <div>
-          <p className="text-2xl font-semibold tabular-nums text-[var(--text-heading)]">{value}</p>
+          <p className="text-2xl font-semibold tabular-nums tracking-tight text-[var(--text-heading)]">
+            {value}
+          </p>
           {change ? <p className={`mt-1 text-xs font-medium ${trendColor}`}>{change}</p> : null}
         </div>
         {sparkline?.length ? <Sparkline values={sparkline} /> : null}

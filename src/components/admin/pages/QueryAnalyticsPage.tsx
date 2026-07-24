@@ -182,7 +182,7 @@ export function QueryAnalyticsPage({
         ) : null}
       </section>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 sf-telemetry-strip">
         <MetricCard label="Logical queries" value={String(summary.totalLogicalQueries)} />
         <MetricCard label="Attempts" value={String(summary.totalAttempts)} />
         <MetricCard label="Answered" value={String(summary.answered)} change={answeredPct} />
