@@ -49,7 +49,7 @@ export function buildInviteEmailHtml(payload: InviteEmailPayload): string {
   <p><strong>Role:</strong> ${escapeHtml(payload.role)}<br/>
   <strong>Invited by:</strong> ${escapeHtml(inviter)}<br/>
   <strong>Expires:</strong> ${escapeHtml(expiry)}</p>
-  <p>Sign in with <strong>${escapeHtml(payload.toEmail)}</strong> — Google or company email must match this address.</p>
+  <p>Sign up or Sign in with <strong>${escapeHtml(payload.toEmail)}</strong> — use that exact email, set a password, then enter the verification code from your authenticator app.</p>
   <p style="margin:24px 0;">
     <a href="${escapeHtml(payload.inviteUrl)}" style="display:inline-block;background:#0284c7;color:#fff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:600;">Accept invite &amp; sign in</a>
   </p>
@@ -75,7 +75,7 @@ export function buildInviteEmailText(payload: InviteEmailPayload): string {
     `Invited by: ${inviter}`,
     `Expires: ${expiry}`,
     "",
-    `Sign in with ${payload.toEmail} (Google or company email must match).`,
+    `Sign up or Sign in with ${payload.toEmail} (exact email; password + verification code).`,
     "",
     `Accept invite: ${payload.inviteUrl}`,
   ].join("\n");

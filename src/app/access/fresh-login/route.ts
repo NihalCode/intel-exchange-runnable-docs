@@ -7,15 +7,10 @@ import {
   FRESH_LOGIN_COOKIE,
   freshLoginCookieOptions,
   normalizeLogoutOrigin,
+  sanitizeFreshLoginReturnTo,
 } from "@/lib/documentation-auth/fresh-login";
 
 export const runtime = "nodejs";
-
-function safeReturnTo(value: string | null): string {
-  const raw = value?.trim();
-  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/";
-  return raw;
-}
 
 function logoutOriginForRequest(request: NextRequest): string {
   const configured = resolveAppBaseUrlFromEnv();
@@ -33,7 +28,9 @@ function logoutOriginForRequest(request: NextRequest): string {
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const modeParam = request.nextUrl.searchParams.get("mode")?.trim();
   const mode = modeParam === "signup" ? "signup" : "login";
-  const returnTo = safeReturnTo(request.nextUrl.searchParams.get("returnTo"));
+  const returnTo = sanitizeFreshLoginReturnTo(
+    request.nextUrl.searchParams.get("returnTo")
+  );
   const origin = logoutOriginForRequest(request);
   const logoutPath = auth0LogoutToOriginPath(origin);
   const response = NextResponse.redirect(new URL(logoutPath, request.url));

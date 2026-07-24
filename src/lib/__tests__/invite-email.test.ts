@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   buildInviteEmailHtml,
   buildInviteEmailSubject,
+  buildInviteEmailText,
   isInviteEmailConfigured,
   sendDocumentationInviteEmail,
 } from "../documentation-auth/invite-email";
@@ -35,6 +36,15 @@ describe("invite email", () => {
     expect(html).toContain("https://docs.example.com/invite?token=abc");
     expect(html).toContain("viewer");
     expect(html).toContain("invite?token=");
+    expect(html).toContain("verification code");
+    expect(html).not.toContain("Google");
+  });
+
+  it("builds text without Google SSO wording", () => {
+    const text = buildInviteEmailText(payload);
+    expect(text).toContain("user@company.com");
+    expect(text).toContain("verification code");
+    expect(text).not.toMatch(/Google/);
   });
 
   it("returns not_configured when API key missing", async () => {

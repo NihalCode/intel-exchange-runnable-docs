@@ -46,11 +46,19 @@ describe("MFA loop regression (local)", () => {
     expect(login).toContain(encodeURIComponent(MFA_ACR_VALUES));
   });
 
+  it("admin MFA step-up uses Okta connection (no Auth0 Guardian ACR) when brokered", () => {
+    process.env.AUTH0_OKTA_CONNECTION = "Cyware-Docs-Auth0";
+    const login = auth0StepUpLoginPath("/admin");
+    expect(login).toContain("connection=Cyware-Docs-Auth0");
+    expect(login).not.toContain("acr_values=");
+    delete process.env.AUTH0_OKTA_CONNECTION;
+  });
+
   it("normal product login never forces prompt=login (one MFA for all tabs/SSO)", () => {
     const silent = auth0LoginPath("/agent");
     expect(silent).toContain("/auth/login?");
     expect(silent).toContain("returnTo=%2Fagent");
-    expect(silent).toContain("connection=Username-Password-Authentication");
+    expect(silent).toContain("connection=Cyware-Docs-Auth0");
     expect(silent).not.toContain("prompt=");
     expect(silent).not.toContain("max_age=");
     expect(silent).not.toContain("acr_values=");

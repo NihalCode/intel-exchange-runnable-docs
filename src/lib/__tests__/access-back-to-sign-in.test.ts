@@ -62,9 +62,10 @@ describe("access gate → Back to sign in", () => {
   });
 
 
-  it("sign-in Continue forces prompt=login when an error interstitial is shown", () => {
+  it("sign-in CTAs clear sticky session via fresh-login; Sign up goes to /sign-up", () => {
     const signIn = source("src/app/sign-in/page.tsx");
-    expect(signIn).toContain('params.set("prompt", "login")');
-    expect(signIn).toContain("Boolean(errorText)");
+    expect(signIn).toContain("freshLoginStartHref");
+    expect(signIn).toContain('freshLoginStartHref("login"');
+    expect(signIn).toContain("/sign-up");
   });
 });

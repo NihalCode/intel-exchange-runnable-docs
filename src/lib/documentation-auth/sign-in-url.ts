@@ -7,7 +7,7 @@ import { normalizeHostname } from "@/lib/domains/normalize";
 import { trustedRequestHostname } from "@/lib/domains/request-host";
 import { authSignInUrl } from "@/lib/domains/urls";
 
-import { getPasswordConnectionOrDefault } from "@/lib/documentation-auth/password-connection";
+import { getAuthConnectionOrDefault } from "@/lib/documentation-auth/password-connection";
 
 function returnToFromRequest(request: NextRequest): string {
   const referer = request.headers.get("referer");
@@ -36,12 +36,12 @@ function returnToFromRequest(request: NextRequest): string {
   return returnTo;
 }
 
-/** Same-origin Auth0 login — always Database connection (email/password UL only). */
+/** Same-origin Auth0 login — Okta Workforce connection when AUTH0_OKTA_CONNECTION is set. */
 export function auth0LoginPath(returnTo = "/"): string {
   const path = returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/";
   const params = new URLSearchParams({
     returnTo: path,
-    connection: getPasswordConnectionOrDefault(),
+    connection: getAuthConnectionOrDefault(),
   });
   return `/auth/login?${params.toString()}`;
 }

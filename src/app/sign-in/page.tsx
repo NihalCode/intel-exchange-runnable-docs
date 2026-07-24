@@ -33,14 +33,14 @@ const ERROR_COPY: Record<string, string> = {
   not_invited:
     "This documentation workspace is invite-only. Ask an administrator to invite your email before signing in.",
   set_password:
-    "You need to set a password first. Use Sign up, then return here to Sign in.",
+    "Set up your account first. You have been added, but your password has not been created yet. Select Sign up to set your password.",
 };
 
 const HINT_COPY: Record<string, string> = {
   set_password:
-    "You need to set a password first. Use Sign up, then return here to Sign in.",
+    "Set up your account first. You have been added, but your password has not been created yet. Select Sign up to set your password.",
   set_password_done:
-    "Password set. Sign in with your email and password, then enter the code from Okta Verify.",
+    "Your account is ready. Sign in with the password you just created.",
 };
 
 export default async function SignInPage({
@@ -84,9 +84,11 @@ export default async function SignInPage({
   const highlightSignUp =
     hint === "set_password" || errorCode === "set_password" || errorCode === "auth_failed";
 
-  // Logout returnTo = app origin only (avoids Auth0 Oops), then proxy starts password UL.
+  // Clear sticky Auth0/Okta broker session, then Okta Workforce email/password + Verify.
   const signInHref = freshLoginStartHref("login", returnTo);
-  const signUpHref = freshLoginStartHref("signup", returnTo);
+  const signUpHref = returnTo
+    ? `/sign-up?returnTo=${encodeURIComponent(returnTo)}`
+    : "/sign-up";
 
   return (
     <div className="cx-split-auth" data-layout="cx-split-auth">
@@ -108,7 +110,7 @@ export default async function SignInPage({
           </p>
           <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in</h1>
           <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
-            Invite-only. Email and password, then your Okta Verify code.
+            Invite-only. Email and password, then the code shown in Okta Verify.
           </p>
         </div>
         <p className="text-xs text-white/50">
@@ -120,10 +122,10 @@ export default async function SignInPage({
 
       <main className="flex items-center justify-center bg-[var(--background-page)] px-4 py-12">
         <div className="w-full max-w-md" data-layout="cx-sign-in-form">
-          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Welcome</h2>
+          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Sign in</h2>
           <p className="mt-2 text-sm text-[var(--text-secondary)]">
-            First time? <strong>Sign up</strong> to create your password. Returning?{" "}
-            <strong>Sign in</strong> with email and password, then the code from Okta Verify.
+            First-time invited users set their password with <strong>Sign up</strong>, then return
+            here.
           </p>
           {hintText ? (
             <div
@@ -199,8 +201,8 @@ export default async function SignInPage({
             className="mt-6 text-xs leading-relaxed text-[var(--text-muted)]"
             data-testid="login-invite-note"
           >
-            Need access? Ask a workspace administrator to Add user with your email. No Google or
-            other providers — email, password, and Okta Verify only.
+            Need access? Ask a workspace administrator to Add user. After Sign up, Sign in with
+            email, password, and the code shown in Okta Verify.
           </p>
         </div>
       </main>

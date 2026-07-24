@@ -26,8 +26,14 @@ export function auth0StepUpLoginPath(returnTo = "/admin"): string {
     returnTo: path,
     prompt: "login",
     max_age: "0",
-    acr_values: MFA_ACR_VALUES,
   });
+  // Okta-authoritative MFA: force the Okta Workforce connection, not Auth0 Guardian.
+  const oktaConnection = process.env.AUTH0_OKTA_CONNECTION?.trim();
+  if (oktaConnection) {
+    params.set("connection", oktaConnection);
+  } else {
+    params.set("acr_values", MFA_ACR_VALUES);
+  }
   return `/auth/login?${params.toString()}`;
 }
 

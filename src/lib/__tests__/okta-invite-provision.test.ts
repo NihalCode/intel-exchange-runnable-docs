@@ -74,11 +74,11 @@ describe("Okta-first invite provision", () => {
     expect(result.user.email).toBe("alice@example.com");
   });
 
-  it("provisionAuth0User uses Okta API only when OKTA_PROVISION_ON_INVITE=true", async () => {
+  it("provisionAuth0User always provisions Okta when Okta API is configured", async () => {
     process.env.OKTA_ORG_URL = "https://example.okta.com";
     process.env.OKTA_API_TOKEN = "ssws-test";
     process.env.OKTA_APP_ID = "0oaTestApp";
-    process.env.OKTA_PROVISION_ON_INVITE = "true";
+    process.env.AUTH0_OKTA_CONNECTION = "Cyware-Docs-Auth0";
     process.env.INVITE_SKIP_IDP_PROVISION = "true";
 
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -108,8 +108,9 @@ describe("Okta-first invite provision", () => {
       email: "alice@example.com",
       displayName: "Alice Example",
     });
-    expect(result.setupStatus).toBe("invite_pending_signup");
+    expect(result.setupStatus).toBe("okta_activation_sent");
     expect(result.created).toBe(true);
+    expect(result.user.user_id).toBe(provisionalAuth0UserIdForEmail("alice@example.com"));
     expect(fetchMock).toHaveBeenCalled();
   });
 

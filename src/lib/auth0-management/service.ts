@@ -264,22 +264,31 @@ async function provisionViaOrganizationInvitation(input: {
   };
 }
 
+function oktaProvisionRequired(): boolean {
+  // Add user provisions Okta only when the Users API is configured.
+  if (!isOktaProvisioningConfigured()) return false;
+  const forceOff =
+    process.env.OKTA_PROVISION_ON_INVITE?.trim().toLowerCase() === "false" ||
+    process.env.OKTA_PROVISION_ON_INVITE?.trim() === "0";
+  // Explicit opt-out only when not on Okta-broker login.
+  if (forceOff && !process.env.AUTH0_OKTA_CONNECTION?.trim()) return false;
+  return true;
+}
+
 export async function provisionAuth0User(input: {
   email: string;
   displayName?: string | null;
   auth0OrganizationId?: string | null;
 }): Promise<{ user: Auth0User; created: boolean; setupStatus: string }> {
-  // Optional: also create the person in Okta Directory (does not replace Auth0 password login).
-  if (
-    isOktaProvisioningConfigured() &&
-    (process.env.OKTA_PROVISION_ON_INVITE?.trim().toLowerCase() === "true" ||
-      process.env.OKTA_PROVISION_ON_INVITE?.trim() === "1")
-  ) {
+  // Okta is authoritative for identity/password/Verify when the Users API is configured.
+  if (oktaProvisionRequired()) {
+    let oktaSetup = "okta_provisioned";
     try {
-      await provisionOktaUser({
+      const result = await provisionOktaUser({
         email: input.email,
         displayName: input.displayName,
       });
+      oktaSetup = result.setupStatus;
     } catch (error) {
       if (error instanceof OktaProvisioningError) throw error;
       throw new OktaProvisioningError(
@@ -287,9 +296,19 @@ export async function provisionAuth0User(input: {
         error instanceof Error ? error.message : undefined
       );
     }
+    // Local invite row + provisional Auth0 id; federated Okta sub links on first Sign in.
+    return {
+      user: {
+        user_id: provisionalAuth0UserIdForEmail(input.email),
+        email: input.email,
+        name: input.displayName ?? undefined,
+      },
+      created: true,
+      setupStatus: oktaSetup,
+    };
   }
 
-  // Invite-only: provisional local row; user sets password via Auth0 Sign up.
+  // Legacy: provisional local row; user sets password via Auth0 Database Sign up.
   if (shouldSkipIdpProvision()) {
     return {
       user: {
