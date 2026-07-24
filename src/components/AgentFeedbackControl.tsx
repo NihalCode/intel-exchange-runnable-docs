@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 
-import { withCsrfHeaders } from "@/lib/csrf-client";
+import {
+  authenticatedFetch,
+  SESSION_RECOVERY_FAILED_MESSAGE,
+} from "@/lib/authenticated-fetch";
+import {
+  clearCsrfTokenCache,
+  getCsrfToken,
+  withCsrfHeaders,
+} from "@/lib/csrf-client";
 import { obtainRecaptchaToken } from "@/lib/recaptcha/client";
 
 type Rating = "up" | "down";
@@ -38,29 +46,63 @@ export function AgentFeedbackControl({
     setError(null);
     try {
       const recaptchaToken = await obtainRecaptchaToken("feedback_submit");
+      const body = JSON.stringify({
+        messageId,
+        rating: next,
+        conversationId: conversationId ?? undefined,
+        turnId: turnId ?? undefined,
+        logicalQueryId: logicalQueryId ?? undefined,
+        productId: productId ?? undefined,
+        recaptchaToken,
+        expectedVersion: feedbackId ? version : undefined,
+      });
       const headers = await withCsrfHeaders({ "Content-Type": "application/json" });
-      const res = await fetch("/api/agent/feedback", {
+      const res = await authenticatedFetch("/api/agent/feedback", {
         method: "POST",
         headers,
-        body: JSON.stringify({
-          messageId,
-          rating: next,
-          conversationId: conversationId ?? undefined,
-          turnId: turnId ?? undefined,
-          logicalQueryId: logicalQueryId ?? undefined,
-          productId: productId ?? undefined,
-          recaptchaToken,
-          expectedVersion: feedbackId ? version : undefined,
-        }),
+        body,
+        credentials: "include",
+        redirectOnFailure: false,
+        treatBare401AsSessionExpired: true,
+        prepareRetry: async (init) => {
+          clearCsrfTokenCache();
+          const token = await getCsrfToken(true);
+          const retryHeaders: Record<string, string> = {
+            "Content-Type": "application/json",
+          };
+          if (token) retryHeaders["X-CSRF-Token"] = token;
+          return {
+            ...init,
+            headers: retryHeaders,
+            body,
+          };
+        },
       });
-      if (!res.ok) throw new Error("save failed");
-      const data = (await res.json()) as { id: string; version: number };
+      const data = (await res.json().catch(() => ({}))) as {
+        id?: string;
+        version?: number;
+        error?: string;
+        code?: string;
+      };
+      if (!res.ok) {
+        if (res.status === 401 || data.code === "SESSION_EXPIRED") {
+          throw new Error(SESSION_RECOVERY_FAILED_MESSAGE);
+        }
+        throw new Error(data.error?.trim() || "Could not save feedback");
+      }
+      if (!data.id || data.version == null) {
+        throw new Error("Could not save feedback");
+      }
       setFeedbackId(data.id);
       setVersion(data.version);
-    } catch {
+    } catch (err) {
       setRating(previous);
       setFeedbackId(previousId);
-      setError("Could not save feedback");
+      setError(
+        err instanceof Error && err.message.trim()
+          ? err.message
+          : "Could not save feedback"
+      );
     } finally {
       setBusy(false);
     }

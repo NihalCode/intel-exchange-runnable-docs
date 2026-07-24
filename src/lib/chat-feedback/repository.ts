@@ -111,6 +111,17 @@ export async function upsertChatFeedback(
       ? String(input.comment).trim().slice(0, 2000)
       : null;
 
+  // Drop stale client conversation/turn ids that are not present (FK would 500).
+  const conversationId = await sanitizeConversationRef(
+    input.organizationId,
+    input.conversationId
+  );
+  const turnId = await sanitizeTurnRef(
+    input.organizationId,
+    conversationId,
+    input.turnId
+  );
+
   if (existing) {
     if (
       input.expectedVersion != null &&
@@ -139,8 +150,8 @@ export async function upsertChatFeedback(
         enc?.ciphertext ?? null,
         enc?.iv ?? null,
         enc?.tag ?? null,
-        input.conversationId ?? null,
-        input.turnId ?? null,
+        conversationId,
+        turnId,
         input.logicalQueryId ?? null,
         input.hostname ?? null,
         input.productId ?? null,
@@ -163,31 +174,60 @@ export async function upsertChatFeedback(
   const id = randomUUID();
   const aad = `feedback:${input.organizationId}:${id}`;
   const enc = comment ? encryptSecret(comment, aad) : null;
-  await db.execute(
-    `INSERT INTO chat_feedback (
-       id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
-       message_id, hostname, product_id, rating,
-       comment_ciphertext, comment_iv, comment_tag,
-       version, created_at, updated_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
-    [
-      id,
-      input.organizationId,
-      input.userId,
-      input.conversationId ?? null,
-      input.turnId ?? null,
-      input.logicalQueryId ?? null,
-      input.messageId,
-      input.hostname ?? null,
-      input.productId ?? null,
-      input.rating,
-      enc?.ciphertext ?? null,
-      enc?.iv ?? null,
-      enc?.tag ?? null,
-      now,
-      now,
-    ]
-  );
+  try {
+    await db.execute(
+      `INSERT INTO chat_feedback (
+         id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
+         message_id, hostname, product_id, rating,
+         comment_ciphertext, comment_iv, comment_tag,
+         version, created_at, updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+      [
+        id,
+        input.organizationId,
+        input.userId,
+        conversationId,
+        turnId,
+        input.logicalQueryId ?? null,
+        input.messageId,
+        input.hostname ?? null,
+        input.productId ?? null,
+        input.rating,
+        enc?.ciphertext ?? null,
+        enc?.iv ?? null,
+        enc?.tag ?? null,
+        now,
+        now,
+      ]
+    );
+  } catch (err) {
+    // Last-resort: persist rating without optional FKs if a constraint still fires.
+    const message = err instanceof Error ? err.message : String(err);
+    if (!/FOREIGN KEY|foreign key/i.test(message)) throw err;
+    await db.execute(
+      `INSERT INTO chat_feedback (
+         id, organization_id, user_id, conversation_id, turn_id, logical_query_id,
+         message_id, hostname, product_id, rating,
+         comment_ciphertext, comment_iv, comment_tag,
+         version, created_at, updated_at
+       ) VALUES (?, ?, ?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`,
+      [
+        id,
+        input.organizationId,
+        input.userId,
+        input.logicalQueryId ?? null,
+        input.messageId,
+        input.hostname ?? null,
+        input.productId ?? null,
+        input.rating,
+        enc?.ciphertext ?? null,
+        enc?.iv ?? null,
+        enc?.tag ?? null,
+        now,
+        now,
+      ]
+    );
+  }
   const created = await getOwnedFeedback({
     organizationId: input.organizationId,
     userId: input.userId,
@@ -195,6 +235,34 @@ export async function upsertChatFeedback(
   });
   if (!created) throw new Error("Failed to create feedback");
   return created;
+}
+
+async function sanitizeConversationRef(
+  organizationId: string,
+  conversationId: string | null | undefined
+): Promise<string | null> {
+  const id = conversationId?.trim();
+  if (!id) return null;
+  const row = await db.queryOne<{ id: string }>(
+    `SELECT id FROM agent_conversations WHERE organization_id = ? AND id = ?`,
+    [organizationId, id]
+  );
+  return row?.id ?? null;
+}
+
+async function sanitizeTurnRef(
+  organizationId: string,
+  conversationId: string | null,
+  turnId: string | null | undefined
+): Promise<string | null> {
+  const id = turnId?.trim();
+  if (!id || !conversationId) return null;
+  const row = await db.queryOne<{ id: string }>(
+    `SELECT id FROM agent_turns
+     WHERE organization_id = ? AND conversation_id = ? AND id = ?`,
+    [organizationId, conversationId, id]
+  );
+  return row?.id ?? null;
 }
 
 export async function updateOwnedFeedback(input: {

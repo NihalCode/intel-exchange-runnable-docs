@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { guardAskAgent } from "@/lib/documentation-auth/guard-api";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
+import { isAnonymousViewerSession } from "@/lib/documentation-auth/anonymous-viewer";
 import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import {
   FeedbackConflictError,
@@ -11,9 +12,16 @@ import {
   parseProductId,
   submitChatFeedback,
 } from "@/lib/chat-feedback/service";
-import { resolveChatFeedbackEnabled, resolveRecaptchaProtectionEnabled } from "@/lib/domains/feature-gates-resolve";
+import { ensureAnonymousFeedbackPrincipal } from "@/lib/chat-feedback/anonymous-principal";
+import {
+  resolveChatFeedbackEnabled,
+  resolveRecaptchaProtectionEnabled,
+} from "@/lib/domains/feature-gates-resolve";
 import { requireMutationCsrf } from "@/lib/enterprise/http";
-import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import {
+  OrganizationContextError,
+  resolveOrganizationContextOrBootstrap,
+} from "@/lib/enterprise/organization-context";
 import { trustedHostnameFromHeaders } from "@/lib/domains/request-host";
 import { verifyRecaptchaToken } from "@/lib/recaptcha/verify";
 import { resolveTrustedClientIp } from "@/lib/security/client-ip";
@@ -34,7 +42,10 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const context = await resolveOrganizationContext(session);
+    const context = isAnonymousViewerSession(session)
+      ? await ensureAnonymousFeedbackPrincipal(session)
+      : await resolveOrganizationContextOrBootstrap(session);
+
     const enabled = await resolveChatFeedbackEnabled({
       organizationId: context.organization.id,
       role: context.principal.role,
@@ -83,7 +94,10 @@ export async function POST(request: NextRequest) {
           { status: 403 }
         );
       }
-      if (verified.degraded && !checkRateLimit(`feedback-degraded:${session.user.id}`, 8, 60_000)) {
+      if (
+        verified.degraded &&
+        !checkRateLimit(`feedback-degraded:${session.user.id}`, 8, 60_000)
+      ) {
         return NextResponse.json({ error: "Too many requests" }, { status: 429 });
       }
     }
@@ -91,7 +105,7 @@ export async function POST(request: NextRequest) {
     const hostname = trustedHostnameFromHeaders(request.headers) ?? null;
     const row = await submitChatFeedback({
       organizationId: context.organization.id,
-      userId: session.user.id,
+      userId: context.principal.userId,
       messageId: body.messageId,
       rating,
       comment: body.comment,
@@ -116,6 +130,23 @@ export async function POST(request: NextRequest) {
     if (error instanceof FeedbackConflictError) {
       return NextResponse.json({ error: "Version conflict" }, { status: 409 });
     }
+    if (error instanceof OrganizationContextError) {
+      return NextResponse.json(
+        {
+          error:
+            "Workspace session is not ready for feedback. Sign in again, then retry.",
+          code: "ORG_CONTEXT_REQUIRED",
+        },
+        { status: 403 }
+      );
+    }
+    console.error(
+      JSON.stringify({
+        level: "error",
+        message: "chat_feedback_save_failed",
+        error: error instanceof Error ? error.message : "unknown",
+      })
+    );
     return NextResponse.json({ error: "Failed to save feedback" }, { status: 500 });
   }
 }

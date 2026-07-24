@@ -42,3 +42,22 @@ describe("anonymous viewer session helper", () => {
     expect(isAnonymousViewerSession(null)).toBe(false);
   });
 });
+
+describe("AgentFeedbackControl CSRF / session recovery", () => {
+  it("posts feedback via authenticatedFetch with CSRF refresh on retry", () => {
+    const source = fs.readFileSync(
+      path.join(process.cwd(), "src/components/AgentFeedbackControl.tsx"),
+      "utf8"
+    );
+    expect(source).toContain("authenticatedFetch");
+    expect(source).toContain('"/api/agent/feedback"');
+    expect(source).toContain("prepareRetry");
+    expect(source).toContain("clearCsrfTokenCache");
+    expect(source).toContain("getCsrfToken(true)");
+    expect(source).toContain("redirectOnFailure: false");
+    expect(source).toContain("data.error");
+    expect(source).not.toMatch(
+      /(?:^|\n)\s*const res = await fetch\(\s*["']\/api\/agent\/feedback["']/m
+    );
+  });
+});

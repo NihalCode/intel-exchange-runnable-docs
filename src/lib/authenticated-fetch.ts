@@ -74,6 +74,9 @@ function isSessionRecoveryApiPath(url: string): boolean {
   if (path === "/api/auth/csrf") return true;
   if (path === "/api/authentication/credentials") return true;
   if (path.startsWith("/api/authentication/credentials/")) return true;
+  if (path === "/api/agent/feedback" || path.startsWith("/api/agent/feedback/")) {
+    return true;
+  }
   return false;
 }
 
