@@ -1,8 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { inputClass, buttonPrimaryClass } from "@/components/admin/ui/tokens";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
+import { createPortal } from "react-dom";
+import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
 import { useProduct } from "@/components/ProductContext";
 import { docsSearchResultHref } from "@/lib/docs-search-href";
 
@@ -19,7 +29,7 @@ export interface DocsSearchHit {
 
 /**
  * Real documentation search against POST /api/docs/search.
- * Respects ProductContext search scope when `respectProductScope` is true.
+ * Results render in a portaled floating panel so hero `overflow: hidden` cannot clip them.
  */
 export function DocsSearch({
   productId: productIdProp,
@@ -46,8 +56,52 @@ export function DocsSearch({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
+  const [mounted, setMounted] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const updatePanelPosition = useCallback(() => {
+    const anchor = wrapRef.current;
+    if (!anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const gutter = 8;
+    const maxWidth = size === "compact" ? Math.max(rect.width, 288) : Math.min(rect.width, 768);
+    const left = Math.min(
+      Math.max(gutter, rect.left),
+      window.innerWidth - maxWidth - gutter
+    );
+    const top = rect.bottom + gutter;
+    const maxHeight = Math.max(180, Math.min(window.innerHeight - top - gutter, 420));
+    setPanelStyle({
+      position: "fixed",
+      top,
+      left,
+      width: maxWidth,
+      maxHeight,
+      zIndex: 80,
+    });
+  }, [size]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    updatePanelPosition();
+    function onReposition() {
+      updatePanelPosition();
+    }
+    window.addEventListener("resize", onReposition);
+    window.addEventListener("scroll", onReposition, true);
+    return () => {
+      window.removeEventListener("resize", onReposition);
+      window.removeEventListener("scroll", onReposition, true);
+    };
+  }, [open, updatePanelPosition, results.length, error, loading]);
 
   const runSearch = useCallback(
     async (q: string) => {
@@ -77,6 +131,7 @@ export function DocsSearch({
         if (!res.ok) throw new Error("search failed");
         const data = (await res.json()) as { results?: DocsSearchHit[] };
         setResults(data.results ?? []);
+        setActiveIndex(0);
         setOpen(true);
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
@@ -97,11 +152,15 @@ export function DocsSearch({
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
-      if (!wrapRef.current?.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (wrapRef.current?.contains(target)) return;
+      const panel = document.getElementById(listId);
+      if (panel?.contains(target)) return;
+      setOpen(false);
     }
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, []);
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [listId]);
 
   const navigateToResult = useCallback(
     (hit: DocsSearchHit) => {
@@ -112,6 +171,112 @@ export function DocsSearch({
     },
     [router]
   );
+
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (!open) return;
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.min(i + 1, Math.max(results.length - 1, 0)));
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIndex((i) => Math.max(i - 1, 0));
+        return;
+      }
+      if (e.key === "Enter" && results[activeIndex]) {
+        e.preventDefault();
+        navigateToResult(results[activeIndex]!);
+      }
+    },
+    [activeIndex, navigateToResult, open, results]
+  );
+
+  const panel =
+    open && mounted
+      ? createPortal(
+          <div
+            id={listId}
+            role="listbox"
+            data-layout="cx-search-overlay"
+            className="sf-search-panel"
+            style={panelStyle}
+          >
+            <div className="sf-search-panel__glow" aria-hidden="true" />
+            <div className="sf-search-panel__head">
+              <span className="sf-search-panel__eyebrow">
+                {loading ? "Scanning corpus…" : error ? "Search issue" : "Documentation hits"}
+              </span>
+              {!loading && !error ? (
+                <span className="sf-search-panel__count">
+                  {results.length} result{results.length === 1 ? "" : "s"}
+                </span>
+              ) : null}
+            </div>
+            <div className="sf-search-panel__body">
+              {error ? (
+                <p className="sf-search-panel__empty" role="alert">
+                  {error}
+                </p>
+              ) : results.length === 0 ? (
+                <div className="sf-search-panel__empty">
+                  <p>{loading ? "Searching indexed endpoints and guides…" : "No matching documentation."}</p>
+                  {!loading ? (
+                    <a href="/agent" className="sf-search-panel__ask">
+                      Ask AI instead →
+                    </a>
+                  ) : null}
+                </div>
+              ) : (
+                <ul className="sf-search-panel__list">
+                  {results.map((hit, i) => {
+                    const active = i === activeIndex;
+                    return (
+                      <li key={hit.id || `${docsSearchResultHref(hit)}-${i}`}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={active}
+                          data-active={active}
+                          className="sf-search-hit"
+                          onMouseEnter={() => setActiveIndex(i)}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => navigateToResult(hit)}
+                        >
+                          <span className="sf-search-hit__title">{hit.title}</span>
+                          <span className="sf-search-hit__meta">
+                            {hit.productId ? (
+                              <span className="sf-search-hit__product">{hit.productId}</span>
+                            ) : null}
+                            {hit.excerpt || hit.snippet ? (
+                              <span className="sf-search-hit__excerpt">
+                                {hit.excerpt || hit.snippet}
+                              </span>
+                            ) : null}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+            <div className="sf-search-panel__foot">
+              <a href="/agent" className="sf-search-panel__ask">
+                Escalate to Ask AI →
+              </a>
+              <span className="sf-search-panel__hint">↑↓ navigate · Enter open · Esc close</span>
+            </div>
+          </div>,
+          document.body
+        )
+      : null;
 
   return (
     <div
@@ -124,6 +289,10 @@ export function DocsSearch({
         role="search"
         onSubmit={(e) => {
           e.preventDefault();
+          if (results[activeIndex]) {
+            navigateToResult(results[activeIndex]!);
+            return;
+          }
           if (results[0]) {
             navigateToResult(results[0]);
             return;
@@ -133,17 +302,20 @@ export function DocsSearch({
         className={`flex gap-2 ${size === "hub" ? "max-w-3xl" : size === "compact" ? "max-w-none" : "max-w-2xl"}`}
       >
         <input
+          ref={inputRef}
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={onKeyDown}
           onFocus={() => {
             if (results.length || error) setOpen(true);
           }}
           aria-label="Search documentation"
           aria-controls={listId}
           aria-autocomplete="list"
+          aria-expanded={open}
           placeholder={placeholder}
-          className={`${inputClass} min-w-0 flex-1 ${
+          className={`sf-search-input min-w-0 flex-1 ${
             size === "hub" ? "py-3.5 text-base" : size === "compact" ? "py-1.5 text-xs" : "py-3"
           }`}
           autoComplete="off"
@@ -151,7 +323,7 @@ export function DocsSearch({
         {size !== "compact" ? (
           <button
             type="submit"
-            className={`${buttonPrimaryClass} ${size === "hub" ? "px-6 py-3.5" : "px-5 py-3"}`}
+            className={`${buttonPrimaryClass} sf-search-submit ${size === "hub" ? "px-6 py-3.5" : "px-5 py-3"}`}
           >
             {loading ? "…" : "Search"}
           </button>
@@ -161,72 +333,7 @@ export function DocsSearch({
           </button>
         )}
       </form>
-
-      {open ? (
-        <div
-          id={listId}
-          role="listbox"
-          data-layout="cx-search-overlay"
-          className={`absolute z-30 mt-2 overflow-hidden border border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-overlay)] ${
-            size === "compact" ? "w-full min-w-[18rem] right-0" : "w-full max-w-3xl"
-          }`}
-          style={{ borderRadius: "var(--radius-md)" }}
-        >
-          {error ? (
-            <p className="px-4 py-3 text-sm text-red-700 dark:text-red-300" role="alert">
-              {error}
-            </p>
-          ) : results.length === 0 ? (
-            <div className="px-4 py-3 text-sm text-[var(--text-secondary)]">
-              <p>{loading ? "Searching…" : "No matching documentation."}</p>
-              {!loading ? (
-                <p className="mt-2">
-                  <a href="/agent" className="font-medium text-[var(--accent-ai)] hover:underline">
-                    Ask AI instead →
-                  </a>
-                </p>
-              ) : null}
-            </div>
-          ) : (
-            <ul className="max-h-80 overflow-y-auto scroll-thin py-1">
-              {results.map((hit, i) => (
-                <li key={hit.id || `${docsSearchResultHref(hit)}-${i}`}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={false}
-                    className="block w-full px-4 py-2.5 text-left hover:bg-[var(--surface-muted)]"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => navigateToResult(hit)}
-                  >
-                    <span className="block text-sm font-medium text-[var(--text-heading)]">
-                      {hit.title}
-                    </span>
-                    <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-[var(--text-muted)]">
-                      {hit.productId ? (
-                        <span className="rounded bg-[var(--surface-muted)] px-1.5 py-0.5 uppercase tracking-wide">
-                          {hit.productId}
-                        </span>
-                      ) : null}
-                      {hit.excerpt || hit.snippet ? (
-                        <span className="line-clamp-1">{hit.excerpt || hit.snippet}</span>
-                      ) : null}
-                    </span>
-                  </button>
-                </li>
-              ))}
-              <li className="border-t border-[var(--border-subtle)] px-4 py-2">
-                <a
-                  href="/agent"
-                  className="text-xs font-medium text-[var(--accent-ai)] hover:underline"
-                >
-                  Escalate to Ask AI →
-                </a>
-              </li>
-            </ul>
-          )}
-        </div>
-      ) : null}
+      {panel}
     </div>
   );
 }

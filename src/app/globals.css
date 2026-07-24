@@ -811,9 +811,182 @@ body {
   pointer-events: none;
 }
 
-.cx-search-hub input {
+.cx-search-hub input,
+.sf-search-input {
   min-height: 3rem;
   font-size: 1rem;
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--product-accent, var(--accent-primary)) 35%, var(--border-default));
+  background: color-mix(in srgb, var(--surface-raised) 92%, var(--product-accent, var(--accent-primary)) 8%);
+  padding-inline: 0.95rem;
+  color: var(--text-primary);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent),
+    var(--shadow-resting);
+  outline: none;
+  transition:
+    border-color var(--motion-fast) var(--ease-standard),
+    box-shadow var(--motion-fast) var(--ease-standard);
+}
+
+.sf-search-input:focus-visible {
+  border-color: var(--product-accent, var(--accent-primary));
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--product-accent, var(--accent-primary)) 35%, transparent),
+    var(--shadow-focused);
+}
+
+.sf-search-submit {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, white 22%, transparent),
+    var(--shadow-resting);
+}
+
+.sf-search-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--product-accent, var(--accent-primary)) 28%, var(--line-default));
+  border-radius: var(--radius-xl);
+  background: var(--surface-floating);
+  box-shadow: var(--shadow-floating);
+  backdrop-filter: blur(10px);
+}
+
+.sf-search-panel__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--product-accent, var(--accent-primary)) 35%,
+    var(--accent-ai) 70%,
+    transparent
+  );
+  opacity: 0.9;
+}
+
+.sf-search-panel__head,
+.sf-search-panel__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--surface-operational);
+}
+
+.sf-search-panel__head {
+  border-bottom: 1px solid var(--line-subtle);
+  padding-top: 0.85rem;
+}
+
+.sf-search-panel__foot {
+  border-top: 1px solid var(--line-subtle);
+}
+
+.sf-search-panel__eyebrow {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+.sf-search-panel__count,
+.sf-search-panel__hint {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.sf-search-panel__body {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sf-search-panel__list {
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+}
+
+.sf-search-hit {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color var(--motion-fast) var(--ease-standard);
+}
+
+.sf-search-hit[data-active="true"],
+.sf-search-hit:hover {
+  background: color-mix(in srgb, var(--product-accent, var(--accent-primary)) 10%, var(--surface-muted));
+}
+
+.sf-search-hit__title {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.sf-search-hit__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.sf-search-hit__product {
+  display: inline-flex;
+  border-radius: 9999px;
+  padding: 0.1rem 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--product-accent, var(--accent-primary));
+  background: color-mix(in srgb, var(--product-accent, var(--accent-primary)) 14%, transparent);
+}
+
+.sf-search-hit__excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.sf-search-panel__empty {
+  padding: 1.1rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.sf-search-panel__ask {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-ai);
+  text-decoration: none;
+}
+
+.sf-search-panel__ask:hover {
+  text-decoration: underline;
+}
+
+.sf-search-panel {
+  position: relative;
 }
 
 /* ── Ask AI — Intelligence operations studio ── */
