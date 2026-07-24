@@ -57,8 +57,8 @@ describe("access gate → Back to sign in", () => {
 
   it("does not client-redirect accessDenied away from the anonymous hub", () => {
     const provider = source("src/components/auth/DocumentationAuthProvider.tsx");
-    expect(provider).toContain("isAnonymousHubPath");
-    expect(provider).toContain("if (isAnonymousHubPath(pathname)) return;");
+    expect(provider).toContain("isAnonymousViewerPath");
+    expect(provider).toContain("if (isAnonymousViewerPath(pathname)) return;");
   });
 
 

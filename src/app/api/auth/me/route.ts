@@ -92,7 +92,8 @@ export async function GET() {
       : null,
     permissions: [],
     enterpriseCapabilities: [],
-    canAskAi: false,
+    // Anonymous viewers may open Ask AI; snippet Run stays gated client + /api/run.
+    canAskAi: true,
     user: null,
   });
 }

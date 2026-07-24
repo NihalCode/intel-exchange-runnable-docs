@@ -91,6 +91,7 @@ export function CommandPalette() {
     }
 
     const canAsk =
+      !state.authenticated ||
       state.canAskAi ||
       (state.authenticated &&
         hasPermission("ask_agent") &&

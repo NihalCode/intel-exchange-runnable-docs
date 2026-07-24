@@ -14,9 +14,10 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
   const [copied, setCopied] = useState(false);
   const { baseUrl } = useRunSettings();
   const { hasPermission, state } = useDocumentationAuth();
-  // Align with /api/run (`test_snippets`). Unauthenticated local/dev may still run.
-  const canRunSnippets =
-    !state.authenticated || hasPermission("test_snippets");
+  // Align with /api/run (`test_snippets`). Anonymous viewers are view-only.
+  const canRunSnippets = state.authenticated
+    ? hasPermission("test_snippets")
+    : state.authProvider === "disabled";
   const displayCode = useMemo(
     () => applyRuntimeBaseUrl(snippet.code, baseUrl),
     [snippet.code, baseUrl]

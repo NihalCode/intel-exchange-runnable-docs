@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   guardAskAgent,
 } from "@/lib/documentation-auth/guard-api";
+import { isAnonymousViewerSession } from "@/lib/documentation-auth/anonymous-viewer";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { checkRateLimit } from "@/lib/documentation-auth/rate-limit";
 import { requireMutationCsrf } from "@/lib/enterprise/http";
@@ -29,7 +30,7 @@ import {
   recordTerminalAnalyticsSafe,
 } from "@/lib/query-analytics/service";
 import { resolveAppProductId, coerceAgentProductId } from "@/lib/deployment/resolve-app-product-id";
-import { isProductKey, type ProductKey } from "@/lib/products/registry";
+import { isProductKey, listProducts, type ProductKey } from "@/lib/products/registry";
 import { OpenAiNotConfiguredError, sanitizeProviderError } from "@/lib/openai/client";
 import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
 import { resolveTrustedClientIp } from "@/lib/security/client-ip";
@@ -75,7 +76,10 @@ export async function POST(req: Request) {
     if (csrfFailure) return csrfFailure;
   }
 
-  if (!checkRateLimit(`agent:${session.user.id}`, 30, 60_000)) {
+  const rateKey = isAnonymousViewerSession(session)
+    ? `agent:anon:${resolveTrustedClientIp(req.headers) ?? "unknown"}`
+    : `agent:${session.user.id}`;
+  if (!checkRateLimit(rateKey, 30, 60_000)) {
     return Response.json({ error: "Too many requests" }, { status: 429, headers: responseHeaders });
   }
 
@@ -116,9 +120,14 @@ export async function POST(req: Request) {
         { status: 400, headers: responseHeaders }
       );
     }
-    // Fail closed for Build App: check the flag without re-entering guardAskAgent
-    // (a second session/feature pass was returning opaque 500s on production).
+    // Fail closed for Build App: anonymous viewers cannot use app builder.
     if (body.mode === "app" || body.existingApp || isAppBuilderQuery(body.query ?? "")) {
+      if (isAnonymousViewerSession(session)) {
+        return Response.json(
+          { error: "Feature unavailable", code: "FEATURE_DISABLED" },
+          { status: 403, headers: responseHeaders }
+        );
+      }
       if (isAuthEnabled() || process.env.NODE_ENV === "production") {
         try {
           const context = await resolveOrganizationContext(session);
@@ -167,7 +176,19 @@ export async function POST(req: Request) {
     }
 
     let allowedProductIds: string[] | undefined;
-    if (isAuthEnabled() || process.env.NODE_ENV === "production") {
+    if (isAnonymousViewerSession(session)) {
+      // Docs-only Ask AI: host-pinned product or full catalog; no org/credential gate.
+      const pinnedOrHost =
+        pinnedProduct ??
+        (hostContext?.productId && isProductKey(hostContext.productId)
+          ? hostContext.productId
+          : null);
+      allowedProductIds = pinnedOrHost
+        ? [pinnedOrHost]
+        : listProducts().map((p) => p.productId);
+      organizationId = undefined;
+      analyticsUserId = undefined;
+    } else if (isAuthEnabled() || process.env.NODE_ENV === "production") {
       const context = await resolveOrganizationContext(session);
       organizationId = context.organization.id;
       analyticsUserId = context.principal.userId;

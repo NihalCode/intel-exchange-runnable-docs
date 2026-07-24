@@ -2,13 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   isAnonymousHubPath,
+  isAnonymousViewerPath,
   isProtectedPath,
   isPublicApiPath,
   isPublicPagePath,
 } from "@/lib/documentation-auth/route-policy";
 
-describe("documentation route policy — Auth0-gated app", () => {
-  it("protects documentation and application pages", () => {
+describe("documentation route policy — anonymous viewer + gated admin", () => {
+  it("allows anonymous viewer pages without Auth0", () => {
     for (const pathname of [
       "/",
       "/docs",
@@ -16,8 +17,18 @@ describe("documentation route policy — Auth0-gated app", () => {
       "/guides",
       "/changelog",
       "/agent",
+    ]) {
+      expect(isPublicPagePath(pathname)).toBe(true);
+      expect(isAnonymousViewerPath(pathname)).toBe(true);
+      expect(isProtectedPath(pathname)).toBe(false);
+    }
+  });
+
+  it("keeps authentication, settings, admin, and developer gated", () => {
+    for (const pathname of [
       "/authentication",
       "/settings",
+      "/settings/users",
       "/admin",
       "/developer",
     ]) {
@@ -26,14 +37,14 @@ describe("documentation route policy — Auth0-gated app", () => {
     }
   });
 
-  it("marks only the product hub as anonymously browsable", () => {
+  it("marks anonymous viewer paths for client auth provider", () => {
     expect(isAnonymousHubPath("/")).toBe(true);
-    expect(isAnonymousHubPath("")).toBe(true);
-    expect(isAnonymousHubPath("/docs")).toBe(false);
-    expect(isAnonymousHubPath("/access/wrong-email")).toBe(false);
+    expect(isAnonymousViewerPath("/agent")).toBe(true);
+    expect(isAnonymousViewerPath("/docs/ctix")).toBe(true);
+    expect(isAnonymousViewerPath("/access/wrong-email")).toBe(false);
   });
 
-  it("allows authentication UX paths only", () => {
+  it("allows authentication UX paths", () => {
     for (const pathname of [
       "/auth",
       "/auth/callback",
@@ -48,31 +59,36 @@ describe("documentation route policy — Auth0-gated app", () => {
     }
   });
 
-  it("allows only health and auth probe APIs", () => {
+  it("allows health, auth probes, CSRF, Ask AI chat, docs search, and product metadata", () => {
     for (const pathname of [
       "/api/auth/invite-check",
       "/api/auth/session",
       "/api/auth/me",
+      "/api/auth/csrf",
       "/api/auth/okta-signup",
       "/api/invites/validate",
       "/api/health/live",
       "/api/health/ready",
+      "/api/docs/search",
+      "/api/products",
+      "/api/products/ctix",
+      "/api/agent",
     ]) {
       expect(isPublicApiPath(pathname)).toBe(true);
       expect(isProtectedPath(pathname)).toBe(false);
     }
   });
 
-  it("protects product, search, agent, and execution APIs", () => {
+  it("protects credential, run, admin, and agent mutation APIs", () => {
     for (const pathname of [
-      "/api/products",
-      "/api/products/ctix",
-      "/api/docs/search",
-      "/api/agent",
       "/api/run",
       "/api/authentication/credentials",
       "/api/authentication/credentials/session",
       "/api/admin/control-plane/context",
+      "/api/agent/commit",
+      "/api/agent/deploy",
+      "/api/agent/conversations",
+      "/api/products/ctix/ingest",
     ]) {
       expect(isPublicApiPath(pathname)).toBe(false);
       expect(isProtectedPath(pathname)).toBe(true);

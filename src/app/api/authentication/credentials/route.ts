@@ -12,7 +12,13 @@ import {
   isDocumentationProduct,
   type DocumentationProduct,
 } from "@/lib/documentation-credentials/types";
-import { guardEnterpriseApi } from "@/lib/enterprise/guard";
+import { requireSession } from "@/lib/documentation-auth/session";
+import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
+import {
+  CSRF_COOKIE_NAME,
+  createCsrfToken,
+  csrfCookieOptions,
+} from "@/lib/enterprise/csrf";
 import {
   ApiInputError,
   auditApiEvent,
@@ -23,22 +29,40 @@ import {
   requireMutationCsrf,
   requiredString,
 } from "@/lib/enterprise/http";
+import type { EnterpriseAccess } from "@/lib/enterprise/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/** Any signed-in workspace user may manage their own product Open API connections. */
+async function requireCredentialSession(
+  request: NextRequest
+): Promise<EnterpriseAccess | NextResponse> {
+  const session = await requireSession(request);
+  if (session instanceof NextResponse) return session;
+  try {
+    const context = await resolveOrganizationContext(session);
+    return { session, context };
+  } catch {
+    return controlPlaneJson({ error: "Forbidden" }, { status: 403 });
+  }
+}
+
 export async function GET(request: NextRequest) {
-  const access = await guardEnterpriseApi(request, "credentials.read_metadata");
+  const access = await requireCredentialSession(request);
   if (access instanceof NextResponse) return access;
   const credentials = await listCredentialMetadata(
     access.context.organization.id,
     access.session.user.id
   );
-  return controlPlaneJson({ credentials });
+  const csrfToken = createCsrfToken();
+  const response = controlPlaneJson({ credentials, csrfToken });
+  response.cookies.set(CSRF_COOKIE_NAME, csrfToken, csrfCookieOptions());
+  return response;
 }
 
 export async function POST(request: NextRequest) {
-  const access = await guardEnterpriseApi(request, "credentials.read_metadata");
+  const access = await requireCredentialSession(request);
   if (access instanceof NextResponse) return access;
   const csrfFailure = requireMutationCsrf(request);
   if (csrfFailure) return csrfFailure;
@@ -77,7 +101,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const access = await guardEnterpriseApi(request, "credentials.read_metadata");
+  const access = await requireCredentialSession(request);
   if (access instanceof NextResponse) return access;
   const csrfFailure = requireMutationCsrf(request);
   if (csrfFailure) return csrfFailure;

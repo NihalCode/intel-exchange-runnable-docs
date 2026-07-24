@@ -1,4 +1,4 @@
-/** Auth UX and health endpoints only — the documentation app itself is Auth0-gated. */
+/** Auth UX paths — always reachable without an app session. */
 const PUBLIC_PAGE_PREFIXES = [
   "/auth",
   "/sign-in",
@@ -9,12 +9,10 @@ const PUBLIC_PAGE_PREFIXES = [
 ];
 
 /**
- * Product hub routes that stay readable without an app session (viewer-style
- * landing + Sign in). Docs/agent/admin still require invite-backed login.
- * Host-routed product deployments already skip the edge Auth0 redirect for
- * these; the client auth provider must not yank users to /access/* either.
+ * Anonymous viewer surfaces: browse docs + Ask AI without signing in.
+ * Admin/settings/authentication stay Auth0-gated.
  */
-const ANONYMOUS_HUB_PATHS = new Set(["/", ""]);
+const ANONYMOUS_VIEWER_PAGE_PREFIXES = ["/docs", "/guides", "/changelog", "/agent"];
 
 const PUBLIC_API_EXACT = [
   "/api/auth/invite-check",
@@ -22,36 +20,53 @@ const PUBLIC_API_EXACT = [
   "/api/auth/me",
   "/api/auth/setup-status",
   "/api/auth/okta-signup",
+  "/api/auth/csrf",
   "/api/invites/validate",
   "/api/health/live",
   "/api/health/ready",
   "/api/health/auth",
+  "/api/docs/search",
+  "/api/products",
+  /** Ask AI chat only — nested mutate/deploy routes stay protected. */
+  "/api/agent",
 ];
-
-/** Product catalog metadata remains readable pre-login for invite/setup pages only when needed.
- * With full Auth0 gate, protect product/search APIs as well. */
-const PUBLIC_API_PREFIXES: string[] = [];
 
 function matchesExactOrDescendant(pathname: string, path: string): boolean {
   return pathname === path || pathname.startsWith(`${path}/`);
 }
 
+/** Product catalog metadata reads (`/api/products/ctix`) — not `/ingest` mutations. */
+function isPublicProductMetadataPath(pathname: string): boolean {
+  return /^\/api\/products\/[^/]+$/.test(pathname);
+}
+
 export function isPublicPagePath(pathname: string): boolean {
+  if (isAnonymousViewerPath(pathname)) return true;
   return PUBLIC_PAGE_PREFIXES.some((path) =>
     matchesExactOrDescendant(pathname, path)
   );
 }
 
-/** True for the public product hub — browse without signing in. */
+/**
+ * True for anonymous-viewer browsable pages (hub, docs, Ask AI, guides, changelog).
+ * Used by the client auth provider so invite failures do not yank users off these routes.
+ */
+export function isAnonymousViewerPath(pathname: string): boolean {
+  if (pathname === "/" || pathname === "") return true;
+  return ANONYMOUS_VIEWER_PAGE_PREFIXES.some((path) =>
+    matchesExactOrDescendant(pathname, path)
+  );
+}
+
+/** @deprecated Prefer isAnonymousViewerPath — hub is part of anonymous viewer browsing. */
 export function isAnonymousHubPath(pathname: string): boolean {
-  return ANONYMOUS_HUB_PATHS.has(pathname);
+  return isAnonymousViewerPath(pathname);
 }
 
 export function isPublicApiPath(pathname: string): boolean {
   if (PUBLIC_API_EXACT.includes(pathname)) return true;
-  return PUBLIC_API_PREFIXES.some((path) =>
-    matchesExactOrDescendant(pathname, path)
-  );
+  if (isPublicProductMetadataPath(pathname)) return true;
+  return false;
 }
 
 export function isProtectedPath(pathname: string): boolean {

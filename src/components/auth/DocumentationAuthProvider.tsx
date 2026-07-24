@@ -13,7 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { DocumentationPermission, DocumentationRole } from "@/lib/documentation-auth/types";
 import { hasPermission } from "@/lib/documentation-auth/permissions";
 import {
-  isAnonymousHubPath,
+  isAnonymousViewerPath,
   isPublicPagePath,
 } from "@/lib/documentation-auth/route-policy";
 
@@ -93,9 +93,8 @@ export function DocumentationAuthProvider({ children }: { children: React.ReactN
 
   useEffect(() => {
     if (state.loading || isPublicPagePath(pathname)) return;
-    // Product hub stays viewable with Sign in even when Auth0 login failed
-    // invite/identity checks — do not trap users on /access/wrong-email.
-    if (isAnonymousHubPath(pathname)) return;
+    // Docs / Ask AI / hub stay viewable without a workspace session.
+    if (isAnonymousViewerPath(pathname)) return;
 
     if (state.accessDenied?.redirectTo) {
       router.replace(state.accessDenied.redirectTo);

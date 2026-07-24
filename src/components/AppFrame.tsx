@@ -23,7 +23,9 @@ import {
 function AskAiNavLink({ pathname }: { pathname: string }) {
   const { state, hasPermission } = useDocumentationAuth();
   if (state.loading) return null;
+  // Anonymous viewers + roles with Ask AI. Signed-in viewers still need canAskAi flag.
   const allowed =
+    !state.authenticated ||
     state.canAskAi ||
     (state.authenticated &&
       hasPermission("ask_agent") &&
@@ -94,6 +96,7 @@ function MobileDrawerWorkspaceLinks({
       href: "/agent",
       label: "Ask AI",
       show:
+        !state.authenticated ||
         state.canAskAi ||
         (state.authenticated &&
           hasPermission("ask_agent") &&

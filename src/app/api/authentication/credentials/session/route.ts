@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { guardEnterpriseApi } from "@/lib/enterprise/guard";
+import { requireSession } from "@/lib/documentation-auth/session";
+import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import {
   ApiInputError,
   controlPlaneJson,
@@ -20,8 +21,13 @@ export const dynamic = "force-dynamic";
  * only for the current tab session and are never persisted server-side.
  */
 export async function POST(request: NextRequest) {
-  const access = await guardEnterpriseApi(request, "credentials.read_metadata");
-  if (access instanceof NextResponse) return access;
+  const session = await requireSession(request);
+  if (session instanceof NextResponse) return session;
+  try {
+    await resolveOrganizationContext(session);
+  } catch {
+    return controlPlaneJson({ error: "Forbidden" }, { status: 403 });
+  }
   const csrfFailure = requireMutationCsrf(request);
   if (csrfFailure) return csrfFailure;
 

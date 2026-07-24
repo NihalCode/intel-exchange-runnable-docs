@@ -7,6 +7,10 @@ import {
   requireSession,
   type AppSession,
 } from "@/lib/documentation-auth/session";
+import {
+  anonymousViewerSession,
+  isAnonymousViewerSession,
+} from "@/lib/documentation-auth/anonymous-viewer";
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { verifyDeveloperRequest } from "@/lib/developer/access";
 import { DEVELOPER_ACCESS_UNAVAILABLE_MESSAGE } from "@/lib/user-facing-errors";
@@ -88,8 +92,17 @@ export async function guardReadDocs(request: NextRequest): Promise<AppSession | 
 }
 
 export async function guardAskAgent(request: NextRequest): Promise<AppSession | NextResponse> {
+  // Unsigned viewers may use Ask AI chat (snippets/run stay gated elsewhere).
+  if (isAuthEnabled()) {
+    const result = await getAppSessionResult(request);
+    if (!result.session) {
+      return anonymousViewerSession();
+    }
+  }
+
   const session = await guardDocumentationApi(request, "ask_agent");
   if (session instanceof NextResponse) return session;
+  if (isAnonymousViewerSession(session)) return session;
 
   // Local AUTH_DISABLED: still honor x-test-role Viewer gate for parity with production.
   if (!isAuthEnabled() && process.env.NODE_ENV !== "production") {
@@ -135,7 +148,8 @@ export async function guardAskAgent(request: NextRequest): Promise<AppSession | 
       );
     }
 
-    // Viewer Ask AI is opt-in via feature flag (default OFF).
+    // Signed-in Viewer Ask AI is opt-in via feature flag (default OFF).
+    // Anonymous viewers are handled above and do not hit this branch.
     if (context.principal.role === "viewer" || session.user.role === "viewer") {
       const viewerAllowed = await resolveViewerAskAiAccessEnabled({
         organizationId: context.organization.id,

@@ -54,18 +54,32 @@ function requestUrl(input: RequestInfo | URL): string {
   return input.url;
 }
 
-function isUsersApiPath(url: string): boolean {
+function apiPathname(url: string): string {
   try {
-    const path = url.startsWith("http") ? new URL(url).pathname : url.split("?")[0] ?? url;
-    return path === "/api/users" || path.startsWith("/api/users/");
+    return url.startsWith("http") ? new URL(url).pathname : url.split("?")[0] ?? url;
   } catch {
-    return url.includes("/api/users");
+    return url;
   }
+}
+
+function isUsersApiPath(url: string): boolean {
+  const path = apiPathname(url);
+  return path === "/api/users" || path.startsWith("/api/users/");
+}
+
+/** Auth-sensitive APIs where a bare 401 often means a rolling Auth0 cookie settle. */
+function isSessionRecoveryApiPath(url: string): boolean {
+  const path = apiPathname(url);
+  if (isUsersApiPath(url)) return true;
+  if (path === "/api/auth/csrf") return true;
+  if (path === "/api/authentication/credentials") return true;
+  if (path.startsWith("/api/authentication/credentials/")) return true;
+  return false;
 }
 
 function defaultTreatBare401(url: string, explicit?: boolean): boolean {
   if (typeof explicit === "boolean") return explicit;
-  return isUsersApiPath(url);
+  return isSessionRecoveryApiPath(url);
 }
 
 /** Bodies we can safely send again after SESSION_EXPIRED (mutation never started). */

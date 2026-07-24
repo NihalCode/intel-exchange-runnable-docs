@@ -1,6 +1,3 @@
-import { requireProtectedWorkspace } from "@/lib/documentation-auth/protect-layout";
-
-export default async function AgentLayout({ children }: { children: React.ReactNode }) {
-  await requireProtectedWorkspace();
+export default function AgentLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

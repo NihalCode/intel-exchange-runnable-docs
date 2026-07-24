@@ -1,8 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
 import { useRunSettings } from "@/components/RunSettings";
+import {
+  authenticatedFetch,
+  SESSION_RECOVERY_FAILED_MESSAGE,
+  type SessionRecoveryState,
+} from "@/lib/authenticated-fetch";
 import { clearCsrfTokenCache, getCsrfToken } from "@/lib/csrf-client";
 
 type ProductId = "ctix" | "cftr" | "orchestrate" | "csap";
@@ -90,14 +95,15 @@ function connectFailureMessage(
     return "Could not reach the Base URL. Check the URL and network access.";
   }
   if (status === 400 && data.error) return data.error;
+  if (status === 401 || data.code === "SESSION_EXPIRED") {
+    return SESSION_RECOVERY_FAILED_MESSAGE;
+  }
   return "Connection could not be validated. Check the URL and credentials.";
 }
 
 /**
  * Credentials live on the product auth surface (not admin control-plane).
- * Fetch CSRF from /api/auth/csrf — control-plane/context is admin-gated and
- * returns 403 for non-admin users, which previously surfaced as a generic
- * "Connection could not be validated" for Orchestrate Test & connect.
+ * Fetch CSRF via authenticatedFetch + session recovery (same pattern as Users).
  */
 async function csrfToken(): Promise<string> {
   clearCsrfTokenCache();
@@ -126,6 +132,8 @@ export function CredentialManager() {
   >({});
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<Record<string, string>>({});
+  const [, setRecoveryState] = useState<SessionRecoveryState>("idle");
+  const csrfRef = useRef<string | null>(null);
 
   const connectedCount = useMemo(
     () => credentials.filter((item) => item.status === "valid").length,
@@ -137,9 +145,19 @@ export function CredentialManager() {
   const form = forms[product.id] ?? { baseUrl: "", accessId: "", secretKey: "" };
 
   async function load() {
-    const response = await fetch("/api/authentication/credentials", { cache: "no-store" });
+    const response = await authenticatedFetch("/api/authentication/credentials", {
+      cache: "no-store",
+      redirectOnFailure: false,
+      treatBare401AsSessionExpired: true,
+      onRecoveryStateChange: setRecoveryState,
+    });
     if (response.ok) {
-      setCredentials(((await response.json()) as { credentials: Credential[] }).credentials);
+      const data = (await response.json()) as {
+        credentials: Credential[];
+        csrfToken?: string;
+      };
+      setCredentials(data.credentials);
+      if (data.csrfToken) csrfRef.current = data.csrfToken;
     }
   }
 
@@ -159,6 +177,13 @@ export function CredentialManager() {
     }));
   }
 
+  async function ensureCsrf(): Promise<string> {
+    if (csrfRef.current) return csrfRef.current;
+    const token = await csrfToken();
+    csrfRef.current = token;
+    return token;
+  }
+
   async function connect(productId: ProductId) {
     const formValues = forms[productId];
     if (!formValues?.baseUrl?.trim()) {
@@ -176,11 +201,36 @@ export function CredentialManager() {
     setBusy(productId);
     setMessage((value) => ({ ...value, [productId]: "" }));
     try {
-      const token = await csrfToken();
-      const response = await fetch("/api/authentication/credentials", {
+      const body = JSON.stringify({ productId, ...formValues });
+      const response = await authenticatedFetch("/api/authentication/credentials", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
-        body: JSON.stringify({ productId, ...formValues }),
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": await ensureCsrf(),
+        },
+        body,
+        treatBare401AsSessionExpired: true,
+        onRecoveryStateChange: (next) => {
+          setRecoveryState(next);
+          if (next === "recovering") {
+            csrfRef.current = null;
+            clearCsrfTokenCache();
+          }
+        },
+        prepareRetry: async (init) => {
+          csrfRef.current = null;
+          clearCsrfTokenCache();
+          const token = await ensureCsrf();
+          return {
+            ...init,
+            headers: {
+              ...(init.headers as Record<string, string>),
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+            },
+            body,
+          };
+        },
       });
       const data = (await response.json()) as {
         credential?: Credential;
@@ -235,10 +285,23 @@ export function CredentialManager() {
   async function disconnect(productId: ProductId) {
     setBusy(productId);
     try {
-      const token = await csrfToken();
-      await fetch(`/api/authentication/credentials?productId=${productId}`, {
+      await authenticatedFetch(`/api/authentication/credentials?productId=${productId}`, {
         method: "DELETE",
-        headers: { "X-CSRF-Token": token },
+        headers: { "X-CSRF-Token": await ensureCsrf() },
+        treatBare401AsSessionExpired: true,
+        onRecoveryStateChange: setRecoveryState,
+        prepareRetry: async (init) => {
+          csrfRef.current = null;
+          clearCsrfTokenCache();
+          const token = await ensureCsrf();
+          return {
+            ...init,
+            headers: {
+              ...(init.headers as Record<string, string>),
+              "X-CSRF-Token": token,
+            },
+          };
+        },
       });
       clearCredentials();
       setForms((current) => ({

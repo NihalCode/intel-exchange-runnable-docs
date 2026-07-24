@@ -32,13 +32,8 @@ describe("documentation UI credential boundaries", () => {
     expect(agentPage).toContain("mergeEnsuredProductIds");
   });
 
-  it("protects docs and application areas behind authentication", () => {
+  it("protects privileged application areas behind authentication", () => {
     for (const route of [
-      "/",
-      "/docs/ctix",
-      "/guides",
-      "/changelog",
-      "/agent",
       "/authentication",
       "/settings/profile",
       "/admin",
@@ -47,18 +42,22 @@ describe("documentation UI credential boundaries", () => {
       expect(isProtectedDocumentationPath(route)).toBe(true);
     }
     expect(isProtectedDocumentationPath("/sign-in")).toBe(false);
+    expect(isProtectedDocumentationPath("/agent")).toBe(false);
+    expect(isProtectedDocumentationPath("/docs/ctix")).toBe(false);
   });
 
   it("aligns snippet Run UI with test_snippets permission (not role!==viewer)", () => {
     const codeBlock = source("src/components/CodeBlock.tsx");
     expect(codeBlock).toContain('hasPermission("test_snippets")');
     expect(codeBlock).not.toContain('role !== "viewer"');
+    expect(codeBlock).toContain("state.authenticated");
   });
 
-  it("gates Viewer Ask AI on viewer_ask_ai_access_enabled", () => {
+  it("gates signed-in Viewer Ask AI on viewer_ask_ai_access_enabled", () => {
     const agentPage = source("src/app/agent/page.tsx");
     expect(agentPage).toContain("resolveViewerAskAiAccessEnabled");
     expect(agentPage).toContain('session.user.role === "viewer"');
     expect(agentPage).toContain("notFound()");
+    expect(agentPage).toContain("Unsigned viewers");
   });
 });

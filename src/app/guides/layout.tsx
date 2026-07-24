@@ -1,8 +1,3 @@
-import { requireProtectedWorkspace } from "@/lib/documentation-auth/protect-layout";
-
-export const dynamic = "force-dynamic";
-
-export default async function GuidesLayout({ children }: { children: React.ReactNode }) {
-  await requireProtectedWorkspace();
+export default function GuidesLayout({ children }: { children: React.ReactNode }) {
   return children;
 }
