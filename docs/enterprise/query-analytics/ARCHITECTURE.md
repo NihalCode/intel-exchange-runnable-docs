@@ -27,7 +27,7 @@ Cancel and agent error paths must finalize analytics the same way as success.
 | Attempt | UUID (`attempt_id`) | Unique per `(organization_id, attempt_id)` |
 | Explicit user retry | Same logical query, new attempt | Provider retries stay under same attempt |
 
-Logical count increments only when a new turn is accepted. Double-click, reconnect, and idempotent duplicate submissions must not inflate logical counts.
+Logical count increments only when a new turn is accepted. Double-click, reconnect, and idempotent duplicate submissions must not inflate logical counts. Admin outcome cards use **`query_logical_queries.terminal_outcome`** when present (with a latest-event fallback for projection-only rows); attempt totals still include every projection row so retries do not inflate answered/unanswered cards.
 
 ## Outcomes
 

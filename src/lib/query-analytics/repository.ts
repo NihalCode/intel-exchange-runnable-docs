@@ -59,12 +59,56 @@ SELECT id FROM query_analytics_events
 WHERE organization_id = ? AND attempt_id = ?
 `;
 
+/**
+ * Logical counts prefer authoritative query_logical_queries.terminal_outcome.
+ * Projection-only rows (no logical parent) fall back to latest event per id.
+ * Attempt counts still include every projection row.
+ */
 const SUMMARIZE_ANALYTICS_SQL = `
 SELECT outcome,
-  COUNT(DISTINCT logical_query_id) AS logical_count,
-  COUNT(*) AS attempt_count
-FROM query_analytics_events
-WHERE organization_id = ? AND created_at >= ?
+  SUM(logical_count) AS logical_count,
+  SUM(attempt_count) AS attempt_count
+FROM (
+  SELECT q.terminal_outcome AS outcome,
+    COUNT(*) AS logical_count,
+    0 AS attempt_count
+  FROM query_logical_queries q
+  WHERE q.organization_id = ?
+    AND q.created_at >= ?
+    AND q.terminal_outcome IS NOT NULL
+  GROUP BY q.terminal_outcome
+  UNION ALL
+  SELECT e.outcome AS outcome,
+    COUNT(*) AS logical_count,
+    0 AS attempt_count
+  FROM query_analytics_events e
+  WHERE e.organization_id = ?
+    AND e.created_at >= ?
+    AND NOT EXISTS (
+      SELECT 1 FROM query_logical_queries q
+      WHERE q.organization_id = e.organization_id
+        AND q.logical_query_id = e.logical_query_id
+    )
+    AND e.id = (
+      SELECT e2.id
+      FROM query_analytics_events e2
+      WHERE e2.organization_id = e.organization_id
+        AND e2.logical_query_id = e.logical_query_id
+        AND e2.created_at >= ?
+      ORDER BY e2.created_at DESC,
+        CASE WHEN e2.outcome = 'cancelled' THEN 0 ELSE 1 END DESC,
+        e2.id DESC
+      LIMIT 1
+    )
+  GROUP BY e.outcome
+  UNION ALL
+  SELECT outcome,
+    0 AS logical_count,
+    COUNT(*) AS attempt_count
+  FROM query_analytics_events
+  WHERE organization_id = ? AND created_at >= ?
+  GROUP BY outcome
+) parts
 GROUP BY outcome
 `;
 
@@ -145,14 +189,58 @@ AND (CAST(? AS TEXT) IS NULL OR outcome = CAST(? AS TEXT))
 /** Open-ended upper bound when callers omit untilIso. */
 const FILTER_UNTIL_OPEN_ENDED = "9999-12-31T23:59:59.999Z";
 
-const SUMMARIZE_FILTERED_SQL =
+const SUMMARIZE_FILTERED_ATTEMPTS_SQL =
   "SELECT outcome,\n" +
-  "  COUNT(DISTINCT logical_query_id) AS logical_count,\n" +
+  "  0 AS logical_count,\n" +
   "  COUNT(*) AS attempt_count\n" +
   "FROM query_analytics_events\n" +
   "WHERE " +
   FILTERED_ANALYTICS_WHERE_SQL +
   "\nGROUP BY outcome";
+
+/**
+ * Terminal logical counts from authoritative logical rows, with projection-only fallback.
+ */
+const SUMMARIZE_FILTERED_LOGICAL_SQL =
+  "SELECT outcome, SUM(logical_count) AS logical_count, 0 AS attempt_count FROM (\n" +
+  "  SELECT q.terminal_outcome AS outcome, COUNT(*) AS logical_count\n" +
+  "  FROM query_logical_queries q\n" +
+  "  WHERE q.organization_id = ?\n" +
+  "  AND q.created_at >= ?\n" +
+  "  AND q.created_at <= ?\n" +
+  "  AND (CAST(? AS TEXT) IS NULL OR q.product_id = CAST(? AS TEXT))\n" +
+  "  AND (CAST(? AS TEXT) IS NULL OR q.hostname = CAST(? AS TEXT))\n" +
+  "  AND (CAST(? AS TEXT) IS NULL OR q.terminal_outcome = CAST(? AS TEXT))\n" +
+  "  AND q.terminal_outcome IS NOT NULL\n" +
+  "  GROUP BY q.terminal_outcome\n" +
+  "  UNION ALL\n" +
+  "  SELECT e.outcome AS outcome, COUNT(*) AS logical_count\n" +
+  "  FROM query_analytics_events e\n" +
+  "  WHERE e.organization_id = ?\n" +
+  "  AND e.created_at >= ?\n" +
+  "  AND e.created_at <= ?\n" +
+  "  AND (CAST(? AS TEXT) IS NULL OR e.product_id = CAST(? AS TEXT))\n" +
+  "  AND (CAST(? AS TEXT) IS NULL OR e.hostname = CAST(? AS TEXT))\n" +
+  "  AND (CAST(? AS TEXT) IS NULL OR e.outcome = CAST(? AS TEXT))\n" +
+  "  AND NOT EXISTS (\n" +
+  "    SELECT 1 FROM query_logical_queries q\n" +
+  "    WHERE q.organization_id = e.organization_id\n" +
+  "      AND q.logical_query_id = e.logical_query_id\n" +
+  "  )\n" +
+  "  AND e.id = (\n" +
+  "    SELECT e2.id FROM query_analytics_events e2\n" +
+  "    WHERE e2.organization_id = e.organization_id\n" +
+  "      AND e2.logical_query_id = e.logical_query_id\n" +
+  "      AND e2.created_at >= ?\n" +
+  "      AND e2.created_at <= ?\n" +
+  "    ORDER BY e2.created_at DESC,\n" +
+  "      CASE WHEN e2.outcome = 'cancelled' THEN 0 ELSE 1 END DESC,\n" +
+  "      e2.id DESC\n" +
+  "    LIMIT 1\n" +
+  "  )\n" +
+  "  GROUP BY e.outcome\n" +
+  ") logical_parts\n" +
+  "GROUP BY outcome";
 
 const LATENCY_FILTERED_SQL =
   "SELECT latency_ms FROM query_analytics_events\n" +
@@ -432,11 +520,20 @@ export async function summarizeQueryAnalytics(
   organizationId: string,
   sinceIso: string
 ): Promise<QueryAnalyticsSummary> {
+  const since = boundTimestamp(sinceIso);
   const rows = await db.query<{
     outcome: string;
     logical_count: number;
     attempt_count: number;
-  }>(SUMMARIZE_ANALYTICS_SQL, [organizationId, sinceIso]);
+  }>(SUMMARIZE_ANALYTICS_SQL, [
+    organizationId,
+    since,
+    organizationId,
+    since,
+    since,
+    organizationId,
+    since,
+  ]);
 
   const summary = emptySummary();
   for (const row of rows) {
@@ -636,11 +733,28 @@ export async function summarizeQueryAnalyticsFiltered(
   filters: QueryAnalyticsFilters
 ): Promise<QueryAnalyticsMetrics> {
   const params = filteredParams(organizationId, filters);
-  const rows = await db.query<{
-    outcome: string;
-    logical_count: number;
-    attempt_count: number;
-  }>(SUMMARIZE_FILTERED_SQL, params);
+  const until = filters.untilIso ?? FILTER_UNTIL_OPEN_ENDED;
+  const sinceBound = boundTimestamp(filters.sinceIso);
+  const untilBound = boundTimestamp(until);
+  const logicalParams = [
+    ...params,
+    ...params,
+    sinceBound,
+    untilBound,
+  ];
+
+  const [logicalRows, attemptRows] = await Promise.all([
+    db.query<{
+      outcome: string;
+      logical_count: number;
+      attempt_count: number;
+    }>(SUMMARIZE_FILTERED_LOGICAL_SQL, logicalParams),
+    db.query<{
+      outcome: string;
+      logical_count: number;
+      attempt_count: number;
+    }>(SUMMARIZE_FILTERED_ATTEMPTS_SQL, params),
+  ]);
 
   const summary: QueryAnalyticsMetrics = {
     ...emptySummary(),
@@ -649,7 +763,7 @@ export async function summarizeQueryAnalyticsFiltered(
     avgLatencyMs: null,
   };
 
-  for (const row of rows) {
+  for (const row of [...logicalRows, ...attemptRows]) {
     accumulateOutcome(
       summary,
       row.outcome,
