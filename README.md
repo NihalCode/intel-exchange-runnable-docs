@@ -1,5 +1,7 @@
 # Cyware API Docs — Runnable Reference
 
+> **Developer handoff:** start with [`DEVELOPER_HANDOFF.md`](./DEVELOPER_HANDOFF.md) — setup, env vars, cloud services, auth, and a detailed guide to every app/admin tab.
+
 An unofficial, **runnable** documentation platform for Cyware product APIs. Browse docs, search with natural language, generate runnable code snippets, and test API calls in the browser.
 
 ## Supported products
@@ -130,3 +132,5 @@ npm run start
 ## Deploy (Vercel)
 
 Standard Next.js deploy; set env vars in Vercel project settings. Doc pages are statically generated per product.
+
+Four product projects share this repo (`cyware-docs-ctix|cftr|csap|orchestrate`). See [`DEVELOPER_HANDOFF.md`](./DEVELOPER_HANDOFF.md) §10 for multi-product env, Auth0 URL allowlists, and Hobby quota notes.
