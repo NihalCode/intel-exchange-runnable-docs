@@ -24,6 +24,16 @@ export function freshLoginCookieOptions(
   };
 }
 
+/** Clear options must match set options (including Domain) or the bridge cookie sticks. */
+export function clearFreshLoginCookieOptions(cookieDomain?: string) {
+  return {
+    httpOnly: true as const,
+    path: "/",
+    maxAge: 0,
+    ...(cookieDomain ? { domain: cookieDomain } : {}),
+  };
+}
+
 /**
  * Auth0 logout returnTo must be the allowlisted app origin. Prefer APP_BASE_URL
  * when set so Allowed Logout URLs match production.

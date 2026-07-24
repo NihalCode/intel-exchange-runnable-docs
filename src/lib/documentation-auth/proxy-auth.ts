@@ -21,8 +21,10 @@ import {
 import {
   FRESH_LOGIN_COOKIE,
   FRESH_LOGIN_START_PATH,
+  clearFreshLoginCookieOptions,
   freshPasswordLoginPath,
 } from "@/lib/documentation-auth/fresh-login";
+import { getAuthCookieDomain } from "@/lib/auth0-management/invite-provision";
 
 export function isPublicDocumentationApiPath(pathname: string): boolean {
   return isPublicApiPath(pathname);
@@ -198,11 +200,11 @@ async function runDocumentationAuthProxyInner(
   ) {
     const destination = new URL(freshPasswordLoginPath(pendingFreshLogin), request.url);
     const response = NextResponse.redirect(destination);
-    response.cookies.set(FRESH_LOGIN_COOKIE, "", {
-      httpOnly: true,
-      path: "/",
-      maxAge: 0,
-    });
+    response.cookies.set(
+      FRESH_LOGIN_COOKIE,
+      "",
+      clearFreshLoginCookieOptions(getAuthCookieDomain())
+    );
     return mergeAuthHeaders(response, authResponse);
   }
 
