@@ -2,6 +2,7 @@
 
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
+import { SignalButton, SignalEmptyState } from "@/components/fabric";
 import type { WeeklySnapshotRow } from "@/lib/query-analytics/unanswered-types";
 
 export function UnansweredWeeklyPage({
@@ -41,14 +42,15 @@ export function UnansweredWeeklyPage({
           </p>
         </div>
       ) : null}
-      <div className="flex flex-wrap gap-3 text-xs">
+      <div className="flex flex-wrap items-center gap-3 text-xs">
         <span className="text-zinc-500">
           Refreshed {new Date(refreshedAt).toLocaleString()}
         </span>
         {weeklyEnabled ? (
-          <button
+          <SignalButton
             type="button"
-            className="underline-offset-2 hover:underline"
+            size="sm"
+            variant="secondary"
             onClick={() => {
               window.location.assign(
                 "/api/admin/unanswered-queries/weekly?format=csv"
@@ -56,18 +58,18 @@ export function UnansweredWeeklyPage({
             }}
           >
             Download CSV
-          </button>
+          </SignalButton>
         ) : null}
       </div>
       {!weeklyEnabled ? (
         <p className="text-sm text-zinc-500">Snapshots are hidden while this feature is disabled.</p>
       ) : rows.length === 0 ? (
-        <p className="text-sm text-zinc-500">
-          No weekly snapshots yet. Run <code>npm run analytics:weekly-unanswered</code> or wait
-          for the control-plane job.
-        </p>
+        <SignalEmptyState
+          title="No weekly snapshots yet"
+          description="Run npm run analytics:weekly-unanswered or wait for the control-plane job."
+        />
       ) : (
-        <div className="overflow-x-auto rounded border border-zinc-200 dark:border-zinc-800">
+        <div className="sf-table-wrap overflow-x-auto rounded border border-zinc-200 dark:border-zinc-800">
           <table className="w-full text-left text-xs">
             <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
               <tr>

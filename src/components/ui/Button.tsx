@@ -2,19 +2,11 @@
 
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import {
-  buttonDangerClass,
-  buttonGhostClass,
-  buttonPrimaryClass,
-  buttonSecondaryClass,
-} from "@/components/admin/ui/tokens";
+  SignalButton,
+  type SignalButtonVariant,
+} from "@/components/fabric/SignalButton";
 
-const VARIANTS = {
-  primary: buttonPrimaryClass,
-  secondary: buttonSecondaryClass,
-  danger: buttonDangerClass,
-  ghost: buttonGhostClass,
-} as const;
-
+/** Thin compatibility wrapper — prefer SignalButton for new UI. */
 export function Button({
   variant = "primary",
   className = "",
@@ -22,12 +14,15 @@ export function Button({
   children,
   ...rest
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: keyof typeof VARIANTS;
+  variant?: Extract<
+    SignalButtonVariant,
+    "primary" | "secondary" | "danger" | "ghost"
+  >;
   children?: ReactNode;
 }) {
   return (
-    <button type={type} className={`${VARIANTS[variant]} ${className}`} {...rest}>
+    <SignalButton type={type} variant={variant} className={className} {...rest}>
       {children}
-    </button>
+    </SignalButton>
   );
 }

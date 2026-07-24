@@ -4,6 +4,7 @@ import { isOpenApiAuthParam } from "@/lib/credential-placeholders";
 import { needsCredential } from "@/lib/resolve-request";
 import type { CredField } from "@/lib/resolve-request";
 import type { KeyValue } from "@/lib/types";
+import { SignalButton, SignalInput } from "@/components/fabric";
 import { useRunSettings } from "./RunSettings";
 
 /* --------------------------------- shared -------------------------------- */
@@ -47,25 +48,25 @@ export function ManualCredentialsForm({ fields }: { fields: CredField[] }) {
   const manual = fields.filter((f) => !isOpenApiAuthParam(f.name));
   if (manual.length === 0) return null;
   return (
-    <div className="mt-2 rounded-md border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
+    <div className="mt-2 rounded-[var(--radius-md)] border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
       <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
         <LockIcon />
         Additional credentials
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {manual.map((f) => (
-          <label key={f.name} className="flex flex-col gap-1 text-xs">
-            <span className="font-medium opacity-80">{f.name}</span>
-            <input
-              type="password"
-              autoComplete="off"
-              spellCheck={false}
-              placeholder={f.example || `Enter ${f.name}`}
-              value={getCredential(f.name)}
-              onChange={(e) => setCredential(f.name, e.target.value)}
-              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
-            />
-          </label>
+          <SignalInput
+            key={f.name}
+            id={`cred-${f.name}`}
+            label={f.name}
+            type="password"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder={f.example || `Enter ${f.name}`}
+            value={getCredential(f.name)}
+            onChange={(e) => setCredential(f.name, e.target.value)}
+            className="font-mono text-xs"
+          />
         ))}
       </div>
     </div>
@@ -85,21 +86,18 @@ export function RunButton({
   children: React.ReactNode;
   tone?: "primary" | "ghost" | "danger";
 }) {
-  const toneClass = {
-    primary: "bg-sky-600 text-white hover:bg-sky-500 disabled:opacity-50",
-    ghost: "border border-zinc-300 hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800",
-    danger: "bg-red-600 text-white hover:bg-red-500 disabled:opacity-50",
-  }[tone];
+  const variant = tone === "ghost" ? "ghost" : tone === "danger" ? "danger" : "primary";
   return (
-    <button
+    <SignalButton
       type="button"
+      variant={variant}
+      size="sm"
       onClick={onClick}
-      disabled={busy || disabled}
-      className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold transition ${toneClass}`}
+      disabled={disabled}
+      loading={busy}
     >
-      {busy ? <Spinner /> : null}
       {children}
-    </button>
+    </SignalButton>
   );
 }
 

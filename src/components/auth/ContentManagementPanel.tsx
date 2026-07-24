@@ -3,6 +3,14 @@
 import { useState } from "react";
 
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
+import {
+  SignalButton,
+  SignalErrorState,
+  SignalPermissionState,
+  SignalSelect,
+  SignalSkeleton,
+  SignalTextarea,
+} from "@/components/fabric";
 import { withCsrfHeaders } from "@/lib/csrf-client";
 import {
   POSTMAN_PASTE_INSTRUCTIONS,
@@ -97,14 +105,22 @@ export function ContentManagementPanel() {
   }
 
   if (state.loading) {
-    return <p className="text-sm text-zinc-500">Loading…</p>;
+    return (
+      <div className="space-y-3" aria-busy="true" aria-label="Loading">
+        <SignalSkeleton className="h-4 w-48" />
+        <SignalSkeleton className="h-24 w-full" />
+      </div>
+    );
   }
 
   if (!canSync && !canManageSources) {
     return (
-      <p className="text-sm text-red-600 dark:text-red-400" data-testid="content-access-denied">
-        You do not have permission to manage documentation content.
-      </p>
+      <div data-testid="content-access-denied">
+        <SignalPermissionState
+          title="Access restricted"
+          description="You do not have permission to manage documentation content."
+        />
+      </div>
     );
   }
 
@@ -122,12 +138,11 @@ export function ContentManagementPanel() {
             written to <code className="font-mono">/tmp</code> only — it does not update the live
             site until you commit and redeploy.
           </p>
-          <label className="mt-3 block text-xs">
-            <span className="text-zinc-500">Product</span>
-            <select
+          <div className="mt-3 max-w-sm">
+            <SignalSelect
+              label="Product"
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
-              className="mt-1 block rounded border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
               data-testid="sync-product"
             >
               {PRODUCTS.map((p) => (
@@ -135,23 +150,24 @@ export function ContentManagementPanel() {
                   {p.label}
                 </option>
               ))}
-            </select>
-          </label>
+            </SignalSelect>
+          </div>
           {productId !== "cftr" ? (
             <p className="mt-2 text-xs text-amber-800 dark:text-amber-200">
               If sync returns HTTP 403, Theneo is blocking this cloud server — use{" "}
               <strong>Import Postman collection</strong> below instead.
             </p>
           ) : null}
-          <button
+          <SignalButton
             type="button"
+            className="mt-3"
             disabled={busy}
+            loading={busy}
             onClick={() => void runDocSync()}
             data-testid="sync-docs-submit"
-            className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-700 disabled:opacity-50"
           >
-            {busy ? "Syncing…" : "Sync from source"}
-          </button>
+            Sync from source
+          </SignalButton>
         </section>
       ) : null}
 
@@ -159,12 +175,11 @@ export function ContentManagementPanel() {
         <section className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
           <h2 className="text-sm font-semibold">Import Postman collection</h2>
           <p className="mt-1 text-xs text-zinc-500">{POSTMAN_PASTE_INSTRUCTIONS}</p>
-          <label className="mt-3 block text-xs">
-            <span className="text-zinc-500">Product</span>
-            <select
+          <div className="mt-3 max-w-sm">
+            <SignalSelect
+              label="Product"
               value={productId}
               onChange={(e) => setProductId(e.target.value)}
-              className="mt-1 block rounded border border-zinc-300 px-2 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900"
               data-testid="postman-product"
             >
               {PRODUCTS.map((p) => (
@@ -172,43 +187,49 @@ export function ContentManagementPanel() {
                   {p.label}
                 </option>
               ))}
-            </select>
-          </label>
-          <textarea
-            value={collectionText}
-            onChange={(e) => setCollectionText(e.target.value)}
-            placeholder='Paste full Postman export JSON here, e.g. {"info":{"name":"My API","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},...}'
-            rows={10}
-            className="mt-3 w-full rounded border border-zinc-300 bg-white p-2 font-mono text-[11px] dark:border-zinc-700 dark:bg-zinc-900"
-            data-testid="postman-collection"
-          />
+            </SignalSelect>
+          </div>
+          <div className="mt-3">
+            <SignalTextarea
+              label="Collection JSON"
+              value={collectionText}
+              onChange={(e) => setCollectionText(e.target.value)}
+              placeholder='Paste full Postman export JSON here, e.g. {"info":{"name":"My API","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},...}'
+              rows={10}
+              className="w-full font-mono text-[11px]"
+              data-testid="postman-collection"
+            />
+          </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button
+            <SignalButton
               type="button"
+              size="sm"
+              variant="secondary"
               disabled={busy}
               onClick={() => setCollectionText(SAMPLE_POSTMAN_COLLECTION_JSON)}
-              className="rounded border border-zinc-300 px-3 py-1.5 text-xs font-medium dark:border-zinc-700"
             >
               Insert sample JSON
-            </button>
-            <button
+            </SignalButton>
+            <SignalButton
               type="button"
+              size="sm"
+              variant="secondary"
               disabled={busy || !collectionText.trim()}
               onClick={() => void parseCollection(false)}
-              className="rounded border border-zinc-300 px-3 py-1.5 text-xs font-medium dark:border-zinc-700"
             >
               Preview parse
-            </button>
+            </SignalButton>
             {canSync ? (
-              <button
+              <SignalButton
                 type="button"
+                size="sm"
                 disabled={busy || !collectionText.trim()}
+                loading={busy}
                 onClick={() => void parseCollection(true)}
                 data-testid="postman-import-submit"
-                className="rounded bg-sky-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
               >
                 Import &amp; write docs
-              </button>
+              </SignalButton>
             ) : (
               <p className="self-center text-xs text-zinc-500">
                 Import requires sync permission (contact an admin).
@@ -219,9 +240,7 @@ export function ContentManagementPanel() {
       ) : null}
 
       {error ? (
-        <p className="rounded-md border border-red-300 bg-red-50 p-3 text-xs text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-200">
-          {error}
-        </p>
+        <SignalErrorState title="Operation failed" description={error} />
       ) : null}
 
       {lastResult ? (

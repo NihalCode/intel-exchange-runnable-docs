@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { eyebrowClass } from "@/components/admin/ui/tokens";
 
 export function PageHeader({
   title,
@@ -23,11 +24,7 @@ export function PageHeader({
         aria-hidden="true"
       />
       <div className="min-w-0 flex-1 pl-3">
-        {eyebrow ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
-            {eyebrow}
-          </p>
-        ) : null}
+        {eyebrow ? <p className={eyebrowClass}>{eyebrow}</p> : null}
         <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-3xl">
           {title}
         </h1>

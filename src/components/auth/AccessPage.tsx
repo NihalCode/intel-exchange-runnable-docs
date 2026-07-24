@@ -1,4 +1,7 @@
-import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
+import {
+  buttonPrimaryClass,
+  buttonSecondaryClass,
+} from "@/components/admin/ui/tokens";
 import {
   accessBackToSignInHref,
   accessBrowseHomeAfterLogoutHref,
@@ -54,7 +57,7 @@ export function AccessPage({
           <a
             href={browseHomeHref}
             data-testid="access-browse-home"
-            className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+            className={buttonSecondaryClass}
           >
             Browse documentation home
           </a>

@@ -6,6 +6,12 @@ import Link from "next/link";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
+import {
+  SignalButton,
+  SignalEmptyState,
+  SignalSelect,
+  SignalSkeleton,
+} from "@/components/fabric";
 import { UNANSWERED_QUERY_REVIEW_STATUSES } from "@/lib/domains/types";
 import type { UnansweredQueryReviewRow } from "@/lib/query-analytics/repository";
 import {
@@ -152,6 +158,15 @@ export function UnansweredQueriesPage({
         ) : null}
       </div>
 
+      {realtimeEnabled && !summary ? (
+        <div className="grid gap-2 sm:grid-cols-4" aria-busy="true" aria-label="Loading summary">
+          <SignalSkeleton className="h-16 w-full" />
+          <SignalSkeleton className="h-16 w-full" />
+          <SignalSkeleton className="h-16 w-full" />
+          <SignalSkeleton className="h-16 w-full" />
+        </div>
+      ) : null}
+
       {realtimeEnabled && summary ? (
         <div className="grid gap-2 sm:grid-cols-4">
           <SummaryCard label="Open" value={summary.totalOpen} />
@@ -173,7 +188,10 @@ export function UnansweredQueriesPage({
         <p className="text-xs text-zinc-500">Read-only view.</p>
       ) : null}
       {rows.length === 0 ? (
-        <p className="text-sm text-zinc-500">No unanswered query reviews yet.</p>
+        <SignalEmptyState
+          title="No unanswered query reviews yet"
+          description="When Ask AI cannot verify a solution, reviews appear here for triage."
+        />
       ) : (
         <ul className="space-y-2">
           {rows.map((row) => {
@@ -224,31 +242,40 @@ export function UnansweredQueriesPage({
                     {reveal.message}
                   </p>
                 ) : null}
-                <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <div className="mt-2 flex flex-wrap items-end gap-2 text-xs">
                   {canReadSensitive && !shouldHideRevealButton(reveal) ? (
-                    <button
+                    <SignalButton
                       type="button"
+                      size="sm"
+                      variant="secondary"
                       disabled={busyId === row.id}
                       onClick={() => void revealSensitive(row.id)}
-                      className="rounded border border-amber-400 px-2 py-0.5 disabled:opacity-50 dark:border-amber-700"
                       data-testid="reveal-exact-query"
                     >
                       Reveal exact query
-                    </button>
+                    </SignalButton>
                   ) : null}
-                  {canManage
-                    ? WORKFLOW_STATUSES.map((status) => (
-                        <button
-                          key={status}
-                          type="button"
-                          disabled={busyId === row.id || row.status === status}
-                          onClick={() => void updateStatus(row.id, status)}
-                          className="rounded border border-zinc-300 px-2 py-0.5 disabled:opacity-50 dark:border-zinc-600"
-                        >
+                  {canManage ? (
+                    <SignalSelect
+                      label="Status"
+                      value={row.status}
+                      disabled={busyId === row.id}
+                      onChange={(e) => {
+                        const next = e.target.value as UnansweredQueryReviewRow["status"];
+                        if (next !== row.status) void updateStatus(row.id, next);
+                      }}
+                      className="min-w-[12rem]"
+                    >
+                      {row.status === "NEW" ? (
+                        <option value="NEW">NEW</option>
+                      ) : null}
+                      {WORKFLOW_STATUSES.map((status) => (
+                        <option key={status} value={status}>
                           {status.replace(/_/g, " ")}
-                        </button>
-                      ))
-                    : null}
+                        </option>
+                      ))}
+                    </SignalSelect>
+                  ) : null}
                 </div>
               </li>
             );

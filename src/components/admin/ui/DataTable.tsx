@@ -109,13 +109,13 @@ export function DataTable<T>({
         <EmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
         <>
-          <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)]">
-            <table className={tableClass}>
+          <div className="sf-table-wrap overflow-x-auto">
+            <table className={tableClass} data-testid="signal-table">
               <caption className="sr-only">{caption}</caption>
-              <thead className="sticky top-0 bg-[var(--surface-sunken)]">
-                <tr className="border-b border-[var(--border-default)]">
+              <thead>
+                <tr>
                   {columns.map((col) => (
-                    <th key={col.key} scope="col" className="p-2 font-medium text-[var(--text-heading)]">
+                    <th key={col.key} scope="col" className="p-2.5 text-left">
                       {col.sortable ? (
                         <button
                           type="button"

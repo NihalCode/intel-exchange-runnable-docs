@@ -1,12 +1,17 @@
 /**
- * Thin docs-facing re-exports of admin/ui primitives.
- * Do not duplicate the admin system — upgrade tokens there instead.
+ * Thin docs-facing re-exports of admin/ui primitives + Signal Fabric kit.
+ * Prefer Signal* components for new UI.
  */
 export {
   buttonPrimaryClass,
   buttonSecondaryClass,
+  buttonTertiaryClass,
   buttonDangerClass,
+  buttonSuccessClass,
   buttonGhostClass,
+  buttonQuietClass,
+  buttonToolbarClass,
+  buttonIconClass,
   cardClass,
   inputClass,
   linkClass,
@@ -25,3 +30,31 @@ export { EmptyState, ErrorState, LoadingSkeleton } from "@/components/admin/ui/E
 export { MetricCard } from "@/components/admin/ui/MetricCard";
 export { DataTable } from "@/components/admin/ui/DataTable";
 export type { DataTableColumn, DataTableProps } from "@/components/admin/ui/DataTable";
+export { Button } from "@/components/ui/Button";
+
+export {
+  SignalButton,
+  SignalIconButton,
+  SignalInput,
+  SignalTextarea,
+  SignalSelect,
+  SignalCheckbox,
+  SignalSwitch,
+  SignalSearch,
+  SignalTabs,
+  SignalSegmentedControl,
+  SignalBadge,
+  SignalStatus,
+  SignalDialog,
+  SignalDrawer,
+  SignalSkeleton,
+  SignalEmptyState,
+  SignalErrorState,
+  SignalPermissionState,
+  SignalSectionHeader,
+  SignalFilterBar,
+  SignalActionDock,
+  SignalCodeSurface,
+  SignalDetailPanel,
+  SignalMetric,
+} from "@/components/fabric";

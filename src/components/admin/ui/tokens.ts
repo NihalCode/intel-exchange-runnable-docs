@@ -8,13 +8,23 @@ export const focusRing =
 
 export const inputClass = `rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${focusRing}`;
 
-export const buttonPrimaryClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--accent-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none ${focusRing}`;
+export const buttonPrimaryClass = `sf-btn-primary inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--accent-primary-hover)] disabled:cursor-not-allowed disabled:opacity-50 transition-[box-shadow,transform,background-color] duration-150 motion-reduce:transition-none active:translate-y-px ${focusRing}`;
 
-export const buttonSecondaryClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-[var(--surface-muted)] ${focusRing}`;
+export const buttonSecondaryClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-[var(--surface-muted)] transition-[background-color,border-color] duration-150 motion-reduce:transition-none ${focusRing}`;
+
+export const buttonTertiaryClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-transparent bg-[var(--surface-muted)] px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:border-[var(--border-default)] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
 
 export const buttonDangerClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-red-300 bg-[var(--danger-soft)] px-3 py-2 text-sm font-medium text-red-800 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900 dark:text-red-200 dark:hover:bg-red-950 ${focusRing}`;
 
+export const buttonSuccessClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] border border-emerald-300 bg-[var(--success-soft,color-mix(in_srgb,var(--success)_12%,transparent))] px-3 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-900 dark:text-emerald-200 dark:hover:bg-emerald-950 ${focusRing}`;
+
 export const buttonGhostClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] px-2 py-1.5 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)] ${focusRing}`;
+
+export const buttonQuietClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-md)] px-2 py-1 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-muted)]/60 ${focusRing}`;
+
+export const buttonToolbarClass = `inline-flex items-center justify-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:border-[var(--border-default)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
+
+export const buttonIconClass = `inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-50 ${focusRing}`;
 
 export const cardClass =
   "rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-4 shadow-[var(--shadow-card)]";

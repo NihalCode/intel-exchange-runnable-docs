@@ -6,11 +6,15 @@ import { useRouter } from "next/navigation";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { MetricCard } from "@/components/admin/ui/MetricCard";
+import { buttonSecondaryClass } from "@/components/admin/ui/tokens";
 import {
-  buttonPrimaryClass,
-  buttonSecondaryClass,
-  inputClass,
-} from "@/components/admin/ui/tokens";
+  SignalButton,
+  SignalEmptyState,
+  SignalErrorState,
+  SignalFilterBar,
+  SignalInput,
+  SignalSelect,
+} from "@/components/fabric";
 import { listProducts } from "@/lib/products/registry";
 import type {
   QueryAnalyticsEventListItem,
@@ -99,18 +103,14 @@ export function QueryAnalyticsPage({
       />
 
       {loadError ? (
-        <p
-          className="rounded-[var(--radius-md)] border border-[var(--warning)] bg-[var(--warning-soft)] px-3 py-2 text-sm text-[var(--text-heading)]"
-          role="status"
-          data-testid="query-analytics-load-error"
-        >
-          Analytics data could not be loaded
-          {loadErrorCode ? ` (${loadErrorCode})` : ""}. Showing an empty summary — try Reload or
-          Apply filters again.
-          <span className="mt-1 block font-mono text-xs text-[var(--text-muted)]">
-            {loadError}
-          </span>
-        </p>
+        <div data-testid="query-analytics-load-error">
+          <SignalErrorState
+            title={`Analytics data could not be loaded${
+              loadErrorCode ? ` (${loadErrorCode})` : ""
+            }`}
+            description={`${loadError}. Showing an empty summary — try Reload or Apply filters again.`}
+          />
+        </div>
       ) : null}
 
       <p className="text-xs text-[var(--text-muted)]">
@@ -118,57 +118,42 @@ export function QueryAnalyticsPage({
         partially answered + no verified solution + no results + clarification required ({denom})
       </p>
 
-      <section
-        className="flex flex-wrap items-end gap-3 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-4 text-xs shadow-[var(--shadow-card)]"
-        data-layout="cx-analytics-toolbar"
-      >
-        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
-          From
-          <input
-            type="date"
-            value={since}
-            onChange={(e) => setSince(e.target.value)}
-            className={inputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
-          To
-          <input
-            type="date"
-            value={until}
-            onChange={(e) => setUntil(e.target.value)}
-            className={inputClass}
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
-          Product
-          <select
-            value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            className={inputClass}
-          >
-            <option value="">All products</option>
-            {products.map((p) => (
-              <option key={p.productId} value={p.productId}>
-                {p.displayLabel}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-[var(--text-secondary)]">
-          Hostname / environment
-          <input
-            type="text"
-            value={hostname}
-            onChange={(e) => setHostname(e.target.value)}
-            placeholder="All hosts (optional)"
-            className={inputClass}
-            autoComplete="off"
-          />
-        </label>
-        <button type="button" onClick={applyFilters} className={buttonPrimaryClass}>
+      <SignalFilterBar className="items-end text-xs" data-layout="cx-analytics-toolbar">
+        <SignalInput
+          type="date"
+          label="From"
+          value={since}
+          onChange={(e) => setSince(e.target.value)}
+        />
+        <SignalInput
+          type="date"
+          label="To"
+          value={until}
+          onChange={(e) => setUntil(e.target.value)}
+        />
+        <SignalSelect
+          label="Product"
+          value={productId}
+          onChange={(e) => setProductId(e.target.value)}
+        >
+          <option value="">All products</option>
+          {products.map((p) => (
+            <option key={p.productId} value={p.productId}>
+              {p.displayLabel}
+            </option>
+          ))}
+        </SignalSelect>
+        <SignalInput
+          type="text"
+          label="Hostname / environment"
+          value={hostname}
+          onChange={(e) => setHostname(e.target.value)}
+          placeholder="All hosts (optional)"
+          autoComplete="off"
+        />
+        <SignalButton type="button" onClick={applyFilters}>
           Apply filters
-        </button>
+        </SignalButton>
         <a href={exportUrl} className={buttonSecondaryClass}>
           Export CSV
         </a>
@@ -180,7 +165,7 @@ export function QueryAnalyticsPage({
             Sensitive CSV
           </a>
         ) : null}
-      </section>
+      </SignalFilterBar>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 sf-telemetry-strip">
         <MetricCard label="Logical queries" value={String(summary.totalLogicalQueries)} />
@@ -230,13 +215,13 @@ export function QueryAnalyticsPage({
       <section>
         <h2 className="mb-2 text-sm font-semibold">Recent events</h2>
         {recent.length === 0 ? (
-          <p className="text-sm text-zinc-500">No analytics recorded yet.</p>
+          <SignalEmptyState title="No analytics recorded yet." />
         ) : (
           <ul className="space-y-2 text-xs">
             {recent.map((row) => (
               <li
                 key={row.id}
-                className="rounded border border-zinc-200 px-3 py-2 dark:border-zinc-800"
+                className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2"
               >
                 <span className="font-mono">{row.outcome}</span>
                 {" · "}

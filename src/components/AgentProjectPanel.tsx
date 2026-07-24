@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { SignalActionDock, SignalButton } from "@/components/fabric";
 import type { AgentAppBlueprint } from "@/lib/agent/types";
 import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 
@@ -40,7 +41,8 @@ export function AgentProjectPanel({
       className="flex w-[min(420px,38vw)] shrink-0 flex-col border-l border-[var(--border-default)] bg-[var(--surface-sunken)]"
       data-layout="cx-build-app-panel"
     >
-      <div className="flex flex-wrap items-center gap-1.5 border-b border-[var(--border-subtle)] px-3 py-2.5"
+      <SignalActionDock
+        className="rounded-none border-x-0 border-t-0"
         style={{
           background:
             "linear-gradient(90deg, color-mix(in srgb, var(--product-orchestrate) 10%, transparent), transparent 50%)",
@@ -49,39 +51,53 @@ export function AgentProjectPanel({
         <span className="mr-auto text-xs font-semibold tracking-wide text-[var(--text-heading)]">
           Build studio
         </span>
-        {onPreview ? <button
-          type="button"
-          disabled={!app}
-          onClick={onPreview}
-          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:opacity-40"
-        >
-          Preview
-        </button> : null}
-        {onDeploy ? <button
-          type="button"
-          disabled={!app || deploying}
-          onClick={onDeploy}
-          className="rounded-[var(--radius-sm)] bg-[var(--accent-primary)] px-2 py-0.5 text-[11px] font-semibold text-white hover:bg-[var(--accent-primary-hover)] disabled:opacity-40"
-        >
-          {deploying ? "Deploying…" : "Deploy"}
-        </button> : null}
-        {onCommit ? <button
-          type="button"
-          disabled={!app || committing}
-          onClick={onCommit}
-          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:opacity-40"
-        >
-          {committing ? "Saving…" : "Commit"}
-        </button> : null}
-        {onDownloadZip ? <button
-          type="button"
-          disabled={!app}
-          onClick={onDownloadZip}
-          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--surface-muted)] disabled:opacity-40"
-        >
-          Download
-        </button> : null}
-      </div>
+        {onPreview ? (
+          <SignalButton
+            type="button"
+            variant="toolbar"
+            size="sm"
+            disabled={!app}
+            onClick={onPreview}
+          >
+            Preview
+          </SignalButton>
+        ) : null}
+        {onDeploy ? (
+          <SignalButton
+            type="button"
+            variant="primary"
+            size="sm"
+            disabled={!app || deploying}
+            loading={deploying}
+            onClick={onDeploy}
+          >
+            Deploy
+          </SignalButton>
+        ) : null}
+        {onCommit ? (
+          <SignalButton
+            type="button"
+            variant="toolbar"
+            size="sm"
+            disabled={!app || committing}
+            loading={committing}
+            onClick={onCommit}
+          >
+            Commit
+          </SignalButton>
+        ) : null}
+        {onDownloadZip ? (
+          <SignalButton
+            type="button"
+            variant="toolbar"
+            size="sm"
+            disabled={!app}
+            onClick={onDownloadZip}
+          >
+            Download
+          </SignalButton>
+        ) : null}
+      </SignalActionDock>
 
       {!app ? (
         <div className="flex flex-1 items-center justify-center p-6 text-center text-xs text-[var(--text-muted)]">

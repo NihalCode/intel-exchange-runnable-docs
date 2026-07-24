@@ -15,6 +15,17 @@ import {
   USERS_UNAVAILABLE_LOCAL_MESSAGE,
   USERS_UNAVAILABLE_MESSAGE,
 } from "@/lib/user-facing-errors";
+import {
+  SignalBadge,
+  SignalButton,
+  SignalEmptyState,
+  SignalInput,
+  SignalPermissionState,
+  SignalSectionHeader,
+  SignalSelect,
+  SignalSkeleton,
+  SignalStatus,
+} from "@/components/fabric";
 
 interface UserRow {
   id: string;
@@ -298,13 +309,20 @@ export function UsersManagementPanel() {
   }
 
   if (state.loading || loading) {
-    return <p className="text-sm text-[var(--text-muted)]">Loading users…</p>;
+    return (
+      <div className="space-y-3" aria-busy="true" aria-label="Loading users">
+        <SignalSkeleton className="h-8 w-48" />
+        <SignalSkeleton className="h-24 w-full" />
+        <SignalSkeleton className="h-40 w-full" />
+      </div>
+    );
   }
   if (!canManage) {
     return (
-      <p className="text-sm text-[var(--danger)]">
-        You do not have permission to manage users.
-      </p>
+      <SignalPermissionState
+        title="Users management restricted"
+        description="You do not have permission to manage users."
+      />
     );
   }
 
@@ -313,18 +331,11 @@ export function UsersManagementPanel() {
 
   return (
     <div data-testid="users-management" className="space-y-8" data-layout="sf-identity-command">
-      <div className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-operational)] p-4">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
-          Identity access
-        </p>
-        <h2 className="mt-1 text-lg font-semibold text-[var(--text-heading)]">
-          Okta + documentation membership
-        </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-secondary)]">
-          New users receive an Okta setup email. Existing ACTIVE same-tenant users keep password and
-          Okta Verify; no setup email is sent. Target group: Cyware Docs Users.
-        </p>
-      </div>
+      <SignalSectionHeader
+        eyebrow="Identity access"
+        title="Okta + documentation membership"
+        description="New users receive an Okta setup email. Existing ACTIVE same-tenant users keep password and Okta Verify; no setup email is sent. Target group: Cyware Docs Users."
+      />
       <form
         onSubmit={addUser}
         className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-resting)]"
@@ -335,63 +346,53 @@ export function UsersManagementPanel() {
           documentation invitation. They select Sign up to set their Okta password,
           then Sign in with email, password, and the code shown in Okta Verify.
         </p>
-        <div className="mt-3 grid gap-3 sm:grid-cols-4">
-          <label className="text-xs text-[var(--text-secondary)]">
-            <span>Email</span>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
-            />
-          </label>
-          <label className="text-xs text-[var(--text-secondary)]">
-            <span>Display name</span>
-            <input
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
-            />
-          </label>
-          <label className="text-xs text-[var(--text-secondary)]">
-            <span>Role</span>
-            <select
-              value={role}
-              onChange={(event) => setRole(event.target.value as DocumentationRole)}
-              disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
-            >
-              {DOCUMENTATION_ROLES.filter(
-                (value) => state.user?.role === "owner" || value !== "owner"
-              ).map((value) => (
-                <option key={value}>{value}</option>
-              ))}
-            </select>
-          </label>
-          <label className="text-xs text-[var(--text-secondary)]">
-            <span>Access expiry</span>
-            <input
-              type="date"
-              value={expiresAt}
-              onChange={(event) => setExpiresAt(event.target.value)}
-              disabled={recovering || busy === "add"}
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1.5 text-[var(--text-primary)]"
-            />
-          </label>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <SignalInput
+            id="users-email"
+            label="Email"
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            disabled={recovering || busy === "add"}
+          />
+          <SignalInput
+            id="users-name"
+            label="Display name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            disabled={recovering || busy === "add"}
+          />
+          <SignalSelect
+            id="users-role"
+            label="Role"
+            value={role}
+            onChange={(event) => setRole(event.target.value as DocumentationRole)}
+            disabled={recovering || busy === "add"}
+          >
+            {DOCUMENTATION_ROLES.filter(
+              (value) => state.user?.role === "owner" || value !== "owner"
+            ).map((value) => (
+              <option key={value}>{value}</option>
+            ))}
+          </SignalSelect>
+          <SignalInput
+            id="users-expiry"
+            label="Access expiry"
+            type="date"
+            value={expiresAt}
+            onChange={(event) => setExpiresAt(event.target.value)}
+            disabled={recovering || busy === "add"}
+          />
         </div>
-        <button
+        <SignalButton
+          type="submit"
+          className="mt-4"
           disabled={busy === "add" || recovering}
-          className="mt-3 rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 py-1.5 text-sm font-medium text-white hover:bg-[var(--accent-primary-hover)] disabled:opacity-50"
+          loading={busy === "add" || recovering}
         >
-          {recovering
-            ? "Refreshing session…"
-            : busy === "add"
-              ? "Adding…"
-              : "Add user"}
-        </button>
+          {recovering ? "Refreshing session…" : "Add user"}
+        </SignalButton>
         {recovering ? (
           <p className="mt-3 text-xs text-[var(--info)]" role="status">
             {SESSION_RECOVERY_IN_PROGRESS_MESSAGE}
@@ -412,67 +413,94 @@ export function UsersManagementPanel() {
       </form>
       <section>
         <h2 className="text-sm font-semibold text-[var(--text-heading)]">Documentation users</h2>
-        <div className="mt-2 overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs text-zinc-500">
-                <th className="py-2">User</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Last login</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="border-t py-2 dark:border-zinc-800">
-                    {user.name || user.email}
-                    <span className="block text-xs text-zinc-500">{user.email}</span>
-                  </td>
-                  <td className="border-t dark:border-zinc-800">
-                    {user.id !== state.user?.id ? (
-                      <select
-                        value={user.role}
-                        disabled={busy === user.id || recovering}
-                        onChange={(event) =>
-                          void changeRole(
-                            user.id,
-                            event.target.value as DocumentationRole
-                          )
-                        }
-                      >
-                        {DOCUMENTATION_ROLES.map((value) => (
-                          <option key={value}>{value}</option>
-                        ))}
-                      </select>
-                    ) : (
-                      user.role
-                    )}
-                  </td>
-                  <td className="border-t dark:border-zinc-800">{user.status}</td>
-                  <td className="border-t text-xs dark:border-zinc-800">
-                    {user.lastLoginAt
-                      ? new Date(user.lastLoginAt).toLocaleString()
-                      : "Never"}
-                  </td>
-                  <td className="border-t dark:border-zinc-800">
-                    {user.id !== state.user?.id && user.status === "active" ? (
-                      <button
-                        type="button"
-                        disabled={busy === user.id || recovering}
-                        onClick={() => void disableUser(user.id)}
-                        className="text-xs text-red-600 underline disabled:opacity-50"
-                      >
-                        Disable
-                      </button>
-                    ) : null}
-                  </td>
+        {!users.length ? (
+          <div className="mt-3">
+            <SignalEmptyState
+              title="No documentation users yet"
+              description="Add a user above to provision Okta access and a documentation invitation."
+            />
+          </div>
+        ) : (
+          <div className="sf-table-wrap mt-3 overflow-x-auto">
+            <table className="w-full min-w-[640px] text-sm text-[var(--text-primary)]">
+              <thead>
+                <tr>
+                  <th className="p-2.5 text-left" scope="col">
+                    User
+                  </th>
+                  <th className="p-2.5 text-left" scope="col">
+                    Role
+                  </th>
+                  <th className="p-2.5 text-left" scope="col">
+                    Status
+                  </th>
+                  <th className="p-2.5 text-left" scope="col">
+                    Last login
+                  </th>
+                  <th className="p-2.5 text-left" scope="col">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-t border-[var(--border-subtle)]">
+                    <td className="p-2.5">
+                      {user.name || user.email}
+                      <span className="block text-xs text-[var(--text-muted)]">{user.email}</span>
+                    </td>
+                    <td className="p-2.5">
+                      {user.id !== state.user?.id ? (
+                        <SignalSelect
+                          aria-label={`Role for ${user.email}`}
+                          value={user.role}
+                          disabled={busy === user.id || recovering}
+                          onChange={(event) =>
+                            void changeRole(
+                              user.id,
+                              event.target.value as DocumentationRole
+                            )
+                          }
+                        >
+                          {DOCUMENTATION_ROLES.map((value) => (
+                            <option key={value}>{value}</option>
+                          ))}
+                        </SignalSelect>
+                      ) : (
+                        <SignalBadge>{user.role}</SignalBadge>
+                      )}
+                    </td>
+                    <td className="p-2.5">
+                      <SignalStatus
+                        label={user.status}
+                        tone={user.status === "active" ? "success" : "neutral"}
+                      />
+                    </td>
+                    <td className="p-2.5 text-xs text-[var(--text-secondary)]">
+                      {user.lastLoginAt
+                        ? new Date(user.lastLoginAt).toLocaleString()
+                        : "Never"}
+                    </td>
+                    <td className="p-2.5">
+                      {user.id !== state.user?.id && user.status === "active" ? (
+                        <SignalButton
+                          type="button"
+                          variant="danger"
+                          size="sm"
+                          disabled={busy === user.id || recovering}
+                          loading={busy === user.id}
+                          onClick={() => void disableUser(user.id)}
+                        >
+                          Disable
+                        </SignalButton>
+                      ) : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </div>
   );

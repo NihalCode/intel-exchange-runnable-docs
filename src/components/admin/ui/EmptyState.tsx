@@ -1,6 +1,7 @@
 "use client";
 
-import { buttonPrimaryClass, cardClass } from "@/components/admin/ui/tokens";
+import { cardClass } from "@/components/admin/ui/tokens";
+import { SignalButton, SignalSkeleton } from "@/components/fabric";
 
 export function EmptyState({
   title,
@@ -25,9 +26,9 @@ export function EmptyState({
         <p className="mt-2 max-w-sm text-sm text-[var(--text-secondary)]">{description}</p>
       ) : null}
       {actionLabel && onAction ? (
-        <button type="button" className={`${buttonPrimaryClass} mt-4`} onClick={onAction}>
+        <SignalButton className="mt-4" onClick={onAction}>
           {actionLabel}
-        </button>
+        </SignalButton>
       ) : null}
     </div>
   );
@@ -53,9 +54,9 @@ export function ErrorState({
         <p className="mt-2 text-sm text-[var(--text-secondary)]">{description}</p>
       ) : null}
       {onRetry ? (
-        <button type="button" className={`${buttonPrimaryClass} mt-4`} onClick={onRetry}>
+        <SignalButton className="mt-4" variant="secondary" onClick={onRetry}>
           Retry
-        </button>
+        </SignalButton>
       ) : null}
     </div>
   );
@@ -63,9 +64,9 @@ export function ErrorState({
 
 export function LoadingSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="animate-pulse space-y-3" aria-busy="true" aria-label="Loading">
+    <div className="space-y-3" aria-busy="true" aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-10 rounded-[var(--radius-md)] bg-[var(--surface-muted)]" />
+        <SignalSkeleton key={i} className="h-10 w-full" />
       ))}
     </div>
   );
