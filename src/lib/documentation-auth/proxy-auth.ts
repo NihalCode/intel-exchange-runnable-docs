@@ -163,12 +163,11 @@ async function runDocumentationAuthProxyInner(
     return authUnavailableResponse(request, "AUTH_MIDDLEWARE_FAILED");
   }
 
-  const hostRouted = await applyHostRouting(request, authResponse);
-  if (hostRouted) return hostRouted;
-
   const { pathname } = request.nextUrl;
 
-  // After Auth0 logout for admin MFA step-up, continue into forced re-auth.
+  // Cookie bridges must run BEFORE host routing. On single-product hosts
+  // (e.g. apitest1) applyHostRouting always returns a response and would
+  // otherwise swallow these and leave the user on `/`.
   const pendingMfaReturnTo = request.cookies.get(MFA_STEP_UP_COOKIE)?.value;
   if (
     pendingMfaReturnTo &&
@@ -190,7 +189,6 @@ async function runDocumentationAuthProxyInner(
     return mergeAuthHeaders(response, authResponse);
   }
 
-  // After Auth0 logout for branded Sign in/up, continue into email/password UL.
   const pendingFreshLogin = request.cookies.get(FRESH_LOGIN_COOKIE)?.value;
   if (
     pendingFreshLogin &&
@@ -207,6 +205,9 @@ async function runDocumentationAuthProxyInner(
     });
     return mergeAuthHeaders(response, authResponse);
   }
+
+  const hostRouted = await applyHostRouting(request, authResponse);
+  if (hostRouted) return hostRouted;
 
   if (isPublicPagePath(pathname)) {
     const requestHeaders = new Headers(request.headers);

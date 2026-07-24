@@ -98,9 +98,12 @@ describe("one-time login URL contracts (local)", () => {
     expect(page).not.toContain("login-continue-google");
   });
 
-  it("cross-host post-login bounces through target /auth/login for cookie minting", () => {
-    const page = source("src/app/post-login/page.tsx");
-    expect(page).toContain("/auth/login");
-    expect(page).toContain("targetHostname");
+  it("handles fresh-login / MFA cookies before host routing (single-product hosts)", () => {
+    const src = source("src/lib/documentation-auth/proxy-auth.ts");
+    const freshIdx = src.indexOf("FRESH_LOGIN_COOKIE");
+    const hostIdx = src.indexOf("applyHostRouting");
+    expect(freshIdx).toBeGreaterThan(-1);
+    expect(hostIdx).toBeGreaterThan(-1);
+    expect(freshIdx).toBeLessThan(hostIdx);
   });
 });
