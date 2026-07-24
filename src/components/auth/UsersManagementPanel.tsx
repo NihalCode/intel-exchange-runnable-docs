@@ -6,6 +6,12 @@ import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvide
 import type { DocumentationRole } from "@/lib/documentation-auth/types";
 import { DOCUMENTATION_ROLES } from "@/lib/documentation-auth/types";
 import {
+  authenticatedFetch,
+  SESSION_RECOVERY_FAILED_MESSAGE,
+  SESSION_RECOVERY_IN_PROGRESS_MESSAGE,
+  type SessionRecoveryState,
+} from "@/lib/authenticated-fetch";
+import {
   USERS_UNAVAILABLE_LOCAL_MESSAGE,
   USERS_UNAVAILABLE_MESSAGE,
 } from "@/lib/user-facing-errors";
@@ -18,6 +24,21 @@ interface UserRow {
   status: string;
   lastLoginAt?: string | null;
 }
+
+type UsersGetPayload = {
+  users?: UserRow[];
+  csrfToken?: string;
+  error?: string;
+  code?: string;
+};
+
+type UsersMutationPayload = {
+  error?: string;
+  hint?: string;
+  setupStatus?: string;
+  message?: string;
+  code?: string;
+};
 
 export function UsersManagementPanel() {
   const { state, hasPermission } = useDocumentationAuth();
@@ -32,27 +53,73 @@ export function UsersManagementPanel() {
   const [role, setRole] = useState<DocumentationRole>("viewer");
   const [expiresAt, setExpiresAt] = useState("");
   const [status, setStatus] = useState("");
+  const [recoveryState, setRecoveryState] =
+    useState<SessionRecoveryState>("idle");
   const csrfRef = useRef<string | null>(null);
+
+  const clearCsrf = useCallback(() => {
+    csrfRef.current = null;
+  }, []);
+
+  const onRecoveryStateChange = useCallback(
+    (next: SessionRecoveryState) => {
+      setRecoveryState(next);
+      if (next === "recovering") {
+        clearCsrf();
+        setError(null);
+      }
+    },
+    [clearCsrf]
+  );
+
+  const fetchUsersList = useCallback(async (): Promise<UsersGetPayload> => {
+    const response = await authenticatedFetch("/api/users", {
+      method: "GET",
+      onRecoveryStateChange,
+    });
+    const data = (await response.json().catch(() => ({}))) as UsersGetPayload;
+    if (!response.ok) {
+      const err = new Error(data.error ?? "users_load_failed") as Error & {
+        status?: number;
+        code?: string;
+      };
+      err.status = response.status;
+      err.code = typeof data.code === "string" ? data.code : undefined;
+      throw err;
+    }
+    if (data.csrfToken) csrfRef.current = data.csrfToken;
+    return data;
+  }, [onRecoveryStateChange]);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/users", { cache: "no-store", credentials: "include" });
-      if (!response.ok) {
-        const localPreview = state.authProvider === "disabled";
-        return setError(localPreview ? USERS_UNAVAILABLE_LOCAL_MESSAGE : USERS_UNAVAILABLE_MESSAGE);
+      const data = await fetchUsersList();
+      setUsers(data.users ?? []);
+    } catch (err) {
+      const statusCode =
+        err && typeof err === "object" && "status" in err
+          ? Number((err as { status?: number }).status)
+          : 0;
+      const code =
+        err && typeof err === "object" && "code" in err
+          ? String((err as { code?: string }).code ?? "")
+          : "";
+      if (statusCode === 401 || code === "SESSION_EXPIRED") {
+        setError(SESSION_RECOVERY_FAILED_MESSAGE);
+        return;
       }
-      const data = (await response.json()) as { users: UserRow[]; csrfToken?: string };
-      setUsers(data.users);
-      if (data.csrfToken) csrfRef.current = data.csrfToken;
-    } catch {
+      if (statusCode === 403) {
+        setError("You do not have permission to manage users.");
+        return;
+      }
       const localPreview = state.authProvider === "disabled";
       setError(localPreview ? USERS_UNAVAILABLE_LOCAL_MESSAGE : USERS_UNAVAILABLE_MESSAGE);
     } finally {
       setLoading(false);
     }
-  }, [state.authProvider]);
+  }, [fetchUsersList, state.authProvider]);
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -61,12 +128,12 @@ export function UsersManagementPanel() {
     });
   }, [canManage, load, state.loading]);
 
-  async function csrfToken(): Promise<string> {
+  async function ensureCsrfToken(): Promise<string> {
     if (csrfRef.current) return csrfRef.current;
-    const response = await fetch("/api/users", { cache: "no-store", credentials: "include" });
-    const data = (await response.json()) as { csrfToken?: string };
-    if (!data.csrfToken) throw new Error("Could not prepare a secure form token. Refresh the page.");
-    csrfRef.current = data.csrfToken;
+    const data = await fetchUsersList();
+    if (!data.csrfToken) {
+      throw new Error("Could not prepare a secure form token. Refresh the page.");
+    }
     return data.csrfToken;
   }
 
@@ -77,22 +144,45 @@ export function UsersManagementPanel() {
     setHint(null);
     setStatus("");
     try {
-      const response = await fetch("/api/users", {
+      const body = JSON.stringify({
+        email,
+        name,
+        role,
+        expiresAt: expiresAt || null,
+      });
+      const response = await authenticatedFetch("/api/users", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRF-Token": await csrfToken(),
+          "X-CSRF-Token": await ensureCsrfToken(),
         },
-        body: JSON.stringify({ email, name, role, expiresAt: expiresAt || null }),
+        body,
+        onRecoveryStateChange,
+        prepareRetry: async (init) => {
+          clearCsrf();
+          const token = await ensureCsrfToken();
+          return {
+            ...init,
+            headers: {
+              ...(init.headers as Record<string, string>),
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+            },
+            body,
+          };
+        },
       });
-      const data = (await response.json()) as {
-        error?: string;
-        hint?: string;
-        setupStatus?: string;
-        message?: string;
-      };
+      const data = (await response.json().catch(() => ({}))) as UsersMutationPayload;
       if (!response.ok) {
+        if (response.status === 401 || data.code === "SESSION_EXPIRED") {
+          setError(SESSION_RECOVERY_FAILED_MESSAGE);
+          return;
+        }
+        if (response.status === 403) {
+          setError(data.error ?? "You do not have permission to add users.");
+          setHint(data.hint ?? null);
+          return;
+        }
         setError(data.error ?? "User provisioning failed.");
         setHint(data.hint ?? null);
         return;
@@ -107,6 +197,7 @@ export function UsersManagementPanel() {
       setEmail("");
       setName("");
       setExpiresAt("");
+      clearCsrf();
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "User provisioning failed.");
@@ -117,50 +208,177 @@ export function UsersManagementPanel() {
 
   async function changeRole(userId: string, nextRole: DocumentationRole) {
     setBusy(userId);
-    await fetch(`/api/users/${userId}/role`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": await csrfToken(),
-      },
-      body: JSON.stringify({ role: nextRole }),
-    });
-    await load();
-    setBusy(null);
+    setError(null);
+    try {
+      const body = JSON.stringify({ role: nextRole });
+      const response = await authenticatedFetch(`/api/users/${userId}/role`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": await ensureCsrfToken(),
+        },
+        body,
+        onRecoveryStateChange,
+        prepareRetry: async (init) => {
+          clearCsrf();
+          const token = await ensureCsrfToken();
+          return {
+            ...init,
+            headers: {
+              ...(init.headers as Record<string, string>),
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+            },
+            body,
+          };
+        },
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as UsersMutationPayload;
+        setError(data.error ?? "Could not update role.");
+        return;
+      }
+      clearCsrf();
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update role.");
+    } finally {
+      setBusy(null);
+    }
   }
 
   async function disableUser(userId: string) {
     setBusy(userId);
-    await fetch(`/api/users/${userId}/disable`, {
-      method: "PATCH",
-      credentials: "include",
-      headers: { "X-CSRF-Token": await csrfToken() },
-    });
-    await load();
-    setBusy(null);
+    setError(null);
+    try {
+      const response = await authenticatedFetch(`/api/users/${userId}/disable`, {
+        method: "PATCH",
+        headers: { "X-CSRF-Token": await ensureCsrfToken() },
+        onRecoveryStateChange,
+        prepareRetry: async (init) => {
+          clearCsrf();
+          const token = await ensureCsrfToken();
+          return {
+            ...init,
+            headers: {
+              ...(init.headers as Record<string, string>),
+              "X-CSRF-Token": token,
+            },
+          };
+        },
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as UsersMutationPayload;
+        setError(data.error ?? "Could not disable user.");
+        return;
+      }
+      clearCsrf();
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not disable user.");
+    } finally {
+      setBusy(null);
+    }
   }
 
-  if (state.loading || loading) return <p className="text-sm text-zinc-500">Loading users…</p>;
-  if (!canManage) return <p className="text-sm text-red-600">You do not have permission to manage users.</p>;
+  if (state.loading || loading) {
+    return <p className="text-sm text-zinc-500">Loading users…</p>;
+  }
+  if (!canManage) {
+    return (
+      <p className="text-sm text-red-600">
+        You do not have permission to manage users.
+      </p>
+    );
+  }
+
+  const recovering = recoveryState === "recovering";
+  const recoveryFailed = recoveryState === "failed";
 
   return (
     <div data-testid="users-management" className="space-y-8">
-      <form onSubmit={addUser} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+      <form
+        onSubmit={addUser}
+        className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+      >
         <h2 className="text-sm font-semibold">Add user</h2>
         <p className="mt-1 text-xs text-zinc-500">
-          Creates the person in Okta, adds them to the docs Okta group, and adds a documentation
-          invitation. They select Sign up to set their Okta password, then Sign in with email,
-          password, and the code shown in Okta Verify.
+          Creates the person in Okta, adds them to the docs Okta group, and adds a
+          documentation invitation. They select Sign up to set their Okta password,
+          then Sign in with email, password, and the code shown in Okta Verify.
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
-          <label className="text-xs"><span>Email</span><input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>
-          <label className="text-xs"><span>Display name</span><input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>
-          <label className="text-xs"><span>Role</span><select value={role} onChange={(event) => setRole(event.target.value as DocumentationRole)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900">{DOCUMENTATION_ROLES.filter((value) => state.user?.role === "owner" || value !== "owner").map((value) => <option key={value}>{value}</option>)}</select></label>
-          <label className="text-xs"><span>Access expiry</span><input type="date" value={expiresAt} onChange={(event) => setExpiresAt(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>
+          <label className="text-xs">
+            <span>Email</span>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              disabled={recovering || busy === "add"}
+              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </label>
+          <label className="text-xs">
+            <span>Display name</span>
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              disabled={recovering || busy === "add"}
+              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </label>
+          <label className="text-xs">
+            <span>Role</span>
+            <select
+              value={role}
+              onChange={(event) => setRole(event.target.value as DocumentationRole)}
+              disabled={recovering || busy === "add"}
+              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+            >
+              {DOCUMENTATION_ROLES.filter(
+                (value) => state.user?.role === "owner" || value !== "owner"
+              ).map((value) => (
+                <option key={value}>{value}</option>
+              ))}
+            </select>
+          </label>
+          <label className="text-xs">
+            <span>Access expiry</span>
+            <input
+              type="date"
+              value={expiresAt}
+              onChange={(event) => setExpiresAt(event.target.value)}
+              disabled={recovering || busy === "add"}
+              className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900"
+            />
+          </label>
         </div>
-        <button disabled={busy === "add"} className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50">{busy === "add" ? "Adding…" : "Add user"}</button>
-        {status ? <p className="mt-3 text-xs text-emerald-700" role="status">{status}</p> : null}
+        <button
+          disabled={busy === "add" || recovering}
+          className="mt-3 rounded bg-sky-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+        >
+          {recovering
+            ? "Refreshing session…"
+            : busy === "add"
+              ? "Adding…"
+              : "Add user"}
+        </button>
+        {recovering ? (
+          <p className="mt-3 text-xs text-sky-700" role="status">
+            {SESSION_RECOVERY_IN_PROGRESS_MESSAGE}
+          </p>
+        ) : null}
+        {recoveryFailed ? (
+          <p className="mt-3 text-xs text-amber-700" role="status">
+            {SESSION_RECOVERY_FAILED_MESSAGE}
+          </p>
+        ) : null}
+        {status ? (
+          <p className="mt-3 text-xs text-emerald-700" role="status">
+            {status}
+          </p>
+        ) : null}
         {error ? <p className="mt-3 text-xs text-red-600">{error}</p> : null}
         {hint ? <p className="mt-1 text-xs text-zinc-500">{hint}</p> : null}
       </form>
@@ -168,16 +386,63 @@ export function UsersManagementPanel() {
         <h2 className="text-sm font-semibold">Documentation users</h2>
         <div className="mt-2 overflow-x-auto">
           <table className="w-full text-sm">
-            <thead><tr className="text-left text-xs text-zinc-500"><th className="py-2">User</th><th>Role</th><th>Status</th><th>Last login</th><th>Actions</th></tr></thead>
-            <tbody>{users.map((user) => (
-              <tr key={user.id}>
-                <td className="border-t py-2 dark:border-zinc-800">{user.name || user.email}<span className="block text-xs text-zinc-500">{user.email}</span></td>
-                <td className="border-t dark:border-zinc-800">{user.id !== state.user?.id ? <select value={user.role} disabled={busy === user.id} onChange={(event) => void changeRole(user.id, event.target.value as DocumentationRole)}>{DOCUMENTATION_ROLES.map((value) => <option key={value}>{value}</option>)}</select> : user.role}</td>
-                <td className="border-t dark:border-zinc-800">{user.status}</td>
-                <td className="border-t text-xs dark:border-zinc-800">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</td>
-                <td className="border-t dark:border-zinc-800">{user.id !== state.user?.id && user.status === "active" ? <button onClick={() => void disableUser(user.id)} className="text-xs text-red-600 underline">Disable</button> : null}</td>
+            <thead>
+              <tr className="text-left text-xs text-zinc-500">
+                <th className="py-2">User</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last login</th>
+                <th>Actions</th>
               </tr>
-            ))}</tbody>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td className="border-t py-2 dark:border-zinc-800">
+                    {user.name || user.email}
+                    <span className="block text-xs text-zinc-500">{user.email}</span>
+                  </td>
+                  <td className="border-t dark:border-zinc-800">
+                    {user.id !== state.user?.id ? (
+                      <select
+                        value={user.role}
+                        disabled={busy === user.id || recovering}
+                        onChange={(event) =>
+                          void changeRole(
+                            user.id,
+                            event.target.value as DocumentationRole
+                          )
+                        }
+                      >
+                        {DOCUMENTATION_ROLES.map((value) => (
+                          <option key={value}>{value}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      user.role
+                    )}
+                  </td>
+                  <td className="border-t dark:border-zinc-800">{user.status}</td>
+                  <td className="border-t text-xs dark:border-zinc-800">
+                    {user.lastLoginAt
+                      ? new Date(user.lastLoginAt).toLocaleString()
+                      : "Never"}
+                  </td>
+                  <td className="border-t dark:border-zinc-800">
+                    {user.id !== state.user?.id && user.status === "active" ? (
+                      <button
+                        type="button"
+                        disabled={busy === user.id || recovering}
+                        onClick={() => void disableUser(user.id)}
+                        className="text-xs text-red-600 underline disabled:opacity-50"
+                      >
+                        Disable
+                      </button>
+                    ) : null}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </section>
