@@ -94,4 +94,32 @@ describe("anonymous feedback principal", () => {
     expect(row.conversationId).toBeNull();
     expect(row.turnId).toBeNull();
   });
+
+  it("anonymous thumbs-down triages to unanswered without prior analytics", async () => {
+    const context = await ensureAnonymousFeedbackPrincipal(anonymousViewerSession());
+    const row = await submitChatFeedback({
+      organizationId: context.organization.id,
+      userId: context.principal.userId,
+      messageId: "msg-anon-down",
+      rating: "down",
+      productId: "ctix",
+    });
+    expect(row.rating).toBe("down");
+    const reviews = await db.query<{ logical_query_id: string }>(
+      `SELECT logical_query_id FROM unanswered_query_reviews
+       WHERE organization_id = ?`,
+      [context.organization.id]
+    );
+    expect(reviews.some((r) => r.logical_query_id === "msg-anon-down")).toBe(true);
+  });
+
+  it("bootstraps anonymous membership inside org-scoped transaction", async () => {
+    const context = await ensureAnonymousFeedbackPrincipal(anonymousViewerSession());
+    const membership = await db.queryOne<{ id: string }>(
+      `SELECT id FROM organization_memberships
+       WHERE organization_id = ? AND user_id = ?`,
+      [context.organization.id, "anonymous-viewer"]
+    );
+    expect(membership?.id).toBeTruthy();
+  });
 });
