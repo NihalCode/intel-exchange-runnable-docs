@@ -513,6 +513,102 @@ export async function linkFeedback(input: LinkFeedbackInput): Promise<void> {
   );
 }
 
+/**
+ * Thumbs-down / unsatisfied feedback → open (or reopen) an unanswered triage row
+ * for the latest analytics event on this logical query. Idempotent per event.
+ * Does not invent analytics events when none exist.
+ */
+export async function enqueueUnansweredFromNegativeFeedback(input: {
+  organizationId: string;
+  logicalQueryId: string;
+  feedbackId: string;
+  comment?: string | null;
+}): Promise<{ reviewId: string | null; createdOrReopened: boolean }> {
+  ensureMigrations();
+  const logicalQueryId = input.logicalQueryId.trim();
+  if (!logicalQueryId) return { reviewId: null, createdOrReopened: false };
+
+  const event = await db.queryOne<{ id: string }>(
+    `SELECT id FROM query_analytics_events
+     WHERE organization_id = ? AND logical_query_id = ?
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [input.organizationId, logicalQueryId]
+  );
+  if (!event) return { reviewId: null, createdOrReopened: false };
+
+  const sanitizedComment = input.comment?.trim()
+    ? sanitizeTopic(input.comment.trim())
+    : null;
+  const note = [
+    `User marked answer unhelpful (feedback:${input.feedbackId})`,
+    sanitizedComment ? `Feedback: ${sanitizedComment}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n")
+    .slice(0, 2000);
+  const topic =
+    sanitizedComment ?? "User marked Ask AI answer unhelpful";
+  const now = nowIso();
+
+  const existingByLogical = await db.queryOne<{ id: string }>(
+    `SELECT id FROM unanswered_query_reviews
+     WHERE organization_id = ? AND logical_query_id = ?
+     ORDER BY updated_at DESC
+     LIMIT 1`,
+    [input.organizationId, logicalQueryId]
+  );
+
+  if (existingByLogical) {
+    await db.execute(
+      `UPDATE unanswered_query_reviews
+       SET status = 'NEW',
+           resolved_by_logical_query_id = NULL,
+           resolution_reference = NULL,
+           internal_note = ?,
+           sanitized_topic = COALESCE(?, sanitized_topic),
+           logical_query_id = ?,
+           analytics_event_id = ?,
+           updated_at = ?,
+           version = version + 1
+       WHERE organization_id = ? AND id = ?`,
+      [
+        note,
+        topic,
+        logicalQueryId,
+        event.id,
+        now,
+        input.organizationId,
+        existingByLogical.id,
+      ]
+    );
+    return { reviewId: existingByLogical.id, createdOrReopened: true };
+  }
+
+  await ensureUnansweredReviewForEvent(input.organizationId, event.id);
+
+  await db.execute(
+    `UPDATE unanswered_query_reviews
+     SET status = 'NEW',
+         resolved_by_logical_query_id = NULL,
+         resolution_reference = NULL,
+         internal_note = ?,
+         sanitized_topic = COALESCE(?, sanitized_topic),
+         logical_query_id = ?,
+         updated_at = ?,
+         version = version + 1
+     WHERE organization_id = ? AND analytics_event_id = ?`,
+    [note, topic, logicalQueryId, now, input.organizationId, event.id]
+  );
+
+  const review = await db.queryOne<{ id: string }>(
+    `SELECT id FROM unanswered_query_reviews
+     WHERE organization_id = ? AND analytics_event_id = ?`,
+    [input.organizationId, event.id]
+  );
+  return { reviewId: review?.id ?? null, createdOrReopened: Boolean(review?.id) };
+}
+
 async function writeEncryptedUnansweredFields(input: {
   organizationId: string;
   analyticsEventId: string;

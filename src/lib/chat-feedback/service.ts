@@ -1,7 +1,10 @@
 import "server-only";
 
 import { isProductKey, type ProductKey } from "@/lib/products/registry";
-import { linkFeedback } from "@/lib/query-analytics/service";
+import {
+  enqueueUnansweredFromNegativeFeedback,
+  linkFeedback,
+} from "@/lib/query-analytics/service";
 import {
   deleteOwnedFeedback,
   FeedbackConflictError,
@@ -27,6 +30,43 @@ export function parseProductId(value: unknown): ProductKey | null {
   return isProductKey(value) ? value : null;
 }
 
+async function linkAnalyticsAndUnanswered(input: {
+  organizationId: string;
+  logicalQueryId: string;
+  feedbackId: string;
+  rating: FeedbackRating;
+  comment?: string | null;
+}): Promise<void> {
+  await linkFeedback({
+    organizationId: input.organizationId,
+    logicalQueryId: input.logicalQueryId,
+    feedbackId: input.feedbackId,
+    rating: input.rating,
+    note: input.comment?.trim() ? "comment_present" : null,
+  });
+
+  if (input.rating !== "down") return;
+
+  try {
+    await enqueueUnansweredFromNegativeFeedback({
+      organizationId: input.organizationId,
+      logicalQueryId: input.logicalQueryId,
+      feedbackId: input.feedbackId,
+      comment: input.comment,
+    });
+  } catch (err) {
+    console.warn(
+      JSON.stringify({
+        level: "warn",
+        message: "unanswered_enqueue_from_feedback_failed",
+        organizationId: input.organizationId,
+        feedbackId: input.feedbackId,
+        error: err instanceof Error ? err.message : "unknown",
+      })
+    );
+  }
+}
+
 export async function submitChatFeedback(input: {
   organizationId: string;
   userId: string;
@@ -49,12 +89,12 @@ export async function submitChatFeedback(input: {
   });
 
   if (row.logicalQueryId) {
-    await linkFeedback({
+    await linkAnalyticsAndUnanswered({
       organizationId: input.organizationId,
       logicalQueryId: row.logicalQueryId,
       feedbackId: row.id,
       rating: row.rating,
-      note: input.comment?.trim() ? "comment_present" : null,
+      comment: input.comment,
     });
   }
 
@@ -72,16 +112,15 @@ export async function patchChatFeedback(input: {
   const row = await updateOwnedFeedback(input);
   if (!row) return null;
   if (row.logicalQueryId) {
-    await linkFeedback({
+    await linkAnalyticsAndUnanswered({
       organizationId: input.organizationId,
       logicalQueryId: row.logicalQueryId,
       feedbackId: row.id,
       rating: row.rating,
-      note: input.comment !== undefined
-        ? input.comment?.trim()
-          ? "comment_present"
-          : null
-        : undefined,
+      comment:
+        input.comment !== undefined
+          ? input.comment
+          : undefined,
     });
   }
   return row;
