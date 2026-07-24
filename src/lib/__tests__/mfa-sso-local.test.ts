@@ -100,8 +100,8 @@ describe("one-time login URL contracts (local)", () => {
 
   it("handles fresh-login / MFA cookies before host routing (single-product hosts)", () => {
     const src = source("src/lib/documentation-auth/proxy-auth.ts");
-    const freshIdx = src.indexOf("FRESH_LOGIN_COOKIE");
-    const hostIdx = src.indexOf("applyHostRouting");
+    const freshIdx = src.indexOf("pendingFreshLogin");
+    const hostIdx = src.indexOf("await applyHostRouting");
     expect(freshIdx).toBeGreaterThan(-1);
     expect(hostIdx).toBeGreaterThan(-1);
     expect(freshIdx).toBeLessThan(hostIdx);
