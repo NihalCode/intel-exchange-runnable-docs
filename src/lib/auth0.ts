@@ -21,10 +21,16 @@ import { isAuthDisabled } from "@/lib/documentation-auth/config";
 import { getAuthCookieDomain } from "@/lib/auth0-management/invite-provision";
 import { getRequiredOktaConnection } from "@/lib/documentation-auth/password-connection";
 
-function loginErrorRedirect(appBaseUrl: string, code: string, message: string): NextResponse {
+function loginErrorRedirect(
+  appBaseUrl: string,
+  code: string,
+  message: string,
+  returnTo?: string
+): NextResponse {
   const url = new URL("/sign-in", appBaseUrl);
   url.searchParams.set("error", code);
   url.searchParams.set("message", message);
+  url.searchParams.set("returnTo", safeReturnTo(returnTo));
   return NextResponse.redirect(url);
 }
 
@@ -123,7 +129,12 @@ function createAuth0Client(): Auth0Client {
 
       if (error) {
         const mapped = mapAuthCallbackError(error);
-        return loginErrorRedirect(appBaseUrl, mapped.code, mapped.message);
+        return loginErrorRedirect(
+          appBaseUrl,
+          mapped.code,
+          mapped.message,
+          ctx.returnTo
+        );
       }
 
       const returnTo = safeReturnTo(ctx.returnTo);

@@ -13,11 +13,42 @@ export const FRESH_LOGIN_START_PATH = "/access/fresh-login";
 
 const FRESH_LOGIN_COOKIE_MAX_AGE_SEC = 180;
 
-export function freshLoginCookieOptions(secure: boolean) {
+export function freshLoginCookieOptions(
+  secure: boolean,
+  cookieDomain?: string
+) {
   return {
     ...mfaStepUpCookieOptions(secure),
     maxAge: FRESH_LOGIN_COOKIE_MAX_AGE_SEC,
+    ...(cookieDomain ? { domain: cookieDomain } : {}),
   };
+}
+
+/**
+ * Auth0 logout returnTo must be the allowlisted app origin. Prefer APP_BASE_URL
+ * when set so Allowed Logout URLs match production.
+ */
+export function resolveFreshLoginLogoutOrigin(
+  requestOrigin: string,
+  configuredAppBaseUrl: string | null | undefined
+): string {
+  const req = normalizeLogoutOrigin(requestOrigin);
+  const configured = configuredAppBaseUrl
+    ? normalizeLogoutOrigin(configuredAppBaseUrl)
+    : null;
+  if (configured && configured === req) return configured;
+  if (configured) return configured;
+  return req;
+}
+
+/** True when cookie must be minted on APP_BASE_URL, not the inbound alias host. */
+export function freshLoginNeedsCanonicalHost(
+  requestOrigin: string,
+  logoutOrigin: string
+): boolean {
+  return (
+    normalizeLogoutOrigin(requestOrigin) !== normalizeLogoutOrigin(logoutOrigin)
+  );
 }
 
 export function encodeFreshLoginCookie(

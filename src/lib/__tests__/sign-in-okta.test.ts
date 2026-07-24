@@ -11,9 +11,11 @@ import {
 } from "@/lib/documentation-auth/password-connection";
 import {
   encodeFreshLoginCookie,
+  freshLoginNeedsCanonicalHost,
   freshLoginStartHref,
   freshPasswordLoginPath,
   parseFreshLoginCookie,
+  resolveFreshLoginLogoutOrigin,
   sanitizeFreshLoginReturnTo,
 } from "@/lib/documentation-auth/fresh-login";
 import { auth0LoginPath } from "@/lib/documentation-auth/sign-in-url";
@@ -108,6 +110,26 @@ describe("freshLogin", () => {
     expect(sanitizeFreshLoginReturnTo("/auth/login")).toBe("/");
     expect(sanitizeFreshLoginReturnTo("/sign-in")).toBe("/");
     expect(sanitizeFreshLoginReturnTo("/agent?x=1")).toBe("/agent?x=1");
+  });
+
+  it("prefers APP_BASE_URL for logout origin and detects alias-host mismatch", () => {
+    const canonical = "https://apitest1.cyninjadev.com";
+    const alias = "https://cyware-docs-ctix.vercel.app";
+    expect(resolveFreshLoginLogoutOrigin(alias, canonical)).toBe(canonical);
+    expect(resolveFreshLoginLogoutOrigin(canonical, canonical)).toBe(canonical);
+    expect(resolveFreshLoginLogoutOrigin(alias, null)).toBe(alias);
+    expect(freshLoginNeedsCanonicalHost(alias, canonical)).toBe(true);
+    expect(freshLoginNeedsCanonicalHost(canonical, canonical)).toBe(false);
+  });
+
+  it("fresh-login route canonicalizes onto APP_BASE_URL before setting the cookie", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/app/access/fresh-login/route.ts"),
+      "utf8"
+    );
+    expect(source).toContain("freshLoginNeedsCanonicalHost");
+    expect(source).toContain("resolveFreshLoginLogoutOrigin");
+    expect(source).toContain("getAuthCookieDomain");
   });
 });
 
