@@ -332,6 +332,7 @@ export function AppFrame({
   const drawerRef = useFocusTrap(drawerOpen, () => setDrawerOpen(false));
   const isDocsRoute = pathname.startsWith("/docs/");
   const isHome = pathname === "/";
+  const isAskAi = pathname === "/agent" || pathname.startsWith("/agent/");
   const showDocsRail = isDocsRoute;
 
   return (
@@ -499,7 +500,9 @@ export function AppFrame({
             id="main-content"
             tabIndex={-1}
             data-layout="cx-main"
-            className={`min-w-0 flex-1 ${isHome ? "" : "px-4 py-6 sm:px-8"}`}
+            className={`min-w-0 flex-1 ${
+              isHome ? "" : isAskAi ? "px-3 py-3 sm:px-5 sm:py-4" : "px-4 py-6 sm:px-8"
+            }`}
           >
             {children}
           </main>

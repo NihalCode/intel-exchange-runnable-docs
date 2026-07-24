@@ -13,6 +13,7 @@ import {
 } from "./AgentProductAccess";
 import { useAgentChat } from "./agent-chat-state";
 import { Markdown } from "./Markdown";
+import { SignalTopologyArt } from "./fabric/SignalField";
 import { AGENT_UPLOAD_ACCEPT } from "@/lib/agent/file-extract-client";
 import { degradedRetrievalNotice, evidenceLabel, progressLabel } from "@/lib/agent/answer-ux";
 import { getProduct, inferProductsFromQuery } from "@/lib/products/registry";
@@ -185,7 +186,7 @@ function AgentChatBody({
         onDelete={deleteChat}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="cx-ask-workspace__stage">
         {features.vercel_import && showImport && (
           <ImportVercelModal
             onClose={() => setShowImport(false)}
@@ -200,23 +201,20 @@ function AgentChatBody({
           />
         ) : null}
 
-        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] px-4 py-3"
-          style={{
-            background:
-              "linear-gradient(90deg, color-mix(in srgb, var(--accent-ai) 8%, transparent), transparent 55%)",
-          }}
-        >
+        <div className="cx-ask-context-bar">
           <div>
             <div className="mb-1 inline-flex items-center gap-2">
               <span
-                className="h-1.5 w-1.5 rounded-full bg-[var(--accent-ai)] sf-signal-pulse"
+                className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse"
                 aria-hidden="true"
               />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-ai)]">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
                 Intelligence workspace
               </p>
             </div>
-            <h2 id="agent-chat-heading" className="text-sm font-semibold text-[var(--text-heading)]">Documentation Agent</h2>
+            <h2 id="agent-chat-heading" className="text-sm font-semibold text-[var(--text-heading)]">
+              Documentation Agent
+            </h2>
             <p className="text-[11px] text-[var(--text-secondary)]">
               Ask about endpoints, authentication, workflows, parameters, and code examples.
             </p>
@@ -232,7 +230,7 @@ function AgentChatBody({
               onClick={() => setShowSettings((s) => !s)}
               aria-expanded={showSettings}
               aria-controls="agent-chat-settings"
-              className="rounded-[var(--radius-md)] px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
+              className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs text-[var(--text-secondary)] transition hover:border-[var(--border-default)] hover:text-[var(--text-primary)]"
             >
               {showSettings ? "Hide settings" : "Settings"}
             </button>
@@ -251,7 +249,10 @@ function AgentChatBody({
         ) : null}
 
         {showSettings ? (
-          <div id="agent-chat-settings" className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-4 py-3">
+          <div
+            id="agent-chat-settings"
+            className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-4 py-3"
+          >
             <div className="flex flex-wrap items-end gap-3">
               <label className="flex flex-col gap-1 text-xs">
                 <span className="font-semibold text-[var(--text-secondary)]">Example code language</span>
@@ -271,26 +272,33 @@ function AgentChatBody({
           </div>
         ) : null}
 
-        <div aria-label="Conversation" className="flex-1 overflow-y-auto px-4 py-4">
+        <div aria-label="Conversation" className="scroll-thin flex-1 overflow-y-auto px-4 py-4">
           {isEmpty ? (
-            <div className="mx-auto flex h-full max-w-lg flex-col items-center justify-center text-center">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-ai-soft)] text-[var(--accent-ai)]">
-                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+            <div className="cx-ask-empty">
+              <SignalTopologyArt
+                variant="ops"
+                className="pointer-events-none absolute inset-x-0 top-1/2 h-44 w-full -translate-y-[70%] opacity-30"
+              />
+              <div className="cx-ask-empty__mark" aria-hidden="true">
+                <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
                   <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" strokeLinejoin="round" />
                   <path d="M5 16l.8 2.2L8 19l-2.2.8L5 22l-.8-2.2L2 19l2.2-.8L5 16z" strokeLinejoin="round" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold">What would you like to learn?</h2>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                Ask in everyday language. Answers are grounded in the published product documentation.
+              <h2 className="relative text-xl font-semibold tracking-tight text-[var(--text-heading)]">
+                Open an intelligence inquiry
+              </h2>
+              <p className="relative mt-1.5 max-w-md text-sm text-[var(--text-secondary)]">
+                Ask in everyday language. Answers are grounded in published Cyware product documentation —
+                endpoints, auth, workflows, and runnable examples.
               </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-2">
+              <div className="relative mt-6 flex flex-wrap justify-center gap-2">
                 {quickStarts.map((ex) => (
                   <button
                     key={ex}
                     type="button"
                     onClick={() => void send(ex)}
-                    className="rounded-full border border-zinc-200 px-3 py-1 text-[11px] text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400"
+                    className="cx-ask-chip"
                   >
                     {ex.length > 52 ? `${ex.slice(0, 52)}…` : ex}
                   </button>
@@ -302,17 +310,18 @@ function AgentChatBody({
               {messages.map((msg) => {
                 if (msg.role === "user") {
                   return (
-                    <div key={msg.id} className="flex justify-end">
-                      <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-sky-600 px-4 py-2.5 text-sm text-white">
-                        {msg.content}
-                      </div>
+                    <div key={msg.id} className="cx-ask-msg-enter flex justify-end">
+                      <div className="cx-ask-user-bubble">{msg.content}</div>
                     </div>
                   );
                 }
                 if (msg.role === "error") {
                   return (
-                    <div key={msg.id} className="flex justify-start">
-                      <div role="alert" className="max-w-[90%] rounded-2xl rounded-bl-sm border border-red-300 bg-red-50 px-4 py-2.5 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+                    <div key={msg.id} className="cx-ask-msg-enter flex justify-start">
+                      <div
+                        role="alert"
+                        className="max-w-[90%] rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--danger-soft)] px-4 py-2.5 text-sm text-[var(--danger)]"
+                      >
                         {msg.content}
                       </div>
                     </div>
@@ -321,13 +330,13 @@ function AgentChatBody({
                 const evidence = evidenceLabel(msg.response.retrievalEvidence);
                 const retrievalNotice = degradedRetrievalNotice(msg.response.retrievalDegraded);
                 return (
-                  <div key={msg.id} className="flex justify-start">
-                    <div className="w-full max-w-full space-y-3 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs dark:bg-sky-950">
+                  <div key={msg.id} className="cx-ask-msg-enter flex justify-start">
+                    <div className="cx-ask-intel-panel space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-primary)_14%,transparent)] text-[10px] font-bold tracking-wide text-[var(--accent-primary)]">
                           AI
                         </span>
-                        <span className="text-xs font-semibold text-zinc-500">
+                        <span className="text-xs font-semibold text-[var(--text-secondary)]">
                           {msg.response.appEdit
                             ? "Updated your app"
                             : msg.response.mode === "app"
@@ -335,50 +344,52 @@ function AgentChatBody({
                               : "Answer"}
                         </span>
                         {evidence ? (
-                          <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-800 dark:bg-sky-950 dark:text-sky-200">
+                          <span className="rounded-[var(--radius-pill)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
                             {evidence}
                           </span>
                         ) : null}
                         {msg.response.productContext?.label ? (
-                          <span className="text-[10px] text-zinc-400">{msg.response.productContext.label}</span>
+                          <span className="text-[10px] text-[var(--text-muted)]">
+                            {msg.response.productContext.label}
+                          </span>
                         ) : null}
                       </div>
                       {retrievalNotice ? (
-                        <p className="rounded-lg border border-sky-200 bg-sky-50/70 px-3 py-2 text-xs text-sky-900 dark:border-sky-900 dark:bg-sky-950/30 dark:text-sky-200">
+                        <p className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-primary)_25%,var(--border-default))] bg-[color-mix(in_srgb,var(--accent-primary)_8%,transparent)] px-3 py-2 text-xs text-[var(--text-primary)]">
                           {retrievalNotice}
                         </p>
                       ) : null}
                       {msg.content.length > 900 || msg.response.steps.length > 2 ? (
                         <nav
                           aria-label="Jump to sections"
-                          className="flex flex-wrap gap-2 text-[11px] text-zinc-500"
+                          className="flex flex-wrap gap-2 text-[11px] text-[var(--text-muted)]"
                         >
-                          <a href={`#answer-${msg.id}`} className="underline-offset-2 hover:underline">
+                          <a href={`#answer-${msg.id}`} className="underline-offset-2 hover:underline hover:text-[var(--text-link)]">
                             Answer
                           </a>
                           {msg.response.steps.length ? (
-                            <a href={`#steps-${msg.id}`} className="underline-offset-2 hover:underline">
+                            <a href={`#steps-${msg.id}`} className="underline-offset-2 hover:underline hover:text-[var(--text-link)]">
                               API details
                             </a>
                           ) : null}
                           {msg.response.citations.length ? (
-                            <a href={`#sources-${msg.id}`} className="underline-offset-2 hover:underline">
+                            <a href={`#sources-${msg.id}`} className="underline-offset-2 hover:underline hover:text-[var(--text-link)]">
                               Sources
                             </a>
                           ) : null}
                         </nav>
                       ) : null}
-                      <div id={`answer-${msg.id}`} className="prose prose-sm max-w-none dark:prose-invert">
+                      <div id={`answer-${msg.id}`} className="prose prose-sm prose-cyware max-w-none dark:prose-invert">
                         <Markdown>{msg.content}</Markdown>
                       </div>
                       <div id={`steps-${msg.id}`}>
-                      <AgentMessageView
-                        response={msg.response}
-                        language={language}
-                        workflowId={msg.id}
-                        onDeploySuccess={handleDeploySuccess}
-                        compactAppFiles
-                      />
+                        <AgentMessageView
+                          response={msg.response}
+                          language={language}
+                          workflowId={msg.id}
+                          onDeploySuccess={handleDeploySuccess}
+                          compactAppFiles
+                        />
                       </div>
                       <AgentFeedbackControl
                         messageId={msg.id}
@@ -394,15 +405,18 @@ function AgentChatBody({
               })}
 
               {loading ? (
-                <div className="flex justify-start">
-                  <div
-                    aria-live="polite"
-                    className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/60"
-                  >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs dark:bg-sky-950">
+                <div className="cx-ask-msg-enter flex justify-start">
+                  <div aria-live="polite" className="cx-ask-status-pill">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-primary)_14%,transparent)] text-[10px] font-bold text-[var(--accent-primary)]">
                       AI
                     </span>
-                    <span className="text-sm text-zinc-500">{progressLabel(intentLabel)}</span>
+                    <span
+                      className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse"
+                      aria-hidden="true"
+                    />
+                    <span className="text-sm text-[var(--text-secondary)]">
+                      {progressLabel(intentLabel)}
+                    </span>
                   </div>
                 </div>
               ) : null}
@@ -412,11 +426,8 @@ function AgentChatBody({
         </div>
 
         <div
-          className={`shrink-0 border-t p-3 transition ${
-            dragOver
-              ? "border-sky-400 bg-sky-50/60 dark:border-sky-700 dark:bg-sky-950/30"
-              : "border-zinc-200 dark:border-zinc-800"
-          }`}
+          className="cx-ask-composer"
+          data-drag={dragOver ? "true" : "false"}
           onDragOver={(e) => {
             e.preventDefault();
             setDragOver(true);
@@ -433,22 +444,26 @@ function AgentChatBody({
               {attachments.map((a, i) => (
                 <span
                   key={`${a.name}-${i}`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] text-sky-800 dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-300"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,var(--border-default))] bg-[color-mix(in_srgb,var(--accent-primary)_8%,transparent)] px-2.5 py-1 text-[11px] text-[var(--text-primary)]"
                 >
-                  📎 {a.name}
+                  <PaperclipIcon className="h-3 w-3 text-[var(--accent-primary)]" />
+                  {a.name}
                   {a.truncated ? " (truncated)" : ""}
                   <button
                     type="button"
                     aria-label={`Remove ${a.name}`}
                     onClick={() => removeAttachment(i)}
-                    className="text-sky-500 hover:text-sky-700 dark:hover:text-sky-200"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"
                   >
                     ×
                   </button>
                 </span>
               ))}
               {extracting && (
-                <span className="text-[11px] text-zinc-500">Reading attached files…</span>
+                <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse" aria-hidden="true" />
+                  Reading attached files…
+                </span>
               )}
             </div>
           )}
@@ -457,7 +472,7 @@ function AgentChatBody({
               e.preventDefault();
               void send();
             }}
-            className="mx-auto flex max-w-3xl items-end gap-2"
+            className="cx-ask-composer__shell"
           >
             <input
               ref={fileInputRef}
@@ -476,9 +491,9 @@ function AgentChatBody({
               disabled={loading || extracting}
               title="Attach files"
               aria-label="Attach files"
-              className="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl border border-zinc-300 text-lg text-zinc-500 transition hover:border-sky-400 hover:text-sky-600 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-400"
+              className="cx-ask-icon-btn"
             >
-              📎
+              <PaperclipIcon className="h-4 w-4" />
             </button>
             <textarea
               ref={inputRef}
@@ -489,12 +504,12 @@ function AgentChatBody({
               aria-label="Ask the documentation agent"
               placeholder="Ask about an endpoint, workflow, parameter, or code example…"
               disabled={loading}
-              className="max-h-32 min-h-[42px] flex-1 resize-none rounded-xl border border-zinc-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-sky-500 disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950"
+              className="cx-ask-composer__input"
             />
             <button
               type="submit"
               disabled={loading || extracting || (!input.trim() && attachments.length === 0)}
-              className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-xl bg-sky-600 px-4 text-sm font-semibold text-white transition hover:bg-sky-700 disabled:opacity-40"
+              className="cx-ask-send"
             >
               Send
             </button>
@@ -502,14 +517,14 @@ function AgentChatBody({
               <button
                 type="button"
                 onClick={cancel}
-                className="inline-flex h-[42px] shrink-0 items-center justify-center rounded-xl border border-red-300 px-4 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/30"
+                className="inline-flex h-[2.6rem] shrink-0 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--danger)_40%,var(--border-default))] px-3.5 text-sm font-semibold text-[var(--danger)] transition hover:bg-[var(--danger-soft)]"
               >
                 Stop
               </button>
             ) : null}
           </form>
           {statusMessage ? (
-            <p role="status" className="mx-auto mt-2 max-w-3xl text-xs text-zinc-500 dark:text-zinc-400">
+            <p role="status" className="mx-auto mt-2 max-w-3xl text-xs text-[var(--text-muted)]">
               {statusMessage}
             </p>
           ) : null}
@@ -531,5 +546,17 @@ function AgentChatBody({
         />
       ) : null}
     </section>
+  );
+}
+
+function PaperclipIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21.44 11.05l-8.49 8.49a5.25 5.25 0 01-7.42-7.42l8.84-8.84a3.5 3.5 0 014.95 4.95l-8.84 8.84a1.75 1.75 0 01-2.47-2.47l8.13-8.13"
+      />
+    </svg>
   );
 }

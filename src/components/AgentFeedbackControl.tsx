@@ -68,10 +68,10 @@ export function AgentFeedbackControl({
 
   return (
     <div
-      className="flex items-center gap-2 border-t border-[var(--border-subtle)] pt-2"
+      className="flex items-center gap-2 border-t border-[var(--border-subtle)] pt-2.5"
       data-testid="agent-feedback"
     >
-      <span className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
+      <span className="text-[10px] font-medium uppercase tracking-[0.08em] text-[var(--text-muted)]">
         Helpful?
       </span>
       <button
@@ -82,8 +82,8 @@ export function AgentFeedbackControl({
         onClick={() => void submit("up")}
         className={`inline-flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)] transition ${
           rating === "up"
-            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
-            : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
+            ? "bg-[var(--success-soft)] text-[var(--success)] ring-1 ring-[color-mix(in_srgb,var(--success)_35%,transparent)]"
+            : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
         }`}
       >
         <ThumbUpIcon />
@@ -96,13 +96,13 @@ export function AgentFeedbackControl({
         onClick={() => void submit("down")}
         className={`inline-flex h-7 w-7 items-center justify-center rounded-[var(--radius-md)] transition ${
           rating === "down"
-            ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
-            : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
+            ? "bg-[var(--danger-soft)] text-[var(--danger)] ring-1 ring-[color-mix(in_srgb,var(--danger)_35%,transparent)]"
+            : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
         }`}
       >
         <ThumbDownIcon />
       </button>
-      {error ? <span className="text-[10px] text-rose-600">{error}</span> : null}
+      {error ? <span className="text-[10px] text-[var(--danger)]">{error}</span> : null}
     </div>
   );
 }
