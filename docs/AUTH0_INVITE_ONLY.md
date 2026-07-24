@@ -1,5 +1,7 @@
 # Auth0 Invite-Only Setup — Cyware Documentation Workspace
 
+> **Current production model (2026):** Auth0 is a thin OIDC/session broker. Login uses a single Okta Workforce enterprise connection (`AUTH0_OKTA_CONNECTION`). Password and Okta Verify live in Okta. Add user provisions Okta + docs group (`OKTA_DOCS_GROUP_ID`). Google and Auth0 Database login/signup are disabled. See [OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md).
+
 This document describes how to configure Auth0 for **strict invite-only** access to the Cyware Runnable API Docs workspace. Authentication proves identity only; access is granted only when the user email matches an active user or valid pending invite in the application database.
 
 ## Overview
@@ -22,19 +24,15 @@ AUTH0_CLIENT_ID=
 AUTH0_CLIENT_SECRET=
 AUTH0_ACTION_SHARED_SECRET=              # Strong random secret for Post-Login Action
 APP_BASE_URL=https://your-app.example
+AUTH0_OKTA_CONNECTION=cyware-docs-okta   # Required — only Okta enterprise connection
+OKTA_ORG_URL=https://integrator-XXXX.okta.com
+OKTA_API_TOKEN=
+OKTA_DOCS_GROUP_ID=00g...                # Cyware Docs Users (preferred under Federation Broker Mode)
+# OKTA_APP_ID=0oa...                     # optional; soft-fails under Federation Broker Mode
+# AUTH_COOKIE_DOMAIN=.cyninjadev.com
 # Cold-start owner bootstrap (only when zero active users). Canonical: INITIAL_OWNER_EMAIL
 INITIAL_OWNER_EMAIL=
-# Aliases (legacy): DOCUMENTATION_BOOTSTRAP_OWNER_EMAIL, INITIAL_ADMIN_EMAIL
 DATABASE_URL=                            # Required on Vercel (Postgres). SQLite used locally when unset
-AUTH0_GOOGLE_CONNECTION=google-oauth2    # Optional — connection name for Google button
-AUTH0_EMAIL_CONNECTION=Username-Password-Authentication  # Optional — falls back to AUTH0_DATABASE_CONNECTION
-# Okta-only UX (see docs/enterprise/auth/OKTA_AUTH0_FEDERATION.md)
-# AUTH0_OKTA_CONNECTION=okta
-# INVITE_SKIP_IDP_PROVISION=true
-# OKTA_ORG_URL=https://integrator-XXXX.okta.com
-# OKTA_API_TOKEN=
-# OKTA_APP_ID=0oa...
-# AUTH_COOKIE_DOMAIN=.cyninjadev.com
 ```
 
 Never commit real credentials. Never log Auth0 tokens or invite tokens.
@@ -44,12 +42,11 @@ For **Okta-only** sign-in (recommended): follow **[docs/enterprise/auth/OKTA_AUT
 ## Auth0 application settings
 
 1. Create a **Regular Web Application** in Auth0
-2. For Okta-only UX: enable **only** the Okta enterprise connection; disable Google and Database on the app. Set Auth0 MFA to **Never**.
-3. If not Okta-only: **Disable public signup** on database connections; enable Google/Database as needed — see [OKTA_AUTH0_FEDERATION.md](../enterprise/auth/OKTA_AUTH0_FEDERATION.md).
-4. Set **Allowed Callback URLs**:
+2. Enable **only** the Okta Workforce enterprise connection; disable Google and Database on the app. Set Auth0 MFA to **Never**.
+3. Set **Allowed Callback URLs**:
    - `https://your-app.example/auth/callback`
    - `http://localhost:3000/auth/callback` (development)
-5. Set **Allowed Logout URLs** (exact origins — required for MFA step-up and normal logout):
+4. Set **Allowed Logout URLs** (exact origins — required for MFA step-up and normal logout):
    - `https://apitest1.cyninjadev.com`
    - `https://cyware-docs-ctix.vercel.app`
    - `https://cyware-docs-cftr.vercel.app`
@@ -175,22 +172,22 @@ If email is not configured, admins still get a copyable invite link in the UI.
 
 ## Testing
 
-### Uninvited Google login
+### Uninvited login
 
-1. Use a Google account that has **no** invite in the database
-2. Click **Continue with Google** on `/sign-in`
+1. Use an account that has **no** invite in the database
+2. Click **Sign in** on `/sign-in` (routes through Okta via Auth0)
 3. Auth0 Action should deny with `invite_required`, or app redirects to `/access/invite-required`
 
-### Invited company email login
+### Invited Okta login
 
-1. Admin invites `user@company.com` with role `viewer`
-2. User opens invite link, then signs in via **Continue with company email**
+1. Admin uses **Add user** for `user@company.com` with role `viewer` (creates Okta user + group + local invite)
+2. User completes Okta first-time password setup (Sign up), then **Sign in** with email, Okta password, and Okta Verify
 3. User should land in docs with `viewer` role
 
 ### Wrong email / identity conflict
 
-1. Invite `user@company.com` and complete Add user (Auth0 Database `auth0|…` row in the app DB)
-2. Sign in via **Continue with Okta** with the **same** email → app relinks to the Okta `sub` (should succeed)
+1. Invite `user@company.com` and complete Add user (provisional `auth0|invited|…` row until first login)
+2. Sign in through Okta with the **same** email → app links the live Auth0 broker `sub`
 3. `/access/wrong-email` is reserved for rare cases where that email cannot be linked (e.g. Auth0 `sub` already owned by another workspace user)
 4. Signing in with a **different** email than any invite → usually `/access/invite-required`
 
@@ -208,7 +205,7 @@ Only **owner** and **admin** can manage invites and users.
 
 ## Security notes
 
-- Do not rely on Auth0 “disable signup” alone — social logins can still create Auth0 profiles
+- Enable only the Okta enterprise connection on the Auth0 application; do not re-enable Google or Database login
 - Always enforce invite check in Post-Login Action **and** application session
 - Disabled users are blocked on every API call
 - Revoked/expired invites cannot be reused

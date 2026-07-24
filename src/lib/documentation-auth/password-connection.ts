@@ -1,62 +1,71 @@
 /**
- * Auth0 connection used for login. Okta-only production: AUTH0_OKTA_CONNECTION
- * (Workforce enterprise). Auth0 is a thin broker — Okta owns password + Verify.
+ * Auth0 Okta Workforce enterprise connection — required for all authorize requests.
+ * Auth0 is a thin broker; Okta owns password + Verify. Never fall back to Database/Google.
  */
+
+/** Trimmed AUTH0_OKTA_CONNECTION, or undefined if unset. */
 export function getOktaBrokerConnection(): string | undefined {
   return process.env.AUTH0_OKTA_CONNECTION?.trim() || undefined;
 }
 
-/** True when Auth0 must federate only to Okta (no Database / social). */
+/** True when the Okta enterprise connection env is present. */
 export function isOktaBrokerLogin(): boolean {
   return Boolean(getOktaBrokerConnection());
 }
 
 /**
- * Connection name forced on /auth/login.
- * Prefer Okta Workforce; legacy Database only when AUTH0_OKTA_CONNECTION is unset.
+ * Server-side required connection name for /authorize `connection=`.
+ * Throws if unset — callers must not silently omit the parameter.
+ */
+export function getRequiredOktaConnection(): string {
+  const value = getOktaBrokerConnection();
+  if (!value) {
+    throw new Error("AUTH0_OKTA_CONNECTION is required for authentication.");
+  }
+  return value;
+}
+
+/** Safe presence check for diagnostics (never returns the name). */
+export function isOktaConnectionConfigured(): boolean {
+  return Boolean(getOktaBrokerConnection());
+}
+
+/**
+ * Connection forced on every `/auth/login` query.
+ * Alias of getRequiredOktaConnection for existing call sites.
  */
 export function getAuthConnectionOrDefault(): string {
-  return (
-    getOktaBrokerConnection() ||
-    process.env.AUTH0_EMAIL_CONNECTION?.trim() ||
-    process.env.AUTH0_DATABASE_CONNECTION?.trim() ||
-    "Cyware-Docs-Auth0"
-  );
+  return getRequiredOktaConnection();
 }
 
-/** @deprecated Use getAuthConnectionOrDefault — kept for older tests. */
+/** @deprecated Prefer getOktaBrokerConnection / getRequiredOktaConnection */
 export function getPasswordConnection(): string | undefined {
-  return (
-    getOktaBrokerConnection() ||
-    process.env.AUTH0_EMAIL_CONNECTION?.trim() ||
-    process.env.AUTH0_DATABASE_CONNECTION?.trim() ||
-    undefined
-  );
+  return getOktaBrokerConnection();
 }
 
-/** @deprecated Use getAuthConnectionOrDefault */
+/** @deprecated Prefer getRequiredOktaConnection */
 export function getPasswordConnectionOrDefault(): string {
-  return getAuthConnectionOrDefault();
+  return getRequiredOktaConnection();
 }
 
+/**
+ * Branded / fresh-login → Auth0 login with Okta enterprise connection.
+ * Does not use Auth0 Database screen_hint=signup.
+ */
 export function passwordLoginPath(options?: {
   returnTo?: string;
+  /** Fresh-login / account switch: force interactive Okta login. Default true. */
   forceLogin?: boolean;
-  /** Ignored for Okta broker (no Auth0 Database signup screen). */
+  /** Ignored — Auth0 Database signup is not used. */
   signUp?: boolean;
 }): string {
   const params = new URLSearchParams();
-  params.set("connection", getAuthConnectionOrDefault());
+  params.set("connection", getRequiredOktaConnection());
   if (options?.returnTo) params.set("returnTo", options.returnTo);
-  // Without prompt=login Auth0 resumes SSO and can skip the Okta password prompt.
   const forceLogin = options?.forceLogin !== false;
   if (forceLogin) {
     params.set("prompt", "login");
     params.set("max_age", "0");
-  }
-  // Never pass Auth0 Database screen_hint when using Okta broker.
-  if (options?.signUp && !isOktaBrokerLogin()) {
-    params.set("screen_hint", "signup");
   }
   return `/auth/login?${params.toString()}`;
 }

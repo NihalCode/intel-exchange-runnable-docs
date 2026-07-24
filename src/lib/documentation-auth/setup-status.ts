@@ -11,6 +11,7 @@ const SIGN_IN_ENV_KEYS = [
   "AUTH0_CLIENT_ID",
   "AUTH0_CLIENT_SECRET",
   "AUTH0_SECRET",
+  "AUTH0_OKTA_CONNECTION",
 ] as const;
 
 const RECOMMENDED_ENV_KEYS = [
@@ -67,7 +68,12 @@ export function buildAuthSetupStatus(options?: {
   const secretValid = Boolean(secret && secret.length >= 32);
 
   const authReady = Boolean(
-    domain && clientId && clientSecret && secretValid && resolvedAppBaseUrl
+    domain &&
+      clientId &&
+      clientSecret &&
+      secretValid &&
+      resolvedAppBaseUrl &&
+      envPresent("AUTH0_OKTA_CONNECTION")
   );
 
   const missingForSignIn: string[] = [];
@@ -80,6 +86,9 @@ export function buildAuthSetupStatus(options?: {
   else if (!secretValid) missingForSignIn.push("AUTH0_SECRET (must be 32+ characters)");
   if (!resolvedAppBaseUrl) {
     missingForSignIn.push("APP_BASE_URL (or AUTH0_BASE_URL, or VERCEL_URL on Vercel)");
+  }
+  if (!envPresent("AUTH0_OKTA_CONNECTION")) {
+    missingForSignIn.push("AUTH0_OKTA_CONNECTION");
   }
 
   const missingRecommended: string[] = [];

@@ -64,6 +64,21 @@ export async function POST(request: Request) {
   }
 
   const normalized = normalizeEmail(email);
+
+  // Prefer Okta Workforce only — reject unexpected Auth0 connections when configured.
+  const expectedConnection = cleanEnvValue(process.env.AUTH0_OKTA_CONNECTION);
+  const reportedConnection = body.connection?.trim();
+  if (
+    expectedConnection &&
+    reportedConnection &&
+    reportedConnection.toLowerCase() !== expectedConnection.toLowerCase()
+  ) {
+    return NextResponse.json({
+      allowed: false,
+      reason: "not_invited",
+    } satisfies InviteCheckResponse);
+  }
+
   let result;
   try {
     result = await checkEmailAccess(normalized);

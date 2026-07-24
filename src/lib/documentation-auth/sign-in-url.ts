@@ -7,7 +7,7 @@ import { normalizeHostname } from "@/lib/domains/normalize";
 import { trustedRequestHostname } from "@/lib/domains/request-host";
 import { authSignInUrl } from "@/lib/domains/urls";
 
-import { getAuthConnectionOrDefault } from "@/lib/documentation-auth/password-connection";
+import { getOktaBrokerConnection } from "@/lib/documentation-auth/password-connection";
 
 function returnToFromRequest(request: NextRequest): string {
   const referer = request.headers.get("referer");
@@ -36,12 +36,21 @@ function returnToFromRequest(request: NextRequest): string {
   return returnTo;
 }
 
-/** Same-origin Auth0 login — Okta Workforce connection when AUTH0_OKTA_CONNECTION is set. */
+/** Same-origin Auth0 login — always includes AUTH0_OKTA_CONNECTION. */
 export function auth0LoginPath(returnTo = "/"): string {
   const path = returnTo.startsWith("/") && !returnTo.startsWith("//") ? returnTo : "/";
+  const connection = getOktaBrokerConnection();
+  if (!connection) {
+    // Fail closed to branded setup page — never authorize without Okta connection.
+    const params = new URLSearchParams({
+      error: "auth_config",
+      returnTo: path,
+    });
+    return `/sign-in?${params.toString()}`;
+  }
   const params = new URLSearchParams({
     returnTo: path,
-    connection: getAuthConnectionOrDefault(),
+    connection,
   });
   return `/auth/login?${params.toString()}`;
 }

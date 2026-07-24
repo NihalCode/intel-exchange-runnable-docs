@@ -25,7 +25,7 @@ describe("user-facing error copy", () => {
 
   it("sanitizes Auth0 env validation strings", () => {
     const raw =
-      "Auth0 requires AUTH0_ISSUER_BASE_URL (or AUTH0_DOMAIN), AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, and APP_BASE_URL (or AUTH0_BASE_URL, or VERCEL_URL on Vercel).";
+      "Auth0 requires AUTH0_ISSUER_BASE_URL (or AUTH0_DOMAIN), AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, APP_BASE_URL (or AUTH0_BASE_URL, or VERCEL_URL on Vercel), and AUTH0_OKTA_CONNECTION.";
     expect(sanitizeUserFacingMessage(raw, SIGN_IN_NOT_CONFIGURED_MESSAGE)).toBe(
       SIGN_IN_NOT_CONFIGURED_MESSAGE
     );

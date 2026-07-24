@@ -50,6 +50,7 @@ export interface AuthConfigChecks {
   auth0SecretValid: boolean;
   actionSharedSecretSet: boolean;
   appBaseUrlSet: boolean;
+  oktaConnectionConfigured: boolean;
   databaseConfigured: boolean;
   vercelWithoutDatabase: boolean;
   initialOwnerEmailSet: boolean;
@@ -70,10 +71,13 @@ export function validateAuthConfigPublic(): AuthConfigValidation {
   const secret = cleanEnvValue(process.env.AUTH0_SECRET);
   const appBaseUrl = resolveAppBaseUrlFromEnv();
 
-  const auth0EnvComplete = Boolean(domain && clientId && clientSecret && secret && appBaseUrl);
+  const auth0EnvComplete = Boolean(
+    domain && clientId && clientSecret && secret && appBaseUrl && cleanEnvValue(process.env.AUTH0_OKTA_CONNECTION)
+  );
   const auth0SecretValid = !secret || secret.length >= 32;
   const actionSharedSecretSet = Boolean(cleanEnvValue(process.env.AUTH0_ACTION_SHARED_SECRET));
   const appBaseUrlSet = Boolean(appBaseUrl);
+  const oktaConnectionConfigured = Boolean(cleanEnvValue(process.env.AUTH0_OKTA_CONNECTION));
   const databaseConfigured = isPostgresConfigured();
   const vercelWithoutDatabase = Boolean(process.env.VERCEL && !databaseConfigured);
   const ownerEmail = initialOwnerEmail();
@@ -83,10 +87,16 @@ export function validateAuthConfigPublic(): AuthConfigValidation {
 
   if (!auth0EnvComplete) {
     issues.push(
-      "Auth0 env incomplete: set AUTH0_ISSUER_BASE_URL, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, and APP_BASE_URL (or AUTH0_BASE_URL)."
+      "Auth0 env incomplete: set AUTH0_ISSUER_BASE_URL, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, APP_BASE_URL (or AUTH0_BASE_URL), and AUTH0_OKTA_CONNECTION."
     );
   } else if (!auth0SecretValid) {
     issues.push("AUTH0_SECRET must be at least 32 characters.");
+  }
+
+  if (!oktaConnectionConfigured) {
+    issues.push(
+      "AUTH0_OKTA_CONNECTION is unset — login must route through the Okta Workforce enterprise connection."
+    );
   }
 
   if (!actionSharedSecretSet) {
@@ -118,6 +128,7 @@ export function validateAuthConfigPublic(): AuthConfigValidation {
     auth0SecretValid,
     actionSharedSecretSet,
     appBaseUrlSet,
+    oktaConnectionConfigured,
     databaseConfigured,
     vercelWithoutDatabase,
     initialOwnerEmailSet: Boolean(ownerEmail),

@@ -9,6 +9,7 @@ import {
 } from "@/lib/admin/overview-data";
 import { db } from "@/lib/db/client";
 import { getAppSession } from "@/lib/documentation-auth/session";
+import { auth0LoginPath } from "@/lib/documentation-auth/sign-in-url";
 import { listApiKeyMetadata } from "@/lib/enterprise/api-keys";
 import { listEnterpriseAuditEvents } from "@/lib/enterprise/audit";
 import { resolveOrganizationContextOrBootstrap } from "@/lib/enterprise/organization-context";
@@ -28,12 +29,12 @@ import {
 
 export async function requireAdminPageContext() {
   const session = await getAppSession();
-  if (!session) redirect("/auth/login?returnTo=/admin");
+  if (!session) redirect(auth0LoginPath("/admin"));
   let context;
   try {
     context = await resolveOrganizationContextOrBootstrap(session);
   } catch {
-    redirect("/auth/login?returnTo=/admin");
+    redirect(auth0LoginPath("/admin"));
   }
   const capabilities = ENTERPRISE_PERMISSIONS.filter((permission) =>
     authorizeEnterprise(context.principal, permission, {

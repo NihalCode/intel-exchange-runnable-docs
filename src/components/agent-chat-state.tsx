@@ -641,11 +641,13 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
             error: data.error,
           });
           if (classified.shouldRedirectToSignIn) {
-            const fallbackSignIn = `/auth/login?returnTo=${encodeURIComponent(
+            // Prefer API `signIn` (includes Okta connection). Fallback is branded
+            // /sign-in → fresh-login → /auth/login?connection=… — never bare authorize.
+            const returnPath =
               typeof window !== "undefined"
                 ? window.location.pathname + window.location.search
-                : "/agent"
-            )}`;
+                : "/agent";
+            const fallbackSignIn = `/sign-in?returnTo=${encodeURIComponent(returnPath)}`;
             const signIn =
               typeof data.signIn === "string" && data.signIn ? data.signIn : fallbackSignIn;
             logPanel("Session expired — redirecting to sign in.");

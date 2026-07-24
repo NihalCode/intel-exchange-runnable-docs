@@ -4,7 +4,9 @@ import { join } from "node:path";
 
 import {
   getAuthConnectionOrDefault,
+  getRequiredOktaConnection,
   isOktaBrokerLogin,
+  isOktaConnectionConfigured,
   passwordLoginPath,
 } from "@/lib/documentation-auth/password-connection";
 import {
@@ -14,26 +16,67 @@ import {
   parseFreshLoginCookie,
   sanitizeFreshLoginReturnTo,
 } from "@/lib/documentation-auth/fresh-login";
+import { auth0LoginPath } from "@/lib/documentation-auth/sign-in-url";
+import { auth0StepUpLoginPath } from "@/lib/enterprise/mfa-step-up";
+import { authEnvValidationError, isAuthEnvComplete } from "@/lib/documentation-auth/env";
 
-describe("passwordLoginPath (Okta broker)", () => {
+const TEST_CONNECTION = "test-okta-workforce";
+
+describe("required Okta enterprise connection", () => {
   afterEach(() => {
     delete process.env.AUTH0_OKTA_CONNECTION;
-    delete process.env.AUTH0_EMAIL_CONNECTION;
-    delete process.env.AUTH0_DATABASE_CONNECTION;
   });
 
-  it("defaults to Okta Workforce connection name and forces prompt=login", () => {
-    expect(getAuthConnectionOrDefault()).toBe("Cyware-Docs-Auth0");
-    expect(passwordLoginPath()).toContain("connection=Cyware-Docs-Auth0");
-    expect(passwordLoginPath()).toContain("prompt=login");
-    expect(passwordLoginPath({ forceLogin: false })).not.toContain("prompt=");
+  it("fails closed when AUTH0_OKTA_CONNECTION is missing", () => {
+    expect(isOktaConnectionConfigured()).toBe(false);
+    expect(() => getRequiredOktaConnection()).toThrow(/AUTH0_OKTA_CONNECTION/);
+    expect(() => getAuthConnectionOrDefault()).toThrow(/AUTH0_OKTA_CONNECTION/);
+    expect(() => passwordLoginPath()).toThrow(/AUTH0_OKTA_CONNECTION/);
   });
 
-  it("uses AUTH0_OKTA_CONNECTION and never Auth0 Database screen_hint", () => {
-    process.env.AUTH0_OKTA_CONNECTION = "Cyware-Docs-Auth0";
+  it("returns the configured connection and forces it on login paths", () => {
+    process.env.AUTH0_OKTA_CONNECTION = `  ${TEST_CONNECTION}  `;
     expect(isOktaBrokerLogin()).toBe(true);
-    expect(passwordLoginPath({ signUp: true })).toContain("connection=Cyware-Docs-Auth0");
-    expect(passwordLoginPath({ signUp: true })).not.toContain("screen_hint=");
+    expect(getRequiredOktaConnection()).toBe(TEST_CONNECTION);
+    const path = passwordLoginPath({ returnTo: "/agent" });
+    expect(path).toContain(`connection=${TEST_CONNECTION}`);
+    expect(path).toContain("prompt=login");
+    expect(path).toContain("returnTo=%2Fagent");
+    expect(path).not.toContain("screen_hint=");
+    expect(path).not.toContain("google");
+    expect(path).not.toContain("Username-Password");
+  });
+
+  it("applies the same connection on silent product login and admin step-up", () => {
+    process.env.AUTH0_OKTA_CONNECTION = TEST_CONNECTION;
+    expect(auth0LoginPath("/agent")).toContain(`connection=${TEST_CONNECTION}`);
+    expect(auth0LoginPath("/agent")).not.toContain("prompt=");
+    const stepUp = auth0StepUpLoginPath("/admin");
+    expect(stepUp).toContain(`connection=${TEST_CONNECTION}`);
+    expect(stepUp).not.toContain("acr_values=");
+  });
+});
+
+describe("auth env requires AUTH0_OKTA_CONNECTION", () => {
+  afterEach(() => {
+    delete process.env.AUTH0_OKTA_CONNECTION;
+    delete process.env.AUTH0_ISSUER_BASE_URL;
+    delete process.env.AUTH0_CLIENT_ID;
+    delete process.env.AUTH0_CLIENT_SECRET;
+    delete process.env.AUTH0_SECRET;
+    delete process.env.APP_BASE_URL;
+  });
+
+  it("is incomplete without Okta connection even when other Auth0 vars are set", () => {
+    process.env.AUTH0_ISSUER_BASE_URL = "https://example.auth0.com";
+    process.env.AUTH0_CLIENT_ID = "client";
+    process.env.AUTH0_CLIENT_SECRET = "secret";
+    process.env.AUTH0_SECRET = "x".repeat(32);
+    process.env.APP_BASE_URL = "https://docs.example.com";
+    expect(isAuthEnvComplete()).toBe(false);
+    expect(authEnvValidationError()).toMatch(/AUTH0_OKTA_CONNECTION/);
+    process.env.AUTH0_OKTA_CONNECTION = TEST_CONNECTION;
+    expect(isAuthEnvComplete()).toBe(true);
   });
 });
 
@@ -43,7 +86,7 @@ describe("freshLogin", () => {
   });
 
   it("encodes cookie and builds Okta broker login after logout-to-origin", () => {
-    process.env.AUTH0_OKTA_CONNECTION = "Cyware-Docs-Auth0";
+    process.env.AUTH0_OKTA_CONNECTION = TEST_CONNECTION;
     expect(encodeFreshLoginCookie("login", "/agent")).toBe("login|/agent");
     expect(parseFreshLoginCookie("signup|/docs")).toEqual({
       mode: "signup",
@@ -53,7 +96,7 @@ describe("freshLogin", () => {
       "/access/fresh-login?mode=login&returnTo=%2Fagent"
     );
     const path = freshPasswordLoginPath("login|/agent");
-    expect(path).toContain("connection=Cyware-Docs-Auth0");
+    expect(path).toContain(`connection=${TEST_CONNECTION}`);
     expect(path).toContain("prompt=login");
     expect(path).toContain("returnTo=%2Fagent");
   });
@@ -68,10 +111,37 @@ describe("freshLogin", () => {
   });
 });
 
-describe("sign-in Okta-only UX contract", () => {
-  const source = readFileSync(join(process.cwd(), "src/app/sign-in/page.tsx"), "utf8");
+describe("Auth0Client + UI contracts", () => {
+  it("Auth0Client merges Okta connection into authorizationParameters", () => {
+    const source = readFileSync(join(process.cwd(), "src/lib/auth0.ts"), "utf8");
+    expect(source).toContain("getRequiredOktaConnection");
+    expect(source).toContain("authorizationParameters");
+    expect(source).toContain('scope: "openid profile email"');
+    expect(source).toContain("connection: getRequiredOktaConnection()");
+    expect(source).not.toMatch(/api\.multifactor\.enable/);
+  });
 
-  it("exposes Sign in via fresh-login and Sign up via /sign-up; no Google CTAs", () => {
+  it("agent chat session-expired fallback uses branded /sign-in, not bare /auth/login", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/components/agent-chat-state.tsx"),
+      "utf8"
+    );
+    expect(source).toContain("`/sign-in?returnTo=${encodeURIComponent(returnPath)}`");
+    expect(source).not.toMatch(/fallbackSignIn\s*=\s*`\/auth\/login/);
+  });
+
+  it("admin step-up uses getRequiredOktaConnection and never ACR multifactor", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src/lib/enterprise/mfa-step-up.ts"),
+      "utf8"
+    );
+    expect(source).toContain("getRequiredOktaConnection");
+    expect(source).not.toMatch(/acr_values/);
+    expect(source).not.toContain("MFA_ACR_VALUES");
+  });
+
+  it("sign-in routes Sign in via fresh-login and Sign up via /sign-up", () => {
+    const source = readFileSync(join(process.cwd(), "src/app/sign-in/page.tsx"), "utf8");
     expect(source).toContain("freshLoginStartHref");
     expect(source).toContain('data-testid="login-continue-password"');
     expect(source).toContain('data-testid="login-signup"');
@@ -79,21 +149,17 @@ describe("sign-in Okta-only UX contract", () => {
     expect(source).not.toContain("login-continue-google");
     expect(source).not.toContain("login-continue-okta");
     expect(source).toContain("Okta Verify");
-    expect(source).toContain("set_password");
   });
-});
 
-describe("sign-up page", () => {
-  it("collects email for Okta password setup (not Auth0 Database signup)", () => {
+  it("sign-up uses Okta password setup, not Auth0 Database signup", () => {
     const source = readFileSync(join(process.cwd(), "src/app/sign-up/page.tsx"), "utf8");
     expect(source).toContain("OktaSignUpForm");
     expect(source).toContain("Set up your account");
     expect(source).not.toContain("freshLoginStartHref");
+    expect(source).not.toContain("screen_hint");
   });
-});
 
-describe("Add user / invite UX contract", () => {
-  it("describes Okta provision + Sign up password + Okta Verify", () => {
+  it("Add user copy describes Okta provision + Verify", () => {
     const source = readFileSync(
       join(process.cwd(), "src/components/auth/UsersManagementPanel.tsx"),
       "utf8"

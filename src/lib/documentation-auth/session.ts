@@ -20,7 +20,7 @@ import type {
 import {
   isProvisionalAuth0UserId,
   auth0UserIdForLoginLink,
-} from "@/lib/auth0-management/errors";
+} from "@/lib/identity/broker-user-id";
 import { getAuth0 } from "@/lib/auth0";
 import {
   acceptInvite,

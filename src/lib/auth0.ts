@@ -19,6 +19,7 @@ import {
 } from "@/lib/documentation-auth/env";
 import { isAuthDisabled } from "@/lib/documentation-auth/config";
 import { getAuthCookieDomain } from "@/lib/auth0-management/invite-provision";
+import { getRequiredOktaConnection } from "@/lib/documentation-auth/password-connection";
 
 function loginErrorRedirect(appBaseUrl: string, code: string, message: string): NextResponse {
   const url = new URL("/sign-in", appBaseUrl);
@@ -77,6 +78,8 @@ function createAuth0Client(): Auth0Client {
     },
     authorizationParameters: {
       scope: "openid profile email",
+      // Route every authorize request to the Okta Workforce enterprise connection.
+      connection: getRequiredOktaConnection(),
     },
     beforeSessionSaved: async (session, idToken) => {
       // Ensure MFA / ACR claims from the ID token are present on session.user

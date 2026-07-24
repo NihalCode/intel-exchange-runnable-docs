@@ -36,7 +36,7 @@ export function ingestSpawnEnv(): NodeJS.ProcessEnv {
   const base: NodeJS.ProcessEnv = { ...process.env };
   delete base.AUTH0_CLIENT_SECRET;
   delete base.AUTH0_SECRET;
-  delete base.AUTH0_MANAGEMENT_CLIENT_SECRET;
+  delete base.OKTA_API_TOKEN;
   delete base.CSRF_SIGNING_SECRET;
   delete base.CONTROL_PLANE_CRON_SECRET;
   delete base.DEVELOPER_ACCESS_TOKEN;

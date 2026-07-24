@@ -2,14 +2,13 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 
 import { NextRequest } from "next/server";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, afterEach, describe, expect, it } from "vitest";
 
 import { buildSignInUrl, auth0LoginPath, signInUrlFor } from "@/lib/documentation-auth/sign-in-url";
 import {
   adminMfaStepUpHref,
   auth0LogoutToOriginPath,
   auth0StepUpLoginPath,
-  MFA_ACR_VALUES,
   MFA_STEP_UP_START_PATH,
 } from "@/lib/enterprise/mfa-step-up";
 
@@ -32,7 +31,8 @@ describe("MFA loop regression (local)", () => {
     expect(mfaBlock).not.toContain('"/auth/login?returnTo=/admin"');
   });
 
-  it("MFA step-up clears app session then forces Auth0 re-auth + MFA ACR", () => {
+  it("MFA step-up clears app session then forces Okta Workforce re-auth", () => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     const href = adminMfaStepUpHref("/admin");
     expect(href).toBe(`${MFA_STEP_UP_START_PATH}?returnTo=${encodeURIComponent("/admin")}`);
     const logout = auth0LogoutToOriginPath("https://cyware-docs-csap.vercel.app");
@@ -43,25 +43,29 @@ describe("MFA loop regression (local)", () => {
     const login = auth0StepUpLoginPath("/admin");
     expect(login).toContain("prompt=login");
     expect(login).toContain("max_age=0");
-    expect(login).toContain(encodeURIComponent(MFA_ACR_VALUES));
+    expect(login).toContain("connection=test-okta-workforce");
+    expect(login).not.toContain("acr_values=");
+    delete process.env.AUTH0_OKTA_CONNECTION;
   });
 
-  it("admin MFA step-up uses Okta connection (no Auth0 Guardian ACR) when brokered", () => {
-    process.env.AUTH0_OKTA_CONNECTION = "Cyware-Docs-Auth0";
+  it("admin MFA step-up uses Okta connection (no Auth0 Guardian ACR)", () => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     const login = auth0StepUpLoginPath("/admin");
-    expect(login).toContain("connection=Cyware-Docs-Auth0");
+    expect(login).toContain("connection=test-okta-workforce");
     expect(login).not.toContain("acr_values=");
     delete process.env.AUTH0_OKTA_CONNECTION;
   });
 
   it("normal product login never forces prompt=login (one MFA for all tabs/SSO)", () => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     const silent = auth0LoginPath("/agent");
     expect(silent).toContain("/auth/login?");
     expect(silent).toContain("returnTo=%2Fagent");
-    expect(silent).toContain("connection=Cyware-Docs-Auth0");
+    expect(silent).toContain("connection=test-okta-workforce");
     expect(silent).not.toContain("prompt=");
     expect(silent).not.toContain("max_age=");
     expect(silent).not.toContain("acr_values=");
+    delete process.env.AUTH0_OKTA_CONNECTION;
   });
 });
 
@@ -69,6 +73,11 @@ describe("one-time login URL contracts (local)", () => {
   beforeEach(() => {
     delete process.env.CROSS_DOMAIN_SSO_ENABLED;
     delete process.env.AUTH_DOMAIN;
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
+  });
+
+  afterEach(() => {
+    delete process.env.AUTH0_OKTA_CONNECTION;
   });
 
   it("buildSignInUrl uses Auth0 login for silent SSO, not branded interstitial", async () => {
@@ -77,6 +86,7 @@ describe("one-time login URL contracts (local)", () => {
     });
     const url = await buildSignInUrl(request);
     expect(url).toContain("/auth/login");
+    expect(url).toContain("connection=test-okta-workforce");
     expect(url).not.toContain("/sign-in");
     expect(url).toContain(encodeURIComponent("/agent?x=1"));
     expect(url).not.toContain("prompt=");
@@ -88,13 +98,13 @@ describe("one-time login URL contracts (local)", () => {
   });
 
   it("workspace + admin page redirects prefer /auth/login for SSO", () => {
-    expect(source("src/lib/documentation-auth/protect-layout.ts")).toContain(
-      "/auth/login?returnTo="
-    );
-    expect(source("src/lib/admin/page-data.ts")).toContain("/auth/login?returnTo=/admin");
+    expect(source("src/lib/documentation-auth/protect-layout.ts")).toContain("auth0LoginPath");
+    expect(source("src/lib/admin/page-data.ts")).toContain("auth0LoginPath");
     expect(source("src/components/AppFrame.tsx")).toContain("/sign-in?returnTo=");
-    expect(source("src/components/agent-chat-state.tsx")).toContain(
-      "/auth/login?returnTo="
+    // Session-expired fallback uses branded /sign-in; API signIn carries Okta connection.
+    expect(source("src/components/agent-chat-state.tsx")).toContain("/sign-in?returnTo=");
+    expect(source("src/components/agent-chat-state.tsx")).not.toMatch(
+      /fallbackSignIn\s*=\s*`\/auth\/login/
     );
   });
 

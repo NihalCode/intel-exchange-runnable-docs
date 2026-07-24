@@ -12,6 +12,7 @@ describe("buildAuthRuntimeStatus", () => {
     delete process.env.AUTH0_CLIENT_ID;
     delete process.env.AUTH0_CLIENT_SECRET;
     delete process.env.AUTH0_SECRET;
+    delete process.env.AUTH0_OKTA_CONNECTION;
     delete process.env.APP_BASE_URL;
     delete process.env.AUTH0_BASE_URL;
     delete process.env.VERCEL_URL;
@@ -36,6 +37,7 @@ describe("buildAuthRuntimeStatus", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.APP_BASE_URL = "https://cyware-docs-ctix.vercel.app";
     process.env.DATABASE_URL = "postgresql://user:pass@db.example/docs";
     process.env.AUTH0_ACTION_SHARED_SECRET = "b".repeat(32);
@@ -57,6 +59,7 @@ describe("buildAuthRuntimeStatus", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.APP_BASE_URL = "https://cyware-docs-ctix.vercel.app";
 
     const status = buildAuthRuntimeStatus({

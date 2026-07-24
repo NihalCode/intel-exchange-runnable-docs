@@ -1,13 +1,11 @@
 import "server-only";
 
 /**
- * Skip Auth0 Management user create / password tickets on Add user.
- * Only when INVITE_SKIP_IDP_PROVISION is explicitly true (invite row only;
- * user sets password via Auth0 Sign up).
+ * @deprecated Auth0 Database skip path removed. Add user always provisions Okta.
+ * Kept for diagnostics that still read the env flag; always returns false.
  */
 export function shouldSkipIdpProvision(): boolean {
-  const explicit = process.env.INVITE_SKIP_IDP_PROVISION?.trim().toLowerCase();
-  return explicit === "true" || explicit === "1";
+  return false;
 }
 
 export function getAuth0OktaConnection(): string | undefined {

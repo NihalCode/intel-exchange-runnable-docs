@@ -90,25 +90,19 @@ export function UsersManagementPanel() {
         error?: string;
         hint?: string;
         setupStatus?: string;
+        message?: string;
       };
       if (!response.ok) {
         setError(data.error ?? "User provisioning failed.");
         setHint(data.hint ?? null);
         return;
       }
+      setHint(data.hint ?? null);
       setStatus(
-        data.setupStatus === "okta_activation_sent" ||
-          data.setupStatus === "okta_provisioned" ||
-          data.setupStatus === "okta_activation_pending"
-          ? "User added successfully. They can now select Sign up to create their password."
-          : data.setupStatus === "invite_pending_signup" ||
-              data.setupStatus === "okta_invite_pending"
-            ? "User added successfully. They can now select Sign up to create their password."
-            : data.setupStatus === "provider_invitation_sent"
-              ? "Invitation created. An invitation email was sent."
-              : data.setupStatus === "provider_setup_created"
-                ? "Invitation created. The user should finish setup through Sign up, then Sign in."
-                : "User added successfully. They can now select Sign up to create their password."
+        data.message ||
+          (data.setupStatus
+            ? `User added (${data.setupStatus}).`
+            : "User added successfully.")
       );
       setEmail("");
       setName("");
@@ -155,9 +149,9 @@ export function UsersManagementPanel() {
       <form onSubmit={addUser} className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
         <h2 className="text-sm font-semibold">Add user</h2>
         <p className="mt-1 text-xs text-zinc-500">
-          Creates the person in Okta, assigns this docs app, and adds a documentation invitation.
-          They select Sign up to set their Okta password, then Sign in with email, password, and the
-          code shown in Okta Verify.
+          Creates the person in Okta, adds them to the docs Okta group, and adds a documentation
+          invitation. They select Sign up to set their Okta password, then Sign in with email,
+          password, and the code shown in Okta Verify.
         </p>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
           <label className="text-xs"><span>Email</span><input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded border px-2 py-1.5 dark:border-zinc-700 dark:bg-zinc-900" /></label>

@@ -89,7 +89,7 @@ async function smokeOne(baseUrl) {
   }
 
   try {
-    const loginRes = await fetch(`${baseUrl}/auth/login?connection=google-oauth2&returnTo=%2F`, {
+    const loginRes = await fetch(`${baseUrl}/auth/login?returnTo=%2F`, {
       redirect: "manual",
     });
     const text = await loginRes.text();
@@ -103,14 +103,24 @@ async function smokeOne(baseUrl) {
       (location.includes("auth0.com") || location.includes("/auth/login") || location.startsWith("http"));
     // Vercel project aliases may 308 to the canonical product domain before Auth0.
     const isCanonicalRedirect = loginRes.status === 308 || loginRes.status === 307;
+    const authorizeUrl = isBridge
+      ? (text.match(/url=([^"'\s>]+)/)?.[1] || text.match(/https:\/\/[^"'\\\s]+\/authorize[^"'\\\s]*/)?.[0] || "")
+      : location;
+    const decodedAuthorize = decodeURIComponent(authorizeUrl.replace(/&amp;/g, "&"));
+    const hasConnection = /[?&]connection=/.test(decodedAuthorize);
+    const hasGoogle = /connection=google/i.test(decodedAuthorize);
     result.login = {
       http: loginRes.status,
       bridgeOrRedirect: isBridge || isRedirect || isCanonicalRedirect,
+      oktaConnectionParam: hasConnection && !hasGoogle,
+      googleConnectionDetected: hasGoogle,
     };
     if (loginRes.status === 500) result.failures.push("login_HTTP_500");
     if (!isBridge && !isRedirect && !isCanonicalRedirect) {
       result.failures.push(`login_unexpected_status=${loginRes.status}`);
     }
+    if (isBridge && hasGoogle) result.failures.push("login_google_connection");
+    if (isBridge && !hasConnection) result.failures.push("login_missing_connection");
   } catch (error) {
     result.failures.push(`login_error:${error instanceof Error ? error.message : "fetch"}`);
   }

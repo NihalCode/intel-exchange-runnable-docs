@@ -24,6 +24,7 @@ export interface AuthEnv {
   clientSecret: string | null;
   secret: string | null;
   appBaseUrl: string | null;
+  oktaConnection: string | null;
 }
 
 export function resolveAppBaseUrlForAuth(): string | null {
@@ -37,12 +38,18 @@ export function getAuthEnv(): AuthEnv {
     clientSecret: cleanEnvValue(process.env.AUTH0_CLIENT_SECRET),
     secret: cleanEnvValue(process.env.AUTH0_SECRET),
     appBaseUrl: resolveAppBaseUrlForAuth(),
+    oktaConnection: cleanEnvValue(process.env.AUTH0_OKTA_CONNECTION),
   };
 }
 
 export function isAuthEnvComplete(env: AuthEnv = getAuthEnv()): boolean {
   return Boolean(
-    env.domain && env.clientId && env.clientSecret && env.secret && env.appBaseUrl
+    env.domain &&
+      env.clientId &&
+      env.clientSecret &&
+      env.secret &&
+      env.appBaseUrl &&
+      env.oktaConnection
   );
 }
 
@@ -55,7 +62,7 @@ export function validateAuthSecret(secret: string): string | null {
 
 export function authEnvValidationError(env: AuthEnv = getAuthEnv()): string | null {
   if (!isAuthEnvComplete(env)) {
-    return "Auth0 requires AUTH0_ISSUER_BASE_URL (or AUTH0_DOMAIN), AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, and APP_BASE_URL (or AUTH0_BASE_URL, or VERCEL_URL on Vercel).";
+    return "Auth0 requires AUTH0_ISSUER_BASE_URL (or AUTH0_DOMAIN), AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_SECRET, APP_BASE_URL (or AUTH0_BASE_URL, or VERCEL_URL on Vercel), and AUTH0_OKTA_CONNECTION.";
   }
   return validateAuthSecret(env.secret!);
 }

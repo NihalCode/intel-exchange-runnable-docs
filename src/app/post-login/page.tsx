@@ -5,6 +5,7 @@ import {
   getAppSessionResult,
 } from "@/lib/documentation-auth/session";
 import { consumeAuthReturnTarget } from "@/lib/documentation-auth/auth-return-target";
+import { getRequiredOktaConnection } from "@/lib/documentation-auth/password-connection";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,7 @@ export default async function PostLoginPage({
       // without a cookie or the other app will force another interactive sign-in.
       const bounce = new URL(`https://${target.targetHostname}/auth/login`);
       bounce.searchParams.set("returnTo", path);
+      bounce.searchParams.set("connection", getRequiredOktaConnection());
       redirect(bounce.toString());
     }
   }

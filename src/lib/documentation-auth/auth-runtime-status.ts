@@ -86,6 +86,8 @@ export function authConfigFingerprint(): string {
     cleanEnvValue(process.env.AUTH0_CLIENT_ID)?.length.toString() ?? "0",
     cleanEnvValue(process.env.AUTH0_CLIENT_SECRET)?.length.toString() ?? "0",
     cleanEnvValue(process.env.AUTH0_SECRET)?.length.toString() ?? "0",
+    // Presence only — never include the connection name value.
+    cleanEnvValue(process.env.AUTH0_OKTA_CONNECTION) ? "1" : "0",
     resolveAppBaseUrlFromEnv() ?? "",
     resolveAppProductId() ?? "",
   ];

@@ -9,6 +9,7 @@ const AUTH_ENV_KEYS = [
   "AUTH0_CLIENT_SECRET",
   "AUTH0_SECRET",
   "APP_BASE_URL",
+  "AUTH0_OKTA_CONNECTION",
   "DEVELOPER_ACCESS_TOKEN",
   "DEV_CYWARE_CFTR_BASE_URL",
   "DEV_CYWARE_CFTR_ACCESS_ID",
@@ -38,6 +39,7 @@ describe("canRunProductIngest", () => {
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
     process.env.APP_BASE_URL = "https://app.example";
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
   }
 
   it("allows ingest for doc managers when Auth0 is enabled (no dev token)", () => {

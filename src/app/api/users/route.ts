@@ -5,9 +5,12 @@ import { requirePermission } from "@/lib/documentation-auth/session";
 import { DOCUMENTATION_ROLES } from "@/lib/documentation-auth/types";
 import {
   createDirectDocumentationUser,
+  findUserByEmail,
   listInvites,
   listUsers,
 } from "@/lib/db/repository";
+import { normalizeEmail } from "@/lib/documentation-auth/email-utils";
+import { isProvisionalAuth0UserId } from "@/lib/identity/broker-user-id";
 import { isDocumentationRole } from "@/lib/documentation-auth/permissions";
 import { resolveOrganizationContext } from "@/lib/enterprise/organization-context";
 import {
@@ -29,6 +32,7 @@ import {
   OktaProvisioningError,
   userFacingOktaProvisioningMessage,
 } from "@/lib/okta/errors";
+import { addUserOutcomeMessage } from "@/lib/okta/outcome-messages";
 
 export const runtime = "nodejs";
 
@@ -78,14 +82,35 @@ export async function POST(request: NextRequest) {
   }
   try {
     const organization = await resolveOrganizationContext(session);
+    const normalizedEmail = normalizeEmail(email);
+    const existingLocal = await findUserByEmail(normalizedEmail);
+    const existingAuth0UserId =
+      existingLocal && !isProvisionalAuth0UserId(existingLocal.auth0UserId)
+        ? existingLocal.auth0UserId
+        : null;
+
     const provisioned = await provisionAuth0User({
-      email,
+      email: normalizedEmail,
       displayName: body.name?.trim() || null,
       auth0OrganizationId: organization.organization.auth0OrganizationId,
+      existingAuth0UserId,
     });
+
+    if (provisioned.blocked) {
+      return NextResponse.json(
+        {
+          error: addUserOutcomeMessage(provisioned.setupStatus),
+          code: provisioned.setupStatus,
+          setupStatus: provisioned.setupStatus,
+          ...(provisioned.hint ? { hint: provisioned.hint } : {}),
+        },
+        { status: 409 }
+      );
+    }
+
     const user = await createDirectDocumentationUser({
       auth0UserId: provisioned.user.user_id,
-      email,
+      email: normalizedEmail,
       name: body.name?.trim() || provisioned.user.name || null,
       role,
       createdByUserId: session.user.id,
@@ -104,11 +129,17 @@ export async function POST(request: NextRequest) {
         role: user.role,
         organizationId: organization.organization.id,
         expiresAt: expiresAt?.toISOString() ?? null,
+        setupStatus: provisioned.setupStatus,
       },
     });
 
     return NextResponse.json(
-      { user, setupStatus: provisioned.setupStatus },
+      {
+        user,
+        setupStatus: provisioned.setupStatus,
+        message: addUserOutcomeMessage(provisioned.setupStatus),
+        ...(provisioned.hint ? { hint: provisioned.hint } : {}),
+      },
       { status: provisioned.created ? 201 : 200 }
     );
   } catch (error) {

@@ -29,7 +29,7 @@ function logoutOriginForRequest(request: NextRequest): string {
  * Bridge for admin MFA step-up:
  * 1) Remember where to land after MFA (`returnTo` cookie)
  * 2) Clear the Auth0/app session with logout returnTo = exact app origin
- * 3) Proxy then starts `/auth/login?prompt=login&max_age=0&acr_values=…`
+ * 3) Proxy then starts `/auth/login?connection=…&prompt=login&max_age=0` (Okta Verify)
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const returnTo = safeReturnTo(request.nextUrl.searchParams.get("returnTo"));

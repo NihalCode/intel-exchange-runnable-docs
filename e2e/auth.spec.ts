@@ -1,18 +1,20 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("invite-only login UX", () => {
-  test("login page has no signup copy", async ({ page }) => {
+  test("login page shows Sign in / Sign up only (Okta Workforce)", async ({ page }) => {
     await page.goto("/sign-in");
-    await expect(page.getByTestId("login-continue-google")).toBeVisible();
-    await expect(page.getByTestId("login-continue-email")).toBeVisible();
+    await expect(page.getByTestId("login-continue-password")).toBeVisible();
+    await expect(page.getByTestId("login-signup")).toBeVisible();
     await expect(page.getByTestId("login-invite-note")).toContainText(
-      "Ask a documentation workspace administrator for an invite"
+      "Ask a workspace administrator to Add user"
     );
     await expect(page.getByPlaceholder("Filter endpoints…")).toHaveCount(0);
+    await expect(page.getByTestId("login-continue-google")).toHaveCount(0);
+    await expect(page.getByTestId("login-continue-email")).toHaveCount(0);
     const body = await page.locator("body").innerText();
-    expect(body.toLowerCase()).not.toContain("sign up");
-    expect(body.toLowerCase()).not.toContain("create account");
-    expect(body.toLowerCase()).not.toContain("register");
+    expect(body.toLowerCase()).toContain("sign in");
+    expect(body.toLowerCase()).toContain("sign up");
+    expect(body.toLowerCase()).toContain("okta verify");
   });
 
   test("invite-required access page renders", async ({ page }) => {

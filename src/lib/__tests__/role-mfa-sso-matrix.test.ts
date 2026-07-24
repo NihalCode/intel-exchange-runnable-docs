@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   canAccessEnterpriseAdminNav,
@@ -81,17 +81,25 @@ describe("role-based filtering (workspace + enterprise)", () => {
 });
 
 describe("one-time login vs one-time MFA (path contracts)", () => {
-  it("silent product login never re-prompts MFA", () => {
+  beforeEach(() => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
+  });
+  afterEach(() => {
+    delete process.env.AUTH0_OKTA_CONNECTION;
+  });
+
+  it("silent product login never re-prompts MFA and always uses Okta connection", () => {
     for (const path of ["/", "/agent", "/docs/ping", "/authentication"]) {
       const url = auth0LoginPath(path);
       expect(url.startsWith("/auth/login?")).toBe(true);
+      expect(url).toContain("connection=test-okta-workforce");
       expect(url).not.toContain("prompt=");
       expect(url).not.toContain("max_age=");
       expect(url).not.toContain("acr_values=");
     }
   });
 
-  it("admin MFA step-up always logs out then forces re-auth", () => {
+  it("admin MFA step-up always logs out then forces Okta re-auth", () => {
     const href = adminMfaStepUpHref("/admin");
     expect(href.startsWith("/access/mfa-step-up?returnTo=")).toBe(true);
     const logout = auth0LogoutToOriginPath("https://cyware-docs-orchestrate.vercel.app");
@@ -100,5 +108,6 @@ describe("one-time login vs one-time MFA (path contracts)", () => {
     expect(origin).toBe("https://cyware-docs-orchestrate.vercel.app");
     expect(auth0StepUpLoginPath("/admin")).toContain("prompt=login");
     expect(auth0StepUpLoginPath("/admin")).toContain("max_age=0");
+    expect(auth0StepUpLoginPath("/admin")).toContain("connection=test-okta-workforce");
   });
 });

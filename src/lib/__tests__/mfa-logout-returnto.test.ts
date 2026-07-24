@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { NextRequest } from "next/server";
 
 import {
@@ -12,6 +12,9 @@ import {
 } from "@/lib/enterprise/mfa-step-up";
 
 describe("Auth0 MFA logout returnTo shape", () => {
+  afterEach(() => {
+    delete process.env.AUTH0_OKTA_CONNECTION;
+  });
   it("detects logout paths", () => {
     expect(isAuthLogoutPath("/auth/logout")).toBe(true);
     expect(isAuthLogoutPath("/auth/login")).toBe(false);
@@ -40,6 +43,7 @@ describe("Auth0 MFA logout returnTo shape", () => {
   });
 
   it("never nests step-up login inside logout returnTo (Auth0 Oops regression)", () => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     const href = adminMfaStepUpHref("/admin");
     expect(href).not.toContain("/auth/logout");
     expect(href).toContain("/access/mfa-step-up");

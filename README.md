@@ -36,9 +36,9 @@ Copy `.env.example` → `.env.local`:
 | `ENABLE_API_EXECUTION` | Enable live API execution (optional) |
 | `MAX_CRAWL_PAGES` | Limit pages during ingest (optional) |
 | `DOCUMENTATION_CREDENTIAL_ENCRYPTION_KEY` | Required base64 32-byte AES-256-GCM key for per-user product secrets |
-| `AUTH0_MANAGEMENT_CLIENT_ID` / `AUTH0_MANAGEMENT_CLIENT_SECRET` | Auth0 M2M application used for direct user provisioning |
-| `AUTH0_MANAGEMENT_AUDIENCE` | Auth0 Management API audience (defaults to the issuer `/api/v2/`) |
-| `AUTH0_DATABASE_CONNECTION` | Auth0 connection used for provider-managed user setup |
+| `AUTH0_OKTA_CONNECTION` | Required — Okta Workforce enterprise connection name (Auth0 thin broker) |
+| `OKTA_ORG_URL` / `OKTA_API_TOKEN` | Okta Users API for Add user provisioning |
+| `OKTA_DOCS_GROUP_ID` | Preferred — Cyware Docs Users group id (`00g…`) |
 
 All application routes are Auth0 protected. The Documentation Agent additionally requires one
 currently valid per-user connection to CTIX, CFTR, Orchestrate, or CSAP. Users configure these

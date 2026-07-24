@@ -8,16 +8,21 @@ import {
   adminMfaStepUpHref,
   auth0LogoutToOriginPath,
   auth0StepUpLoginPath,
-  MFA_ACR_VALUES,
 } from "@/lib/enterprise/mfa-step-up";
 
 describe("mfa step-up URLs", () => {
-  it("requests forced re-auth with MFA ACR on login", () => {
+  afterEach(() => {
+    delete process.env.AUTH0_OKTA_CONNECTION;
+  });
+
+  it("requests forced re-auth through Okta Workforce connection", () => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     const path = auth0StepUpLoginPath("/admin");
     expect(path.startsWith("/auth/login?")).toBe(true);
     expect(path).toContain("prompt=login");
     expect(path).toContain("max_age=0");
-    expect(path).toContain(`acr_values=${encodeURIComponent(MFA_ACR_VALUES)}`);
+    expect(path).toContain("connection=test-okta-workforce");
+    expect(path).not.toContain("acr_values=");
     expect(path).toContain(`returnTo=${encodeURIComponent("/admin")}`);
   });
 

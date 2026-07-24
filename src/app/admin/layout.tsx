@@ -14,6 +14,7 @@ import {
   type AdminAccessDenialReason,
 } from "@/lib/enterprise/admin-access";
 import { adminMfaStepUpHref, auth0StepUpLoginPath } from "@/lib/enterprise/mfa-step-up";
+import { auth0LoginPath } from "@/lib/documentation-auth/sign-in-url";
 import { ENTERPRISE_PERMISSIONS } from "@/lib/enterprise/types";
 import { authorizeEnterprise } from "@/lib/enterprise/policy";
 import { listResolvedEnabledFeatureKeys } from "@/lib/documentation-features/resolve-enabled";
@@ -40,7 +41,7 @@ export default async function AdminLayout({
   if (!result.session) {
     if (!result.auth0Authenticated && !result.accessDenied) {
       const { redirect } = await import("next/navigation");
-      redirect("/auth/login?returnTo=/admin");
+      redirect(auth0LoginPath("/admin"));
     }
     return <ForbiddenState reason="no_session" />;
   }

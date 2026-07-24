@@ -39,6 +39,7 @@ describe("buildAuthSetupStatus", () => {
     delete process.env.AUTH0_CLIENT_ID;
     delete process.env.AUTH0_CLIENT_SECRET;
     delete process.env.AUTH0_SECRET;
+    delete process.env.AUTH0_OKTA_CONNECTION;
     delete process.env.APP_BASE_URL;
     delete process.env.VERCEL_URL;
   });
@@ -63,9 +64,21 @@ describe("buildAuthSetupStatus", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.VERCEL_URL = "cyware-docs-ctix.vercel.app";
     const status = buildAuthSetupStatus({ databaseConnected: true });
     expect(status.authReady).toBe(true);
     expect(status.missingForSignIn).toEqual([]);
+  });
+
+  it("lists AUTH0_OKTA_CONNECTION when missing", () => {
+    process.env.AUTH0_ISSUER_BASE_URL = "https://tenant.auth0.com";
+    process.env.AUTH0_CLIENT_ID = "client";
+    process.env.AUTH0_CLIENT_SECRET = "secret";
+    process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.VERCEL_URL = "cyware-docs-ctix.vercel.app";
+    const status = buildAuthSetupStatus();
+    expect(status.authReady).toBe(false);
+    expect(status.missingForSignIn).toContain("AUTH0_OKTA_CONNECTION");
   });
 });

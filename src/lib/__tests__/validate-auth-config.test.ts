@@ -11,6 +11,7 @@ describe("validateAuthConfig", () => {
     delete process.env.AUTH0_CLIENT_ID;
     delete process.env.AUTH0_CLIENT_SECRET;
     delete process.env.AUTH0_SECRET;
+    delete process.env.AUTH0_OKTA_CONNECTION;
     delete process.env.APP_BASE_URL;
     delete process.env.AUTH0_BASE_URL;
     delete process.env.AUTH0_ACTION_SHARED_SECRET;
@@ -35,6 +36,7 @@ describe("validateAuthConfig", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "short";
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.APP_BASE_URL = "https://app.example.com";
     process.env.AUTH0_ACTION_SHARED_SECRET = "action-secret-at-least-32-characters-long";
 
@@ -49,6 +51,7 @@ describe("validateAuthConfig", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.APP_BASE_URL = "https://app.example.com";
     process.env.AUTH0_ACTION_SHARED_SECRET = "action-secret-at-least-32-characters-long";
     process.env.VERCEL = "1";
@@ -63,6 +66,7 @@ describe("validateAuthConfig", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.APP_BASE_URL = "https://app.example.com";
     process.env.AUTH0_ACTION_SHARED_SECRET = "action-secret-at-least-32-characters-long";
     process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/docs";
@@ -79,6 +83,7 @@ describe("validateAuthConfig", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     process.env.VERCEL_URL = "cyware-docs-ctix.vercel.app";
     process.env.AUTH0_ACTION_SHARED_SECRET = "action-secret-at-least-32-characters-long";
     process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/docs";

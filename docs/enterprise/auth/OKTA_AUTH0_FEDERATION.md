@@ -4,7 +4,7 @@
 
 ```text
 Admin Add user
-→ Okta user create/link + app assignment + docs invitation
+→ Okta user create/link + docs group membership (+ optional app assignment) + docs invitation
 → Sign up → Okta password-setup email
 → Sign in → Okta email/password → Okta Verify passcode
 → Auth0 callback → docs invite gate → app
@@ -29,25 +29,35 @@ This is **not** Auth0 Database signup. This is **not** Auth0 Guardian MFA.
 
 ## Okta Admin (required)
 
-1. App **Cyware Docs Auth0** (OIDC) assigned to invited users (Add user does this via API).
-2. Sign-on / authenticator policy for this app:
+1. Group **Cyware Docs Users** (or your docs access group). Add user adds people to this group via API (`OKTA_DOCS_GROUP_ID`).
+   - With **Federation Broker Mode**, direct user→app assignment is blocked; group membership is the correct path. The Applications column on the group may show **0** apps — that can still be fine if Auth0/Okta federation policies rely on the group.
+2. App **Cyware Docs Auth0** (OIDC): prefer group-based access. Optional `OKTA_APP_ID` is still attempted and soft-fails under Federation Broker Mode when the group was assigned.
+3. Sign-on / authenticator policy for this app:
    - Password required
    - **Okta Verify passcode** required
    - Do **not** offer Push, FastPass, SMS, email OTP, Duo, WebAuthn, or “choose another method” for this app
-3. Users API token + `OKTA_APP_ID` configured in Vercel for provisioning
+4. Users API token + `OKTA_DOCS_GROUP_ID` (and optionally `OKTA_APP_ID`) configured in Vercel for provisioning
 
 ---
 
 ## App env
 
 ```env
-AUTH0_OKTA_CONNECTION=Cyware-Docs-Auth0
+AUTH0_OKTA_CONNECTION=cyware-docs-okta
 OKTA_ORG_URL=https://integrator-XXXX.okta.com
 OKTA_API_TOKEN=...
-OKTA_APP_ID=0oa...
+# Preferred — Directory → Groups → Cyware Docs Users → copy id from URL (/admin/group/<id>)
+OKTA_DOCS_GROUP_ID=00g...
+# Optional alias / name lookup:
+# OKTA_GROUP_ID=00g...
+# OKTA_DOCS_GROUP_NAME=Cyware Docs Users
+# Optional; soft-fails when Federation Broker Mode blocks direct assignment:
+# OKTA_APP_ID=0oa...
 # Optional; when Okta API is configured, Add user always provisions Okta:
 # OKTA_PROVISION_ON_INVITE=true
 ```
+
+`AUTH0_OKTA_CONNECTION` is **required** on every product deployment. The Auth0 SDK and every `/auth/login` path pass `connection=<AUTH0_OKTA_CONNECTION>` so Auth0 never shows a connection chooser.
 
 ---
 

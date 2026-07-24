@@ -27,6 +27,7 @@ describe("resolveAppBaseUrlForAuth", () => {
     process.env.AUTH0_CLIENT_ID = "client";
     process.env.AUTH0_CLIENT_SECRET = "secret";
     process.env.AUTH0_SECRET = "a".repeat(32);
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
     delete process.env.APP_BASE_URL;
     delete process.env.AUTH0_BASE_URL;
     process.env.VERCEL_URL = "cyware-docs-csap.vercel.app";

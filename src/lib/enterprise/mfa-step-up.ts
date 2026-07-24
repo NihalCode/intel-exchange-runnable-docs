@@ -1,10 +1,7 @@
 import type { AppSession } from "@/lib/documentation-auth/session";
+import { getRequiredOktaConnection } from "@/lib/documentation-auth/password-connection";
 
-/** Auth0 Universal Login MFA ACR (PAPE multi-factor policy). */
-export const MFA_ACR_VALUES =
-  "http://schemas.openid.net/pape/policies/2007/06/multi-factor";
-
-/** Short-lived cookie bridging Auth0 logout → forced MFA login. */
+/** Short-lived cookie bridging Auth0 logout → forced re-auth via Okta Verify. */
 export const MFA_STEP_UP_COOKIE = "cyware_mfa_step_up";
 
 /** Starts MFA step-up: set cookie, then Auth0 logout to the allowlisted app origin. */
@@ -17,8 +14,9 @@ function safeAppPath(returnTo: string, fallback: string): string {
 }
 
 /**
- * Forces a fresh Auth0 login that should complete MFA, then return to `returnTo`.
- * Query params are forwarded by @auth0/nextjs-auth0 v4 to /authorize.
+ * Forces a fresh Auth0 login through the Okta Workforce connection (Okta Verify),
+ * then return to `returnTo`. Query params are forwarded by @auth0/nextjs-auth0 v4.
+ * Never uses Auth0 Guardian / ACR multi-factor.
  */
 export function auth0StepUpLoginPath(returnTo = "/admin"): string {
   const path = safeAppPath(returnTo, "/admin");
@@ -26,14 +24,8 @@ export function auth0StepUpLoginPath(returnTo = "/admin"): string {
     returnTo: path,
     prompt: "login",
     max_age: "0",
+    connection: getRequiredOktaConnection(),
   });
-  // Okta-authoritative MFA: force the Okta Workforce connection, not Auth0 Guardian.
-  const oktaConnection = process.env.AUTH0_OKTA_CONNECTION?.trim();
-  if (oktaConnection) {
-    params.set("connection", oktaConnection);
-  } else {
-    params.set("acr_values", MFA_ACR_VALUES);
-  }
   return `/auth/login?${params.toString()}`;
 }
 

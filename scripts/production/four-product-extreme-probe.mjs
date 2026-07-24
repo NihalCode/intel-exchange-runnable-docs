@@ -290,10 +290,8 @@ async function probeProduct(target) {
     );
   }
 
-  // Auth login must never 500
-  const loginMeta = await fetchMeta(
-    `${base}/auth/login?connection=google-oauth2&returnTo=%2F`
-  );
+  // Auth login must never 500 (Okta enterprise connection from server config)
+  const loginMeta = await fetchMeta(`${base}/auth/login?returnTo=%2F`);
   const loginOk =
     loginMeta.status === 200 &&
     (loginMeta.body?.includes("/authorize") || loginMeta.body?.includes("auth0.com"));

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import {
   continueWithAuthHeaders,
@@ -43,6 +43,13 @@ describe("proxy-auth helpers", () => {
 });
 
 describe("unauthorized API response (agent chat regression)", () => {
+  beforeEach(() => {
+    process.env.AUTH0_OKTA_CONNECTION = "test-okta-workforce";
+  });
+  afterEach(() => {
+    delete process.env.AUTH0_OKTA_CONNECTION;
+  });
+
   it("returns an actionable 401 body instead of bare 'Unauthorized'", async () => {
     const request = new NextRequest("https://docs.example.com/api/agent", {
       method: "POST",

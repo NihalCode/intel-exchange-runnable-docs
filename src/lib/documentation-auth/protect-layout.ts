@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { isAuthEnabled } from "@/lib/documentation-auth/config";
 import { accessDeniedPath, type AppSessionResult } from "@/lib/documentation-auth/session";
+import { auth0LoginPath } from "@/lib/documentation-auth/sign-in-url";
 import {
   resolveWorkspaceSession,
   type WorkspaceSession,
@@ -23,7 +24,7 @@ function redirectForMissingSession(result: AppSessionResult, returnTo: string): 
   if (result.auth0Authenticated) {
     redirect(`/post-login?returnTo=${encodeURIComponent(returnTo)}`);
   }
-  redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+  redirect(auth0LoginPath(returnTo));
 }
 
 /** Returns workspace session or redirects to sign-in / access-denied flows. */
