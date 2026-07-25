@@ -122,4 +122,42 @@ describe("anonymous feedback principal", () => {
     );
     expect(membership?.id).toBeTruthy();
   });
+
+  it("reuses legacy anonymous auth0/email row id for membership FK", async () => {
+    const legacyId = "legacy-anon-uuid-0001";
+    const now = new Date().toISOString();
+    await db.execute(
+      `INSERT INTO documentation_users
+         (id, auth0_user_id, email, name, role, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, 'viewer', 'active', ?, ?)`,
+      [
+        legacyId,
+        "anonymous|viewer",
+        "anonymous@viewer.local",
+        "Anonymous viewer",
+        now,
+        now,
+      ]
+    );
+
+    const context = await ensureAnonymousFeedbackPrincipal(anonymousViewerSession());
+    expect(context.principal.userId).toBe(legacyId);
+    expect(context.membership.userId).toBe(legacyId);
+
+    const membership = await db.queryOne<{ user_id: string }>(
+      `SELECT user_id FROM organization_memberships
+       WHERE organization_id = ? AND user_id = ?`,
+      [context.organization.id, legacyId]
+    );
+    expect(membership?.user_id).toBe(legacyId);
+
+    const row = await submitChatFeedback({
+      organizationId: context.organization.id,
+      userId: context.principal.userId,
+      messageId: "msg-legacy-anon",
+      rating: "down",
+      productId: "ctix",
+    });
+    expect(row.userId).toBe(legacyId);
+  });
 });
