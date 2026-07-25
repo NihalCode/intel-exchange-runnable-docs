@@ -43,6 +43,10 @@ import {
   POSTGRES_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
   SQLITE_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
 } from "@/lib/db/migrations/011_feedback_unanswered_weekly";
+import {
+  POSTGRES_COMMIT_SWITCH_MIGRATION_SQL,
+  SQLITE_COMMIT_SWITCH_MIGRATION_SQL,
+} from "@/lib/db/migrations/012_commit_switch";
 
 export interface VersionedMigration {
   version: number;
@@ -121,6 +125,12 @@ export const DB_MIGRATIONS: readonly VersionedMigration[] = [
     name: "feedback_unanswered_weekly",
     sqlite: SQLITE_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
     postgres: POSTGRES_FEEDBACK_UNANSWERED_WEEKLY_MIGRATION_SQL,
+  },
+  {
+    version: 12,
+    name: "deployment_commit_switch",
+    sqlite: SQLITE_COMMIT_SWITCH_MIGRATION_SQL,
+    postgres: POSTGRES_COMMIT_SWITCH_MIGRATION_SQL,
   },
 ] as const;
 

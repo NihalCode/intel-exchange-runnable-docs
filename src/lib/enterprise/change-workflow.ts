@@ -137,6 +137,12 @@ export async function createChangeRequest(
     config: Record<string, unknown>;
     diff: Record<string, unknown>;
     idempotencyKey: string;
+    /**
+     * Propose-only path for promote_commit: developers may create CRs against
+     * production product_deployment resources without the production write gate.
+     * Execute still requires deployments.manage.
+     */
+    skipEnvironmentAuthorization?: boolean;
   }
 ): Promise<ChangeRequestRecord> {
   if (!input.idempotencyKey.trim()) {
@@ -187,10 +193,16 @@ export async function createChangeRequest(
       if (!resource) {
         throw new ChangeWorkflowError("Resource was not found", "NOT_FOUND");
       }
-      requireEnterprisePermission(context.principal, "changes.create", {
-        organizationId: resource.organizationId,
-        environment: resource.environment,
-      });
+      requireEnterprisePermission(
+        context.principal,
+        "changes.create",
+        input.skipEnvironmentAuthorization
+          ? { organizationId: resource.organizationId }
+          : {
+              organizationId: resource.organizationId,
+              environment: resource.environment,
+            }
+      );
 
       const version = await createConfigVersion(
         {

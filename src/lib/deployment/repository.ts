@@ -126,7 +126,7 @@ export async function createProductDeployment(input: {
           input.config.environment,
           input.config.primaryDomain ?? null,
           JSON.stringify(input.config.additionalDomains ?? []),
-          input.config.enabled !== false,
+          input.config.enabled === false ? 0 : 1,
           input.config.status ?? "configuring",
           input.userId,
           input.userId,

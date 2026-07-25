@@ -11,16 +11,16 @@ import {
 } from "@/lib/enterprise/change-workflow";
 import type { WorkflowRequestContext } from "@/lib/enterprise/change-workflow";
 import {
-  findControlPlaneResource,
-  listOrganizations,
-} from "@/lib/enterprise/repository";
-import type { ChangeRequestRecord, EnterprisePrincipal } from "@/lib/enterprise/types";
-import {
   claimDueJobs,
   completeJob,
   failJob,
+  findControlPlaneResource,
+  getConfigVersionDetail,
   listDueScheduledChanges,
+  listOrganizations,
 } from "@/lib/enterprise/repository";
+import { isPromoteCommitConfig } from "@/lib/deployment/commit-change-requests";
+import type { ChangeRequestRecord, EnterprisePrincipal } from "@/lib/enterprise/types";
 import { processAnalyticsOutbox } from "@/lib/query-analytics/service";
 import { buildUnansweredWeeklySnapshots } from "@/lib/query-analytics/unanswered-intel";
 import { resolveUnansweredWeeklyAnalyticsEnabled } from "@/lib/domains/feature-gates-resolve";
@@ -109,6 +109,16 @@ async function processOrganizationJobs(
   );
   for (const change of dueChanges) {
     try {
+      const configVersion = await getConfigVersionDetail(
+        change.organizationId,
+        change.targetConfigVersionId
+      );
+      if (isPromoteCommitConfig(configVersion?.config ?? null)) {
+        errors.push(
+          `change ${change.id}: promote_commit cannot be activated by Sync Jobs; execute via Commits tab`
+        );
+        continue;
+      }
       await activateScheduledChange(change);
       scheduledChangesActivated += 1;
     } catch (error) {

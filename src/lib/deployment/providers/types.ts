@@ -26,13 +26,25 @@ export interface VercelDomainStatus {
   ssl?: { status: string };
 }
 
+export interface VercelDeploymentGitMeta {
+  githubCommitSha?: string;
+  githubCommitMessage?: string;
+  githubCommitAuthorName?: string;
+  githubCommitRef?: string;
+  githubCommitOrg?: string;
+  githubCommitRepo?: string;
+}
+
 export interface VercelDeploymentSummary {
   id: string;
   url: string;
   state: string;
   createdAt: string;
-  meta?: { githubCommitSha?: string };
+  meta?: VercelDeploymentGitMeta;
 }
+
+/** Max deployments fetched per product for Commits / promote history. */
+export const VERCEL_DEPLOYMENT_LIST_LIMIT = 25;
 
 export interface VercelProvider {
   listProjects(): Promise<VercelProjectSummary[]>;

@@ -50,6 +50,11 @@ describe("admin navigation", () => {
         .flatMap((group) => group.items)
         .some((item) => item.href === "/admin/documentation-agent/deployments")
     ).toBe(true);
+    expect(
+      enabled
+        .flatMap((group) => group.items)
+        .some((item) => item.href === "/admin/documentation-agent/commits")
+    ).toBe(true);
   });
 
   it("does not expose Support Agent or placeholder admin modules in nav", () => {
@@ -84,5 +89,6 @@ describe("admin navigation", () => {
     expect(pageTitleForPath("/admin/security/settings")).toBe("Settings");
     expect(pageTitleForPath("/admin/documentation-agent/apis")).toBe("APIs");
     expect(pageTitleForPath("/admin/documentation-agent/sync-jobs")).toBe("Sync Jobs");
+    expect(pageTitleForPath("/admin/documentation-agent/commits")).toBe("Commits");
   });
 });

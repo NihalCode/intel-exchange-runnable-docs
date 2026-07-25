@@ -340,6 +340,7 @@ Nav source: `src/lib/admin/navigation.ts` (items filtered by permission + featur
 | **Authentication** | `…/authentication` | Admin pointer / policy around product credential connections (end users use `/authentication`) |
 | **Features** | `…/features` | Runtime feature flags (feedback, unanswered, builder, deployments, …) |
 | **Deployments** | `…/deployments` | Multi-project Vercel deployment management (flag `admin_deployment_management`) |
+| **Commits** | `…/commits` | Deployable GitHub commit history from Vercel; production switch = propose → approve (APIs) → **Execute** on Commits (not generic CR Activate; not Sync Jobs schedule). Developers may **Request switch**; only owner/admin execute. Not full GitHub history of unbuilt SHAs. |
 | **Environments** | `…/environments` | Environment resources |
 | **Change Requests** | `…/change-requests` | Controlled config/content changes |
 | **Audit Logs** | `…/audit-logs` | Audit trail |

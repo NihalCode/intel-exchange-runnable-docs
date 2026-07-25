@@ -1,7 +1,9 @@
 import "server-only";
 
+import { normalizeVercelDeploymentMeta } from "@/lib/deployment/commit-meta";
 import {
   VercelProviderError,
+  VERCEL_DEPLOYMENT_LIST_LIMIT,
   type VercelDeploymentSummary,
   type VercelDomainStatus,
   type VercelDnsRequirement,
@@ -162,7 +164,7 @@ export function createHttpVercelProvider(allowedTeamId?: string): VercelProvider
 
     async listDeployments(projectId) {
       const data = await vercelFetch<{ deployments: Record<string, unknown>[] }>(
-        `/v6/deployments?projectId=${encodeURIComponent(projectId)}&limit=10${teamQuery() ? `&teamId=${encodeURIComponent(getTeamId()!)}` : ""}`
+        `/v6/deployments?projectId=${encodeURIComponent(projectId)}&limit=${VERCEL_DEPLOYMENT_LIST_LIMIT}${teamQuery() ? `&teamId=${encodeURIComponent(getTeamId()!)}` : ""}`
       );
       return (data.deployments ?? []).map(
         (d): VercelDeploymentSummary => ({
@@ -170,7 +172,7 @@ export function createHttpVercelProvider(allowedTeamId?: string): VercelProvider
           url: String(d.url ?? ""),
           state: String(d.state ?? d.readyState ?? "unknown"),
           createdAt: String(d.createdAt ?? d.created ?? ""),
-          meta: d.meta as VercelDeploymentSummary["meta"],
+          meta: normalizeVercelDeploymentMeta(d.meta),
         })
       );
     },
@@ -185,7 +187,7 @@ export function createHttpVercelProvider(allowedTeamId?: string): VercelProvider
         url: String(data.url ?? ""),
         state: String(data.state ?? data.readyState ?? "READY"),
         createdAt: String(data.createdAt ?? data.created ?? ""),
-        meta: data.meta as VercelDeploymentSummary["meta"],
+        meta: normalizeVercelDeploymentMeta(data.meta),
       };
     },
 

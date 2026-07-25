@@ -187,16 +187,41 @@ export function DocumentationAgentDeploymentsPage({
 
             {d.environment === "production" ? (
               <p className="text-xs text-amber-700 dark:text-amber-400">
-                Production domain add/remove/verify may create an approval change request. Access is
-                based on your signed-in role (owner/admin) for this session.
+                Production domain add/remove/verify may create an approval change request. Commit
+                promote/rollback lives on{" "}
+                <a
+                  href="/admin/documentation-agent/commits"
+                  className="underline underline-offset-2"
+                >
+                  Commits
+                </a>{" "}
+                (propose → approve → execute).
               </p>
             ) : null}
 
-            {canManage && d.recentDeployments.length > 0 ? (
+            {d.recentDeployments.length > 0 ? (
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+                Latest:{" "}
+                <span className="font-mono">
+                  {d.latestDeployment?.meta?.githubCommitSha?.slice(0, 7) ??
+                    d.latestDeployment?.id.slice(0, 8) ??
+                    "—"}
+                </span>
+                {" · "}
+                <a
+                  href="/admin/documentation-agent/commits"
+                  className="underline underline-offset-2"
+                >
+                  View commit history / switch
+                </a>
+              </p>
+            ) : null}
+
+            {canManage && d.environment !== "production" && d.recentDeployments.length > 0 ? (
               <section className="space-y-2">
-                <h3 className="text-xs font-semibold">Deployment promote / rollback</h3>
+                <h3 className="text-xs font-semibold">Non-prod promote (or use Commits)</h3>
                 <ul className="space-y-1 text-xs">
-                  {d.recentDeployments.map((dep) => (
+                  {d.recentDeployments.slice(0, 5).map((dep) => (
                     <li key={dep.id} className="flex flex-wrap items-center gap-2">
                       <span className="font-mono">{dep.id.slice(0, 12)}…</span>
                       <span>{dep.state}</span>
@@ -214,14 +239,6 @@ export function DocumentationAgentDeploymentsPage({
                     </li>
                   ))}
                 </ul>
-                <button
-                  type="button"
-                  disabled={busy || d.recentDeployments.length < 2}
-                  onClick={() => void deploymentAction(d.id, "rollback")}
-                  className="rounded border border-amber-400 px-2 py-1 text-xs text-amber-800 dark:border-amber-700 dark:text-amber-300"
-                >
-                  Rollback to previous READY deployment
-                </button>
               </section>
             ) : null}
 

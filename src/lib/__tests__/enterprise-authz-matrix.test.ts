@@ -115,4 +115,27 @@ describe("enterprise authz policy decision coverage", () => {
       })
     ).toBe(true);
   });
+
+  it("developer may create/submit changes org-scoped but not with production environment gate", () => {
+    const developer = principal("developer");
+    expect(
+      authorizeEnterprise(developer, "changes.create", { organizationId: "org-a" })
+    ).toBe(true);
+    expect(
+      authorizeEnterprise(developer, "changes.submit", { organizationId: "org-a" })
+    ).toBe(true);
+    expect(
+      authorizeEnterprise(developer, "changes.create", {
+        organizationId: "org-a",
+        environment: "production",
+      })
+    ).toBe(false);
+    expect(
+      authorizeEnterprise(developer, "deployments.manage", {
+        organizationId: "org-a",
+        environment: "production",
+      })
+    ).toBe(false);
+    expect(authorizeEnterprise(developer, "deployments.read")).toBe(true);
+  });
 });

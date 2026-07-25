@@ -9,10 +9,12 @@ import {
   scheduleChangeRequest,
   submitChangeRequest,
 } from "@/lib/enterprise/change-workflow";
+import { isPromoteCommitConfig } from "@/lib/deployment/commit-change-requests";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
 import {
   findChangeRequest,
   findControlPlaneResource,
+  getConfigVersionDetail,
 } from "@/lib/enterprise/repository";
 import type { EnterprisePermission } from "@/lib/enterprise/types";
 import {
@@ -90,7 +92,36 @@ export async function POST(
         decision: action === "approve" ? "APPROVED" : "REJECTED",
         comment,
       });
+    } else if (action === "schedule") {
+      exactKeys(body, ["expectedVersion", "scheduledFor"]);
+      const configVersion = await getConfigVersionDetail(
+        access.context.organization.id,
+        change.targetConfigVersionId
+      );
+      if (isPromoteCommitConfig(configVersion?.config ?? null)) {
+        throw new ApiInputError(
+          "Commit switches cannot be scheduled. Approve, then Execute on Admin → Commits."
+        );
+      }
+      const scheduledFor = requiredString(body.scheduledFor, "scheduledFor", 40);
+      if (!Number.isFinite(Date.parse(scheduledFor))) {
+        throw new ApiInputError("scheduledFor must be an ISO date");
+      }
+      updated = await scheduleChangeRequest(workflowContext(access, request), {
+        id,
+        expectedVersion: requiredInteger(body.expectedVersion, "expectedVersion"),
+        scheduledFor,
+      });
     } else if (action === "activate") {
+      const configVersion = await getConfigVersionDetail(
+        access.context.organization.id,
+        change.targetConfigVersionId
+      );
+      if (isPromoteCommitConfig(configVersion?.config ?? null)) {
+        throw new ApiInputError(
+          "Commit switches are not activated here. Use Execute approved switch on Admin → Commits after approval."
+        );
+      }
       exactKeys(body, ["expectedVersion", "expectedResourceVersion"]);
       const deploying = await markChangeDeploying(
         workflowContext(access, request),
@@ -104,17 +135,6 @@ export async function POST(
           body.expectedResourceVersion,
           "expectedResourceVersion"
         ),
-      });
-    } else if (action === "schedule") {
-      exactKeys(body, ["expectedVersion", "scheduledFor"]);
-      const scheduledFor = requiredString(body.scheduledFor, "scheduledFor", 40);
-      if (!Number.isFinite(Date.parse(scheduledFor))) {
-        throw new ApiInputError("scheduledFor must be an ISO date");
-      }
-      updated = await scheduleChangeRequest(workflowContext(access, request), {
-        id,
-        expectedVersion: requiredInteger(body.expectedVersion, "expectedVersion"),
-        scheduledFor,
       });
     } else {
       exactKeys(body, [

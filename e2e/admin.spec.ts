@@ -79,6 +79,23 @@ test.describe("enterprise admin surface", () => {
     await context.close();
   });
 
+  test("owner role can load commits page when deployment management is enabled", async ({
+    browser,
+  }) => {
+    const context = await browser.newContext({
+      extraHTTPHeaders: { "x-test-role": "owner" },
+    });
+    const page = await context.newPage();
+    const response = await page.goto("/admin/documentation-agent/commits");
+    expect([200, 404]).toContain(response?.status() ?? 0);
+    if (response?.status() === 200) {
+      await expect(
+        page.locator("#admin-main-content").getByRole("heading", { name: /^commits$/i })
+      ).toBeVisible();
+    }
+    await context.close();
+  });
+
   test("legacy jobs route redirects to sync-jobs", async ({ browser }) => {
     const context = await browser.newContext({
       extraHTTPHeaders: { "x-test-role": "owner" },

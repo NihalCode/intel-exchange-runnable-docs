@@ -66,6 +66,12 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
         featureFlag: "admin_deployment_management",
       },
       {
+        href: "/admin/documentation-agent/commits",
+        label: "Commits",
+        permission: "deployments.read",
+        featureFlag: "admin_deployment_management",
+      },
+      {
         href: "/admin/documentation-agent/environments",
         label: "Environments",
         permission: "resources.read",

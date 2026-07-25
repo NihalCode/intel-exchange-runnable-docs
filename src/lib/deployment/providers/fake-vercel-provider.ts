@@ -93,24 +93,59 @@ export function createFakeVercelProvider(seed?: {
           url: `${projectId}.vercel.app`,
           state: "READY",
           createdAt: new Date().toISOString(),
-          meta: { githubCommitSha: "abc123" },
+          meta: {
+            githubCommitSha: "abc1234deadbeef000000000000000000000001",
+            githubCommitMessage: "feat: current production build",
+            githubCommitAuthorName: "Release Bot",
+            githubCommitRef: "main",
+            githubCommitOrg: "NihalCode",
+            githubCommitRepo: "intel-exchange-runnable-docs",
+          },
         },
         {
           id: `dpl_${projectId}_previous`,
           url: `${projectId}-prev.vercel.app`,
           state: "READY",
           createdAt: new Date(Date.now() - 86_400_000).toISOString(),
-          meta: { githubCommitSha: "def456" },
+          meta: {
+            githubCommitSha: "def4567deadbeef000000000000000000000002",
+            githubCommitMessage: "fix: prior ready build",
+            githubCommitAuthorName: "Release Bot",
+            githubCommitRef: "main",
+            githubCommitOrg: "NihalCode",
+            githubCommitRepo: "intel-exchange-runnable-docs",
+          },
+        },
+        {
+          id: `dpl_${projectId}_building`,
+          url: `${projectId}-wip.vercel.app`,
+          state: "BUILDING",
+          createdAt: new Date(Date.now() - 3_600_000).toISOString(),
+          meta: {
+            githubCommitSha: "fff9999deadbeef000000000000000000000003",
+            githubCommitMessage: "wip: not ready",
+            githubCommitAuthorName: "Dev",
+            githubCommitRef: "feature/wip",
+          },
+        },
+        {
+          id: `dpl_${projectId}_sparse`,
+          url: `${projectId}-cli.vercel.app`,
+          state: "READY",
+          createdAt: new Date(Date.now() - 172_800_000).toISOString(),
+          meta: { githubCommitSha: "cli0001" },
         },
       ] satisfies VercelDeploymentSummary[];
     },
     async promoteDeployment(deploymentId) {
+      const listed = await this.listDeployments("prj_ctix");
+      const hit = listed.find((d) => d.id === deploymentId);
       return {
         id: deploymentId,
-        url: `${deploymentId}.vercel.app`,
+        url: hit?.url ?? `${deploymentId}.vercel.app`,
         state: "READY",
         createdAt: new Date().toISOString(),
-        meta: { githubCommitSha: "promoted" },
+        meta: hit?.meta ?? { githubCommitSha: "promoted" },
       };
     },
     async rollbackDeployment(projectId) {

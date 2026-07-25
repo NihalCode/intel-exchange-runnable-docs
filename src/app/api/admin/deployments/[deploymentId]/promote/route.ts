@@ -34,6 +34,17 @@ export async function POST(
     return NextResponse.json({ error: "Deployment not found" }, { status: 404 });
   }
 
+  if (deployment.environment === "production") {
+    return NextResponse.json(
+      {
+        error:
+          "Production promote/rollback moved to Admin → Commits (propose → approve → execute).",
+        code: "USE_COMMITS_TAB",
+      },
+      { status: 403 }
+    );
+  }
+
   const provider = getVercelProvider(deployment.vercelTeamId);
   const requestId = correlationIds(request.headers).requestId;
 
@@ -58,7 +69,12 @@ export async function POST(
       eventType: action === "rollback" ? "deployment_rollback" : "deployment_promote",
       actorUserId: access.session.user.id,
       requestId,
-      payload: { vercelDeploymentId: result.id, url: result.url, state: result.state },
+      payload: {
+        vercelDeploymentId: result.id,
+        url: result.url,
+        state: result.state,
+        commitSha: result.meta?.githubCommitSha ?? null,
+      },
     });
 
     return NextResponse.json({ ok: true, deployment: result });
