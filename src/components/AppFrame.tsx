@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { NavNode } from "@/lib/types";
 import { authReturnToFromPath } from "@/lib/documentation-auth/auth-return-to-path";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
@@ -15,6 +15,13 @@ import { useFocusTrap } from "./useFocusTrap";
 import { DocsSearch } from "@/components/DocsSearch";
 import { CxFooter } from "@/components/cx";
 import { CommandPalette } from "@/components/fabric/CommandPalette";
+import {
+  AutoHideTopChrome,
+} from "@/components/navigation/AutoHideTopChrome";
+import {
+  TopChromeProvider,
+  useTopChrome,
+} from "@/components/navigation/TopChromeProvider";
 import {
   navLinkActiveClass,
   navLinkClass,
@@ -271,15 +278,39 @@ function PrimaryNav({ pathname }: { pathname: string }) {
   );
 }
 
+function ShortcutHint() {
+  const { shortcutHint } = useTopChrome();
+  return (
+    <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
+      {shortcutHint}
+    </kbd>
+  );
+}
+
 export function AppFrame({
   nav: initialNav,
   children,
 }: {
   nav: NavNode[];
-  children: React.ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <TopChromeProvider>
+      <AppFrameInner nav={initialNav}>{children}</AppFrameInner>
+    </TopChromeProvider>
+  );
+}
+
+function AppFrameInner({
+  nav: initialNav,
+  children,
+}: {
+  nav: NavNode[];
+  children: ReactNode;
 }) {
   const pathname = usePathname();
   const { productId } = useProduct();
+  const { pin, unpin } = useTopChrome();
   const [remoteNav, setRemoteNav] = useState<{
     productId: string;
     nav: NavNode[];
@@ -338,6 +369,11 @@ export function AppFrame({
   const isAskAi = pathname === "/agent" || pathname.startsWith("/agent/");
   const showDocsRail = isDocsRoute;
 
+  useEffect(() => {
+    if (drawerOpen) pin("mobile-drawer");
+    else unpin("mobile-drawer");
+  }, [drawerOpen, pin, unpin]);
+
   return (
     <div className="cx-app-shell" data-testid="app-frame" data-layout="cx-app-shell">
       <ProductRunSettingsSync />
@@ -346,105 +382,106 @@ export function AppFrame({
         Skip to main content
       </a>
 
-      <header className="cx-header sticky top-0 z-30" data-layout="cx-header">
-        <div className="cx-header-zones" data-layout="cx-header-zones">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setDrawerOpen((o) => !o)}
-              aria-label="Toggle navigation"
-              aria-expanded={drawerOpen}
-              aria-controls="documentation-navigation-drawer"
-              data-testid="nav-drawer-toggle"
-              className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] text-[var(--text-secondary)] lg:hidden"
-            >
-              <MenuIcon />
-            </button>
+      <AutoHideTopChrome>
+        <header className="cx-header" data-layout="cx-header">
+          <div className="cx-header-zones" data-layout="cx-header-zones">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setDrawerOpen((o) => !o)}
+                aria-label="Toggle navigation"
+                aria-expanded={drawerOpen}
+                aria-controls="documentation-navigation-drawer"
+                data-testid="nav-drawer-toggle"
+                className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] text-[var(--text-secondary)] lg:hidden"
+              >
+                <MenuIcon />
+              </button>
 
-            <Link
-              href="/"
-              className="flex shrink-0 items-center gap-2"
-              data-testid="brand-home"
-              data-layout="cx-brand"
-            >
-              <span className="relative flex h-8 w-8 items-center justify-center">
-                <span
-                  className="absolute inset-0 rounded-[var(--radius-md)]"
-                  style={{
-                    background:
-                      "color-mix(in srgb, var(--product-accent, var(--brand-blue)) 14%, transparent)",
-                  }}
-                  aria-hidden="true"
-                />
-                <Image
-                  src="/cyware_logo.png"
-                  alt=""
-                  width={28}
-                  height={28}
-                  className="relative h-7 w-7 object-contain"
-                  priority
-                />
-              </span>
-              <span className="hidden items-center gap-1.5 sm:flex">
-                <span className="text-sm font-semibold tracking-tight text-[var(--text-heading)]">
-                  CYWARE
+              <Link
+                href="/"
+                className="flex shrink-0 items-center gap-2"
+                data-testid="brand-home"
+                data-layout="cx-brand"
+              >
+                <span className="relative flex h-8 w-8 items-center justify-center">
+                  <span
+                    className="absolute inset-0 rounded-[var(--radius-md)]"
+                    style={{
+                      background:
+                        "color-mix(in srgb, var(--product-accent, var(--brand-blue)) 14%, transparent)",
+                    }}
+                    aria-hidden="true"
+                  />
+                  <Image
+                    src="/cyware_logo.png"
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="relative h-7 w-7 object-contain"
+                    priority
+                  />
                 </span>
-                <span className="text-[var(--border-strong)]" aria-hidden="true">
-                  |
+                <span className="hidden items-center gap-1.5 sm:flex">
+                  <span className="text-sm font-semibold tracking-tight text-[var(--text-heading)]">
+                    CYWARE
+                  </span>
+                  <span className="text-[var(--border-strong)]" aria-hidden="true">
+                    |
+                  </span>
+                  <span className="text-sm font-medium text-[var(--text-secondary)]">
+                    Documentation
+                  </span>
                 </span>
-                <span className="text-sm font-medium text-[var(--text-secondary)]">
-                  Documentation
-                </span>
-              </span>
-            </Link>
-          </div>
-
-          <PrimaryNav pathname={pathname} />
-
-          <div
-            className="flex min-w-0 items-center justify-end gap-2"
-            data-layout="cx-header-actions"
-          >
-            <div className="hidden w-56 xl:block">
-              <DocsSearch
-                className="w-full"
-                placeholder="Search docs"
-                size="compact"
-              />
+              </Link>
             </div>
-            <AskAiNavLink pathname={pathname} />
-            <WorkspaceSettingsLink />
-            <WorkspaceContentLink />
-            <EnterpriseAdminLink />
-            <ThemeToggle />
-            <AuthHeaderControl />
-          </div>
-        </div>
-      </header>
 
-      <div className="cx-product-strip" data-layout="cx-product-strip">
-        <span
-          className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--product-accent,var(--accent-primary))] sf-signal-pulse"
-          aria-hidden="true"
-        />
-        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
-          Product context
-        </span>
-        <ProductSelector className="flex" />
-        <span className="ml-auto hidden items-center gap-3 sm:flex">
-          <kbd className="rounded border border-[var(--border-default)] bg-[var(--surface-raised)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-muted)]">
-            Ctrl+K
-          </kbd>
-          {isDocsRoute ? (
-            <Link
-              href={`/docs/${sidebarProductId}`}
-              className="text-xs font-medium text-[var(--text-link)] hover:underline"
+            <PrimaryNav pathname={pathname} />
+
+            <div
+              className="flex min-w-0 items-center justify-end gap-2"
+              data-layout="cx-header-actions"
             >
-              API documentation
-            </Link>
-          ) : null}
-        </span>
-      </div>
+              <div className="w-28 min-w-0 sm:w-48 xl:w-56">
+                <DocsSearch
+                  className="w-full"
+                  placeholder="Search docs"
+                  size="compact"
+                  registerGlobalShortcutTarget
+                />
+              </div>
+              <AskAiNavLink pathname={pathname} />
+              <WorkspaceSettingsLink />
+              <WorkspaceContentLink />
+              <EnterpriseAdminLink />
+              <ThemeToggle />
+              <AuthHeaderControl />
+            </div>
+          </div>
+        </header>
+
+        <div className="cx-product-strip" data-layout="cx-product-strip">
+          <span
+            className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--product-accent,var(--accent-primary))] sf-signal-pulse"
+            aria-hidden="true"
+          />
+          <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
+            Product context
+          </span>
+          <ProductSelector className="flex" />
+          <span className="ml-auto hidden items-center gap-3 sm:flex">
+            <ShortcutHint />
+            {isDocsRoute ? (
+              <Link
+                href={`/docs/${sidebarProductId}`}
+                className="text-xs font-medium text-[var(--text-link)] hover:underline"
+              >
+                API documentation
+              </Link>
+            ) : null}
+          </span>
+        </div>
+      </AutoHideTopChrome>
 
       <div className="cx-docs-body">
         {showDocsRail ? (
@@ -464,7 +501,7 @@ export function AppFrame({
         ) : null}
 
         {drawerOpen ? (
-          <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="fixed inset-0 z-50 lg:hidden">
             <div
               className="absolute inset-0 bg-[var(--surface-overlay)]"
               onClick={() => setDrawerOpen(false)}

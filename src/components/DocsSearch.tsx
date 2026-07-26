@@ -15,6 +15,7 @@ import { createPortal } from "react-dom";
 import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
 import { useProduct } from "@/components/ProductContext";
 import { docsSearchResultHref } from "@/lib/docs-search-href";
+import { useOptionalTopChrome } from "@/components/navigation/TopChromeProvider";
 
 export interface DocsSearchHit {
   id?: string;
@@ -37,6 +38,7 @@ export function DocsSearch({
   className = "",
   placeholder = "Search endpoints, guides, and concepts",
   size = "default",
+  registerGlobalShortcutTarget = false,
 }: {
   productId?: string;
   respectProductScope?: boolean;
@@ -44,9 +46,12 @@ export function DocsSearch({
   placeholder?: string;
   /** Hub = large techdocs-style field; compact = header search. */
   size?: "default" | "hub" | "compact";
+  /** When true, Ctrl/Cmd+K focuses this input via TopChromeProvider. */
+  registerGlobalShortcutTarget?: boolean;
 }) {
   const router = useRouter();
   const { productId: ctxProductId, searchScope } = useProduct();
+  const topChrome = useOptionalTopChrome();
   const scopedProductId =
     productIdProp ?? (respectProductScope && searchScope === "product" ? ctxProductId : undefined);
 
@@ -66,6 +71,15 @@ export function DocsSearch({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!registerGlobalShortcutTarget || !topChrome) return;
+    topChrome.registerFocusSearch(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+    return () => topChrome.registerFocusSearch(null);
+  }, [registerGlobalShortcutTarget, topChrome]);
 
   const updatePanelPosition = useCallback(() => {
     const anchor = wrapRef.current;
@@ -178,6 +192,7 @@ export function DocsSearch({
       if (e.key === "Escape") {
         e.preventDefault();
         setOpen(false);
+        topChrome?.unpin("search");
         return;
       }
       if (e.key === "ArrowDown") {
@@ -195,7 +210,7 @@ export function DocsSearch({
         navigateToResult(results[activeIndex]!);
       }
     },
-    [activeIndex, navigateToResult, open, results]
+    [activeIndex, navigateToResult, open, results, topChrome, listId]
   );
 
   const panel =
@@ -308,7 +323,15 @@ export function DocsSearch({
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKeyDown}
           onFocus={() => {
+            topChrome?.pin("search");
             if (results.length || error) setOpen(true);
+          }}
+          onBlur={(e) => {
+            const next = e.relatedTarget as Node | null;
+            if (wrapRef.current?.contains(next)) return;
+            const panel = document.getElementById(listId);
+            if (panel?.contains(next)) return;
+            topChrome?.unpin("search");
           }}
           aria-label="Search documentation"
           aria-controls={listId}

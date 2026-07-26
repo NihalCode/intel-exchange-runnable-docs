@@ -16,6 +16,7 @@ import {
   listProducts,
 } from "@/lib/products/registry";
 import type { ApiProduct } from "@/lib/products/types";
+import { useOptionalTopChrome } from "@/components/navigation/TopChromeProvider";
 
 interface ProductContextValue {
   productId: string;
@@ -121,6 +122,7 @@ export function useProduct(): ProductContextValue {
 
 export function ProductSelector({ className = "" }: { className?: string }) {
   const { productId, products, setProductId, searchScope, setSearchScope } = useProduct();
+  const topChrome = useOptionalTopChrome();
 
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
@@ -130,6 +132,8 @@ export function ProductSelector({ className = "" }: { className?: string }) {
           aria-label="Active documentation product"
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
+          onFocus={() => topChrome?.pin("product-menu")}
+          onBlur={() => topChrome?.unpin("product-menu")}
           className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 text-xs font-medium text-[var(--text-primary)]"
         >
           {products.map((p) => (
@@ -145,6 +149,8 @@ export function ProductSelector({ className = "" }: { className?: string }) {
           aria-label="Documentation search scope"
           value={searchScope}
           onChange={(e) => setSearchScope(e.target.value as "product" | "all")}
+          onFocus={() => topChrome?.pin("search-scope-menu")}
+          onBlur={() => topChrome?.unpin("search-scope-menu")}
           className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 text-xs text-[var(--text-primary)]"
         >
           <option value="product">This product</option>

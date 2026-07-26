@@ -30,7 +30,8 @@ export function CommandPalette() {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      // Ctrl/Cmd+K focuses Search docs (TopChromeProvider). Palette uses Shift+K.
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setOpen((v) => {
           const next = !v;
@@ -215,7 +216,7 @@ export function CommandPalette() {
           )}
         </ul>
         <p className="border-t border-[var(--border-subtle)] px-3 py-2 text-[10px] text-[var(--text-muted)]">
-          Esc to close · ↑↓ to move · Enter to open
+          Esc to close · ↑↓ to move · Enter to open · Ctrl/⌘⇧K to toggle
         </p>
       </div>
     </div>
