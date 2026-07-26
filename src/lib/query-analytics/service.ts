@@ -661,7 +661,141 @@ export async function enqueueUnansweredFromNegativeFeedback(
     );
   }
 
+  // Align answer-quality metrics with thumbs-down triage.
+  await setAnalyticsOutcomeForLogicalQuery(
+    {
+      organizationId: input.organizationId,
+      logicalQueryId,
+      outcome: "no_verified_solution",
+      reasonCode: "user_thumbs_down",
+    },
+    executor
+  );
+
   return { reviewId, createdOrReopened: Boolean(reviewId) };
+}
+
+/**
+ * Thumbs-up / satisfied feedback → mark the logical query answered and close
+ * open unanswered triage rows. Mints an answered analytics row when Ask AI
+ * never recorded one (anonymous / analytics-off paths).
+ */
+export async function applySatisfiedFeedbackToAnalytics(
+  input: {
+    organizationId: string;
+    logicalQueryId: string;
+    feedbackId: string;
+    userId?: string | null;
+    hostname?: string | null;
+    productId?: ProductKey | null;
+  },
+  executor: DbExecutor = db
+): Promise<{ eventId: string | null }> {
+  ensureMigrations();
+  const logicalQueryId = input.logicalQueryId.trim();
+  if (!logicalQueryId) return { eventId: null };
+
+  let event = await executor.queryOne<{ id: string }>(
+    `SELECT id FROM query_analytics_events
+     WHERE organization_id = ? AND logical_query_id = ?
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [input.organizationId, logicalQueryId]
+  );
+
+  if (!event) {
+    const attemptId = `fb-up-${input.feedbackId}`.slice(0, 64);
+    const eventId = await upsertQueryAnalyticsEvent(
+      {
+        organizationId: input.organizationId,
+        userId: input.userId ?? null,
+        logicalQueryId,
+        attemptId,
+        hostname: input.hostname?.trim() || "feedback",
+        productId: input.productId ?? null,
+        outcome: "answered",
+        latencyMs: 0,
+        metadata: {
+          source: "chat_feedback_thumbs_up",
+          feedbackId: input.feedbackId,
+          reasonCode: "user_thumbs_up",
+        },
+      },
+      executor
+    );
+    event = { id: eventId };
+  }
+
+  await setAnalyticsOutcomeForLogicalQuery(
+    {
+      organizationId: input.organizationId,
+      logicalQueryId,
+      outcome: "answered",
+      reasonCode: "user_thumbs_up",
+    },
+    executor
+  );
+
+  await resolveUnansweredReviewsForLogicalQuery(
+    {
+      organizationId: input.organizationId,
+      logicalQueryId,
+      resolvedByLogicalQueryId: logicalQueryId,
+    },
+    executor
+  );
+
+  return { eventId: event.id };
+}
+
+async function setAnalyticsOutcomeForLogicalQuery(
+  input: {
+    organizationId: string;
+    logicalQueryId: string;
+    outcome: QueryOutcome;
+    reasonCode?: string | null;
+  },
+  executor: DbExecutor
+): Promise<void> {
+  const now = nowIso();
+  await executor.execute(
+    `UPDATE query_analytics_events
+     SET outcome = ?
+     WHERE organization_id = ? AND logical_query_id = ?`,
+    [input.outcome, input.organizationId, input.logicalQueryId]
+  );
+  await executor.execute(
+    `UPDATE query_attempts
+     SET outcome = ?,
+         status = ?,
+         reason_code = COALESCE(?, reason_code),
+         updated_at = ?
+     WHERE organization_id = ? AND logical_query_id = ?`,
+    [
+      input.outcome,
+      attemptStatusForOutcome(input.outcome),
+      input.reasonCode ?? null,
+      now,
+      input.organizationId,
+      input.logicalQueryId,
+    ]
+  );
+  await executor.execute(
+    `UPDATE query_logical_queries
+     SET terminal_outcome = ?,
+         reason_code = COALESCE(?, reason_code),
+         status = 'completed',
+         updated_at = ?,
+         version = version + 1
+     WHERE organization_id = ? AND logical_query_id = ?`,
+    [
+      input.outcome,
+      input.reasonCode ?? null,
+      now,
+      input.organizationId,
+      input.logicalQueryId,
+    ]
+  );
 }
 
 async function writeEncryptedUnansweredFields(

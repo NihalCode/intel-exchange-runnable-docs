@@ -59,7 +59,7 @@ const SCENARIOS: ControlledAgentScenario[] = [
     expectedUnanswered: false,
   },
   {
-    name: "partially_answered",
+    name: "soft_fallback_with_steps_answered",
     classifyInput: {
       response: {
         mode: "workflow",
@@ -71,7 +71,7 @@ const SCENARIOS: ControlledAgentScenario[] = [
       },
       retrievalCount: 1,
     },
-    expectedOutcome: "partially_answered",
+    expectedOutcome: "answered",
     expectedUnanswered: false,
   },
   {
@@ -79,13 +79,14 @@ const SCENARIOS: ControlledAgentScenario[] = [
     classifyInput: {
       response: {
         mode: "workflow",
-        workflow: "No match",
+        workflow: "",
         confidence: 0,
         fallback: true,
         citations: [],
         steps: [],
         retrievalEvidence: "no_verified_match",
       },
+      retrievalCount: 2,
     },
     expectedOutcome: "no_verified_solution",
     expectedUnanswered: true,
@@ -95,7 +96,7 @@ const SCENARIOS: ControlledAgentScenario[] = [
     classifyInput: {
       response: {
         mode: "workflow",
-        workflow: "Empty",
+        workflow: "",
         confidence: 0,
         fallback: true,
         citations: [],
@@ -105,6 +106,22 @@ const SCENARIOS: ControlledAgentScenario[] = [
     },
     expectedOutcome: "no_results",
     expectedUnanswered: true,
+  },
+  {
+    name: "soft_fallback_message_answered",
+    classifyInput: {
+      response: {
+        mode: "workflow",
+        workflow: "No verified documentation match found for that request.",
+        confidence: 0,
+        fallback: true,
+        citations: [],
+        steps: [],
+        retrievalEvidence: "no_verified_match",
+      },
+    },
+    expectedOutcome: "answered",
+    expectedUnanswered: false,
   },
   {
     name: "clarification_required",
@@ -185,7 +202,8 @@ describe("query analytics end-to-end harness", () => {
     expect(SCENARIOS.map((s) => s.expectedOutcome).sort()).toEqual(
       [
         "answered",
-        "partially_answered",
+        "answered",
+        "answered",
         "no_verified_solution",
         "no_results",
         "clarification_required",

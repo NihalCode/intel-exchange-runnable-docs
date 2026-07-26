@@ -90,6 +90,20 @@ describe("query analytics harden", () => {
         classifyQueryOutcome({
           response: {
             mode: "workflow",
+            workflow: "",
+            confidence: 0,
+            fallback: true,
+            citations: [],
+            steps: [],
+            retrievalEvidence: "no_verified_match",
+          },
+          retrievalCount: 1,
+        })
+      ).toBe("no_verified_solution");
+      expect(
+        classifyQueryOutcome({
+          response: {
+            mode: "workflow",
             workflow: "No verified documentation match found for that request.",
             confidence: 0,
             fallback: true,
@@ -98,7 +112,7 @@ describe("query analytics harden", () => {
             retrievalEvidence: "no_verified_match",
           },
         })
-      ).toBe("no_verified_solution");
+      ).toBe("answered");
     });
   });
 

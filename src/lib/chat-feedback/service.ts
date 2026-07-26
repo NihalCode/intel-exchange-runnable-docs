@@ -3,6 +3,7 @@ import "server-only";
 import { withOrganizationTransaction, type DbExecutor } from "@/lib/db/client";
 import { isProductKey, type ProductKey } from "@/lib/products/registry";
 import {
+  applySatisfiedFeedbackToAnalytics,
   enqueueUnansweredFromNegativeFeedback,
   linkFeedback,
 } from "@/lib/query-analytics/service";
@@ -57,33 +58,60 @@ async function linkAnalyticsAndUnanswered(
     executor
   );
 
-  if (input.rating !== "down") return;
+  if (input.rating === "down") {
+    try {
+      await enqueueUnansweredFromNegativeFeedback(
+        {
+          organizationId: input.organizationId,
+          logicalQueryId: input.logicalQueryId,
+          feedbackId: input.feedbackId,
+          comment: input.comment,
+          userId: input.userId,
+          hostname: input.hostname,
+          productId: input.productId,
+          queryText: input.queryText,
+          clientIp: input.clientIp,
+        },
+        executor
+      );
+    } catch (err) {
+      console.warn(
+        JSON.stringify({
+          level: "warn",
+          message: "unanswered_enqueue_from_feedback_failed",
+          organizationId: input.organizationId,
+          feedbackId: input.feedbackId,
+          error: err instanceof Error ? err.message : "unknown",
+        })
+      );
+    }
+    return;
+  }
 
-  try {
-    await enqueueUnansweredFromNegativeFeedback(
-      {
-        organizationId: input.organizationId,
-        logicalQueryId: input.logicalQueryId,
-        feedbackId: input.feedbackId,
-        comment: input.comment,
-        userId: input.userId,
-        hostname: input.hostname,
-        productId: input.productId,
-        queryText: input.queryText,
-        clientIp: input.clientIp,
-      },
-      executor
-    );
-  } catch (err) {
-    console.warn(
-      JSON.stringify({
-        level: "warn",
-        message: "unanswered_enqueue_from_feedback_failed",
-        organizationId: input.organizationId,
-        feedbackId: input.feedbackId,
-        error: err instanceof Error ? err.message : "unknown",
-      })
-    );
+  if (input.rating === "up") {
+    try {
+      await applySatisfiedFeedbackToAnalytics(
+        {
+          organizationId: input.organizationId,
+          logicalQueryId: input.logicalQueryId,
+          feedbackId: input.feedbackId,
+          userId: input.userId,
+          hostname: input.hostname,
+          productId: input.productId,
+        },
+        executor
+      );
+    } catch (err) {
+      console.warn(
+        JSON.stringify({
+          level: "warn",
+          message: "answered_from_feedback_failed",
+          organizationId: input.organizationId,
+          feedbackId: input.feedbackId,
+          error: err instanceof Error ? err.message : "unknown",
+        })
+      );
+    }
   }
 }
 

@@ -579,14 +579,17 @@ export async function ensureUnansweredReviewForEvent(
  * Mark prior unanswered reviews for this logical query as FIXED/superseded
  * without deleting history (successful retry path).
  */
-export async function resolveUnansweredReviewsForLogicalQuery(input: {
-  organizationId: string;
-  logicalQueryId: string;
-  resolvedByLogicalQueryId: string;
-}): Promise<void> {
+export async function resolveUnansweredReviewsForLogicalQuery(
+  input: {
+    organizationId: string;
+    logicalQueryId: string;
+    resolvedByLogicalQueryId: string;
+  },
+  executor: DbExecutor = db
+): Promise<void> {
   ensureMigrations();
   const now = new Date().toISOString();
-  await db.execute(RESOLVE_OPEN_REVIEWS_SQL, [
+  await executor.execute(RESOLVE_OPEN_REVIEWS_SQL, [
     input.resolvedByLogicalQueryId,
     `superseded_by:${input.resolvedByLogicalQueryId}`,
     now,

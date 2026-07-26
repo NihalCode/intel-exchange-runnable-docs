@@ -3,6 +3,13 @@ import "server-only";
 /**
  * Query outcome classification — structured inputs only.
  * Never parse English phrases from workflow text.
+ *
+ * Product policy (answer-quality):
+ * - Successful Ask AI responses default to `answered` (including soft fallbacks
+ *   that still return a workflow/steps). No user feedback ⇒ stays answered.
+ * - Thumbs-down feedback promotes triage via analytics adjustment (not this
+ *   classifier).
+ * - Hard fails / clarification stay non-answered.
  */
 
 import type { AgentResponse } from "@/lib/agent/types";
@@ -44,6 +51,11 @@ export interface QueryOutcomeInput {
   errorCode?: string;
   cancelled?: boolean;
   retrievalCount?: number;
+}
+
+function hasAnswerContent(response: AgentResponse): boolean {
+  if (response.steps.length > 0) return true;
+  return Boolean(response.workflow?.trim());
 }
 
 export function classifyQueryOutcome(input: QueryOutcomeInput): QueryOutcome {
@@ -88,22 +100,14 @@ export function classifyQueryOutcome(input: QueryOutcomeInput): QueryOutcome {
   const retrievalCount =
     input.retrievalCount ?? response.retrieval?.length ?? response.citations.length;
 
-  if (response.retrievalEvidence === "no_verified_match" && !response.steps.length) {
+  // Empty soft-fail with no answer body → no_results / no_verified_solution.
+  if (!hasAnswerContent(response) && response.fallback) {
+    if (retrievalCount === 0) return "no_results";
     return "no_verified_solution";
   }
 
-  if (retrievalCount === 0 && response.fallback) {
-    return "no_results";
-  }
-
-  if (response.fallback && response.steps.length > 0) {
-    return "partially_answered";
-  }
-
-  if (response.fallback) {
-    return "no_verified_solution";
-  }
-
+  // Soft fallbacks that still return a workflow/steps count as answered unless
+  // the user later thumbs-down (feedback path adjusts outcome + triage).
   return "answered";
 }
 

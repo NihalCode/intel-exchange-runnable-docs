@@ -260,4 +260,47 @@ describe("negative feedback → unanswered queue", () => {
     expect(sensitive?.queryText).toBe(plaintext);
     expect(sensitive?.clientIp).toBe("203.0.113.50");
   });
+
+  it("thumbs-up marks analytics answered and closes unanswered triage", async () => {
+    await materializeTerminalAnalytics({
+      organizationId,
+      logicalQueryId: "lq-up-fix",
+      attemptId: "att-up-fix",
+      userId: "user-fb",
+      hostname: "docs.test",
+      productId: "ctix",
+      outcome: "no_verified_solution",
+      latencyMs: 8,
+    });
+    const before = await listUnansweredQueryReviews(organizationId, 20);
+    expect(before.some((r) => r.logicalQueryId === "lq-up-fix")).toBe(true);
+
+    await submitChatFeedback({
+      organizationId,
+      userId: "user-fb",
+      messageId: "msg-up-fix",
+      rating: "up",
+      logicalQueryId: "lq-up-fix",
+      productId: "ctix",
+    });
+
+    const event = await db.queryOne<{ outcome: string }>(
+      `SELECT outcome FROM query_analytics_events
+       WHERE organization_id = ? AND logical_query_id = ?`,
+      [organizationId, "lq-up-fix"]
+    );
+    expect(event?.outcome).toBe("answered");
+
+    const review = await db.queryOne<{ status: string }>(
+      `SELECT status FROM unanswered_query_reviews
+       WHERE organization_id = ? AND logical_query_id = ?`,
+      [organizationId, "lq-up-fix"]
+    );
+    expect(review?.status).toBe("FIXED");
+
+    const summary = await (
+      await import("@/lib/query-analytics/repository")
+    ).summarizeQueryAnalytics(organizationId, "1970-01-01T00:00:00.000Z");
+    expect(summary.answered).toBeGreaterThanOrEqual(1);
+  });
 });

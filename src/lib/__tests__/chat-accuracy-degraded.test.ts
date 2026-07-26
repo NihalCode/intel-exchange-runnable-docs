@@ -37,7 +37,7 @@ describe("provider unavailable safe responses", () => {
       classifyQueryOutcome({
         response: {
           mode: "workflow",
-          workflow: "No verified match.",
+          workflow: "",
           confidence: 0,
           fallback: true,
           citations: [],
@@ -46,7 +46,7 @@ describe("provider unavailable safe responses", () => {
         },
         retrievalCount: 0,
       })
-    ).toBe("no_verified_solution");
+    ).toBe("no_results");
     expect(
       classifyQueryOutcome({
         response: {
@@ -59,7 +59,7 @@ describe("provider unavailable safe responses", () => {
         },
         retrievalCount: 0,
       })
-    ).toBe("no_results");
+    ).toBe("answered");
   });
 });
 
