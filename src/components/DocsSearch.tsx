@@ -72,14 +72,15 @@ export function DocsSearch({
     setMounted(true);
   }, []);
 
+  const registerFocusSearch = topChrome?.registerFocusSearch;
   useEffect(() => {
-    if (!registerGlobalShortcutTarget || !topChrome) return;
-    topChrome.registerFocusSearch(() => {
+    if (!registerGlobalShortcutTarget || !registerFocusSearch) return;
+    registerFocusSearch(() => {
       inputRef.current?.focus();
       inputRef.current?.select();
     });
-    return () => topChrome.registerFocusSearch(null);
-  }, [registerGlobalShortcutTarget, topChrome]);
+    return () => registerFocusSearch(null);
+  }, [registerGlobalShortcutTarget, registerFocusSearch]);
 
   const updatePanelPosition = useCallback(() => {
     const anchor = wrapRef.current;

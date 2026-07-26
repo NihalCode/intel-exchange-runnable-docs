@@ -10,6 +10,13 @@ import {
 } from "@/lib/navigation/top-chrome-state";
 
 describe("top-chrome-state", () => {
+  it("nextPinReasons always returns a new Set instance", () => {
+    const once = nextPinReasons(new Set(), { type: "pin", reason: "search" });
+    const twice = nextPinReasons(once, { type: "pin", reason: "search" });
+    expect(twice.has("search")).toBe(true);
+    expect(twice).not.toBe(once);
+  });
+
   beforeEach(() => {
     vi.useFakeTimers();
   });

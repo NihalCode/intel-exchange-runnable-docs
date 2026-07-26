@@ -139,7 +139,7 @@ export function Sidebar({
           className="w-full rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-sky-500 dark:border-zinc-700 dark:bg-zinc-900"
         />
       </div>
-      <div className="scroll-thin flex-1 overflow-y-auto px-2 pb-6">
+      <div data-top-chrome-scroll className="scroll-thin flex-1 overflow-y-auto px-2 pb-6">
         {matches ? (
           matches.length === 0 ? (
             <p className="px-2 py-4 text-sm text-zinc-400">No matches.</p>

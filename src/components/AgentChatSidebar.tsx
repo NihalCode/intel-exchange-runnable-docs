@@ -51,7 +51,7 @@ export function AgentChatSidebar({
           New
         </button>
       </div>
-      <ul className="scroll-thin flex-1 overflow-y-auto p-2">
+      <ul data-top-chrome-scroll className="scroll-thin flex-1 overflow-y-auto p-2">
         {sessions.length === 0 ? (
           <li className="px-2 py-6 text-center text-[11px] text-[var(--text-muted)]">
             No sessions yet. Start a new inquiry.

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
+import { useOptionalTopChrome } from "@/components/navigation/TopChromeProvider";
 import { listProducts } from "@/lib/products/registry";
 
 type CommandItem = {
@@ -27,6 +28,9 @@ export function CommandPalette() {
   const router = useRouter();
   const { state, hasPermission } = useDocumentationAuth();
   const products = listProducts();
+  const topChrome = useOptionalTopChrome();
+  const pinChrome = topChrome?.pin;
+  const unpinChrome = topChrome?.unpin;
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -47,6 +51,13 @@ export function CommandPalette() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  useEffect(() => {
+    if (!pinChrome || !unpinChrome) return;
+    if (open) pinChrome("command-palette");
+    else unpinChrome("command-palette");
+    return () => unpinChrome("command-palette");
+  }, [open, pinChrome, unpinChrome]);
 
   useEffect(() => {
     if (!open) return;

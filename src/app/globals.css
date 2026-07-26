@@ -771,8 +771,9 @@ body {
   pointer-events: none;
 }
 
+/* Sit under the revealed chrome so pointer-events flips do not fire spurious leave */
 .cx-top-activation-zone[data-chrome-visible="true"] {
-  pointer-events: none;
+  z-index: 39;
 }
 
 @media (prefers-reduced-motion: reduce) {

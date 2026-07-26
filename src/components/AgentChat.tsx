@@ -272,7 +272,11 @@ function AgentChatBody({
           </div>
         ) : null}
 
-        <div aria-label="Conversation" className="scroll-thin flex-1 overflow-y-auto px-4 py-4">
+        <div
+          aria-label="Conversation"
+          data-top-chrome-scroll
+          className="scroll-thin flex-1 overflow-y-auto px-4 py-4"
+        >
           {isEmpty ? (
             <div className="cx-ask-empty">
               <SignalTopologyArt
