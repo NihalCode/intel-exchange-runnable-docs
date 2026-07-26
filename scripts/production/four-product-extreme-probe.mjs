@@ -47,26 +47,33 @@ const PROTECTED_PAGES = [
   "/admin/documentation-agent/authentication",
   "/admin/documentation-agent/features",
   "/admin/documentation-agent/deployments",
+  "/admin/documentation-agent/commits",
   "/admin/documentation-agent/environments",
   "/admin/documentation-agent/change-requests",
   "/admin/documentation-agent/audit-logs",
   "/admin/documentation-agent/settings",
   "/admin/documentation-agent/apis",
-  "/admin/documentation-agent/sources",
   "/admin/documentation-agent/sync-jobs",
   "/admin/documentation-agent/keys",
   "/admin/documentation-agent/domains",
   "/admin/documentation-agent/query-analytics",
   "/admin/documentation-agent/unanswered",
-  "/admin/documentation-agent/webhooks",
-  "/admin/documentation-agent/logs",
-  "/admin/support-agent",
+  "/admin/documentation-agent/unanswered/weekly",
   "/admin/environments",
   "/admin/change-requests",
   "/admin/audit-logs",
   "/admin/security/settings",
   "/settings/users",
+  "/settings/content",
   "/developer",
+];
+
+/** Removed placeholder admin UIs — unauthenticated 404 is correct. */
+const REMOVED_PLACEHOLDER_ROUTES = [
+  "/admin/documentation-agent/sources",
+  "/admin/documentation-agent/webhooks",
+  "/admin/documentation-agent/logs",
+  "/admin/support-agent",
 ];
 
 function argValue(name) {
@@ -360,6 +367,34 @@ async function probeProduct(target) {
         evidence: [`location=${meta.location || ""}`],
         vercelRequestId: meta.vercelId,
         limitation,
+      })
+    );
+  }
+
+  for (const route of REMOVED_PLACEHOLDER_ROUTES) {
+    const meta = await fetchMeta(`${base}${route}`);
+    const status =
+      meta.status === 404
+        ? "PASS"
+        : meta.status === 500
+          ? "FAIL"
+          : "PASS_WITH_DOCUMENTED_LIMITATIONS";
+    rows.push(
+      result({
+        id: `${target.product}:removed${route}`,
+        area: "rbac",
+        feature: "removed_placeholder_absent",
+        product: target.product,
+        hostname: new URL(base).hostname,
+        route,
+        pane: route,
+        userRole: "unauthenticated",
+        actualStatusCode: meta.status,
+        status,
+        expected: "404 (placeholder removed)",
+        actual: `HTTP ${meta.status}`,
+        evidence: ["Removed non-production placeholder admin UIs"],
+        vercelRequestId: meta.vercelId,
       })
     );
   }

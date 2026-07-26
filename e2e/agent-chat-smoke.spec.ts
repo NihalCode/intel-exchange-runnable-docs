@@ -21,7 +21,7 @@ test.describe("agent chat smoke", () => {
 
   test("agent page exposes Documentation Agent chrome", async ({ page }) => {
     await page.goto("/agent");
-    await expect(page.getByRole("heading", { name: /Documentation Agent/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Documentation Agent/i })).toBeVisible();
     const chatHeading = page.locator("#agent-chat-heading");
     const connectCta = page.getByRole("link", { name: /Configure authentication/i });
     await expect(chatHeading.or(connectCta).first()).toBeVisible();

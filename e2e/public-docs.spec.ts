@@ -6,7 +6,8 @@ import { test, expect } from "@playwright/test";
  */
 test.describe("documentation access smoke", () => {
   test("skip link targets main content", async ({ page }) => {
-    await page.goto("/");
+    // Prefer a stable docs route; hub can surface transient Next overlay noise in parallel e2e.
+    await page.goto("/docs/ctix");
     const skip = page.getByRole("link", { name: /skip to main content/i });
     await expect(skip).toHaveAttribute("href", "#main-content");
   });

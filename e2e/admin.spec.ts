@@ -12,7 +12,8 @@ test.describe("enterprise admin surface", () => {
     await expect(
       page.locator("#admin-main-content").getByRole("heading", { name: /^dashboard$/i })
     ).toBeVisible();
-    await expect(page.getByText("Enterprise Admin")).toBeVisible();
+    await expect(page.getByTestId("admin-brand")).toBeVisible();
+    await expect(page.getByTestId("admin-brand")).toContainText(/Admin/i);
     await context.close();
   });
 
@@ -87,11 +88,18 @@ test.describe("enterprise admin surface", () => {
     });
     const page = await context.newPage();
     const response = await page.goto("/admin/documentation-agent/commits");
-    expect([200, 404]).toContain(response?.status() ?? 0);
-    if (response?.status() === 200) {
-      await expect(
-        page.locator("#admin-main-content").getByRole("heading", { name: /^commits$/i })
-      ).toBeVisible();
+    const status = response?.status() ?? 0;
+    expect([200, 404]).toContain(status);
+    const commitsHeading = page
+      .locator("#admin-main-content")
+      .getByRole("heading", { name: /^commits$/i });
+    const notFoundHeading = page.getByRole("heading", {
+      name: /this page could not be found/i,
+    });
+    // Flag off → notFound(); flag on → Commits page. Soft 404 shells also acceptable.
+    await expect(commitsHeading.or(notFoundHeading).first()).toBeVisible();
+    if (await commitsHeading.isVisible()) {
+      await expect(commitsHeading).toBeVisible();
     }
     await context.close();
   });

@@ -43,7 +43,8 @@ test.describe("query analytics and unanswered admin", () => {
     await page.goto("/admin/documentation-agent/unanswered/weekly");
     await expect(
       page.locator("#admin-main-content").getByRole("heading", {
-        name: /weekly/i,
+        level: 1,
+        name: /unanswered weekly/i,
       })
     ).toBeVisible();
     await expect(page.getByRole("button", { name: /download csv/i })).toBeVisible();
