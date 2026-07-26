@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { listCommitHistories } from "@/lib/deployment/commit-history";
 import type { DeploymentEnvironment } from "@/lib/deployment/types";
 import { guardEnterpriseApi } from "@/lib/enterprise/guard";
-import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
+import { resolveDocumentationFeatureEnabled } from "@/lib/documentation-features/resolve-enabled";
 
 export const runtime = "nodejs";
 
@@ -19,7 +19,9 @@ export async function GET(request: NextRequest) {
   const access = await guardEnterpriseApi(request, "deployments.read");
   if (access instanceof NextResponse) return access;
 
-  const enabled = await isDocumentationFeatureEnabled({
+  // Match admin page gate (requireAdminFeature → resolveDocumentationFeatureEnabled)
+  // so product hosts with APP_PRODUCT_ID get the same multi-project override.
+  const enabled = await resolveDocumentationFeatureEnabled({
     organizationId: access.context.organization.id,
     key: "admin_deployment_management",
     role: access.context.principal.role,

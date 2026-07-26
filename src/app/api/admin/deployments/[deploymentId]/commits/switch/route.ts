@@ -12,7 +12,7 @@ import {
   recordDeploymentAuditEvent,
 } from "@/lib/deployment/repository";
 import { getVercelProvider } from "@/lib/deployment/providers";
-import { isDocumentationFeatureEnabled } from "@/lib/documentation-features";
+import { resolveDocumentationFeatureEnabled } from "@/lib/documentation-features/resolve-enabled";
 import { guardEnterpriseApi, type EnterpriseAccess } from "@/lib/enterprise/guard";
 import {
   controlPlaneJson,
@@ -26,7 +26,7 @@ import { correlationIds } from "@/lib/enterprise/observability";
 export const runtime = "nodejs";
 
 async function requireFeature(access: EnterpriseAccess): Promise<NextResponse | null> {
-  const enabled = await isDocumentationFeatureEnabled({
+  const enabled = await resolveDocumentationFeatureEnabled({
     organizationId: access.context.organization.id,
     key: "admin_deployment_management",
     role: access.context.principal.role,

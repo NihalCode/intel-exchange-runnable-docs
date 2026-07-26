@@ -30,6 +30,20 @@ export default defineConfig({
           UNANSWERED_QUERY_REVIEW_ENABLED: "true",
           UNANSWERED_QUERY_WEEKLY_ANALYTICS_ENABLED: "true",
           UNANSWERED_QUERY_REALTIME_SUMMARY_ENABLED: "true",
+          UNANSWERED_QUERY_SENSITIVE_CAPTURE_ENABLED: "true",
+          CHAT_FEEDBACK_ENABLED: "true",
+          // Local parity with product hosts: deployment/commits + sensitive capture auto-path.
+          APP_PRODUCT_ID: "ctix",
+          // Deterministic local AES key for encrypted unanswered query text (e2e only).
+          DOCUMENTATION_CREDENTIAL_ENCRYPTION_KEY:
+            process.env.DOCUMENTATION_CREDENTIAL_ENCRYPTION_KEY ||
+            "BwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwc=",
+          // CSRF signing for admin PATCH / unanswered triage in local e2e.
+          AUTH_SECRET:
+            process.env.AUTH_SECRET ||
+            "local-e2e-auth-secret-at-least-32-chars!!",
+          // Never hit live Vercel during commits-tab stress; in-memory fake only.
+          VERCEL_PROVIDER_FAKE: "true",
         },
       },
 });

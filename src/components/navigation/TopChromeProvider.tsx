@@ -111,9 +111,31 @@ function subscribeScroll(onStoreChange: () => void) {
   const onScroll = () => onStoreChange();
   window.addEventListener("scroll", onScroll, { passive: true, capture: true });
   window.addEventListener("resize", onScroll);
+
+  // Nested docs/agent/sidebar scrollers update nearTop — window-only listeners miss them.
+  const nested = new Set<HTMLElement>();
+  const bindNested = () => {
+    const nodes = document.querySelectorAll<HTMLElement>(
+      "[data-top-chrome-scroll], main, .cx-docs-body"
+    );
+    for (const el of nodes) {
+      if (nested.has(el)) continue;
+      nested.add(el);
+      el.addEventListener("scroll", onScroll, { passive: true });
+    }
+  };
+  bindNested();
+  const mo =
+    typeof MutationObserver !== "undefined"
+      ? new MutationObserver(() => bindNested())
+      : null;
+  mo?.observe(document.documentElement, { childList: true, subtree: true });
+
   return () => {
     window.removeEventListener("scroll", onScroll, true);
     window.removeEventListener("resize", onScroll);
+    mo?.disconnect();
+    for (const el of nested) el.removeEventListener("scroll", onScroll);
   };
 }
 
