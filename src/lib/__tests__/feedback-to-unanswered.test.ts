@@ -222,4 +222,42 @@ describe("negative feedback → unanswered queue", () => {
     const reviews = await listUnansweredQueryReviews(organizationId, 20);
     expect(reviews.some((r) => r.logicalQueryId === "msg-no-analytics")).toBe(true);
   });
+
+  it("thumbs-down with queryText encrypts exact query for reveal", async () => {
+    const plaintext = "How do I tag indicator 1.2.3.4 for user@corp.test?";
+    const result = await enqueueUnansweredFromNegativeFeedback({
+      organizationId,
+      logicalQueryId: "lq-sensitive-fb",
+      feedbackId: "fb-sensitive",
+      userId: "user-fb",
+      hostname: "apitest1.cyninjadev.com",
+      productId: "ctix",
+      queryText: plaintext,
+      clientIp: "203.0.113.50",
+    });
+    expect(result.reviewId).toBeTruthy();
+
+    const stored = await db.queryOne<{
+      query_ciphertext: string | null;
+      sanitized_topic: string | null;
+    }>(
+      `SELECT query_ciphertext, sanitized_topic FROM unanswered_query_reviews
+       WHERE organization_id = ? AND id = ?`,
+      [organizationId, result.reviewId]
+    );
+    expect(stored?.query_ciphertext).toBeTruthy();
+    expect(stored?.query_ciphertext).not.toContain(plaintext);
+    expect(stored?.sanitized_topic).not.toContain("user@corp.test");
+
+    const { getUnansweredReviewSensitive } = await import(
+      "@/lib/query-analytics/repository"
+    );
+    const sensitive = await getUnansweredReviewSensitive({
+      organizationId,
+      reviewId: result.reviewId!,
+    });
+    expect(sensitive?.queryStatus).toBe("ok");
+    expect(sensitive?.queryText).toBe(plaintext);
+    expect(sensitive?.clientIp).toBe("203.0.113.50");
+  });
 });

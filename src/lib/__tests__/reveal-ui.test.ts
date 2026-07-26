@@ -30,7 +30,7 @@ describe("reveal-ui", () => {
     expect(state.kind).toBe("unavailable");
     if (state.kind === "unavailable") {
       expect(state.reason).toBe("not_captured");
-      expect(state.message).toMatch(/not captured/i);
+      expect(state.message).toMatch(/not stored|not captured/i);
     }
     expect(shouldHideRevealButton(state)).toBe(false);
   });

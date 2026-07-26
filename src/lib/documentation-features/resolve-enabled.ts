@@ -63,7 +63,8 @@ export async function resolveDocumentationFeatureEnabled(
     if (isUnansweredRealtimeSummaryEnabled()) return true;
   }
   if (input.key === "unanswered_query_sensitive_capture") {
-    if (isUnansweredSensitiveCaptureEnabled()) return true;
+    // Product hosts auto-enable so Ask AI / thumbs-down can encrypt exact queries.
+    if (isUnansweredSensitiveCaptureEnabled() || multiProject) return true;
   }
   if (input.key === "chat_feedback") {
     // Product hosts and CHAT_FEEDBACK_ENABLED always expose thumbs controls.

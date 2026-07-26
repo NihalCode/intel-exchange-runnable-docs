@@ -21,6 +21,7 @@ export function AgentFeedbackControl({
   turnId,
   logicalQueryId,
   productId,
+  queryText,
   enabled,
 }: {
   messageId: string;
@@ -28,6 +29,8 @@ export function AgentFeedbackControl({
   turnId?: string | null;
   logicalQueryId?: string | null;
   productId?: string | null;
+  /** Original user question — sent on thumbs-down for sensitive capture. */
+  queryText?: string | null;
   enabled?: boolean;
 }) {
   const [rating, setRating] = useState<Rating | null>(null);
@@ -53,6 +56,10 @@ export function AgentFeedbackControl({
         turnId: turnId ?? undefined,
         logicalQueryId: logicalQueryId ?? undefined,
         productId: productId ?? undefined,
+        queryText:
+          next === "down" && queryText?.trim()
+            ? queryText.trim().slice(0, 8000)
+            : undefined,
         recaptchaToken,
         expectedVersion: feedbackId ? version : undefined,
       });

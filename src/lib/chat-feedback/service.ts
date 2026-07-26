@@ -41,6 +41,8 @@ async function linkAnalyticsAndUnanswered(
     userId?: string | null;
     hostname?: string | null;
     productId?: ProductKey | null;
+    queryText?: string | null;
+    clientIp?: string | null;
   },
   executor: DbExecutor
 ): Promise<void> {
@@ -67,6 +69,8 @@ async function linkAnalyticsAndUnanswered(
         userId: input.userId,
         hostname: input.hostname,
         productId: input.productId,
+        queryText: input.queryText,
+        clientIp: input.clientIp,
       },
       executor
     );
@@ -95,6 +99,8 @@ async function submitChatFeedbackInTx(
     logicalQueryId?: string | null;
     hostname?: string | null;
     productId?: ProductKey | null;
+    queryText?: string | null;
+    clientIp?: string | null;
     expectedVersion?: number;
   },
   executor: DbExecutor
@@ -127,6 +133,8 @@ async function submitChatFeedbackInTx(
         userId: input.userId,
         hostname: input.hostname,
         productId: input.productId,
+        queryText: input.queryText,
+        clientIp: input.clientIp,
       },
       executor
     );
@@ -146,6 +154,8 @@ export async function submitChatFeedback(input: {
   logicalQueryId?: string | null;
   hostname?: string | null;
   productId?: ProductKey | null;
+  queryText?: string | null;
+  clientIp?: string | null;
   expectedVersion?: number;
 }): Promise<ChatFeedbackRow> {
   return withOrganizationTransaction(

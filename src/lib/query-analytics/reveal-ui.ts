@@ -29,7 +29,7 @@ export const REVEAL_REASON_MESSAGES: Record<
 > = {
   ok: "",
   not_captured:
-    "Exact query was not captured for this row. Enable unanswered_query_sensitive_capture (UNANSWERED_QUERY_SENSITIVE_CAPTURE_ENABLED) on the product host that recorded it.",
+    "Exact query was not stored for this row. Enabling unanswered_query_sensitive_capture only affects new Ask AI / thumbs-down captures — re-submit thumbs-down after the flag is on, or ask again so analytics can encrypt the question.",
   decrypt_failed:
     "Stored query ciphertext could not be decrypted. Confirm DOCUMENTATION_CREDENTIAL_ENCRYPTION_KEY matches the host that encrypted this row.",
   encryption_key_missing:

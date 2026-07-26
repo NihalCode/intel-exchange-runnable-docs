@@ -55,6 +55,8 @@ export type AssistantMessage = {
   conversationId?: string | null;
   turnId?: string | null;
   logicalQueryId?: string | null;
+  /** User question that produced this answer (for feedback → unanswered capture). */
+  queryText?: string | null;
 };
 export type ErrorMessage = { id: string; role: "error"; content: string };
 export type ChatMessage = UserMessage | AssistantMessage | ErrorMessage;
@@ -675,6 +677,7 @@ export function AgentChatProvider({ children }: { children: ReactNode }) {
           turnId: data.analytics?.turnId ?? serverTurnId ?? null,
           logicalQueryId:
             data.analytics?.logicalQueryId ?? serverTurnId ?? null,
+          queryText: displayContent,
         };
         setMessages((prev) => [...prev, assistantMsg]);
         if (data.recaptchaDegraded) {

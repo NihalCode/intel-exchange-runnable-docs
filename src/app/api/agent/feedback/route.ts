@@ -16,6 +16,7 @@ import { ensureAnonymousFeedbackPrincipal } from "@/lib/chat-feedback/anonymous-
 import {
   resolveChatFeedbackEnabled,
   resolveRecaptchaProtectionEnabled,
+  resolveUnansweredSensitiveCaptureEnabled,
 } from "@/lib/domains/feature-gates-resolve";
 import { requireMutationCsrf } from "@/lib/enterprise/http";
 import {
@@ -27,6 +28,8 @@ import { verifyRecaptchaToken } from "@/lib/recaptcha/verify";
 import { resolveTrustedClientIp } from "@/lib/security/client-ip";
 
 export const runtime = "nodejs";
+
+const MAX_FEEDBACK_QUERY_TEXT = 8_000;
 
 export async function POST(request: NextRequest) {
   const session = await guardAskAgent(request);
@@ -65,6 +68,7 @@ export async function POST(request: NextRequest) {
       turnId?: string | null;
       logicalQueryId?: string | null;
       productId?: string | null;
+      queryText?: string | null;
       recaptchaToken?: string | null;
       expectedVersion?: number;
     };
@@ -102,6 +106,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const captureSensitive =
+      rating === "down" &&
+      (await resolveUnansweredSensitiveCaptureEnabled({
+        organizationId: context.organization.id,
+        role: context.principal.role,
+      }));
+    const queryText =
+      captureSensitive && typeof body.queryText === "string"
+        ? body.queryText.trim().slice(0, MAX_FEEDBACK_QUERY_TEXT) || null
+        : null;
+    const clientIp = captureSensitive
+      ? resolveTrustedClientIp(request.headers)
+      : null;
+
     const hostname = trustedHostnameFromHeaders(request.headers) ?? null;
     const row = await submitChatFeedback({
       organizationId: context.organization.id,
@@ -114,6 +132,8 @@ export async function POST(request: NextRequest) {
       logicalQueryId: body.logicalQueryId ?? null,
       hostname,
       productId: parseProductId(body.productId),
+      queryText,
+      clientIp,
       expectedVersion: body.expectedVersion,
     });
 

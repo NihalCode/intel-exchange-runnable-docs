@@ -522,6 +522,8 @@ export async function linkFeedback(
  * When no analytics event exists yet (anonymous Ask AI / analytics off), mint a
  * terminal "no_verified_solution" projection so triage still receives the row.
  */
+const MAX_FEEDBACK_QUERY_TEXT = 8_000;
+
 export async function enqueueUnansweredFromNegativeFeedback(
   input: {
     organizationId: string;
@@ -531,6 +533,9 @@ export async function enqueueUnansweredFromNegativeFeedback(
     userId?: string | null;
     hostname?: string | null;
     productId?: ProductKey | null;
+    /** Original Ask AI question — encrypted when provided (caller gates capture). */
+    queryText?: string | null;
+    clientIp?: string | null;
   },
   executor: DbExecutor = db
 ): Promise<{ reviewId: string | null; createdOrReopened: boolean }> {
@@ -568,6 +573,7 @@ export async function enqueueUnansweredFromNegativeFeedback(
     event = { id: eventId };
   }
 
+  const queryText = input.queryText?.trim().slice(0, MAX_FEEDBACK_QUERY_TEXT) || null;
   const sanitizedComment = input.comment?.trim()
     ? sanitizeTopic(input.comment.trim())
     : null;
@@ -579,7 +585,9 @@ export async function enqueueUnansweredFromNegativeFeedback(
     .join("\n")
     .slice(0, 2000);
   const topic =
-    sanitizedComment ?? "User marked Ask AI answer unhelpful";
+    (queryText ? sanitizeTopic(queryText) : null) ??
+    sanitizedComment ??
+    "User marked Ask AI answer unhelpful";
   const now = nowIso();
 
   const existingByLogical = await executor.queryOne<{ id: string }>(
@@ -590,6 +598,7 @@ export async function enqueueUnansweredFromNegativeFeedback(
     [input.organizationId, logicalQueryId]
   );
 
+  let reviewId: string | null = null;
   if (existingByLogical) {
     await executor.execute(
       `UPDATE unanswered_query_reviews
@@ -613,41 +622,59 @@ export async function enqueueUnansweredFromNegativeFeedback(
         existingByLogical.id,
       ]
     );
-    return { reviewId: existingByLogical.id, createdOrReopened: true };
+    reviewId = existingByLogical.id;
+  } else {
+    await ensureUnansweredReviewForEvent(input.organizationId, event.id, executor);
+
+    await executor.execute(
+      `UPDATE unanswered_query_reviews
+       SET status = 'NEW',
+           resolved_by_logical_query_id = NULL,
+           resolution_reference = NULL,
+           internal_note = ?,
+           sanitized_topic = COALESCE(?, sanitized_topic),
+           logical_query_id = ?,
+           updated_at = ?,
+           version = version + 1
+       WHERE organization_id = ? AND analytics_event_id = ?`,
+      [note, topic, logicalQueryId, now, input.organizationId, event.id]
+    );
+
+    const review = await executor.queryOne<{ id: string }>(
+      `SELECT id FROM unanswered_query_reviews
+       WHERE organization_id = ? AND analytics_event_id = ?`,
+      [input.organizationId, event.id]
+    );
+    reviewId = review?.id ?? null;
   }
 
-  await ensureUnansweredReviewForEvent(input.organizationId, event.id, executor);
+  if (reviewId && (queryText || input.clientIp?.trim())) {
+    await writeEncryptedUnansweredFields(
+      {
+        organizationId: input.organizationId,
+        analyticsEventId: event.id,
+        logicalQueryId,
+        queryText,
+        clientIp: input.clientIp?.trim() || null,
+      },
+      executor
+    );
+  }
 
-  await executor.execute(
-    `UPDATE unanswered_query_reviews
-     SET status = 'NEW',
-         resolved_by_logical_query_id = NULL,
-         resolution_reference = NULL,
-         internal_note = ?,
-         sanitized_topic = COALESCE(?, sanitized_topic),
-         logical_query_id = ?,
-         updated_at = ?,
-         version = version + 1
-     WHERE organization_id = ? AND analytics_event_id = ?`,
-    [note, topic, logicalQueryId, now, input.organizationId, event.id]
-  );
-
-  const review = await executor.queryOne<{ id: string }>(
-    `SELECT id FROM unanswered_query_reviews
-     WHERE organization_id = ? AND analytics_event_id = ?`,
-    [input.organizationId, event.id]
-  );
-  return { reviewId: review?.id ?? null, createdOrReopened: Boolean(review?.id) };
+  return { reviewId, createdOrReopened: Boolean(reviewId) };
 }
 
-async function writeEncryptedUnansweredFields(input: {
-  organizationId: string;
-  analyticsEventId: string;
-  logicalQueryId: string;
-  queryText?: string | null;
-  clientIp?: string | null;
-  customerNameSnapshot?: string | null;
-}): Promise<void> {
+async function writeEncryptedUnansweredFields(
+  input: {
+    organizationId: string;
+    analyticsEventId: string;
+    logicalQueryId: string;
+    queryText?: string | null;
+    clientIp?: string | null;
+    customerNameSnapshot?: string | null;
+  },
+  executor: DbExecutor = db
+): Promise<void> {
   const aad = `unanswered:${input.organizationId}:${input.logicalQueryId}`;
   const queryEnc = input.queryText
     ? encryptSecret(input.queryText, aad)
@@ -656,7 +683,7 @@ async function writeEncryptedUnansweredFields(input: {
   const fingerprint = input.queryText ? queryFingerprint(input.queryText) : null;
   const topic = input.queryText ? sanitizeTopic(input.queryText) : null;
 
-  await db.execute(
+  await executor.execute(
     `UPDATE unanswered_query_reviews
      SET query_ciphertext = COALESCE(?, query_ciphertext),
          query_iv = COALESCE(?, query_iv),
