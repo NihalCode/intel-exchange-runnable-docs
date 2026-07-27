@@ -153,6 +153,44 @@ test.describe("premium auto-hide top navigation — production hard checks", () 
     await pressSearchShortcut(page);
     await expectChromeVisible(page, true);
   });
+
+  test("light mode: tuck-away works after theme toggle click (focus must not stick)", async ({
+    page,
+  }) => {
+    await page.goto("/docs/ctix/ping/ping");
+    await waitForDesktopAutoHide(page);
+
+    // Force dark first so the toggle click switches into light (user repro path).
+    await page.evaluate(() => {
+      document.documentElement.classList.add("dark");
+      try {
+        localStorage.setItem("theme", "dark");
+      } catch {
+        /* ignore */
+      }
+    });
+    const toggle = page.getByTestId("theme-toggle");
+    await toggle.click();
+    await expect
+      .poll(async () => page.evaluate(() => document.documentElement.classList.contains("dark")))
+      .toBe(false);
+
+    // Move pointer off chrome so stuck hover cannot mask the scroll reconcile.
+    await page.mouse.move(400, 500);
+    await scrollAwayFromTop(page);
+    await expectChromeVisible(page, false);
+    await expect(page.getByTestId("top-chrome")).toHaveAttribute("data-pin-count", "0");
+
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const c = document.querySelector<HTMLElement>('[data-testid="top-chrome"]');
+          if (!c) return null;
+          return Number(getComputedStyle(c).opacity);
+        })
+      )
+      .toBe(0);
+  });
 });
 
 test.describe("auto-hide mobile — no hover dependency", () => {

@@ -183,6 +183,7 @@ export function TopChromeProvider({ children }: { children: ReactNode }) {
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const focusSearchRef = useRef<FocusSearchFn | null>(null);
   const pinnedReasonsRef = useRef<Set<string>>(new Set());
+  const lastPointerRef = useRef<{ x: number; y: number }>({ x: -1, y: -1 });
 
   const [routeKey, setRouteKey] = useState(pathname);
   const [pinnedReasons, setPinnedReasons] = useState<Set<string>>(() => new Set());
@@ -282,6 +283,47 @@ export function TopChromeProvider({ children }: { children: ReactNode }) {
     pointerInChrome,
     forceVisible,
   });
+
+  /**
+   * Clicking theme / Sign in leaves focus on chrome; CSS transform can also move
+   * the bar out from under the cursor without firing mouseleave (common after a
+   * theme toggle into light mode). Reconcile pointer + blur non-critical focus
+   * once the user scrolls into the workspace so tuck-away can run.
+   */
+  useEffect(() => {
+    if (!autoHideEnabled || nearTop) return;
+
+    const root = chromeRef.current;
+    const { x, y } = lastPointerRef.current;
+    const under =
+      x >= 0 && y >= 0 ? document.elementFromPoint(x, y) : null;
+    const stillOverChrome = Boolean(root && under && root.contains(under));
+    const stillOverZone = Boolean(
+      under instanceof Element &&
+        under.closest('[data-testid="top-chrome-activation-zone"]')
+    );
+    if (!stillOverChrome) setPointerInChrome(false);
+    if (!stillOverZone) setPointerInZone(false);
+
+    const active = document.activeElement;
+    if (!(root && active instanceof HTMLElement && root.contains(active))) return;
+    if (
+      active.matches(
+        'input, textarea, select, [aria-expanded="true"], [role="listbox"], [role="menu"], [role="combobox"]'
+      )
+    ) {
+      return;
+    }
+    active.blur();
+  }, [autoHideEnabled, nearTop]);
+
+  useEffect(() => {
+    function onPointerMove(e: PointerEvent) {
+      lastPointerRef.current = { x: e.clientX, y: e.clientY };
+    }
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onPointerMove);
+  }, []);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
