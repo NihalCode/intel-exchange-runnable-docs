@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 
+import { useOptionalTopChrome } from "@/components/navigation/TopChromeProvider";
+
 function subscribeTheme(onStoreChange: () => void) {
   const observer = new MutationObserver(onStoreChange);
   observer.observe(document.documentElement, {
@@ -26,6 +28,7 @@ function getServerDarkSnapshot() {
 /** Unified light/dark theme toggle for AppFrame + AdminFrame. */
 export function ThemeToggle({ className = "" }: { className?: string }) {
   const dark = useSyncExternalStore(subscribeTheme, getDarkSnapshot, getServerDarkSnapshot);
+  const topChrome = useOptionalTopChrome();
 
   function toggle() {
     const next = !dark;
@@ -41,6 +44,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
     <button
       type="button"
       onClick={toggle}
+      onFocus={() => topChrome?.pin("theme-menu")}
+      onBlur={() => topChrome?.unpin("theme-menu")}
       aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}
       data-testid="theme-toggle"
       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] ${className}`}

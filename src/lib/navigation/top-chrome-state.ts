@@ -5,7 +5,8 @@
 
 export const TOP_CHROME_SCROLL_THRESHOLD_PX = 24;
 export const TOP_CHROME_HIDE_DELAY_MS = 750;
-export const TOP_CHROME_ACTIVATION_ZONE_PX = 12;
+/** Slightly taller than 12px so the top-edge hover target is easy to hit. */
+export const TOP_CHROME_ACTIVATION_ZONE_PX = 16;
 
 export type TopChromePinReason =
   | "scroll-top"

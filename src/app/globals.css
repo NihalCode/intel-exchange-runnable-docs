@@ -769,6 +769,12 @@ body {
   );
   opacity: 0.55;
   pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+/* Stronger cue while chrome is tucked away so the top-edge hover target is discoverable */
+.cx-top-activation-zone[data-chrome-visible="false"]::after {
+  opacity: 0.9;
 }
 
 /* Sit under the revealed chrome so pointer-events flips do not fire spurious leave */

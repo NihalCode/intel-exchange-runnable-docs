@@ -108,7 +108,14 @@ function subscribeViewport(onStoreChange: () => void) {
 }
 
 function subscribeScroll(onStoreChange: () => void) {
-  const onScroll = () => onStoreChange();
+  let raf = 0;
+  const onScroll = () => {
+    if (raf) return;
+    raf = window.requestAnimationFrame(() => {
+      raf = 0;
+      onStoreChange();
+    });
+  };
   window.addEventListener("scroll", onScroll, { passive: true, capture: true });
   window.addEventListener("resize", onScroll);
 
@@ -132,6 +139,7 @@ function subscribeScroll(onStoreChange: () => void) {
   mo?.observe(document.documentElement, { childList: true, subtree: true });
 
   return () => {
+    if (raf) window.cancelAnimationFrame(raf);
     window.removeEventListener("scroll", onScroll, true);
     window.removeEventListener("resize", onScroll);
     mo?.disconnect();
@@ -291,15 +299,19 @@ export function TopChromeProvider({ children }: { children: ReactNode }) {
     return () => cancelHide();
   }, [cancelHide]);
 
+  /**
+   * Enter: cancel pending hide and mark pointer.
+   * Leave: only schedule delayed clear — immediate clear made the chrome snap
+   * shut and broke zone↔chrome handoff / "premium" hover dwell.
+   */
   const setPointerInZoneBound = useCallback(
     (inside: boolean) => {
       if (inside) {
         cancelHide();
         setPointerInZone(true);
-      } else {
-        setPointerInZone(false);
-        scheduleHide();
+        return;
       }
+      scheduleHide();
     },
     [cancelHide, scheduleHide]
   );
@@ -309,10 +321,9 @@ export function TopChromeProvider({ children }: { children: ReactNode }) {
       if (inside) {
         cancelHide();
         setPointerInChrome(true);
-      } else {
-        setPointerInChrome(false);
-        scheduleHide();
+        return;
       }
+      scheduleHide();
     },
     [cancelHide, scheduleHide]
   );

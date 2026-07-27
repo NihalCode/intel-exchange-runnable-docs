@@ -61,13 +61,15 @@ test.describe("premium auto-hide top navigation — production hard checks", () 
     await zone.hover({ force: true, position: { x: 80, y: 3 } });
     await expectChromeVisible(page, true);
 
-    // Move into chrome (not away) — must stay visible
+    // Move into chrome (not away) — must stay visible through hide-delay window
     await page.getByTestId("top-chrome").hover({ position: { x: 200, y: 20 } });
     await page.waitForTimeout(850);
     await expectChromeVisible(page, true);
 
-    // Leave chrome entirely — hide after delay
+    // Leave chrome entirely — hide only after the dwell delay (~750ms)
     await page.mouse.move(400, 500);
+    await page.waitForTimeout(400);
+    await expectChromeVisible(page, true);
     await expectChromeVisible(page, false);
 
     await pressSearchShortcut(page);

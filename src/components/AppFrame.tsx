@@ -540,6 +540,7 @@ function AppFrameInner({
             id="main-content"
             tabIndex={-1}
             data-layout="cx-main"
+            data-top-chrome-scroll
             className={`min-w-0 flex-1 ${
               isHome ? "" : isAskAi ? "px-3 py-3 sm:px-5 sm:py-4" : "px-4 py-6 sm:px-8"
             }`}

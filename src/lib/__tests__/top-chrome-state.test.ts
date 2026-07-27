@@ -142,7 +142,7 @@ describe("top-chrome-state", () => {
     expect(isDesktopAutoHideViewport({ width: 1280, hoverFine: false })).toBe(false);
   });
 
-  it("documents hide delay constant", () => {
+  it("documents hide delay and activation zone constants", () => {
     expect(TOP_CHROME_HIDE_DELAY_MS).toBeGreaterThanOrEqual(600);
     expect(TOP_CHROME_HIDE_DELAY_MS).toBeLessThanOrEqual(900);
   });
