@@ -81,7 +81,10 @@ export function DataTable<T>({
   if (loading) return <LoadingSkeleton rows={6} />;
   if (error) {
     return (
-      <p className="rounded-md border border-red-200 px-4 py-6 text-sm text-red-800 dark:border-red-900 dark:text-red-300" role="alert">
+      <p
+        className="rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-danger)_40%,transparent)] bg-[color-mix(in_srgb,var(--atlas-danger)_10%,transparent)] px-4 py-6 text-sm text-[var(--atlas-danger)]"
+        role="alert"
+      >
         {error}
       </p>
     );
@@ -90,10 +93,10 @@ export function DataTable<T>({
   return (
     <div>
       {searchable ? (
-        <div className="mb-3">
+        <div className="mb-2.5">
           <input
             type="search"
-            className={`${inputClass} max-w-xs`}
+            className={`${inputClass} max-w-xs rounded-[var(--radius-sm)]`}
             placeholder={searchPlaceholder}
             value={query}
             onChange={(e) => {
@@ -109,17 +112,21 @@ export function DataTable<T>({
         <EmptyState title={emptyTitle} description={emptyDescription} />
       ) : (
         <>
-          <div className="sf-table-wrap overflow-x-auto">
+          <div className="sf-table-wrap overflow-x-auto rounded-[var(--radius-sm)] border border-[var(--atlas-line)]">
             <table className={tableClass} data-testid="signal-table">
               <caption className="sr-only">{caption}</caption>
               <thead>
                 <tr>
                   {columns.map((col) => (
-                    <th key={col.key} scope="col" className="p-2.5 text-left">
+                    <th
+                      key={col.key}
+                      scope="col"
+                      className="atlas-micro-label border-b border-[var(--atlas-line)] bg-[var(--surface-sunken)] p-2 text-left !normal-case tracking-[0.08em]"
+                    >
                       {col.sortable ? (
                         <button
                           type="button"
-                          className="inline-flex items-center gap-1 hover:text-[var(--text-link)]"
+                          className="inline-flex items-center gap-1 hover:text-[var(--atlas-signal)]"
                           onClick={() => toggleSort(col.key)}
                         >
                           {col.header}
@@ -136,10 +143,10 @@ export function DataTable<T>({
                 {pageRows.map((row) => (
                   <tr
                     key={rowKey(row)}
-                    className="border-b border-[var(--border-subtle)]"
+                    className="border-b border-[var(--atlas-line)]"
                   >
                     {columns.map((col) => (
-                      <td key={col.key} className="p-2">
+                      <td key={col.key} className="p-2 text-[13px]">
                         {col.render(row)}
                       </td>
                     ))}
@@ -150,25 +157,25 @@ export function DataTable<T>({
           </div>
 
           {totalPages > 1 ? (
-            <div className="mt-3 flex items-center justify-between text-sm">
-              <span className="text-[var(--text-muted)]">
+            <div className="mt-2.5 flex items-center justify-between text-xs">
+              <span className="atlas-micro-label !inline text-[var(--atlas-text-muted)]">
                 {filtered.length} record{filtered.length === 1 ? "" : "s"}
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  className="rounded-[var(--radius-md)] border border-[var(--border-default)] px-2 py-1 disabled:opacity-50"
+                  className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] px-2 py-1 disabled:opacity-50"
                   disabled={page === 0}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   Previous
                 </button>
-                <span className="tabular-nums text-[var(--text-secondary)]">
+                <span className="font-mono tabular-nums text-[var(--atlas-text-secondary)]">
                   {page + 1} / {totalPages}
                 </span>
                 <button
                   type="button"
-                  className="rounded-[var(--radius-md)] border border-[var(--border-default)] px-2 py-1 disabled:opacity-50"
+                  className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] px-2 py-1 disabled:opacity-50"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
                 >

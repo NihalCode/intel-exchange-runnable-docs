@@ -48,6 +48,7 @@ export {
   SignalDialog,
   SignalDrawer,
   SignalSkeleton,
+  SignalAcquireLoader,
   SignalEmptyState,
   SignalErrorState,
   SignalPermissionState,

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { LiveStatus } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
@@ -135,15 +136,22 @@ export function UnansweredQueriesPage({
 
   return (
     <div
-      className="mx-auto max-w-[var(--workbench-max)] space-y-6"
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
       data-layout="cx-unanswered-workbench"
     >
       <PageHeader
         eyebrow={organization.name}
         title="Unanswered queries"
         description="Triage Ask AI gaps using Phase 10 review statuses (documentation, retrieval, product, connector, access)."
+        actions={
+          <LiveStatus
+            label={summaryStale ? "Stale" : realtimeEnabled ? "Live queue" : "Static"}
+            tone={summaryStale ? "amber" : "signal"}
+          />
+        }
       />
-      <div className="flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+
+      <div className="flex flex-wrap items-center gap-3 font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--atlas-text-muted)]">
         <span>
           List refreshed {new Date(refreshedAt).toLocaleString()} · Exact query text requires
           sensitive permission
@@ -151,7 +159,7 @@ export function UnansweredQueriesPage({
         {weeklyAnalyticsEnabled ? (
           <Link
             href="/admin/documentation-agent/unanswered/weekly"
-            className="underline-offset-2 hover:underline"
+            className="text-[var(--atlas-signal)] underline-offset-2 hover:underline"
           >
             Weekly analytics
           </Link>
@@ -159,24 +167,33 @@ export function UnansweredQueriesPage({
       </div>
 
       {realtimeEnabled && !summary ? (
-        <div className="grid gap-2 sm:grid-cols-4" aria-busy="true" aria-label="Loading summary">
-          <SignalSkeleton className="h-16 w-full" />
-          <SignalSkeleton className="h-16 w-full" />
-          <SignalSkeleton className="h-16 w-full" />
-          <SignalSkeleton className="h-16 w-full" />
+        <div
+          className="flex gap-2 overflow-x-auto"
+          aria-busy="true"
+          aria-label="Loading summary"
+        >
+          <SignalSkeleton className="h-14 w-28 shrink-0 rounded-[var(--radius-sm)]" />
+          <SignalSkeleton className="h-14 w-28 shrink-0 rounded-[var(--radius-sm)]" />
+          <SignalSkeleton className="h-14 w-28 shrink-0 rounded-[var(--radius-sm)]" />
+          <SignalSkeleton className="h-14 w-28 shrink-0 rounded-[var(--radius-sm)]" />
         </div>
       ) : null}
 
+      {/* Queue ticker — distinct from overview/analytics metric grids */}
       {realtimeEnabled && summary ? (
-        <div className="grid gap-2 sm:grid-cols-4">
-          <SummaryCard label="Open" value={summary.totalOpen} />
-          <SummaryCard label="New" value={summary.totalNew} />
-          <SummaryCard
+        <div
+          className="flex flex-wrap gap-px overflow-hidden rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--atlas-line)]"
+          role="group"
+          aria-label="Queue summary"
+        >
+          <QueueChip label="Open" value={summary.totalOpen} />
+          <QueueChip label="New" value={summary.totalNew} accent />
+          <QueueChip
             label="Outcomes"
             value={Object.keys(summary.byOutcome).length}
             hint="distinct"
           />
-          <SummaryCard
+          <QueueChip
             label="Poll"
             value={summaryStale ? "stale" : "live"}
             hint={new Date(summaryAt).toLocaleTimeString()}
@@ -185,49 +202,51 @@ export function UnansweredQueriesPage({
       ) : null}
 
       {!canManage ? (
-        <p className="text-xs text-zinc-500">Read-only view.</p>
+        <p className="atlas-micro-label !inline text-[var(--atlas-text-muted)]">Read-only view.</p>
       ) : null}
+
       {rows.length === 0 ? (
         <SignalEmptyState
           title="No unanswered query reviews yet"
           description="When Ask AI cannot verify a solution, reviews appear here for triage."
         />
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-0 divide-y divide-[var(--atlas-line)] rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)]">
           {rows.map((row) => {
             const reveal = revealById[row.id];
             return (
-              <li
-                key={row.id}
-                className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm shadow-[var(--shadow-resting)]"
-              >
+              <li key={row.id} className="px-3 py-3 text-sm">
                 <div className="flex flex-wrap items-center gap-2">
                   <StatusBadge status={row.status} />
-                  <span className="font-mono text-xs">{row.outcome ?? "unknown"}</span>
-                  <span className="text-xs text-zinc-500">{row.productId ?? "—"}</span>
-                  <span className="text-xs text-zinc-500">{row.hostname ?? "—"}</span>
-                  <span className="text-xs text-zinc-400">
+                  <span className="font-mono text-[11px] text-[var(--atlas-signal)]">
+                    {row.outcome ?? "unknown"}
+                  </span>
+                  <span className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
+                    {row.productId ?? "—"}
+                  </span>
+                  <span className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
+                    {row.hostname ?? "—"}
+                  </span>
+                  <span className="ml-auto font-mono text-[10px] text-[var(--atlas-text-muted)]">
                     {new Date(row.updatedAt).toLocaleString()}
                   </span>
                 </div>
                 {row.sanitizedTopic ? (
-                  <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400">
+                  <p className="mt-1.5 text-xs text-[var(--atlas-text-secondary)]">
                     Topic: {row.sanitizedTopic}
                   </p>
                 ) : null}
                 {reveal?.kind === "revealed" ? (
                   <div
-                    className="mt-2 rounded border border-amber-300 bg-amber-50 p-2 dark:border-amber-800 dark:bg-amber-950/40"
+                    className="mt-2 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-amber)_45%,transparent)] bg-[color-mix(in_srgb,var(--atlas-amber)_12%,transparent)] p-2"
                     data-testid="revealed-exact-query"
                   >
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:text-amber-200">
-                      Exact query
-                    </p>
-                    <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-words font-mono text-xs text-zinc-900 dark:text-zinc-100">
+                    <p className="atlas-micro-label text-[var(--atlas-amber)]">Exact query</p>
+                    <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-words font-mono text-xs text-[var(--atlas-text)]">
                       {reveal.queryText}
                     </pre>
                     {reveal.clientIp ? (
-                      <p className="mt-1 font-mono text-xs text-zinc-500">
+                      <p className="mt-1 font-mono text-xs text-[var(--atlas-text-muted)]">
                         IP: {reveal.clientIp}
                       </p>
                     ) : null}
@@ -235,7 +254,7 @@ export function UnansweredQueriesPage({
                 ) : null}
                 {reveal?.kind === "unavailable" ? (
                   <p
-                    className="mt-2 rounded border border-rose-300 bg-rose-50 px-2 py-1.5 text-xs text-rose-800 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200"
+                    className="mt-2 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-danger)_40%,transparent)] bg-[color-mix(in_srgb,var(--atlas-danger)_10%,transparent)] px-2 py-1.5 text-xs text-[var(--atlas-danger)]"
                     data-testid="reveal-exact-query-error"
                     role="alert"
                   >
@@ -286,22 +305,30 @@ export function UnansweredQueriesPage({
   );
 }
 
-function SummaryCard({
+function QueueChip({
   label,
   value,
   hint,
+  accent,
 }: {
   label: string;
   value: number | string;
   hint?: string;
+  accent?: boolean;
 }) {
   return (
-    <div className="sf-signal-metric">
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-        {label}
+    <div
+      className={`min-w-[6.5rem] flex-1 bg-[var(--atlas-elevated)] px-3 py-2.5 ${
+        accent ? "shadow-[inset_0_-2px_0_var(--atlas-signal)]" : ""
+      }`}
+    >
+      <p className="atlas-micro-label">{label}</p>
+      <p className="mt-0.5 font-mono text-lg font-medium tabular-nums text-[var(--atlas-text)]">
+        {value}
       </p>
-      <p className="mt-1 text-lg font-semibold tabular-nums text-[var(--text-heading)]">{value}</p>
-      {hint ? <p className="text-[10px] text-[var(--text-muted)]">{hint}</p> : null}
+      {hint ? (
+        <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">{hint}</p>
+      ) : null}
     </div>
   );
 }

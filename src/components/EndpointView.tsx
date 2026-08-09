@@ -10,22 +10,8 @@ import { CodeBlock } from "./CodeBlock";
 import { Markdown } from "./Markdown";
 import { RequestPlaygroundPanel, RequestPlaygroundProvider } from "./RequestPlayground";
 
-const METHOD_COLORS: Record<string, string> = {
-  GET: "text-emerald-700 dark:text-emerald-300",
-  POST: "text-sky-700 dark:text-sky-300",
-  PUT: "text-amber-700 dark:text-amber-300",
-  PATCH: "text-violet-700 dark:text-violet-300",
-  DELETE: "text-red-700 dark:text-red-300",
-};
-
 function MethodBadge({ method }: { method: string }) {
-  return (
-    <span
-      className={`sf-method-badge ${METHOD_COLORS[method] || "text-[var(--text-muted)]"}`}
-    >
-      {method}
-    </span>
-  );
+  return <span className="atlas-method">{method}</span>;
 }
 
 function ParamTable({ title, fields }: { title: string; fields?: ParamField[] }) {
@@ -35,14 +21,22 @@ function ParamTable({ title, fields }: { title: string; fields?: ParamField[] })
       <h3 className="mb-2 text-sm font-semibold text-[var(--text-heading)]">
         {title}
       </h3>
-      <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)]">
+      <div className="overflow-x-auto rounded-[var(--radius-sm)] border border-[var(--border-default)]">
         <table className="w-full text-left text-sm">
-          <thead className="bg-[var(--surface-sunken)] text-xs uppercase tracking-wide text-[var(--text-muted)]">
+          <thead className="bg-[var(--surface-sunken)]">
             <tr>
-              <th className="px-3 py-2 font-medium">Name</th>
-              <th className="px-3 py-2 font-medium">Type</th>
-              <th className="px-3 py-2 font-medium">Required</th>
-              <th className="px-3 py-2 font-medium">Description</th>
+              <th className="px-3 py-2">
+                <span className="atlas-micro-label">Name</span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="atlas-micro-label">Type</span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="atlas-micro-label">Required</span>
+              </th>
+              <th className="px-3 py-2">
+                <span className="atlas-micro-label">Description</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -57,9 +51,7 @@ function ParamTable({ title, fields }: { title: string; fields?: ParamField[] })
                 </td>
                 <td className="px-3 py-2 text-xs">
                   {f.isRequired ? (
-                    <span className="font-medium text-red-600 dark:text-red-400">
-                      required
-                    </span>
+                    <span className="font-medium text-[var(--danger)]">required</span>
                   ) : (
                     <span className="text-[var(--text-muted)]">optional</span>
                   )}
@@ -96,7 +88,7 @@ export function EndpointView({
 
   return (
     <article className="mx-auto max-w-[var(--content-max)]" data-layout="sf-endpoint-explorer">
-      <div className="sf-endpoint-identity">
+      <div className="atlas-endpoint-meta">
         <ProductBadge productId={productId} />
         <MethodBadge method={page.method} />
         <h1 className="text-2xl font-bold tracking-tight text-[var(--text-heading)]">
@@ -114,10 +106,10 @@ export function EndpointView({
         ) : null}
       </div>
 
-      <div className="mb-5 flex items-center gap-2 overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-code)] px-3 py-2.5 font-mono text-sm text-[#e5e7eb] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+      <div className="atlas-code-deck mb-5 flex items-center gap-2 overflow-x-auto px-3 py-2.5 font-mono text-sm">
         <MethodBadge method={page.method} />
-        <span className="whitespace-nowrap text-white/55">{displayBase}</span>
-        <span className="whitespace-nowrap font-semibold text-white">
+        <span className="whitespace-nowrap opacity-55">{displayBase}</span>
+        <span className="whitespace-nowrap font-semibold">
           {page.path.startsWith("/") ? page.path : `/${page.path}`}
         </span>
       </div>
@@ -133,27 +125,34 @@ export function EndpointView({
       <ParamTable title="Headers" fields={page.request?.header} />
       <ParamTable title="Body Parameters" fields={page.request?.body} />
 
-      <section className="mt-8">
-        <h2 className="mb-1 text-lg font-semibold text-[var(--text-heading)]">Run it</h2>
-        <p className="mb-3 text-sm text-[var(--text-secondary)]">
-          Use the <strong>Request parameters</strong> panel to enter path IDs, query values, JSON
-          body, and credentials. Then run any snippet below — all languages use the same values.
-          Base URL: <code className="font-mono text-xs">{displayBase}</code> (change in API Settings).
-        </p>
-        <RequestPlaygroundProvider
-          request={runnableRequest}
-          storageId={page.slug}
-          meta={{
-            pathFields: page.request?.path,
-            queryFields: page.request?.query,
-            bodyFields: page.request?.body,
-          }}
-        >
-          <RequestPlaygroundPanel />
-          {snippets.map((snippet, i) => (
-            <CodeBlock key={`${snippet.label}-${i}`} snippet={snippet} />
-          ))}
-        </RequestPlaygroundProvider>
+      <section className="atlas-panel mt-8">
+        <div className="atlas-panel__header">
+          <div>
+            <h2 className="text-lg font-semibold text-[var(--text-heading)]">Run it</h2>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">
+              Use the <strong>Request parameters</strong> panel to enter path IDs, query values, JSON
+              body, and credentials. Then run any snippet below — all languages use the same values.
+              Base URL: <code className="font-mono text-xs">{displayBase}</code> (change in API
+              Settings).
+            </p>
+          </div>
+        </div>
+        <div className="space-y-3 p-3">
+          <RequestPlaygroundProvider
+            request={runnableRequest}
+            storageId={page.slug}
+            meta={{
+              pathFields: page.request?.path,
+              queryFields: page.request?.query,
+              bodyFields: page.request?.body,
+            }}
+          >
+            <RequestPlaygroundPanel />
+            {snippets.map((snippet, i) => (
+              <CodeBlock key={`${snippet.label}-${i}`} snippet={snippet} />
+            ))}
+          </RequestPlaygroundProvider>
+        </div>
       </section>
     </article>
   );

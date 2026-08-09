@@ -15,7 +15,7 @@ const APP_LINKS = [
 
 function ArrowLeftIcon() {
   return (
-    <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+    <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
@@ -36,25 +36,25 @@ export function AdminAppExitNav({
   if (variant === "sidebar") {
     return (
       <div
-        className={`space-y-2 border-b px-3 py-3 ${
-          inverse ? "border-white/10" : "border-[var(--border-subtle)]"
+        className={`space-y-1.5 border-b px-2.5 py-2.5 ${
+          inverse ? "border-white/10" : "border-[var(--atlas-line)]"
         }`}
         data-tone={tone}
       >
         <Link
           href="/"
-          className={`flex items-center gap-2 rounded-[var(--radius-md)] px-2 py-2 text-sm font-medium ${
+          className={`flex items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-[13px] font-medium ${
             inverse
               ? "text-white hover:bg-white/10"
-              : "text-[var(--text-link)] hover:bg-[var(--surface-muted)]"
+              : "text-[var(--atlas-signal)] hover:bg-[var(--surface-muted)]"
           }`}
         >
           <ArrowLeftIcon />
           Back to app
         </Link>
         <p
-          className={`px-2 text-[10px] font-semibold uppercase tracking-wide ${
-            inverse ? "text-white/65" : "text-[var(--text-muted)]"
+          className={`atlas-micro-label px-2 ${
+            inverse ? "text-white/65" : "text-[var(--atlas-text-muted)]"
           }`}
         >
           Workspace
@@ -67,14 +67,14 @@ export function AdminAppExitNav({
                 <Link
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`block rounded-[var(--radius-md)] px-2 py-1.5 text-sm ${
+                  className={`block rounded-[var(--radius-sm)] px-2 py-1.5 text-[13px] ${
                     inverse
                       ? active
                         ? "bg-white/15 font-medium text-white"
                         : "text-white/85 hover:bg-white/10 hover:text-white"
                       : active
-                        ? "bg-[var(--surface-muted)] font-medium text-[var(--text-heading)]"
-                        : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
+                        ? "bg-[var(--surface-muted)] font-medium text-[var(--atlas-text)]"
+                        : "text-[var(--atlas-text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--atlas-text)]"
                   }`}
                 >
                   {link.label}
@@ -88,16 +88,16 @@ export function AdminAppExitNav({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1">
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-muted)] px-2.5 py-1.5 text-xs font-semibold text-[var(--text-link)] hover:bg-[var(--surface-raised)]"
+        className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--surface-muted)] px-2 py-1 text-[11px] font-semibold text-[var(--atlas-signal)] hover:border-[var(--atlas-line-strong)]"
       >
         <ArrowLeftIcon />
         Back to app
       </Link>
       <span
-        className="hidden h-4 w-px bg-[var(--border-default)] sm:inline"
+        className="hidden h-3.5 w-px bg-[var(--atlas-line)] sm:inline"
         aria-hidden="true"
       />
       <nav aria-label="Workspace" className="hidden items-center gap-0.5 sm:flex">
@@ -108,10 +108,10 @@ export function AdminAppExitNav({
               key={link.href}
               href={link.href}
               aria-current={active ? "page" : undefined}
-              className={`rounded-[var(--radius-md)] px-2 py-1 text-xs font-medium ${
+              className={`rounded-[var(--radius-sm)] px-1.5 py-1 text-[11px] font-medium ${
                 active
-                  ? "bg-[var(--surface-muted)] text-[var(--text-heading)]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
+                  ? "bg-[var(--surface-muted)] text-[var(--atlas-text)]"
+                  : "text-[var(--atlas-text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--atlas-text)]"
               }`}
             >
               {link.label}

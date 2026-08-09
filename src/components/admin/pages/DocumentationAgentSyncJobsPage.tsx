@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useControlPlaneMutation } from "@/components/admin/hooks/useControlPlaneMutation";
 import { PageHeader, StatusMessage } from "@/components/admin/ui/PageHeader";
 import { DataTable } from "@/components/admin/ui/DataTable";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
 import { PermissionGate } from "@/components/admin/ui/PermissionGate";
-import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
+import { buttonPrimaryClass, buttonSecondaryClass } from "@/components/admin/ui/tokens";
 import type { BackgroundJobRecord } from "@/lib/enterprise/repository";
 import type { EnterprisePermission } from "@/lib/enterprise/types";
 
@@ -84,15 +85,19 @@ export function DocumentationAgentSyncJobsPage({ jobs, capabilities }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-layout="sf-jobs-timeline"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="Sync Jobs"
-        description="Monitor queued background work and manually process due scheduled changes."
+        description="Background work timeline — process due jobs and inspect queue state."
         actions={
           canManage ? (
             <PermissionGate permission="jobs.manage" hasPermission={hasPermission}>
               <div className="flex gap-2">
+                <LiveStatus label="Queue" tone="signal" />
                 <button
                   type="button"
                   className={buttonPrimaryClass}
@@ -103,7 +108,7 @@ export function DocumentationAgentSyncJobsPage({ jobs, capabilities }: Props) {
                 </button>
                 <button
                   type="button"
-                  className={buttonPrimaryClass}
+                  className={buttonSecondaryClass}
                   disabled={busy}
                   onClick={() => void enqueueNoopJob()}
                 >
@@ -111,43 +116,67 @@ export function DocumentationAgentSyncJobsPage({ jobs, capabilities }: Props) {
                 </button>
               </div>
             </PermissionGate>
-          ) : undefined
+          ) : (
+            <LiveStatus label="Read-only" tone="muted" />
+          )
         }
       />
       <StatusMessage message={status} />
-      <DataTable
-        caption="Background sync jobs"
-        data={items}
-        rowKey={(j) => j.id}
-        columns={[
-          {
-            key: "id",
-            header: "Job",
-            render: (j) => <span className="font-mono text-xs">{j.id.slice(0, 12)}</span>,
-          },
-          { key: "type", header: "Type", sortable: true, sortValue: (j) => j.jobType, render: (j) => j.jobType },
-          {
-            key: "status",
-            header: "Status",
-            render: (j) => <StatusBadge status={j.status} />,
-          },
-          {
-            key: "runAfter",
-            header: "Run after",
-            sortable: true,
-            sortValue: (j) => j.runAfter,
-            render: (j) => (
-              <time dateTime={j.runAfter}>{new Date(j.runAfter).toLocaleString()}</time>
-            ),
-          },
-          {
-            key: "attempts",
-            header: "Attempts",
-            render: (j) => `${j.attempts}/${j.maxAttempts}`,
-          },
-        ]}
-        emptyTitle="No background jobs"
-      />
+      <section className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-3">
+        <p className="atlas-micro-label text-[var(--atlas-signal)] mb-3">Execution timeline</p>
+        <DataTable
+          caption="Background sync jobs"
+          data={items}
+          rowKey={(j) => j.id}
+          columns={[
+            {
+              key: "id",
+              header: "Job",
+              render: (j) => (
+                <span className="font-mono text-xs text-[var(--atlas-text-secondary)]">
+                  {j.id.slice(0, 12)}
+                </span>
+              ),
+            },
+            {
+              key: "type",
+              header: "Type",
+              sortable: true,
+              sortValue: (j) => j.jobType,
+              render: (j) => j.jobType,
+            },
+            {
+              key: "status",
+              header: "Status",
+              render: (j) => <StatusBadge status={j.status} />,
+            },
+            {
+              key: "runAfter",
+              header: "Run after",
+              sortable: true,
+              sortValue: (j) => j.runAfter,
+              render: (j) => (
+                <time
+                  className="font-mono text-[10px] text-[var(--atlas-text-muted)]"
+                  dateTime={j.runAfter}
+                >
+                  {new Date(j.runAfter).toLocaleString()}
+                </time>
+              ),
+            },
+            {
+              key: "attempts",
+              header: "Attempts",
+              render: (j) => (
+                <span className="font-mono text-xs">
+                  {j.attempts}/{j.maxAttempts}
+                </span>
+              ),
+            },
+          ]}
+          emptyTitle="No background jobs"
+        />
+      </section>
     </div>
   );
 }

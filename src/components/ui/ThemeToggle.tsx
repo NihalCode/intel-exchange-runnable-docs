@@ -20,7 +20,8 @@ function getDarkSnapshot() {
 }
 
 function getServerDarkSnapshot() {
-  return false;
+  // Atlas is dark-first (matches public/theme-init.js default).
+  return true;
 }
 
 /** Unified light/dark theme toggle for AppFrame + AdminFrame. */

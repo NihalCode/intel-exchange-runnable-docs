@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
+import { StatusBadge } from "@/components/admin/ui/StatusBadge";
+import { buttonPrimaryClass, buttonSecondaryClass } from "@/components/admin/ui/tokens";
 import type { BackgroundJobRecord } from "@/lib/enterprise/repository";
 import type { EnterprisePermission } from "@/lib/enterprise/types";
-
-const buttonClass =
-  "rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white hover:bg-sky-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
 interface Props {
   jobs: BackgroundJobRecord[];
@@ -94,44 +94,54 @@ export function JobsDashboard({ jobs, capabilities }: Props) {
   }
 
   return (
-    <section aria-labelledby="jobs-heading">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="jobs-heading" className="text-xl font-semibold">
-          Background jobs
-        </h2>
-        {canManage ? (
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className={buttonClass}
-              disabled={busy}
-              onClick={() => void processJobs()}
-            >
-              Process due jobs
-            </button>
-            <button
-              type="button"
-              className={buttonClass}
-              disabled={busy}
-              onClick={() => void enqueueNoopJob()}
-            >
-              Enqueue test job
-            </button>
-          </div>
-        ) : null}
+    <section
+      aria-labelledby="jobs-heading"
+      className="space-y-4"
+      data-layout="sf-jobs-timeline"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--atlas-line)] pb-3">
+        <div>
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">Queue</p>
+          <h2 id="jobs-heading" className="mt-1 text-lg font-semibold text-[var(--atlas-text)]">
+            Background jobs
+          </h2>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <LiveStatus label={busy ? "Busy" : "Idle"} tone={busy ? "amber" : "signal"} />
+          {canManage ? (
+            <>
+              <button
+                type="button"
+                className={buttonPrimaryClass}
+                disabled={busy}
+                onClick={() => void processJobs()}
+              >
+                Process due jobs
+              </button>
+              <button
+                type="button"
+                className={buttonSecondaryClass}
+                disabled={busy}
+                onClick={() => void enqueueNoopJob()}
+              >
+                Enqueue test job
+              </button>
+            </>
+          ) : null}
+        </div>
       </div>
       <p
-        className="mt-3 rounded-md border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800"
+        className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--atlas-text-secondary)]"
         role="status"
         aria-live="polite"
       >
         Status: {status}
       </p>
-      <div className="mt-4 overflow-x-auto">
-        <table className="w-full min-w-[760px] text-left text-sm">
+      <div className="sf-table-wrap overflow-x-auto rounded-[var(--radius-sm)]">
+        <table className="w-full min-w-[760px] text-left text-sm text-[var(--atlas-text)]">
           <caption className="sr-only">Documentation Agent background jobs</caption>
           <thead>
-            <tr className="border-b border-zinc-300 dark:border-zinc-700">
+            <tr>
               <th scope="col" className="p-2">Job</th>
               <th scope="col" className="p-2">Type</th>
               <th scope="col" className="p-2">Status</th>
@@ -141,16 +151,23 @@ export function JobsDashboard({ jobs, capabilities }: Props) {
           </thead>
           <tbody>
             {items.map((job) => (
-              <tr key={job.id} className="border-b border-zinc-200 dark:border-zinc-800">
-                <td className="p-2 font-mono text-xs">{job.id.slice(0, 12)}</td>
+              <tr key={job.id} className="border-t border-[var(--atlas-line)]">
+                <td className="p-2 font-mono text-xs text-[var(--atlas-text-secondary)]">
+                  {job.id.slice(0, 12)}
+                </td>
                 <td className="p-2">{job.jobType}</td>
-                <td className="p-2 capitalize">{job.status}</td>
                 <td className="p-2">
-                  <time dateTime={job.runAfter}>
+                  <StatusBadge status={job.status} />
+                </td>
+                <td className="p-2">
+                  <time
+                    className="font-mono text-[10px] text-[var(--atlas-text-muted)]"
+                    dateTime={job.runAfter}
+                  >
                     {new Date(job.runAfter).toLocaleString()}
                   </time>
                 </td>
-                <td className="p-2">
+                <td className="p-2 font-mono text-xs">
                   {job.attempts}/{job.maxAttempts}
                 </td>
               </tr>
@@ -158,7 +175,7 @@ export function JobsDashboard({ jobs, capabilities }: Props) {
           </tbody>
         </table>
         {!items.length ? (
-          <p className="mt-3 text-sm text-zinc-500">No background jobs yet.</p>
+          <p className="p-3 text-sm text-[var(--atlas-text-muted)]">No background jobs yet.</p>
         ) : null}
       </div>
     </section>

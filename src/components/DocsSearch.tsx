@@ -8,6 +8,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type CSSProperties,
   type KeyboardEvent,
 } from "react";
@@ -63,14 +64,14 @@ export function DocsSearch({
   const [error, setError] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const abortRef = useRef<AbortController | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const registerFocusSearch = topChrome?.registerFocusSearch;
   useEffect(() => {

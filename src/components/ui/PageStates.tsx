@@ -1,7 +1,8 @@
 "use client";
 
-import { buttonPrimaryClass, cardClass } from "@/components/admin/ui/tokens";
+import { buttonPrimaryClass } from "@/components/admin/ui/tokens";
 import { EmptyState, ErrorState, LoadingSkeleton } from "@/components/admin/ui/EmptyState";
+import { SignalAcquireLoader } from "@/components/fabric/SignalStates";
 
 /** Consistent loading / empty / error / permission surfaces for docs + admin. */
 export function PermissionDeniedState({
@@ -12,18 +13,18 @@ export function PermissionDeniedState({
   description?: string;
 }) {
   return (
-    <div
-      className={`${cardClass} border-amber-300 bg-[var(--warning-soft)] dark:border-amber-900`}
-      role="alert"
-      data-testid="permission-denied"
-    >
-      <h3 className="font-semibold text-amber-950 dark:text-amber-100">{title}</h3>
-      <p className="mt-2 text-sm text-[var(--text-secondary)]">{description}</p>
+    <div className="atlas-error" role="alert" data-testid="permission-denied">
+      <p className="atlas-micro-label">Clearance</p>
+      <h3 className="atlas-error__title">{title}</h3>
+      <p className="atlas-error__desc">{description}</p>
     </div>
   );
 }
 
 export function PageLoadingState({ rows = 4 }: { rows?: number }) {
+  if (rows <= 1) {
+    return <SignalAcquireLoader />;
+  }
   return <LoadingSkeleton rows={rows} />;
 }
 

@@ -13,10 +13,10 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Cyware API Docs — Runnable Reference",
+  title: "Living Signal Atlas — Cyware Intelligence Platform",
   description:
-    "Runnable API documentation for Cyware CTIX, CSAP, Orchestrate, and CFTR. Every code snippet can be executed in the browser.",
-};
+    "The Living Signal Atlas: operational cyber intelligence documentation, Ask Intelligence, and runnable API consoles for CTIX, CSAP, Orchestrate, and CFTR.",
+}
 
 export default function RootLayout({
   children,

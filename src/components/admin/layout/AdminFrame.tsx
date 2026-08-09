@@ -7,7 +7,7 @@ import { ProductionBanner } from "@/components/admin/layout/ProductionBanner";
 export function AdminFrame({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="cx-admin-shell flex min-h-screen flex-col bg-[var(--background-page)]"
+      className="cx-admin-shell atlas-admin-shell flex min-h-screen flex-col bg-[var(--atlas-void)]"
       data-testid="admin-frame"
       data-layout="cx-admin-shell"
     >
@@ -22,7 +22,7 @@ export function AdminFrame({ children }: { children: React.ReactNode }) {
           <main
             id="admin-main-content"
             tabIndex={-1}
-            className="flex-1 px-4 py-5 sm:px-6"
+            className="atlas-admin-main flex-1 px-3 py-4 sm:px-5"
             data-layout="cx-admin-main"
           >
             {children}

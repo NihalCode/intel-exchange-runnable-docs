@@ -1,174 +1,161 @@
 import Link from "next/link";
-import { ProductBadge } from "@/components/ProductContext";
-import { DocsSearch } from "@/components/DocsSearch";
-import { CxPage, CxProductCard, CxSection } from "@/components/cx";
-import {
-  SignalTopologyArt,
-  VerificationNode,
-  WorkflowRibbon,
-} from "@/components/fabric/SignalField";
+import { TopologyField, ThreatBadge, TelemetryValue, LiveStatus } from "@/components/atlas";
 import { listProductManifests } from "@/lib/content";
 import { listProducts } from "@/lib/products/registry";
 import { productAccentClass } from "@/components/admin/ui/tokens";
 
+const TICKER = [
+  "CTIX · indicator correlation spike",
+  "CFTR · incident packet inbound",
+  "CSAP · collaboration thread verified",
+  "Orchestrate · playbook edge hot",
+  "Unknown signals · triage queue armed",
+  "Ask Intelligence · grounded retrieval ready",
+];
+
 export default async function Home() {
   const summaries = await listProductManifests();
   const products = listProducts();
+  const indexedPages = summaries.reduce((n, s) => n + (s.manifest?.count ?? 0), 0);
 
   return (
-    <div data-layout="cx-home-hub">
-      <section className="cx-hub-hero sf-atmosphere" data-layout="cx-hub-hero">
-        <div className="sf-grid-plane" aria-hidden="true" />
-        <CxPage layout="hub" className="relative z-[1] px-4 sm:px-8">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,22rem)] lg:items-end">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--accent-primary)]">
-                Cyware Signal Fabric
-              </p>
-              <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-5xl">
-                Controlled intelligence for every product surface
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--text-secondary)]">
-                Search across Intel Exchange, Respond, Collaborate, and Orchestrate — then open
-                runnable examples or ask the Documentation Agent.
-              </p>
-              <div className="mt-6 flex flex-wrap items-center gap-2">
-                <VerificationNode label="Indexed docs" active />
-                <VerificationNode label="Runnable API" active />
-                <VerificationNode label="Invite-gated workspace" />
-              </div>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-                <DocsSearch
-                  className="w-full flex-1"
-                  size="hub"
-                  placeholder="Search documentation, endpoints, and concepts"
-                />
-                <Link
-                  href="/agent"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[var(--accent-ai)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-focused)] transition hover:opacity-90"
-                  data-testid="home-ask-ai"
-                >
-                  <AssistantIcon />
-                  Ask AI
-                </Link>
-              </div>
+    <div data-layout="cx-home-hub" data-atlas-surface="intelligence-field">
+      <section className="atlas-hero" data-layout="cx-hub-hero" data-testid="atlas-hero">
+        <div className="atlas-hero__grid">
+          <div>
+            <p className="atlas-micro-label atlas-hero__eyebrow">Living Signal Atlas</p>
+            <h1 className="atlas-hero__title">See the threat before it forms.</h1>
+            <p className="atlas-hero__lede">
+              Signals enter the network, correlate across Cyware products, and surface as
+              actionable knowledge — runnable documentation, Ask Intelligence, and operational
+              control in one atlas.
+            </p>
+            <div className="atlas-hero__actions">
+              <Link href="/agent" className="atlas-btn-primary" data-testid="home-ask-ai">
+                Ask Intelligence
+              </Link>
+              <Link href="/docs/ctix" className="atlas-btn-ghost" data-testid="home-open-docs">
+                Enter Knowledge Atlas
+              </Link>
             </div>
-            <div className="hidden lg:block">
-              <SignalTopologyArt
-                className="h-auto w-full max-w-md opacity-90"
-                accent="var(--brand-blue)"
-              />
+            <div className="atlas-hero__readouts">
+              <TelemetryValue label="Indexed pages" value={indexedPages || "—"} />
+              <TelemetryValue label="Products" value={products.length} />
+              <div className="atlas-telemetry">
+                <span className="atlas-micro-label">Network</span>
+                <LiveStatus label="Live" />
+              </div>
             </div>
           </div>
-        </CxPage>
+          <div className="atlas-hero__panel">
+            <TopologyField />
+          </div>
+        </div>
+        <div className="atlas-ticker" aria-label="Live threat ticker">
+          <div className="atlas-ticker__track">
+            {[...TICKER, ...TICKER].map((item, i) => (
+              <span key={`${item}-${i}`}>{item}</span>
+            ))}
+          </div>
+        </div>
       </section>
 
-      <CxPage layout="hub" className="px-4 sm:px-8">
-        <CxSection
-          eyebrow="Products"
-          title="Documentation by product"
-          description="Open the API reference for each Cyware product. Page counts reflect the currently indexed corpus."
-          actions={
-            <Link
-              href="/authentication"
-              className="text-sm font-medium text-[var(--text-link)] hover:underline"
-            >
-              Configure authentication →
-            </Link>
-          }
-        >
-          <div
-            className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
-            data-testid="product-hub"
-            data-layout="cx-product-collection"
-          >
-            {products.map((product) => {
-              const summary = summaries.find((s) => s.product.productId === product.productId);
-              const count = summary?.manifest?.count ?? 0;
-              const indexed = summary?.indexed ?? false;
-              return (
-                <CxProductCard
-                  key={product.productId}
-                  href={`/docs/${product.productId}`}
-                  title={product.displayLabel}
-                  description={product.description}
-                  accentClass={productAccentClass(product.productId)}
-                  initial={product.productId === "orchestrate" ? "OR" : product.productId.slice(0, 2)}
-                  badge={<ProductBadge productId={product.productId} />}
-                  meta={
-                    !indexed ? (
-                      <span className="text-[10px] font-medium leading-none text-[var(--warning)]">
-                        Not indexed
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-medium leading-none text-[var(--text-muted)]">
-                        {count} pages
-                      </span>
-                    )
-                  }
-                  footer="API documentation →"
-                />
-              );
-            })}
-          </div>
-        </CxSection>
+      <section className="atlas-section">
+        <p className="atlas-micro-label">Priority stream</p>
+        <h2 className="atlas-section__title">Operational intelligence now</h2>
+        <p className="atlas-section__lede">
+          Move from observation to action — investigate with Ask Intelligence, execute against
+          live APIs, or open the product knowledge surface.
+        </p>
+        <div className="atlas-stream">
+          <StreamItem
+            tone="signal"
+            title="Ask Intelligence workstation"
+            body="Evidence-backed answers grounded in the indexed API corpus."
+            href="/agent"
+            cta="Open"
+          />
+          <StreamItem
+            tone="violet"
+            title="API Live Console"
+            body="Transmit authenticated requests through the secure proxy laboratory."
+            href="/developer"
+            cta="Transmit"
+          />
+          <StreamItem
+            tone="amber"
+            title="Credentials & clearance"
+            body="Configure product Open API credentials for this session only."
+            href="/authentication"
+            cta="Configure"
+          />
+        </div>
+      </section>
 
-        <CxSection
-          eyebrow="API documentation"
-          title="Start from a common path"
-          description="Jump into guides, agent answers, or recent product changes."
-        >
-          <WorkflowRibbon>
-            <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--text-muted)]">
-              Primary paths
-            </span>
-            <Link href="/guides" className="text-sm font-medium text-[var(--text-link)] hover:underline">
-              Guides
-            </Link>
-            <Link href="/agent" className="text-sm font-medium text-[var(--text-link)] hover:underline">
-              Ask AI
-            </Link>
-            <Link href="/changelog" className="text-sm font-medium text-[var(--text-link)] hover:underline">
-              Release notes
-            </Link>
-          </WorkflowRibbon>
-          <div className="mt-4 grid gap-4 md:grid-cols-3" data-layout="cx-resource-grid">
-            <Link href="/guides" className="cx-card block p-5 transition hover:shadow-[var(--shadow-focused)]" data-layout="cx-resource-card">
-              <p className="text-xs font-semibold text-[var(--accent-primary)]">Guides</p>
-              <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
-                Make your first API request
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                Configure product authentication and run a documented request safely.
-              </p>
-            </Link>
-            <Link href="/agent" className="cx-card block p-5 transition hover:shadow-[var(--shadow-focused)]" data-layout="cx-resource-card">
-              <p className="text-xs font-semibold text-[var(--accent-ai)]">Ask AI</p>
-              <h2 className="mt-2 font-semibold text-[var(--text-heading)]">
-                Ask across product documentation
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                Get plain-language answers with sources from the indexed docs.
-              </p>
-            </Link>
-            <Link href="/changelog" className="cx-card block p-5 transition hover:shadow-[var(--shadow-focused)]" data-layout="cx-resource-card">
-              <p className="text-xs font-semibold text-[var(--accent-primary)]">Release notes</p>
-              <h2 className="mt-2 font-semibold text-[var(--text-heading)]">Product changelog</h2>
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                Review new endpoints, behavior changes, and deprecations.
-              </p>
-            </Link>
-          </div>
-        </CxSection>
-      </CxPage>
+      <section className="atlas-section" data-testid="product-hub">
+        <p className="atlas-micro-label">Product constellation</p>
+        <h2 className="atlas-section__title">Interconnected Cyware ecosystem</h2>
+        <p className="atlas-section__lede">
+          Each product is a living region of the atlas — open its documentation tree and runnable
+          request deck.
+        </p>
+        <div className="atlas-product-constellation">
+          {products.map((product) => {
+            const summary = summaries.find((s) => s.product.productId === product.productId);
+            const count = summary?.manifest?.count ?? 0;
+            const indexed = summary?.indexed ?? false;
+            return (
+              <Link
+                key={product.productId}
+                href={`/docs/${product.productId}`}
+                className={`atlas-product-node ${productAccentClass(product.productId)}`}
+              >
+                <ThreatBadge tone="signal">{product.productId}</ThreatBadge>
+                <div className="atlas-product-node__name">{product.displayLabel}</div>
+                <p className="atlas-product-node__desc">{product.description}</p>
+                <p className="atlas-micro-label mt-3">
+                  {indexed ? `${count} pages indexed` : "Corpus pending"}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="atlas-section">
+        <p className="atlas-micro-label">Secondary lanes</p>
+        <div className="atlas-stream">
+          <StreamItem tone="muted" title="Guides" body="Operator playbooks and onboarding paths." href="/guides" cta="Read" />
+          <StreamItem tone="muted" title="Changelog" body="Release notes across the documentation fabric." href="/changelog" cta="Review" />
+        </div>
+      </section>
     </div>
   );
 }
 
-function AssistantIcon() {
+function StreamItem({
+  tone,
+  title,
+  body,
+  href,
+  cta,
+}: {
+  tone: "signal" | "amber" | "violet" | "muted";
+  title: string;
+  body: string;
+  href: string;
+  cta: string;
+}) {
   return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zM5 16l.8 2.2L8 19l-2.2.8L5 22l-.8-2.2L2 19l2.2-.8L5 16zM18 14l.6 1.8L20.4 16.4 18.6 17 18 18.8l-.6-1.8L15.6 16.4l1.8-.6L18 14z" strokeLinejoin="round" />
-    </svg>
+    <div className="atlas-stream__item">
+      <ThreatBadge tone={tone === "muted" ? "muted" : tone}>{tone}</ThreatBadge>
+      <div>
+        <p className="text-sm font-medium text-[var(--text-heading)]">{title}</p>
+        <p className="mt-0.5 text-sm text-[var(--text-secondary)]">{body}</p>
+      </div>
+      <Link href={href} className="atlas-btn-ghost atlas-btn-sm whitespace-nowrap">
+        {cta}
+      </Link>
+    </div>
   );
 }

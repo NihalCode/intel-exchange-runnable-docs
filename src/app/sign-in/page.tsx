@@ -11,7 +11,7 @@ import {
   sanitizeUserFacingMessage,
 } from "@/lib/user-facing-errors";
 import { freshLoginStartHref } from "@/lib/documentation-auth/fresh-login";
-import { SecurityBrandPanel } from "@/components/fabric/SignalField";
+import { TopologyField } from "@/components/atlas";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -97,12 +97,13 @@ export default async function SignInPage({
     : "/sign-up";
 
   return (
-    <div className="cx-split-auth" data-layout="cx-split-auth">
+    <div className="cx-split-auth atlas-trust-orbit" data-layout="cx-split-auth">
       <aside
-        className="flex flex-col justify-between px-8 py-12 text-white"
+        className="relative flex flex-col justify-between overflow-hidden px-8 py-12 text-[var(--atlas-text)]"
         data-layout="cx-sign-in-brand"
       >
-        <SecurityBrandPanel className="flex flex-1 flex-col justify-between">
+        <TopologyField className="atlas-trust-orbit__field pointer-events-none absolute inset-0 opacity-80" />
+        <div className="relative z-[1] flex flex-1 flex-col justify-between">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -112,34 +113,37 @@ export default async function SignInPage({
               height={40}
               className="h-10 w-10 object-contain"
             />
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-white/70">
+            <p className="atlas-micro-label mt-6 text-[var(--atlas-signal)]">
               CYWARE | Documentation
             </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in</h1>
-            <p className="mt-3 max-w-sm text-sm leading-6 text-white/80">
+            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">Sign in</h1>
+            <p className="mt-3 max-w-sm text-sm leading-6 text-[var(--atlas-text-secondary)]">
               Auth0 brokers session continuity for this workspace. Okta owns your password and
               Verify — complete both steps after you continue.
             </p>
-            <p className="mt-4 max-w-sm text-sm leading-6 text-white/65">
+            <p className="mt-4 max-w-sm text-sm leading-6 text-[var(--atlas-text-muted)]">
               This docs workspace is invite-only. Administrators must add your email before you
               can sign in or set a password.
             </p>
           </div>
-          <p className="text-xs text-white/50">
+          <p className="atlas-micro-label relative z-[1] text-[var(--atlas-text-muted)]">
             {setup.deployment.productId
               ? `Product context: ${setup.deployment.productId}`
               : "Enterprise documentation workspace"}
           </p>
-        </SecurityBrandPanel>
+        </div>
       </aside>
 
-      <main className="sf-atmosphere flex items-center justify-center px-4 py-12">
+      <main className="sf-atmosphere relative flex items-center justify-center px-4 py-12">
         <div
-          className="sf-access-panel w-full max-w-md"
+          className="sf-access-panel atlas-trust-orbit__panel w-full max-w-md"
           data-layout="cx-sign-in-form"
         >
-          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Sign in</h2>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">Trust orbit</p>
+          <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[var(--atlas-text)]">
+            Sign in
+          </h2>
+          <p className="mt-2 text-sm text-[var(--atlas-text-secondary)]">
             First-time invited users set their password with <strong>Sign up</strong>, then return
             here.
           </p>
@@ -147,7 +151,7 @@ export default async function SignInPage({
             <div
               role="status"
               data-testid="login-hint"
-              className="mt-4 rounded-[var(--radius-md)] border border-sky-200 bg-sky-50 px-4 py-3 text-left text-sm text-sky-950 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-100"
+              className="mt-4 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-violet)_40%,transparent)] bg-[color-mix(in_srgb,var(--atlas-violet)_10%,transparent)] px-4 py-3 text-left text-sm text-[var(--atlas-text)]"
             >
               {hintText}
             </div>
@@ -156,7 +160,7 @@ export default async function SignInPage({
             <div
               role="alert"
               data-testid="login-error"
-              className="mt-4 rounded-[var(--radius-md)] border border-red-200 bg-red-50 px-4 py-3 text-left text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200"
+              className="mt-4 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-danger)_40%,transparent)] bg-[color-mix(in_srgb,var(--atlas-danger)_10%,transparent)] px-4 py-3 text-left text-sm text-[var(--atlas-danger)]"
             >
               {errorText}
             </div>
@@ -165,7 +169,7 @@ export default async function SignInPage({
             <div
               role="status"
               data-testid="database-warning"
-              className="mt-4 rounded-[var(--radius-md)] border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
+              className="mt-4 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-amber)_40%,transparent)] bg-[color-mix(in_srgb,var(--atlas-amber)_12%,transparent)] px-4 py-3 text-left text-sm text-[var(--atlas-amber)]"
             >
               <p className="font-medium">Database unavailable</p>
               <p className="mt-1 text-xs leading-relaxed opacity-90">
@@ -176,7 +180,7 @@ export default async function SignInPage({
           ) : null}
           {!authReady ? (
             <div
-              className="mt-4 rounded-[var(--radius-md)] border border-amber-200 bg-amber-50 px-4 py-3 text-left text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
+              className="mt-4 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-amber)_40%,transparent)] bg-[color-mix(in_srgb,var(--atlas-amber)_12%,transparent)] px-4 py-3 text-left text-sm text-[var(--atlas-amber)]"
               data-testid="auth-setup-checklist"
             >
               <p className="font-medium">{AUTH_SETUP_ADMIN_MESSAGE}</p>
@@ -187,11 +191,11 @@ export default async function SignInPage({
             </div>
           ) : null}
           {authReady ? (
-            <div className="mt-6 flex flex-col gap-3">
+            <div className="mt-6 flex flex-col gap-2.5">
               <a
                 href={signInHref}
                 data-testid="login-continue-password"
-                className="inline-flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent-primary-hover)]"
+                className="atlas-btn-primary inline-flex items-center justify-center rounded-[var(--radius-sm)] px-4 py-2.5 text-sm font-semibold"
               >
                 Sign in
               </a>
@@ -200,21 +204,21 @@ export default async function SignInPage({
                 data-testid="login-signup"
                 className={
                   highlightSignUp
-                    ? "inline-flex items-center justify-center rounded-[var(--radius-md)] border-2 border-[var(--accent-primary)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-semibold text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
-                    : "inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-2.5 text-sm font-medium text-[var(--text-heading)] hover:bg-[var(--surface-muted)]"
+                    ? "atlas-btn-ghost inline-flex items-center justify-center rounded-[var(--radius-sm)] border-2 border-[var(--atlas-signal)] px-4 py-2.5 text-sm font-semibold text-[var(--atlas-text)]"
+                    : "atlas-btn-ghost inline-flex items-center justify-center rounded-[var(--radius-sm)] px-4 py-2.5 text-sm font-medium"
                 }
               >
                 Sign up
               </a>
             </div>
           ) : (
-            <p className="mt-6 text-left text-xs text-[var(--text-muted)]">
+            <p className="mt-6 text-left text-xs text-[var(--atlas-text-muted)]">
               Sign-in options appear after an administrator finishes authentication setup for this
               site.
             </p>
           )}
           <p
-            className="mt-6 text-xs leading-relaxed text-[var(--text-muted)]"
+            className="mt-6 text-xs leading-relaxed text-[var(--atlas-text-muted)]"
             data-testid="login-invite-note"
           >
             Need access? Ask a workspace administrator to Add user. After Sign up, Sign in with

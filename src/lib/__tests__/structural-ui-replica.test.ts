@@ -31,24 +31,25 @@ describe("structural Cyware replica UI markers", () => {
     expect(src).toContain('data-layout="cx-section"');
   });
 
-  it("AppFrame uses structural shell layout markers (not flat token-only header)", () => {
+  it("AppFrame uses Atlas shell layout markers (command rail/bar, not top-chrome)", () => {
     const src = readFileSync(path.join(process.cwd(), "src/components/AppFrame.tsx"), "utf8");
     expect(src).toContain('data-layout="cx-app-shell"');
-    expect(src).toContain('data-layout="cx-header-zones"');
-    expect(src).toContain("cx-header-zones");
-    expect(src).toContain('data-layout="cx-product-strip"');
-    expect(src).toContain("CYWARE");
-    expect(src).toContain("Documentation");
-    expect(src).toContain('size="compact"');
+    expect(src).toContain('data-testid="app-frame"');
+    expect(src).toContain('data-atlas="true"');
+    expect(src).toContain("CommandRail");
+    expect(src).toContain("CommandBar");
+    expect(src).toContain("preferPlainShortcut");
+    expect(src).not.toContain("AutoHideTopChrome");
+    expect(src).not.toContain("top-chrome");
   });
 
-  it("home hub uses hero + product collection geometry", () => {
+  it("home hub uses Atlas hero + product constellation geometry", () => {
     const home = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     expect(home).toContain('data-layout="cx-home-hub"');
     expect(home).toContain("cx-hub-hero");
-    expect(home).toContain('size="hub"');
-    expect(home).toContain("CxProductCard");
-    expect(home).toContain("xl:grid-cols-4");
+    expect(home).toContain("atlas-hero");
+    expect(home).toContain("atlas-product-constellation");
+    expect(home).toContain("atlas-stream");
   });
 
   it("docs reader supports three-column TOC rail", () => {
@@ -116,12 +117,11 @@ describe("structural Cyware replica UI markers", () => {
     expect(exit).not.toMatch(/text-sky-800/);
   });
 
-  it("product hub cards use distinct initials instead of shared first letter", () => {
-    const home = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
+  it("product hub cards support distinct initials on CxProductCard", () => {
     const cx = readFileSync(path.join(process.cwd(), "src/components/cx/index.tsx"), "utf8");
     expect(cx).toContain("initial?: string");
-    expect(home).toContain("initial=");
-    expect(home).toContain('product.productId === "orchestrate" ? "OR"');
+    expect(cx).toContain("atlas-product-node");
+    expect(cx).toContain('data-layout="cx-product-card"');
   });
 
   it("product hub cards keep a symmetric mark + badge + meta row", () => {

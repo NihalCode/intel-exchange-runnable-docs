@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useControlPlaneMutation } from "@/components/admin/hooks/useControlPlaneMutation";
 import { PageHeader, StatusMessage } from "@/components/admin/ui/PageHeader";
@@ -13,9 +14,11 @@ import { DataTable } from "@/components/admin/ui/DataTable";
 import {
   buttonPrimaryClass,
   buttonSecondaryClass,
-  cardClass,
   inputClass,
 } from "@/components/admin/ui/tokens";
+
+const panelClass =
+  "rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4";
 import type { EnterpriseAuditEvent } from "@/lib/enterprise/audit";
 import type { ChangeRequestRecord, EnterprisePermission } from "@/lib/enterprise/types";
 import type {
@@ -129,26 +132,31 @@ export function DocumentationAgentApisPage(props: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-layout="sf-apis-control-plane"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="APIs"
         description="Manage Documentation Agent resources, controlled configuration changes, and credentials."
+        actions={<LiveStatus label={selectedEnvironment} tone="signal" />}
       />
       <StatusMessage message={status} />
 
       <PermissionGate permission="resources.write" hasPermission={hasPermission}>
         {capabilities.has("resources.write") ? (
-          <section className={cardClass} aria-labelledby="create-resource-heading">
-            <h2 id="create-resource-heading" className="font-semibold">
+          <section className={`${panelClass} border-l-2 border-l-[var(--atlas-signal)]`} aria-labelledby="create-resource-heading">
+            <p className="atlas-micro-label text-[var(--atlas-signal)]">Provision</p>
+            <h2 id="create-resource-heading" className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">
               Create API resource
             </h2>
             <form action={createResource} className="mt-4 flex flex-wrap items-end gap-3">
               <label className="grid gap-1 text-sm">
-                Resource name
+                <span className="atlas-micro-label">Resource name</span>
                 <input className={inputClass} name="name" required maxLength={100} />
               </label>
-              <span className="text-sm text-zinc-500 capitalize">
+              <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--atlas-text-muted)]">
                 Environment: {selectedEnvironment}
               </span>
               <button className={buttonPrimaryClass} disabled={busy} type="submit">
@@ -159,24 +167,25 @@ export function DocumentationAgentApisPage(props: Props) {
         ) : null}
       </PermissionGate>
 
-      <section className={cardClass} aria-labelledby="resources-heading">
-        <h2 id="resources-heading" className="font-semibold">
+      <section className={panelClass} aria-labelledby="resources-heading">
+        <p className="atlas-micro-label text-[var(--atlas-signal)]">Resource lattice</p>
+        <h2 id="resources-heading" className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">
           Resources — {selectedEnvironment}
         </h2>
         {envResources.length ? (
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
             {envResources.map((resource) => (
               <div
                 key={resource.id}
-                className="rounded-md border border-zinc-200 p-3 dark:border-zinc-800"
+                className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--surface-operational)] p-3"
               >
-                <h3 className="font-medium">{resource.name}</h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                <h3 className="font-medium text-[var(--atlas-text)]">{resource.name}</h3>
+                <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
                   Active version: {resource.activeConfigVersion ?? "None"}
                 </p>
-                <ul className="mt-2 space-y-1 text-sm">
+                <ul className="mt-2 space-y-1 text-sm text-[var(--atlas-text-secondary)]">
                   {resource.versions.map((version) => (
-                    <li key={version.id}>
+                    <li key={version.id} className="font-mono text-xs">
                       v{version.versionNumber} —{" "}
                       <time dateTime={version.createdAt}>
                         {new Date(version.createdAt).toLocaleDateString()}
@@ -188,13 +197,14 @@ export function DocumentationAgentApisPage(props: Props) {
             ))}
           </div>
         ) : (
-          <p className="mt-3 text-sm text-zinc-500">No resources in this environment.</p>
+          <p className="mt-3 text-sm text-[var(--atlas-text-muted)]">No resources in this environment.</p>
         )}
       </section>
 
       {capabilities.has("changes.create") && envResources.length ? (
-        <section className={cardClass} aria-labelledby="create-change-heading">
-          <h2 id="create-change-heading" className="font-semibold">
+        <section className={panelClass} aria-labelledby="create-change-heading">
+          <p className="atlas-micro-label text-[var(--atlas-violet)]">Draft change</p>
+          <h2 id="create-change-heading" className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">
             Draft configuration change
           </h2>
           <form action={createChange} className="mt-4 grid max-w-2xl gap-3">
@@ -224,8 +234,9 @@ export function DocumentationAgentApisPage(props: Props) {
         </section>
       ) : null}
 
-      <section className={cardClass} aria-labelledby="changes-heading">
-        <h2 id="changes-heading" className="font-semibold">
+      <section className={panelClass} aria-labelledby="changes-heading">
+        <p className="atlas-micro-label text-[var(--atlas-violet)]">Change pipeline</p>
+        <h2 id="changes-heading" className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">
           Change requests
         </h2>
         <DataTable
@@ -389,11 +400,12 @@ export function DocumentationAgentApisPage(props: Props) {
         />
       </section>
 
-      <section className={cardClass} aria-labelledby="credentials-heading">
-        <h2 id="credentials-heading" className="font-semibold">
+      <section className={`${panelClass} border-l-2 border-l-[var(--atlas-amber)]`} aria-labelledby="credentials-heading">
+        <p className="atlas-micro-label text-[var(--atlas-amber)]">Vault slice</p>
+        <h2 id="credentials-heading" className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">
           API credentials
         </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
+        <p className="mt-1 text-sm text-[var(--atlas-text-secondary)]">
           Secret values are shown once on create or rotate only.
         </p>
         {capabilities.has("credentials.manage") ? (
@@ -465,13 +477,16 @@ export function DocumentationAgentApisPage(props: Props) {
         </div>
       </section>
 
-      <section className={cardClass} aria-labelledby="audit-heading">
+      <section className={`${panelClass} border-l-2 border-l-[var(--atlas-amber)]`} aria-labelledby="audit-heading">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="audit-heading" className="font-semibold">
-            Recent audit activity
-          </h2>
+          <div>
+            <p className="atlas-micro-label text-[var(--atlas-amber)]">Forensic stream</p>
+            <h2 id="audit-heading" className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">
+              Recent audit activity
+            </h2>
+          </div>
           <div className="flex gap-2">
-            <a className={buttonPrimaryClass} href="/api/admin/control-plane/export?kind=configuration">
+            <a className={buttonSecondaryClass} href="/api/admin/control-plane/export?kind=configuration">
               Export configuration
             </a>
             <a className={buttonPrimaryClass} href="/api/admin/control-plane/export?kind=audit">
@@ -479,14 +494,22 @@ export function DocumentationAgentApisPage(props: Props) {
             </a>
           </div>
         </div>
-        <ol className="mt-4 space-y-2">
+        <ol className="mt-4 max-h-80 space-y-0 overflow-y-auto border-l border-[var(--atlas-line)] pl-3">
           {props.audit.slice(0, 20).map((event) => (
             <li
               key={event.id}
-              className="rounded-md border border-zinc-200 p-3 text-sm dark:border-zinc-800"
+              className="relative py-2.5 pl-1 text-sm"
             >
-              <span className="font-medium">{event.action}</span> — {event.outcome}
-              <time className="ml-2 text-zinc-500" dateTime={event.createdAt}>
+              <span
+                className="absolute -left-[0.97rem] top-3.5 h-1.5 w-1.5 rounded-full bg-[var(--atlas-amber)]"
+                aria-hidden="true"
+              />
+              <span className="font-medium text-[var(--atlas-text)]">{event.action}</span> —{" "}
+              {event.outcome}
+              <time
+                className="ml-2 font-mono text-[10px] text-[var(--atlas-text-muted)]"
+                dateTime={event.createdAt}
+              >
                 {new Date(event.createdAt).toLocaleString()}
               </time>
             </li>
@@ -503,7 +526,7 @@ export function DocumentationAgentApisPage(props: Props) {
       >
         {changeDetail ? (
           <div className="space-y-4">
-            <p className="text-sm text-zinc-600 dark:text-zinc-300">
+            <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
               Status: {changeDetail.change.state.replaceAll("_", " ")} · Target v
               {changeDetail.targetConfig.versionNumber}
             </p>

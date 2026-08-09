@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import {
+  Paperclip,
+  Settings2,
+  Sparkles,
+  Send,
+  Square,
+  X,
+} from "lucide-react";
 import { AgentFeedbackControl } from "./AgentFeedbackControl";
 import { AgentMessageView } from "./AgentMessageView";
 import { AgentSavedAppsBar, ImportVercelModal } from "./AgentSavedAppsBar";
@@ -163,10 +171,14 @@ function AgentChatBody({
     }
   }
 
+  const workstationClass = features.project_workspace
+    ? "atlas-workstation"
+    : "atlas-workstation atlas-workstation--dual";
+
   return (
     <section
       aria-labelledby="agent-chat-heading"
-      className="cx-ask-workspace"
+      className={workstationClass}
       data-testid="agent-chat"
       data-layout="cx-ask-workspace"
     >
@@ -186,7 +198,7 @@ function AgentChatBody({
         onDelete={deleteChat}
       />
 
-      <div className="cx-ask-workspace__stage">
+      <div className="atlas-panel" data-layout="cx-ask-stage">
         {features.vercel_import && showImport && (
           <ImportVercelModal
             onClose={() => setShowImport(false)}
@@ -201,18 +213,12 @@ function AgentChatBody({
           />
         ) : null}
 
-        <div className="cx-ask-context-bar">
-          <div>
-            <div className="mb-1 inline-flex items-center gap-2">
-              <span
-                className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse"
-                aria-hidden="true"
-              />
-              <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
-                Intelligence workspace
-              </p>
-            </div>
-            <h2 id="agent-chat-heading" className="text-sm font-semibold text-[var(--text-heading)]">
+        <div className="atlas-panel__header">
+          <div className="min-w-0">
+            <p className="atlas-micro-label" style={{ color: "var(--accent-ai)" }}>
+              Intelligence channel
+            </p>
+            <h2 id="agent-chat-heading" className="mt-0.5 text-sm font-semibold text-[var(--text-heading)]">
               Documentation Agent
             </h2>
             <p className="text-[11px] text-[var(--text-secondary)]">
@@ -224,17 +230,17 @@ function AgentChatBody({
                 : `Connected products: ${connectedLabels}`}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setShowSettings((s) => !s)}
-              aria-expanded={showSettings}
-              aria-controls="agent-chat-settings"
-              className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-raised)] px-2.5 py-1 text-xs text-[var(--text-secondary)] transition hover:border-[var(--border-default)] hover:text-[var(--text-primary)]"
-            >
-              {showSettings ? "Hide settings" : "Settings"}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowSettings((s) => !s)}
+            aria-expanded={showSettings}
+            aria-controls="agent-chat-settings"
+            className="atlas-icon-btn"
+            title={showSettings ? "Hide settings" : "Settings"}
+          >
+            <Settings2 className="h-3.5 w-3.5" aria-hidden="true" />
+            <span className="sr-only">{showSettings ? "Hide settings" : "Settings"}</span>
+          </button>
         </div>
 
         {features.project_workspace ? (
@@ -255,7 +261,7 @@ function AgentChatBody({
           >
             <div className="flex flex-wrap items-end gap-3">
               <label className="flex flex-col gap-1 text-xs">
-                <span className="font-semibold text-[var(--text-secondary)]">Example code language</span>
+                <span className="atlas-micro-label">Example code language</span>
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value as typeof language)}
@@ -275,7 +281,7 @@ function AgentChatBody({
         <div
           aria-label="Conversation"
           data-top-chrome-scroll
-          className="scroll-thin flex-1 overflow-y-auto px-4 py-4"
+          className="atlas-panel__body scroll-thin overflow-y-auto px-4 py-4"
         >
           {isEmpty ? (
             <div className="cx-ask-empty">
@@ -283,11 +289,11 @@ function AgentChatBody({
                 variant="ops"
                 className="pointer-events-none absolute inset-x-0 top-1/2 h-44 w-full -translate-y-[70%] opacity-30"
               />
-              <div className="cx-ask-empty__mark" aria-hidden="true">
-                <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
-                  <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" strokeLinejoin="round" />
-                  <path d="M5 16l.8 2.2L8 19l-2.2.8L5 22l-.8-2.2L2 19l2.2-.8L5 16z" strokeLinejoin="round" />
-                </svg>
+              <div
+                className="relative mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--accent-ai)_35%,var(--border-subtle))] bg-[var(--accent-ai-soft)] text-[var(--accent-ai)]"
+                aria-hidden="true"
+              >
+                <Sparkles className="h-6 w-6" />
               </div>
               <h2 className="relative text-xl font-semibold tracking-tight text-[var(--text-heading)]">
                 Open an intelligence inquiry
@@ -337,8 +343,8 @@ function AgentChatBody({
                   <div key={msg.id} className="cx-ask-msg-enter flex justify-start">
                     <div className="cx-ask-intel-panel space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-primary)_14%,transparent)] text-[10px] font-bold tracking-wide text-[var(--accent-primary)]">
-                          AI
+                        <span className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--accent-ai-soft)] text-[var(--accent-ai)]">
+                          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
                         </span>
                         <span className="text-xs font-semibold text-[var(--text-secondary)]">
                           {msg.response.appEdit
@@ -348,7 +354,7 @@ function AgentChatBody({
                               : "Answer"}
                         </span>
                         {evidence ? (
-                          <span className="rounded-[var(--radius-pill)] bg-[color-mix(in_srgb,var(--accent-primary)_12%,transparent)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-primary)]">
+                          <span className="rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent-ai)_30%,var(--border-subtle))] bg-[var(--accent-ai-soft)] px-2 py-0.5 font-mono text-[10px] font-medium tracking-wide text-[var(--accent-ai)]">
                             {evidence}
                           </span>
                         ) : null}
@@ -359,7 +365,7 @@ function AgentChatBody({
                         ) : null}
                       </div>
                       {retrievalNotice ? (
-                        <p className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-primary)_25%,var(--border-default))] bg-[color-mix(in_srgb,var(--accent-primary)_8%,transparent)] px-3 py-2 text-xs text-[var(--text-primary)]">
+                        <p className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-ai)_25%,var(--border-default))] bg-[var(--accent-ai-soft)] px-3 py-2 text-xs text-[var(--text-primary)]">
                           {retrievalNotice}
                         </p>
                       ) : null}
@@ -414,11 +420,11 @@ function AgentChatBody({
               {loading ? (
                 <div className="cx-ask-msg-enter flex justify-start">
                   <div aria-live="polite" className="cx-ask-status-pill">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--accent-primary)_14%,transparent)] text-[10px] font-bold text-[var(--accent-primary)]">
-                      AI
+                    <span className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--accent-ai-soft)] text-[var(--accent-ai)]">
+                      <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
                     </span>
                     <span
-                      className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse"
+                      className="h-1.5 w-1.5 rounded-full bg-[var(--accent-ai)] sf-signal-pulse"
                       aria-hidden="true"
                     />
                     <span className="text-sm text-[var(--text-secondary)]">
@@ -433,7 +439,7 @@ function AgentChatBody({
         </div>
 
         <div
-          className="cx-ask-composer"
+          className="atlas-transmission"
           data-drag={dragOver ? "true" : "false"}
           onDragOver={(e) => {
             e.preventDefault();
@@ -446,14 +452,20 @@ function AgentChatBody({
             void addFiles(e.dataTransfer.files);
           }}
         >
+          <div className="atlas-transmission__meta mx-auto max-w-3xl">
+            <span className="atlas-micro-label">Transmission console</span>
+            <span className="atlas-micro-label">
+              {extracting ? "Reading files…" : loading ? "Acquiring…" : "Ready"}
+            </span>
+          </div>
           {(attachments.length > 0 || extracting) && (
             <div className="mx-auto mb-2 flex max-w-3xl flex-wrap items-center gap-1.5">
               {attachments.map((a, i) => (
                 <span
                   key={`${a.name}-${i}`}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--accent-primary)_30%,var(--border-default))] bg-[color-mix(in_srgb,var(--accent-primary)_8%,transparent)] px-2.5 py-1 text-[11px] text-[var(--text-primary)]"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent-ai)_30%,var(--border-default))] bg-[var(--accent-ai-soft)] px-2.5 py-1 font-mono text-[11px] text-[var(--text-primary)]"
                 >
-                  <PaperclipIcon className="h-3 w-3 text-[var(--accent-primary)]" />
+                  <Paperclip className="h-3 w-3 text-[var(--accent-ai)]" aria-hidden="true" />
                   {a.name}
                   {a.truncated ? " (truncated)" : ""}
                   <button
@@ -462,13 +474,13 @@ function AgentChatBody({
                     onClick={() => removeAttachment(i)}
                     className="text-[var(--text-muted)] hover:text-[var(--text-heading)]"
                   >
-                    ×
+                    <X className="h-3 w-3" aria-hidden="true" />
                   </button>
                 </span>
               ))}
               {extracting && (
-                <span className="inline-flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-[var(--text-muted)]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-ai)] sf-signal-pulse" aria-hidden="true" />
                   Reading attached files…
                 </span>
               )}
@@ -479,7 +491,7 @@ function AgentChatBody({
               e.preventDefault();
               void send();
             }}
-            className="cx-ask-composer__shell"
+            className="atlas-transmission__shell"
           >
             <input
               ref={fileInputRef}
@@ -498,9 +510,9 @@ function AgentChatBody({
               disabled={loading || extracting}
               title="Attach files"
               aria-label="Attach files"
-              className="cx-ask-icon-btn"
+              className="atlas-icon-btn h-10 w-10"
             >
-              <PaperclipIcon className="h-4 w-4" />
+              <Paperclip className="h-4 w-4" aria-hidden="true" />
             </button>
             <textarea
               ref={inputRef}
@@ -511,27 +523,29 @@ function AgentChatBody({
               aria-label="Ask the documentation agent"
               placeholder="Ask about an endpoint, workflow, parameter, or code example…"
               disabled={loading}
-              className="cx-ask-composer__input"
+              className="atlas-transmission__input"
             />
             <button
               type="submit"
               disabled={loading || extracting || (!input.trim() && attachments.length === 0)}
-              className="cx-ask-send"
+              className="atlas-transmission__send"
             >
+              <Send className="h-3.5 w-3.5" aria-hidden="true" />
               Send
             </button>
             {loading ? (
               <button
                 type="button"
                 onClick={cancel}
-                className="inline-flex h-[2.6rem] shrink-0 items-center justify-center rounded-[var(--radius-lg)] border border-[color-mix(in_srgb,var(--danger)_40%,var(--border-default))] px-3.5 text-sm font-semibold text-[var(--danger)] transition hover:bg-[var(--danger-soft)]"
+                className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--danger)_40%,var(--border-default))] px-3 font-mono text-[11px] font-semibold uppercase tracking-wide text-[var(--danger)] transition hover:bg-[var(--danger-soft)]"
               >
+                <Square className="h-3 w-3" aria-hidden="true" />
                 Stop
               </button>
             ) : null}
           </form>
           {statusMessage ? (
-            <p role="status" className="mx-auto mt-2 max-w-3xl text-xs text-[var(--text-muted)]">
+            <p role="status" className="mx-auto mt-2 max-w-3xl font-mono text-[11px] text-[var(--text-muted)]">
               {statusMessage}
             </p>
           ) : null}
@@ -553,17 +567,5 @@ function AgentChatBody({
         />
       ) : null}
     </section>
-  );
-}
-
-function PaperclipIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M21.44 11.05l-8.49 8.49a5.25 5.25 0 01-7.42-7.42l8.84-8.84a3.5 3.5 0 014.95 4.95l-8.84 8.84a1.75 1.75 0 01-2.47-2.47l8.13-8.13"
-      />
-    </svg>
   );
 }

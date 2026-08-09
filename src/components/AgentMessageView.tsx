@@ -74,15 +74,15 @@ export function AgentMessageView({
         retrievalEvidence: response.retrievalEvidence,
         stepCount: response.steps.length,
       }) ? (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+        <div className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--warning)_45%,var(--border-subtle))] bg-[var(--warning-soft)] px-3 py-2 text-sm text-[var(--warning)]">
           Low confidence match — review carefully or refine your question.
         </div>
       ) : null}
 
       {response.questions && response.questions.length > 0 ? (
-        <div className="rounded-lg border border-sky-300/50 bg-sky-50/40 px-3 py-2 text-sm dark:border-sky-900 dark:bg-sky-950/30">
-          <p className="mb-1 font-semibold text-sky-900 dark:text-sky-200">Clarifying questions</p>
-          <ul className="list-disc space-y-0.5 pl-4 text-sky-800 dark:text-sky-300">
+        <div className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-ai)_35%,var(--border-subtle))] bg-[var(--accent-ai-soft)] px-3 py-2 text-sm">
+          <p className="mb-1 font-semibold text-[var(--accent-ai)]">Clarifying questions</p>
+          <ul className="list-disc space-y-0.5 pl-4 text-[var(--text-secondary)]">
             {response.questions.map((q) => (
               <li key={q}>{q}</li>
             ))}
@@ -94,7 +94,7 @@ export function AgentMessageView({
 
       {response.mode === "app" && response.app ? (
         compactAppFiles ? (
-          <p className="rounded-lg border border-indigo-200/60 bg-indigo-50/40 px-3 py-2 text-xs text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/30 dark:text-indigo-200">
+          <p className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-ai)_30%,var(--border-subtle))] bg-[var(--accent-ai-soft)] px-3 py-2 text-xs text-[var(--text-primary)]">
             {response.app.files.length} project files ready — open the <strong>Project</strong> panel on
             the right to browse, preview, deploy, or download.
           </p>
@@ -104,20 +104,22 @@ export function AgentMessageView({
       ) : null}
 
       {response.docsModeNote ? (
-        <div className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400">
+        <div className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] px-3 py-2 text-xs text-[var(--text-secondary)]">
           <strong>Note:</strong> {response.docsModeNote}
         </div>
       ) : null}
 
       {response.simpleMode ? (
-        <p className="text-[10px] text-zinc-400">Plain-English mode — ask to “show technical details” for more depth.</p>
+        <p className="font-mono text-[10px] text-[var(--text-muted)]">
+          Plain-English mode — ask to “show technical details” for more depth.
+        </p>
       ) : null}
 
       {hasSteps && !showSteps ? (
         <button
           type="button"
           onClick={() => setShowSteps(true)}
-          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-sky-800 dark:hover:bg-sky-950/30"
+          className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition hover:border-[color-mix(in_srgb,var(--accent-ai)_40%,var(--border-subtle))] hover:bg-[var(--accent-ai-soft)] hover:text-[var(--accent-ai)]"
         >
           Show API details
           {response.steps.length > 1 ? ` (${response.steps.length} steps)` : ""}
@@ -127,10 +129,12 @@ export function AgentMessageView({
       {showSteps && hasSteps ? (
         <>
           {response.steps.length > 1 ? (
-            <div className="rounded-lg border border-sky-300/50 bg-sky-50/40 px-3 py-2 text-xs dark:border-sky-900 dark:bg-sky-950/30">
-              <strong className="text-sky-900 dark:text-sky-200">Next steps:</strong>{" "}
-              Follow steps 1 → {response.steps.length} in order. Example code uses placeholders like{" "}
-              <code className="font-mono">&lt;BASE_URL&gt;</code> — a developer adds real credentials.
+            <div className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-ai)_30%,var(--border-subtle))] bg-[var(--accent-ai-soft)] px-3 py-2 text-xs">
+              <strong className="text-[var(--accent-ai)]">Next steps:</strong>{" "}
+              <span className="text-[var(--text-secondary)]">
+                Follow steps 1 → {response.steps.length} in order. Example code uses placeholders like{" "}
+                <code className="font-mono">&lt;BASE_URL&gt;</code> — a developer adds real credentials.
+              </span>
             </div>
           ) : null}
 
@@ -150,7 +154,7 @@ export function AgentMessageView({
         <button
           type="button"
           onClick={() => setShowScripts(true)}
-          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition hover:border-sky-300 hover:bg-sky-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:border-sky-800 dark:hover:bg-sky-950/30"
+          className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition hover:border-[color-mix(in_srgb,var(--accent-ai)_40%,var(--border-subtle))] hover:bg-[var(--accent-ai-soft)] hover:text-[var(--accent-ai)]"
         >
           Show example code
         </button>
@@ -161,16 +165,14 @@ export function AgentMessageView({
       ) : null}
 
       {response.citations.length > 0 ? (
-        <div id="sources" className="border-t border-zinc-200 pt-3 dark:border-zinc-800">
-          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-            Sources
-          </p>
+        <div id="sources" className="border-t border-[var(--border-subtle)] pt-3">
+          <p className="atlas-micro-label mb-1.5">Sources</p>
           <ul className="flex flex-wrap gap-1.5">
             {response.citations.map((c) => (
               <li key={c.slug}>
                 <a
                   href={c.url}
-                  className="rounded-full border border-zinc-200 px-2 py-0.5 text-[11px] text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-900"
+                  className="rounded-[var(--radius-sm)] border border-[var(--border-subtle)] px-2 py-0.5 text-[11px] text-[var(--text-secondary)] transition hover:border-[color-mix(in_srgb,var(--accent-ai)_35%,var(--border-subtle))] hover:bg-[var(--surface-muted)] hover:text-[var(--text-link)]"
                 >
                   {c.title}
                 </a>

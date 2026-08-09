@@ -27,7 +27,7 @@ function loadCollapsed(): Record<string, boolean> {
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
-      className={`h-4 w-4 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+      className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -41,7 +41,7 @@ function ChevronIcon({ open }: { open: boolean }) {
 
 export function AdminSidebar() {
   const pathname = usePathname();
-  const { capabilities, enabledFeatures } = useAdmin();
+  const { capabilities, enabledFeatures, user } = useAdmin();
   const groups = filterNavByCapabilities(capabilities, enabledFeatures);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -71,7 +71,7 @@ export function AdminSidebar() {
 
   function renderNav(tone: "default" | "inverse") {
     return (
-      <nav aria-label="Administration" className="flex flex-col gap-1 p-3" data-nav-tone={tone}>
+      <nav aria-label="Administration" className="flex flex-col gap-0.5 p-2" data-nav-tone={tone}>
         {groups.map((group) => (
           <NavGroup
             key={group.id}
@@ -91,7 +91,7 @@ export function AdminSidebar() {
     <>
       <button
         type="button"
-        className="fixed bottom-4 right-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--accent-primary)] text-white shadow-lg lg:hidden"
+        className="fixed bottom-4 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--atlas-line-strong)] bg-[var(--atlas-signal)] text-[#04110e] shadow-[var(--shadow-resting)] lg:hidden"
         aria-label="Open admin navigation"
         aria-expanded={mobileOpen}
         aria-controls="admin-navigation-drawer"
@@ -103,25 +103,29 @@ export function AdminSidebar() {
       </button>
 
       <aside
-        className="hidden w-[16.5rem] shrink-0 border-r border-white/10 lg:block"
+        className="atlas-admin-rail hidden w-[15.5rem] shrink-0 border-r border-[var(--atlas-line)] lg:block"
         data-layout="cx-admin-nav-rail"
         data-tone="inverse"
       >
-        <div className="sticky top-0 flex h-screen flex-col bg-[var(--brand-navy-deep)] text-white">
-          <div className="border-b border-white/10 px-4 py-4">
-            <Link href="/admin" className="flex items-center gap-2" data-testid="admin-brand">
+        <div className="sticky top-0 flex h-screen flex-col bg-[color-mix(in_srgb,var(--atlas-elevated)_94%,transparent)] text-[var(--atlas-text)] backdrop-blur-md">
+          <div className="border-b border-[var(--atlas-line)] px-3 py-3">
+            <Link href="/admin" className="flex items-center gap-2.5" data-testid="admin-brand">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/cyware_logo.png" alt="" width={24} height={24} className="h-6 w-6 object-contain" />
               <span>
                 <span className="block text-sm font-semibold text-white">
                   CYWARE | Admin
                 </span>
-                <span className="block text-[10px] text-white/70">Control plane</span>
+                <span className="atlas-micro-label mt-0.5 !inline text-white/70">Control plane</span>
               </span>
             </Link>
           </div>
           <AdminAppExitNav variant="sidebar" tone="inverse" />
           <div className="flex-1 overflow-y-auto scroll-thin">{renderNav("inverse")}</div>
+          <div className="border-t border-[var(--atlas-line)] px-3 py-2.5">
+            <p className="atlas-micro-label text-white/65">Clearance</p>
+            <p className="truncate font-mono text-[11px] text-white/85">{user.role}</p>
+          </div>
         </div>
       </aside>
 
@@ -140,10 +144,11 @@ export function AdminSidebar() {
             role="dialog"
             aria-modal="true"
             aria-label="Administration navigation"
-            className="absolute left-0 top-0 h-full w-72 border-r border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-drawer)]"
+            className="absolute left-0 top-0 h-full w-72 border-r border-[var(--atlas-line)] bg-[var(--atlas-elevated)] shadow-[var(--shadow-drawer)]"
           >
-            <div className="border-b border-[var(--border-subtle)] px-4 py-3">
-              <p className="text-sm font-semibold text-[var(--text-heading)]">Enterprise Admin</p>
+            <div className="border-b border-[var(--atlas-line)] px-3 py-2.5">
+              <p className="atlas-micro-label">Admin</p>
+              <p className="text-sm font-semibold text-[var(--atlas-text)]">Enterprise Admin</p>
             </div>
             <AdminAppExitNav variant="sidebar" tone="default" />
             <div className="overflow-y-auto scroll-thin">{renderNav("default")}</div>
@@ -173,13 +178,13 @@ function NavGroup({
   const inverse = tone === "inverse";
 
   return (
-    <div className="mb-2">
+    <div className="mb-1.5">
       <button
         type="button"
-        className={`flex w-full items-center gap-2 rounded-[var(--radius-md)] px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide ${
+        className={`atlas-micro-label flex w-full items-center gap-1.5 rounded-[var(--radius-sm)] px-2 py-1.5 text-left !normal-case tracking-[0.1em] ${
           inverse
             ? "text-white/65 hover:bg-white/10 hover:text-white"
-            : "text-[var(--text-muted)] hover:bg-[var(--surface-muted)]"
+            : "text-[var(--atlas-text-muted)] hover:bg-[var(--surface-muted)]"
         }`}
         aria-expanded={!collapsed}
         onClick={onToggle}
@@ -188,13 +193,13 @@ function NavGroup({
         {group.label}
         {hasActive && collapsed ? (
           <span
-            className={`ml-auto h-1.5 w-1.5 rounded-full ${inverse ? "bg-white" : "bg-[var(--accent-primary)]"}`}
+            className={`ml-auto h-1.5 w-1.5 rounded-full ${inverse ? "bg-white" : "bg-[var(--atlas-signal)]"}`}
             aria-hidden="true"
           />
         ) : null}
       </button>
       {!collapsed ? (
-        <ul className="mt-1 space-y-0.5 pl-2">
+        <ul className="mt-0.5 space-y-0.5 pl-1.5">
           {group.items.map((item) => {
             const active = isNavItemActive(pathname, item);
             return (
@@ -203,14 +208,14 @@ function NavGroup({
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   onClick={onNavigate}
-                  className={`block rounded-[var(--radius-md)] px-3 py-1.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] ${
+                  className={`block rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[13px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--atlas-signal)] ${
                     inverse
                       ? active
-                        ? "bg-white/15 text-white"
+                        ? "bg-white/15 text-white shadow-[inset_2px_0_0_var(--atlas-signal)]"
                         : "text-white/85 hover:bg-white/10 hover:text-white"
                       : active
-                        ? "bg-[var(--surface-muted)] text-[var(--text-link)]"
-                        : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--text-primary)]"
+                        ? "bg-[color-mix(in_srgb,var(--atlas-signal)_12%,var(--surface-muted))] text-[var(--atlas-signal)] shadow-[inset_2px_0_0_var(--atlas-signal)]"
+                        : "text-[var(--atlas-text-secondary)] hover:bg-[var(--surface-muted)] hover:text-[var(--atlas-text)]"
                   }`}
                 >
                   {item.label}

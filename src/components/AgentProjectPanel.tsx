@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
-import { SignalActionDock, SignalButton } from "@/components/fabric";
+import {
+  Download,
+  Eye,
+  GitCommitHorizontal,
+  Rocket,
+} from "lucide-react";
 import type { AgentAppBlueprint } from "@/lib/agent/types";
 import { isLiveApiUiEnabled } from "@/lib/public-docs-mode";
 
@@ -37,89 +42,89 @@ export function AgentProjectPanel({
   const mockPreview = !isLiveApiUiEnabled();
 
   return (
-    <aside
-      className="flex w-[min(420px,38vw)] shrink-0 flex-col border-l border-[var(--border-default)] bg-[var(--surface-sunken)]"
-      data-layout="cx-build-app-panel"
-    >
-      <SignalActionDock
-        className="rounded-none border-x-0 border-t-0"
-        style={{
-          background:
-            "linear-gradient(90deg, color-mix(in srgb, var(--product-orchestrate) 10%, transparent), transparent 50%)",
-        }}
-      >
-        <span className="mr-auto text-xs font-semibold tracking-wide text-[var(--text-heading)]">
-          Build studio
-        </span>
-        {onPreview ? (
-          <SignalButton
-            type="button"
-            variant="toolbar"
-            size="sm"
-            disabled={!app}
-            onClick={onPreview}
-          >
-            Preview
-          </SignalButton>
-        ) : null}
-        {onDeploy ? (
-          <SignalButton
-            type="button"
-            variant="primary"
-            size="sm"
-            disabled={!app || deploying}
-            loading={deploying}
-            onClick={onDeploy}
-          >
-            Deploy
-          </SignalButton>
-        ) : null}
-        {onCommit ? (
-          <SignalButton
-            type="button"
-            variant="toolbar"
-            size="sm"
-            disabled={!app || committing}
-            loading={committing}
-            onClick={onCommit}
-          >
-            Commit
-          </SignalButton>
-        ) : null}
-        {onDownloadZip ? (
-          <SignalButton
-            type="button"
-            variant="toolbar"
-            size="sm"
-            disabled={!app}
-            onClick={onDownloadZip}
-          >
-            Download
-          </SignalButton>
-        ) : null}
-      </SignalActionDock>
+    <aside className="atlas-panel" data-layout="cx-build-app-panel">
+      <div className="atlas-panel__header">
+        <div>
+          <p className="atlas-micro-label" style={{ color: "var(--accent-ai)" }}>
+            Build studio
+          </p>
+          <p className="mt-0.5 truncate text-[11px] text-[var(--text-secondary)]">
+            {app?.title ?? "No project loaded"}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-1">
+          {onPreview ? (
+            <button
+              type="button"
+              disabled={!app}
+              onClick={onPreview}
+              className="atlas-icon-btn"
+              title="Preview"
+              aria-label="Preview"
+            >
+              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          ) : null}
+          {onDeploy ? (
+            <button
+              type="button"
+              disabled={!app || deploying}
+              onClick={onDeploy}
+              className="inline-flex h-8 items-center gap-1 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent-ai)_40%,transparent)] bg-[var(--accent-ai)] px-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-white disabled:opacity-40"
+              title="Deploy"
+            >
+              <Rocket className="h-3 w-3" aria-hidden="true" />
+              {deploying ? "…" : "Deploy"}
+            </button>
+          ) : null}
+          {onCommit ? (
+            <button
+              type="button"
+              disabled={!app || committing}
+              onClick={onCommit}
+              className="atlas-icon-btn"
+              title="Commit"
+              aria-label={committing ? "Committing" : "Commit"}
+            >
+              <GitCommitHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          ) : null}
+          {onDownloadZip ? (
+            <button
+              type="button"
+              disabled={!app}
+              onClick={onDownloadZip}
+              className="atlas-icon-btn"
+              title="Download"
+              aria-label="Download"
+            >
+              <Download className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
+      </div>
 
       {!app ? (
-        <div className="flex flex-1 items-center justify-center p-6 text-center text-xs text-[var(--text-muted)]">
+        <div className="flex flex-1 items-center justify-center p-6 text-center font-mono text-[11px] text-[var(--text-muted)]">
           Ask me to build an app or fetch API examples — your project files will appear here.
         </div>
       ) : (
         <>
-          <div className="border-b border-zinc-200 px-3 py-2 text-[11px] dark:border-zinc-800">
-            <div className="font-semibold text-zinc-800 dark:text-zinc-200">{app.title}</div>
+          <div className="border-b border-[var(--border-subtle)] px-3 py-2 text-[11px]">
+            <div className="font-semibold text-[var(--text-heading)]">{app.title}</div>
             {mockPreview ? (
-              <p className="mt-1 text-amber-700 dark:text-amber-300">
+              <p className="mt-1 text-[var(--warning)]">
                 Preview uses sample data — live API calls need developer credentials.
               </p>
             ) : (
-              <p className="mt-1 text-emerald-700 dark:text-emerald-300">Live API mode available.</p>
+              <p className="mt-1 text-[var(--success)]">Live API mode available.</p>
             )}
             {app.deploymentUrl ? (
               <a
                 href={app.deploymentUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 block truncate text-sky-600 hover:underline"
+                className="mt-1 block truncate font-mono text-[var(--text-link)] hover:underline"
               >
                 {app.deploymentUrl}
               </a>
@@ -127,18 +132,18 @@ export function AgentProjectPanel({
           </div>
 
           <div className="flex min-h-0 flex-1 flex-col">
-            <div className="max-h-36 overflow-y-auto border-b border-zinc-200 p-2 dark:border-zinc-800">
-              <p className="mb-1 text-[10px] font-semibold uppercase text-zinc-400">Files</p>
+            <div className="max-h-36 overflow-y-auto border-b border-[var(--border-subtle)] p-2">
+              <p className="atlas-micro-label mb-1">Files</p>
               <ul className="space-y-0.5">
                 {files.map((f) => (
                   <li key={f.path}>
                     <button
                       type="button"
                       onClick={() => onSelectPath(f.path)}
-                      className={`w-full truncate rounded px-2 py-0.5 text-left font-mono text-[10px] ${
+                      className={`w-full truncate rounded-[var(--radius-sm)] px-2 py-0.5 text-left font-mono text-[10px] ${
                         selected?.path === f.path
-                          ? "bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200"
-                          : "text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                          ? "bg-[var(--accent-ai-soft)] text-[var(--accent-ai)]"
+                          : "text-[var(--text-secondary)] hover:bg-[var(--surface-muted)]"
                       }`}
                     >
                       {f.path}
@@ -150,7 +155,7 @@ export function AgentProjectPanel({
 
             <div className="min-h-0 flex-1 overflow-auto p-2">
               {selected ? (
-                <pre className="whitespace-pre-wrap break-words rounded-lg border border-zinc-200 bg-white p-2 font-mono text-[10px] leading-relaxed dark:border-zinc-800 dark:bg-zinc-950">
+                <pre className="atlas-code-deck whitespace-pre-wrap break-words p-2 font-mono text-[10px] leading-relaxed">
                   {selected.code}
                 </pre>
               ) : null}
@@ -159,14 +164,16 @@ export function AgentProjectPanel({
         </>
       )}
 
-      <div className="h-28 shrink-0 overflow-y-auto border-t border-zinc-200 bg-zinc-100/80 p-2 dark:border-zinc-800 dark:bg-zinc-950/50">
-        <p className="mb-1 text-[10px] font-semibold uppercase text-zinc-400">Activity</p>
+      <div className="h-28 shrink-0 overflow-y-auto border-t border-[var(--border-subtle)] bg-[var(--surface-sunken)] p-2">
+        <p className="atlas-micro-label mb-1">Activity</p>
         {logs.length === 0 ? (
-          <p className="text-[10px] text-zinc-500">Run, deploy, and commit actions appear here.</p>
+          <p className="font-mono text-[10px] text-[var(--text-muted)]">
+            Run, deploy, and commit actions appear here.
+          </p>
         ) : (
           <ul className="space-y-0.5">
             {logs.slice(-8).map((line, i) => (
-              <li key={`${i}-${line}`} className="font-mono text-[10px] text-zinc-600 dark:text-zinc-400">
+              <li key={`${i}-${line}`} className="font-mono text-[10px] text-[var(--text-secondary)]">
                 {line}
               </li>
             ))}

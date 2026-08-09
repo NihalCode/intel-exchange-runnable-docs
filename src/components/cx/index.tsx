@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-/** Shared presentation primitives for the structural Cyware replica (not token-only wrappers). */
+/** Shared presentation primitives — Atlas section/stream language over cx layout markers. */
 
 export function CxPage({
   children,
@@ -25,6 +25,7 @@ export function CxPage({
   return (
     <div
       data-layout={`cx-page-${layout}`}
+      data-atlas-surface="page"
       className={`mx-auto w-full ${width} ${className}`}
     >
       {children}
@@ -53,26 +54,14 @@ export function CxSection({
     <section
       id={id}
       data-layout="cx-section"
-      className={`py-[var(--section-gap)] ${className}`}
+      className={`atlas-section ${className}`}
     >
       {(eyebrow || title || description || actions) && (
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0 max-w-3xl">
-            {eyebrow ? (
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--accent-primary)]">
-                {eyebrow}
-              </p>
-            ) : null}
-            {title ? (
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[var(--text-heading)]">
-                {title}
-              </h2>
-            ) : null}
-            {description ? (
-              <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-                {description}
-              </p>
-            ) : null}
+            {eyebrow ? <p className="atlas-micro-label">{eyebrow}</p> : null}
+            {title ? <h2 className="atlas-section__title">{title}</h2> : null}
+            {description ? <p className="atlas-section__lede">{description}</p> : null}
           </div>
           {actions ? <div className="shrink-0">{actions}</div> : null}
         </div>
@@ -107,7 +96,7 @@ export function CxProductCard({
     <Link
       href={href}
       data-layout="cx-product-card"
-      className={`sf-product-module group flex h-full flex-col p-5 ${accentClass ?? ""}`}
+      className={`atlas-product-node group flex h-full flex-col ${accentClass ?? ""}`}
     >
       <div
         data-layout="cx-product-card-mark-row"
@@ -130,12 +119,10 @@ export function CxProductCard({
         )}
         {meta ? <div className="shrink-0 whitespace-nowrap">{meta}</div> : null}
       </div>
-      <h3 className="mt-4 min-h-[2.75rem] text-base font-semibold leading-snug text-[var(--text-heading)] group-hover:text-[var(--text-link)] line-clamp-2">
+      <h3 className="atlas-product-node__name mt-4 min-h-[2.75rem] line-clamp-2 group-hover:text-[var(--text-link)]">
         {title}
       </h3>
-      <p className="mt-2 flex-1 text-sm leading-6 text-[var(--text-secondary)] line-clamp-3">
-        {description}
-      </p>
+      <p className="atlas-product-node__desc mt-2 flex-1 line-clamp-3">{description}</p>
       {footer ? (
         <p className="mt-4 text-sm font-medium text-[var(--text-link)]">{footer}</p>
       ) : null}
@@ -151,15 +138,14 @@ export function CxFooter() {
     >
       <div className="mx-auto grid max-w-[var(--hub-max)] gap-8 px-4 py-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-4">
         <div>
-          <p className="text-sm font-semibold text-[var(--text-heading)]">Cyware Documentation</p>
+          <p className="atlas-micro-label">Living Signal Atlas</p>
+          <p className="mt-2 text-sm font-semibold text-[var(--text-heading)]">Cyware Documentation</p>
           <p className="mt-2 text-xs leading-5 text-[var(--text-secondary)]">
             API references, guides, and runnable examples for Cyware products.
           </p>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-            Explore
-          </p>
+          <p className="atlas-micro-label">Explore</p>
           <ul className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
             <li>
               <Link href="/" className="hover:text-[var(--text-link)]">
@@ -179,9 +165,7 @@ export function CxFooter() {
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-            Workspace
-          </p>
+          <p className="atlas-micro-label">Workspace</p>
           <ul className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
             <li>
               <Link href="/agent" className="hover:text-[var(--text-link)]">
@@ -201,9 +185,7 @@ export function CxFooter() {
           </ul>
         </div>
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-            Products
-          </p>
+          <p className="atlas-micro-label">Products</p>
           <ul className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
             <li>
               <Link href="/docs/ctix" className="hover:text-[var(--text-link)]">
@@ -286,10 +268,9 @@ export function CxToolbar({
       className="flex flex-wrap items-end justify-between gap-3 border-b border-[var(--border-subtle)] pb-4"
     >
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold text-[var(--text-heading)]">{title}</h1>
-        {description ? (
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
-        ) : null}
+        <p className="atlas-micro-label">Workbench</p>
+        <h1 className="atlas-section__title text-xl">{title}</h1>
+        {description ? <p className="atlas-section__lede mt-1">{description}</p> : null}
       </div>
       {children ? <div className="flex flex-wrap items-center gap-2">{children}</div> : null}
     </div>

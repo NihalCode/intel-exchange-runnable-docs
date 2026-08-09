@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Rocket, X } from "lucide-react";
 import { CodeBlock } from "./CodeBlock";
 import type { AgentAppBlueprint, AppBlueprintFile } from "@/lib/agent/types";
 import type { CodeSnippet } from "@/lib/types";
@@ -172,24 +173,31 @@ export function AgentDeployModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="deploy-to-vercel-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--surface-overlay)] p-4"
     >
-      <div className="w-full max-w-lg rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="flex items-center justify-between border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
-          <h2 id="deploy-to-vercel-title" className="text-sm font-semibold">Deploy to Vercel</h2>
-          <button type="button" aria-label="Close deploy dialog" onClick={onClose} className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200">
-            <CloseIcon />
+      <div className="atlas-panel w-full max-w-lg shadow-[var(--shadow-floating)]">
+        <div className="atlas-panel__header">
+          <div>
+            <p className="atlas-micro-label" style={{ color: "var(--accent-ai)" }}>
+              Deploy
+            </p>
+            <h2 id="deploy-to-vercel-title" className="text-sm font-semibold text-[var(--text-heading)]">
+              Deploy to Vercel
+            </h2>
+          </div>
+          <button type="button" aria-label="Close deploy dialog" onClick={onClose} className="atlas-icon-btn">
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
         {result ? (
           <div className="space-y-4 p-5">
-            <div className="rounded-lg border border-emerald-300 bg-emerald-50 p-3 dark:border-emerald-800 dark:bg-emerald-950/30">
-              <p className="font-semibold text-emerald-800 dark:text-emerald-200">Deployment started!</p>
-              <p className="mt-1 text-xs text-emerald-700 dark:text-emerald-300">{result.message}</p>
+            <div className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--success)_40%,var(--border-subtle))] bg-[var(--success-soft)] p-3">
+              <p className="font-semibold text-[var(--success)]">Deployment started!</p>
+              <p className="mt-1 text-xs text-[var(--text-secondary)]">{result.message}</p>
             </div>
             {result.warnings && result.warnings.length > 0 ? (
-              <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
+              <div className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--warning)_45%,var(--border-subtle))] bg-[var(--warning-soft)] p-3 text-xs text-[var(--warning)]">
                 <p className="font-semibold">Auto-repaired before deploy</p>
                 <ul className="mt-1 list-disc space-y-0.5 pl-4">
                   {result.warnings.map((w) => (
@@ -203,7 +211,7 @@ export function AgentDeployModal({
                 href={result.url}
                 target="_blank"
                 rel="noreferrer"
-                className="block truncate rounded-lg border border-sky-300 bg-sky-50 px-3 py-2 font-mono text-sm text-sky-700 hover:underline dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-300"
+                className="block truncate rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--accent-ai)_35%,var(--border-subtle))] bg-[var(--accent-ai-soft)] px-3 py-2 font-mono text-sm text-[var(--accent-ai)] hover:underline"
               >
                 {result.url}
               </a>
@@ -213,23 +221,27 @@ export function AgentDeployModal({
                 href={result.inspectorUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="block text-xs text-zinc-500 hover:underline"
+                className="block font-mono text-xs text-[var(--text-muted)] hover:underline"
               >
                 View in Vercel dashboard →
               </a>
             )}
-            <button type="button" onClick={onClose} className="rounded-lg border border-zinc-300 px-3 py-1.5 text-xs dark:border-zinc-700">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-[var(--radius-sm)] border border-[var(--border-default)] px-3 py-1.5 text-xs text-[var(--text-secondary)]"
+            >
               Close
             </button>
           </div>
         ) : (
           <div className="space-y-4 p-5">
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs text-[var(--text-secondary)]">
               Credentials are kept in memory for this browser session only — not written to disk.
               {credentialsSaved ? " Saved values are pre-filled below." : ""}
             </p>
 
-            <div className="rounded-md border border-amber-300/60 bg-amber-50/60 p-2.5 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+            <div className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--warning)_40%,var(--border-subtle))] bg-[var(--warning-soft)] p-2.5 text-xs text-[var(--warning)]">
               Get a Vercel token at{" "}
               <a
                 href="https://vercel.com/account/tokens"
@@ -243,18 +255,20 @@ export function AgentDeployModal({
             </div>
 
             <label className="block text-xs">
-              <span className="mb-1 block font-semibold">Vercel Token <span className="text-red-500">*</span></span>
+              <span className="atlas-micro-label mb-1">
+                Vercel Token <span className="text-[var(--danger)]">*</span>
+              </span>
               <input
                 type="password"
                 value={form.vercelToken}
                 onChange={set("vercelToken")}
                 placeholder="vercel_xxxxxxxxxxxx"
-                className="w-full rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-700 dark:bg-zinc-900"
+                className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2.5 py-1.5 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-ai)]"
               />
             </label>
 
-            <div className="border-t border-zinc-100 pt-3 dark:border-zinc-800">
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Cyware credentials (for deployed app)</p>
+            <div className="border-t border-[var(--border-subtle)] pt-3">
+              <p className="atlas-micro-label mb-2">Cyware credentials (for deployed app)</p>
               <div className="space-y-2">
                 {[
                   { key: "baseUrl" as const, label: "CYWARE_BASE_URL", placeholder: "https://your-tenant.cyware.com/ctixapi" },
@@ -262,13 +276,15 @@ export function AgentDeployModal({
                   { key: "secretKey" as const, label: "CYWARE_SECRET_KEY", placeholder: "Your Secret Key" },
                 ].map(({ key, label, placeholder }) => (
                   <label key={key} className="block text-xs">
-                    <span className="mb-1 block font-semibold">{label} <span className="text-red-500">*</span></span>
+                    <span className="mb-1 block font-mono text-[11px] font-semibold text-[var(--text-secondary)]">
+                      {label} <span className="text-[var(--danger)]">*</span>
+                    </span>
                     <input
                       type={key === "secretKey" ? "password" : "text"}
                       value={form[key]}
                       onChange={set(key)}
                       placeholder={placeholder}
-                      className="w-full rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-700 dark:bg-zinc-900"
+                      className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2.5 py-1.5 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--accent-ai)]"
                     />
                   </label>
                 ))}
@@ -276,7 +292,10 @@ export function AgentDeployModal({
             </div>
 
             {error && (
-              <div role="alert" className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
+              <div
+                role="alert"
+                className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--danger)_40%,var(--border-subtle))] bg-[var(--danger-soft)] px-3 py-2 text-xs text-[var(--danger)]"
+              >
                 {error}
               </div>
             )}
@@ -286,11 +305,16 @@ export function AgentDeployModal({
                 type="button"
                 onClick={deploy}
                 disabled={loading || !form.vercelToken || !form.baseUrl || !form.accessId || !form.secretKey}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--accent-ai)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
               >
+                <Rocket className="h-3.5 w-3.5" aria-hidden="true" />
                 {loading ? "Deploying…" : "Deploy now"}
               </button>
-              <button type="button" onClick={onClose} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm dark:border-zinc-700">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-[var(--radius-sm)] border border-[var(--border-default)] px-4 py-2 text-sm text-[var(--text-secondary)]"
+              >
                 Cancel
               </button>
             </div>
@@ -486,10 +510,3 @@ function VercelIcon() {
   );
 }
 
-function CloseIcon() {
-  return (
-    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" />
-    </svg>
-  );
-}

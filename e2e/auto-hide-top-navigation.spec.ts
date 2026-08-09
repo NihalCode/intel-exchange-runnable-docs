@@ -1,42 +1,14 @@
 import { test, expect, type Page } from "@playwright/test";
 
-async function expectChromeVisible(page: Page, visible: boolean) {
-  const chrome = page.getByTestId("top-chrome");
-  await expect(chrome).toHaveAttribute("data-visible", visible ? "true" : "false", {
-    timeout: 8000,
-  });
-}
+/**
+ * Atlas shell navigation — auto-hide top chrome is retired.
+ * Covers command rail/bar presence, Ctrl/Cmd+K palette, and mobile drawer.
+ */
 
-async function waitForDesktopAutoHide(page: Page) {
-  await expect(page.getByTestId("top-chrome")).toHaveAttribute("data-auto-hide", "true", {
-    timeout: 8000,
-  });
-}
-
-async function scrollAwayFromTop(page: Page) {
-  await page.evaluate(() => {
-    // Guarantee scrollable document height (short pages / hub shells).
-    let pad = document.querySelector<HTMLElement>("[data-testid='e2e-scroll-pad']");
-    if (!pad) {
-      pad = document.createElement("div");
-      pad.setAttribute("data-testid", "e2e-scroll-pad");
-      pad.style.height = "2400px";
-      pad.setAttribute("aria-hidden", "true");
-      document.body.appendChild(pad);
-    }
-    window.scrollTo(0, 1400);
-    document.documentElement.scrollTop = 1400;
-    document.body.scrollTop = 1400;
-    window.dispatchEvent(new Event("scroll", { bubbles: true }));
-  });
-  await page.waitForFunction(() => {
-    const y =
-      window.scrollY ||
-      document.documentElement.scrollTop ||
-      document.body.scrollTop ||
-      0;
-    return y > 100;
-  });
+async function expectAtlasShell(page: Page) {
+  const frame = page.getByTestId("app-frame");
+  await expect(frame).toHaveAttribute("data-atlas", "true");
+  await expect(page.getByTestId("atlas-command-bar")).toBeVisible();
 }
 
 async function pressSearchShortcut(page: Page) {
@@ -44,123 +16,83 @@ async function pressSearchShortcut(page: Page) {
   await page.keyboard.press(isMac ? "Meta+K" : "Control+K");
 }
 
-test.describe("premium auto-hide top navigation — production hard checks", () => {
+async function expectCommandPaletteOpen(page: Page) {
+  const palette = page.getByTestId("command-palette");
+  await expect(palette).toBeVisible({ timeout: 8000 });
+  await expect(palette.locator("input").first()).toBeFocused();
+}
+
+test.describe("Atlas shell navigation — desktop", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test("docs: hide on scroll, reveal on zone, re-entry cancels hide, Ctrl/Cmd+K focuses search", async ({
-    page,
-  }) => {
+  test("docs: atlas frame, command rail/bar, Ctrl/Cmd+K opens palette", async ({ page }) => {
     await page.goto("/docs/ctix");
-    await waitForDesktopAutoHide(page);
-    await expectChromeVisible(page, true);
-
-    await scrollAwayFromTop(page);
-    await expectChromeVisible(page, false);
-
-    const zone = page.getByTestId("top-chrome-activation-zone");
-    await zone.hover({ force: true, position: { x: 80, y: 3 } });
-    await expectChromeVisible(page, true);
-
-    // Move into chrome (not away) — must stay visible through hide-delay window
-    await page.getByTestId("top-chrome").hover({ position: { x: 200, y: 20 } });
-    await page.waitForTimeout(850);
-    await expectChromeVisible(page, true);
-
-    // Leave chrome entirely — hide only after the dwell delay (~750ms)
-    await page.mouse.move(400, 500);
-    await page.waitForTimeout(400);
-    await expectChromeVisible(page, true);
-    await expectChromeVisible(page, false);
+    await expectAtlasShell(page);
+    await expect(page.getByTestId("atlas-command-rail")).toBeVisible();
 
     await pressSearchShortcut(page);
-    await expectChromeVisible(page, true);
-    const search = page.getByTestId("docs-search").locator('input[type="search"]');
-    await expect(search).toBeFocused();
-    await search.fill("indicator");
-    await expect(page.locator('[data-layout="cx-search-overlay"]')).toBeVisible({
-      timeout: 8000,
-    });
+    await expectCommandPaletteOpen(page);
+
+    await page.keyboard.type("indicator");
+    await expect(page.getByTestId("command-palette")).toBeVisible();
 
     await page.keyboard.press("Escape");
-    await expect(page.locator('[data-layout="cx-search-overlay"]')).toHaveCount(0);
+    await expect(page.getByTestId("command-palette")).toHaveCount(0);
   });
 
-  test("product selector focus pins chrome while scrolled", async ({ page }) => {
-    await page.goto("/docs/ctix");
-    await waitForDesktopAutoHide(page);
-    await scrollAwayFromTop(page);
-    await expectChromeVisible(page, false);
-
-    const product = page.getByLabel("Active documentation product");
-    // Keyboard focus (no pointer over chrome) must pin while scrolled.
-    await product.focus();
-    await expectChromeVisible(page, true);
-    await page.waitForTimeout(850);
-    await expectChromeVisible(page, true);
-
-    await product.evaluate((el: HTMLSelectElement) => el.blur());
-    // Blur alone is enough when the pointer is not over chrome.
-    await expectChromeVisible(page, false);
-  });
-
-  test("keyboard focus keeps chrome visible; Tab does not lose controls", async ({
+  test("keyboard: Tab reaches command-bar search trigger after palette dismiss", async ({
     page,
   }) => {
     await page.goto("/guides");
-    await waitForDesktopAutoHide(page);
-    await scrollAwayFromTop(page);
-    await expectChromeVisible(page, false);
+    await expectAtlasShell(page);
 
     await pressSearchShortcut(page);
-    await expectChromeVisible(page, true);
-    const search = page.getByTestId("docs-search").locator('input[type="search"]');
-    await expect(search).toBeFocused();
+    await expectCommandPaletteOpen(page);
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("command-palette")).toHaveCount(0);
+
+    const trigger = page.getByTestId("atlas-search-trigger");
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
     await page.keyboard.press("Tab");
-    await expectChromeVisible(page, true);
+    // Theme toggle or auth control should receive focus — stay within command bar.
+    const bar = page.getByTestId("atlas-command-bar");
+    await expect(bar.locator(":focus")).toHaveCount(1);
   });
 
   for (const path of ["/docs/ctix/ping/ping", "/agent", "/authentication", "/changelog"]) {
-    test(`route ${path}: Ctrl/Cmd+K reveals and focuses Search docs`, async ({ page }) => {
+    test(`route ${path}: Ctrl/Cmd+K opens command palette (preferPlainShortcut)`, async ({
+      page,
+    }) => {
       await page.goto(path);
-      await waitForDesktopAutoHide(page);
-      await scrollAwayFromTop(page);
+      await expectAtlasShell(page);
       await pressSearchShortcut(page);
-      await expectChromeVisible(page, true);
-      await expect(
-        page.getByTestId("docs-search").locator('input[type="search"]')
-      ).toBeFocused();
+      await expectCommandPaletteOpen(page);
     });
   }
 
-  test("no duplicate shortcut: plain Ctrl/Cmd+K does not open command palette", async ({
-    page,
-  }) => {
+  test("preferPlainShortcut: plain Ctrl/Cmd+K opens command palette", async ({ page }) => {
     await page.goto("/docs/ctix");
-    await waitForDesktopAutoHide(page);
+    await expectAtlasShell(page);
     await pressSearchShortcut(page);
-    await expect(page.getByTestId("command-palette")).toHaveCount(0);
-    await expect(
-      page.getByTestId("docs-search").locator('input[type="search"]')
-    ).toBeFocused();
+    await expect(page.getByTestId("command-palette")).toBeVisible({ timeout: 8000 });
   });
 
-  test("reduced motion: chrome still toggles visibility attributes", async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
+  test("product selector remains usable without top-chrome pin semantics", async ({ page }) => {
     await page.goto("/docs/ctix");
-    await waitForDesktopAutoHide(page);
-    await scrollAwayFromTop(page);
-    await expectChromeVisible(page, false);
-    await pressSearchShortcut(page);
-    await expectChromeVisible(page, true);
+    await expectAtlasShell(page);
+    const product = page.getByLabel("Active documentation product");
+    await product.focus();
+    await expect(product).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("atlas-command-bar")).toBeVisible();
   });
 
-  test("light mode: tuck-away works after theme toggle click (focus must not stick)", async ({
-    page,
-  }) => {
+  test("theme toggle still switches dark/light (dark-first default)", async ({ page }) => {
     await page.goto("/docs/ctix/ping/ping");
-    await waitForDesktopAutoHide(page);
+    await expectAtlasShell(page);
 
-    // Force dark first so the toggle click switches into light (user repro path).
+    // Atlas defaults dark; click toggle into light then back.
     await page.evaluate(() => {
       document.documentElement.classList.add("dark");
       try {
@@ -175,43 +107,30 @@ test.describe("premium auto-hide top navigation — production hard checks", () 
       .poll(async () => page.evaluate(() => document.documentElement.classList.contains("dark")))
       .toBe(false);
 
-    // Move pointer off chrome so stuck hover cannot mask the scroll reconcile.
-    await page.mouse.move(400, 500);
-    await scrollAwayFromTop(page);
-    await expectChromeVisible(page, false);
-    await expect(page.getByTestId("top-chrome")).toHaveAttribute("data-pin-count", "0");
-
+    await toggle.click();
     await expect
-      .poll(async () =>
-        page.evaluate(() => {
-          const c = document.querySelector<HTMLElement>('[data-testid="top-chrome"]');
-          if (!c) return null;
-          return Number(getComputedStyle(c).opacity);
-        })
-      )
-      .toBe(0);
+      .poll(async () => page.evaluate(() => document.documentElement.classList.contains("dark")))
+      .toBe(true);
+
+    // No retired top-chrome visibility attributes.
+    await expect(page.getByTestId("top-chrome")).toHaveCount(0);
   });
 });
 
-test.describe("auto-hide mobile — no hover dependency", () => {
+test.describe("Atlas shell navigation — mobile", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("compact bar stays visible after scroll; drawer + search work", async ({ page }) => {
+  test("nav-drawer-toggle opens drawer; Ctrl/Cmd+K opens palette", async ({ page }) => {
     await page.goto("/docs/ctix");
-    const chrome = page.getByTestId("top-chrome");
-    await expect(chrome).toHaveAttribute("data-auto-hide", "false");
-    await expectChromeVisible(page, true);
-    await scrollAwayFromTop(page);
-    await page.waitForTimeout(400);
-    await expectChromeVisible(page, true);
+    await expect(page.getByTestId("app-frame")).toHaveAttribute("data-atlas", "true");
+    await expect(page.getByTestId("atlas-command-bar")).toBeVisible();
 
     await page.getByTestId("nav-drawer-toggle").click();
-    await expect(page.getByLabel("Documentation navigation")).toBeVisible();
+    await expect(page.getByLabel("Command navigation")).toBeVisible();
     await page.keyboard.press("Escape");
+    await expect(page.getByLabel("Command navigation")).toHaveCount(0);
 
     await pressSearchShortcut(page);
-    await expect(
-      page.getByTestId("docs-search").locator('input[type="search"]')
-    ).toBeFocused();
+    await expectCommandPaletteOpen(page);
   });
 });

@@ -8,11 +8,11 @@ describe("StatusBadge helpers", () => {
   });
 
   it("returns known status styles", () => {
-    expect(statusBadgeClass("active")).toContain("emerald");
-    expect(statusBadgeClass("rejected")).toContain("red");
+    expect(statusBadgeClass("active")).toContain("atlas-signal");
+    expect(statusBadgeClass("rejected")).toContain("atlas-danger");
   });
 
-  it("falls back to sky for unknown statuses", () => {
-    expect(statusBadgeClass("custom_state")).toContain("sky");
+  it("falls back to violet for unknown statuses", () => {
+    expect(statusBadgeClass("custom_state")).toContain("atlas-violet");
   });
 });

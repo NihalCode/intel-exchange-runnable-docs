@@ -2,13 +2,9 @@
 
 import { useState } from "react";
 
+import { SignalButton, SignalCheckbox, SignalInput } from "@/components/fabric";
 import type { OrganizationSecuritySettings } from "@/lib/enterprise/security-settings";
 import type { SecuritySettingsRecord } from "@/lib/enterprise/security-settings";
-
-const inputClass =
-  "rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-sky-600 dark:border-zinc-700 dark:bg-zinc-950";
-const buttonClass =
-  "rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white hover:bg-sky-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
 
 interface Props {
   initial: SecuritySettingsRecord;
@@ -58,16 +54,24 @@ export function SecuritySettingsForm({ initial }: Props) {
   }
 
   return (
-    <section aria-labelledby="security-settings-heading">
-      <h2 id="security-settings-heading" className="text-xl font-semibold">
+    <section
+      aria-labelledby="security-settings-heading"
+      className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] border-l-2 border-l-[var(--atlas-amber)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4"
+      data-layout="sf-security-policy-form"
+    >
+      <p className="atlas-micro-label text-[var(--atlas-amber)]">Policy controls</p>
+      <h2
+        id="security-settings-heading"
+        className="mt-1 text-sm font-semibold text-[var(--atlas-text)]"
+      >
         Organization security settings
       </h2>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">
-        These controls apply to Documentation Agent administration. Values are
-        sanitized before persistence and never include secrets.
+      <p className="mt-2 text-sm text-[var(--atlas-text-secondary)]">
+        These controls apply to Documentation Agent administration. Values are sanitized before
+        persistence and never include secrets.
       </p>
       <p
-        className="mt-3 rounded-md border border-zinc-200 px-3 py-2 text-sm dark:border-zinc-800"
+        className="mt-3 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--surface-sunken)] px-3 py-2 text-sm text-[var(--atlas-text-secondary)]"
         role="status"
         aria-live="polite"
       >
@@ -80,64 +84,52 @@ export function SecuritySettingsForm({ initial }: Props) {
           void save();
         }}
       >
-        <label className="flex items-center gap-3 text-sm">
-          <input
-            type="checkbox"
-            checked={form.mfaRequired}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                mfaRequired: event.target.checked,
-              }))
-            }
-          />
-          Require MFA for privileged Documentation Agent operations
-        </label>
-        <label className="flex items-center gap-3 text-sm">
-          <input
-            type="checkbox"
-            checked={form.outboundUrlValidationEnabled}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                outboundUrlValidationEnabled: event.target.checked,
-              }))
-            }
-          />
-          Validate outbound URLs through the control-plane proxy
-        </label>
-        <label className="grid gap-1 text-sm">
-          Audit retention (days)
-          <input
-            className={inputClass}
-            type="number"
-            min={7}
-            max={3650}
-            value={form.auditRetentionDays}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                auditRetentionDays: Number(event.target.value),
-              }))
-            }
-          />
-        </label>
-        <label className="flex items-center gap-3 text-sm">
-          <input
-            type="checkbox"
-            checked={form.emergencyOverrideRequiresReason}
-            onChange={(event) =>
-              setForm((current) => ({
-                ...current,
-                emergencyOverrideRequiresReason: event.target.checked,
-              }))
-            }
-          />
-          Emergency override requires a documented reason
-        </label>
-        <button className={`${buttonClass} justify-self-start`} disabled={busy} type="submit">
+        <SignalCheckbox
+          checked={form.mfaRequired}
+          onChange={(event) =>
+            setForm((current) => ({
+              ...current,
+              mfaRequired: event.target.checked,
+            }))
+          }
+          label="Require MFA for privileged Documentation Agent operations"
+        />
+        <SignalCheckbox
+          checked={form.outboundUrlValidationEnabled}
+          onChange={(event) =>
+            setForm((current) => ({
+              ...current,
+              outboundUrlValidationEnabled: event.target.checked,
+            }))
+          }
+          label="Validate outbound URLs through the control-plane proxy"
+        />
+        <SignalInput
+          label="Audit retention (days)"
+          type="number"
+          min={7}
+          max={3650}
+          value={form.auditRetentionDays}
+          onChange={(event) =>
+            setForm((current) => ({
+              ...current,
+              auditRetentionDays: Number(event.target.value),
+            }))
+          }
+        />
+        <SignalCheckbox
+          checked={form.emergencyOverrideRequiresReason}
+          onChange={(event) =>
+            setForm((current) => ({
+              ...current,
+              emergencyOverrideRequiresReason: event.target.checked,
+            }))
+          }
+          label="Emergency override requires a documented reason"
+        />
+        <SignalButton type="submit" disabled={busy} loading={busy} className="justify-self-start">
           Save settings
-        </button>
+        </SignalButton>
       </form>
     </section>
   );

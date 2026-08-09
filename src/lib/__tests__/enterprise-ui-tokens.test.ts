@@ -66,14 +66,20 @@ describe("enterprise UI tokens and frame naming", () => {
     }
   });
 
-  it("AppFrame brands with cyware_logo and skip link", () => {
+  it("AppFrame is Atlas shell with skip link and command surfaces", () => {
     const src = readFileSync(path.join(process.cwd(), "src/components/AppFrame.tsx"), "utf8");
-    expect(src).toContain("/cyware_logo.png");
+    const bar = readFileSync(path.join(process.cwd(), "src/components/atlas/CommandBar.tsx"), "utf8");
+    const rail = readFileSync(path.join(process.cwd(), "src/components/atlas/CommandRail.tsx"), "utf8");
     expect(src).toContain("skip-link");
-    expect(src).toContain("ThemeToggle");
-    expect(src).toContain("Ask AI");
     expect(src).toContain('data-testid="app-frame"');
-    expect(src).toContain('data-testid="mobile-drawer-workspace"');
+    expect(src).toContain('data-atlas="true"');
+    expect(src).toContain("CommandPalette");
+    expect(src).toContain("preferPlainShortcut");
+    expect(bar).toContain("ThemeToggle");
+    expect(bar).toContain('data-testid="atlas-command-bar"');
+    expect(bar).toContain('data-testid="nav-drawer-toggle"');
+    expect(rail).toContain('data-testid="atlas-command-rail"');
+    expect(src).not.toContain("AutoHideTopChrome");
   });
 
   it("enterprise_ui_v2 feature key exists and defaults ON", () => {
@@ -81,10 +87,19 @@ describe("enterprise UI tokens and frame naming", () => {
     expect(defaultDocumentationFeatureEnabled("enterprise_ui_v2")).toBe(true);
   });
 
-  it("home hub uses DocsSearch (not hard POST to /docs/ctix)", () => {
+  it("home hub uses Atlas CTAs (not hard POST to /docs/ctix)", () => {
     const home = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
-    expect(home).toContain("DocsSearch");
+    expect(home).toContain('data-testid="home-ask-ai"');
+    expect(home).toContain('href="/docs/ctix"');
     expect(home).not.toMatch(/action=["']\/docs\/ctix["']/);
+  });
+
+  it("theme-init defaults dark-first (Atlas)", () => {
+    const theme = readFileSync(path.join(process.cwd(), "public/theme-init.js"), "utf8");
+    const toggle = readFileSync(path.join(process.cwd(), "src/components/ui/ThemeToggle.tsx"), "utf8");
+    expect(theme).toContain("dark-first");
+    expect(theme).toContain('classList.add("dark")');
+    expect(toggle).toContain("return true");
   });
 
   it("agent feedback and empty state avoid emoji markers", () => {

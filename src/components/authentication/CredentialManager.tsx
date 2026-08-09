@@ -316,29 +316,41 @@ export function CredentialManager() {
 
   const localPreview = authState.authProvider === "disabled";
 
+  const fieldClass =
+    "mt-1 w-full rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--atlas-deep)] px-3 py-2 font-mono text-sm text-[var(--atlas-text)]";
+
   return (
     <div
-      className="mx-auto max-w-2xl space-y-6"
+      className="atlas-credential-vault mx-auto max-w-2xl space-y-4"
       data-testid="credential-manager"
       data-layout="cx-credential-workspace"
     >
+      <div className="border-b border-[var(--atlas-line)] pb-3">
+        <p className="atlas-micro-label text-[var(--atlas-signal)]">Operational vault</p>
+        <h1 className="mt-1 text-lg font-semibold tracking-[-0.02em] text-[var(--atlas-text)]">
+          Product credentials
+        </h1>
+        <p className="mt-1 text-xs text-[var(--atlas-text-muted)]">
+          Secrets stay in memory for this tab only — never persisted to local storage.
+        </p>
+      </div>
+
       {localPreview ? (
         <p
-          className="rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--text-secondary)]"
+          className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--surface-sunken)] px-3 py-2 text-xs text-[var(--atlas-text-secondary)]"
           role="status"
         >
           Local preview mode — credentials are optional for reading docs and Ask AI. Connect a
           product here to run live API calls from code snippets.
         </p>
       ) : null}
-      <div className="cx-card bg-[var(--surface-sunken)] p-4">
-        <label className="block text-xs font-semibold text-[var(--text-secondary)]">
-          Product
-        </label>
+
+      <div className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_92%,transparent)] p-4">
+        <label className="atlas-micro-label">Product bay</label>
         <select
           value={selectedProductId}
           onChange={(event) => setSelectedProductId(event.target.value as ProductId)}
-          className="mt-2 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2 text-sm font-medium text-[var(--text-primary)]"
+          className="mt-2 w-full rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--atlas-deep)] px-3 py-2 text-sm font-medium text-[var(--atlas-text)]"
         >
           {PRODUCTS.map((item) => {
             const itemCredential = credentials.find((entry) => entry.productId === item.id);
@@ -356,23 +368,24 @@ export function CredentialManager() {
             );
           })}
         </select>
-        <p className="mt-2 text-xs text-[var(--text-muted)]">
+        <p className="mt-2 font-mono text-[11px] text-[var(--atlas-text-muted)]">
           {connectedCount} of {PRODUCTS.length} products connected. Select a product to view or
           update its credentials.
         </p>
       </div>
 
-      <section className="cx-card p-5">
+      <section className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-5 shadow-[inset_0_1px_0_color-mix(in_srgb,var(--atlas-signal)_12%,transparent)]">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-semibold text-[var(--text-heading)]">{product.label}</h2>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">{product.hint}</p>
+            <p className="atlas-micro-label">Vault slot</p>
+            <h2 className="mt-1 font-semibold text-[var(--atlas-text)]">{product.label}</h2>
+            <p className="mt-1 text-xs text-[var(--atlas-text-muted)]">{product.hint}</p>
           </div>
           <span
-            className={`rounded-full px-2 py-0.5 text-xs ${
+            className={`atlas-threat-badge rounded-[var(--radius-sm)] ${
               credential?.status === "valid"
-                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                : "bg-[var(--surface-muted)] text-[var(--text-secondary)]"
+                ? "atlas-threat-badge--signal"
+                : "atlas-threat-badge--muted"
             }`}
           >
             {statusLabel(credential?.status)}
@@ -380,7 +393,7 @@ export function CredentialManager() {
         </div>
 
         {credential ? (
-          <div className="mt-4 space-y-1 text-xs text-[var(--text-secondary)]">
+          <div className="mt-4 space-y-1 border-t border-[var(--atlas-line)] pt-3 font-mono text-[11px] text-[var(--atlas-text-secondary)]">
             <p className="break-all">Base URL: {credential.baseUrl}</p>
             <p>
               Last validated:{" "}
@@ -404,38 +417,38 @@ export function CredentialManager() {
         ) : null}
 
         <div className="mt-4 space-y-3">
-          <label className="block text-xs text-[var(--text-secondary)]">
-            <span>Environment / Base URL</span>
+          <label className="block text-xs text-[var(--atlas-text-secondary)]">
+            <span className="atlas-micro-label !inline">Environment / Base URL</span>
             <input
               value={form.baseUrl}
               onChange={(event) => update(product.id, "baseUrl", event.target.value)}
               placeholder="https://your-tenant.cyware.com/…"
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-transparent px-3 py-2 text-sm text-[var(--text-primary)]"
+              className={fieldClass}
             />
           </label>
-          <label className="block text-xs text-[var(--text-secondary)]">
-            <span>Access ID</span>
+          <label className="block text-xs text-[var(--atlas-text-secondary)]">
+            <span className="atlas-micro-label !inline">Access ID</span>
             <input
               value={form.accessId}
               onChange={(event) => update(product.id, "accessId", event.target.value)}
               autoComplete="off"
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-transparent px-3 py-2 text-sm text-[var(--text-primary)]"
+              className={fieldClass}
             />
           </label>
-          <label className="block text-xs text-[var(--text-secondary)]">
-            <span>Secret Key</span>
+          <label className="block text-xs text-[var(--atlas-text-secondary)]">
+            <span className="atlas-micro-label !inline">Secret Key</span>
             <input
               type="password"
               value={form.secretKey}
               onChange={(event) => update(product.id, "secretKey", event.target.value)}
               autoComplete="new-password"
-              className="mt-1 w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-transparent px-3 py-2 text-sm text-[var(--text-primary)]"
+              className={fieldClass}
             />
           </label>
         </div>
 
         {message[product.id] ? (
-          <p className="mt-3 text-xs text-[var(--text-secondary)]" role="status">
+          <p className="mt-3 text-xs text-[var(--atlas-text-secondary)]" role="status">
             {message[product.id]}
           </p>
         ) : null}
@@ -445,7 +458,7 @@ export function CredentialManager() {
             type="button"
             disabled={busy === product.id}
             onClick={() => void connect(product.id)}
-            className="rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-3 py-2 text-xs font-medium text-white hover:bg-[var(--accent-primary-hover)] disabled:opacity-50"
+            className="atlas-btn-primary rounded-[var(--radius-sm)] px-3 py-2 text-xs disabled:opacity-50"
           >
             {busy === product.id ? "Testing…" : "Test & connect"}
           </button>
@@ -454,7 +467,7 @@ export function CredentialManager() {
               type="button"
               disabled={busy === product.id}
               onClick={() => void disconnect(product.id)}
-              className="rounded-[var(--radius-md)] border border-[var(--border-default)] px-3 py-2 text-xs text-[var(--text-primary)]"
+              className="atlas-btn-ghost rounded-[var(--radius-sm)] px-3 py-2 text-xs disabled:opacity-50"
             >
               Disconnect
             </button>

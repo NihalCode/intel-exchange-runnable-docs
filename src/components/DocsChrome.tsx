@@ -7,7 +7,11 @@ export function DocsBreadcrumbs({
 }) {
   if (!items.length) return null;
   return (
-    <nav aria-label="Breadcrumb" className="mb-4 text-xs text-[var(--text-muted)]" data-testid="docs-breadcrumbs">
+    <nav
+      aria-label="Breadcrumb"
+      className="mb-4 font-mono text-[11px] tracking-wide text-[var(--text-muted)]"
+      data-testid="docs-breadcrumbs"
+    >
       <ol className="flex flex-wrap items-center gap-1">
         {items.map((item, i) => (
           <li key={`${item.label}-${i}`} className="flex items-center gap-1">
@@ -43,9 +47,7 @@ export function DocsToc({
         data-testid="docs-toc"
         data-layout="cx-toc-rail"
       >
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-          On this page
-        </p>
+        <p className="atlas-micro-label">On this page</p>
         <ul className="mt-3 space-y-2">
           {headings.map((h) => (
             <li key={h.id} style={{ paddingLeft: Math.max(0, h.level - 2) * 10 }}>
@@ -64,13 +66,11 @@ export function DocsToc({
   return (
     <nav
       aria-label="On this page"
-      className="mb-6 rounded-[var(--radius-md)] border border-[var(--border-subtle)] bg-[var(--surface-sunken)] p-3 xl:hidden"
+      className="mb-6 rounded-[var(--radius-sm)] border border-[var(--border-subtle)] bg-[var(--surface-sunken)] p-3 xl:hidden"
       data-testid="docs-toc"
       data-layout="cx-toc-inline"
     >
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-        On this page
-      </p>
+      <p className="atlas-micro-label">On this page</p>
       <ul className="mt-2 space-y-1">
         {headings.map((h) => (
           <li key={h.id} style={{ paddingLeft: Math.max(0, h.level - 2) * 12 }}>
@@ -104,11 +104,9 @@ export function DocsPrevNext({
       {prev ? (
         <Link
           href={prev.href}
-          className="rounded-[var(--radius-lg)] border border-[var(--border-default)] p-3 hover:border-[var(--accent-primary)] hover:bg-[var(--surface-muted)]"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] p-3 hover:border-[var(--atlas-signal)] hover:bg-[var(--surface-muted)]"
         >
-          <span className="block text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
-            Previous
-          </span>
+          <span className="atlas-micro-label">Previous</span>
           <span className="mt-1 block text-sm font-medium text-[var(--text-heading)]">
             {prev.title}
           </span>
@@ -119,11 +117,9 @@ export function DocsPrevNext({
       {next ? (
         <Link
           href={next.href}
-          className="rounded-[var(--radius-lg)] border border-[var(--border-default)] p-3 text-right hover:border-[var(--accent-primary)] hover:bg-[var(--surface-muted)] sm:justify-self-end"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] p-3 text-right hover:border-[var(--atlas-signal)] hover:bg-[var(--surface-muted)] sm:justify-self-end"
         >
-          <span className="block text-[10px] uppercase tracking-wide text-[var(--text-muted)]">
-            Next
-          </span>
+          <span className="atlas-micro-label">Next</span>
           <span className="mt-1 block text-sm font-medium text-[var(--text-heading)]">
             {next.title}
           </span>

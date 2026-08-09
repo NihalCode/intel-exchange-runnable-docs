@@ -1,7 +1,6 @@
 "use client";
 
 import type { HTMLAttributes, ReactNode } from "react";
-import { cardClass } from "@/components/admin/ui/tokens";
 import { SignalButton } from "@/components/fabric/SignalButton";
 
 export function SignalSkeleton({
@@ -9,7 +8,27 @@ export function SignalSkeleton({
 }: {
   className?: string;
 }) {
-  return <div className={`sf-skeleton ${className}`} aria-hidden="true" />;
+  return (
+    <div
+      className={`sf-skeleton rounded-[var(--radius-sm)] ${className}`}
+      aria-hidden="true"
+      data-atlas="skeleton"
+    />
+  );
+}
+
+/** Full-surface acquiring loader (prefer over bare bars when blocking a region). */
+export function SignalAcquireLoader({ label = "Acquiring signals…" }: { label?: string }) {
+  return (
+    <div className="atlas-signal-loader" role="status" aria-live="polite" data-testid="signal-acquire-loader">
+      <div className="atlas-signal-loader__trace" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <p className="atlas-micro-label">{label}</p>
+    </div>
+  );
 }
 
 export function SignalEmptyState({
@@ -24,30 +43,14 @@ export function SignalEmptyState({
   onAction?: () => void;
 }) {
   return (
-    <div
-      className={`${cardClass} flex flex-col items-center py-12 text-center`}
-      data-testid="signal-empty-state"
-    >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--surface-muted)]">
-        <svg
-          className="h-6 w-6 text-[var(--text-muted)]"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          aria-hidden="true"
-        >
-          <path d="M4 7h16M4 12h16M4 17h10" strokeLinecap="round" />
-        </svg>
-      </div>
-      <h3 className="mt-4 text-base font-semibold text-[var(--text-heading)]">{title}</h3>
-      {description ? (
-        <p className="mt-2 max-w-sm text-sm text-[var(--text-secondary)]">{description}</p>
-      ) : null}
+    <div className="atlas-empty" data-testid="signal-empty-state">
+      <p className="atlas-micro-label">No signal</p>
+      <h3 className="atlas-empty__title">{title}</h3>
+      {description ? <p className="atlas-empty__desc">{description}</p> : null}
       {actionLabel && onAction ? (
-        <SignalButton className="mt-4" onClick={onAction}>
-          {actionLabel}
-        </SignalButton>
+        <div className="atlas-empty__action">
+          <SignalButton onClick={onAction}>{actionLabel}</SignalButton>
+        </div>
       ) : null}
     </div>
   );
@@ -63,19 +66,16 @@ export function SignalErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div
-      className={`${cardClass} border-red-300 bg-[var(--danger-soft)] dark:border-red-900`}
-      role="alert"
-      data-testid="signal-error-state"
-    >
-      <h3 className="font-semibold text-red-800 dark:text-red-300">{title}</h3>
-      {description ? (
-        <p className="mt-2 text-sm text-[var(--text-secondary)]">{description}</p>
-      ) : null}
+    <div className="atlas-error" role="alert" data-testid="signal-error-state">
+      <p className="atlas-micro-label atlas-micro-label--danger">Fault</p>
+      <h3 className="atlas-error__title">{title}</h3>
+      {description ? <p className="atlas-error__desc">{description}</p> : null}
       {onRetry ? (
-        <SignalButton className="mt-4" variant="secondary" onClick={onRetry}>
-          Retry
-        </SignalButton>
+        <div className="atlas-error__action">
+          <SignalButton variant="secondary" onClick={onRetry}>
+            Retry
+          </SignalButton>
+        </div>
       ) : null}
     </div>
   );
@@ -89,13 +89,10 @@ export function SignalPermissionState({
   description?: string;
 }) {
   return (
-    <div
-      className={`${cardClass} border-[var(--border-default)]`}
-      role="status"
-      data-testid="signal-permission-state"
-    >
-      <h3 className="font-semibold text-[var(--text-heading)]">{title}</h3>
-      <p className="mt-2 text-sm text-[var(--text-secondary)]">{description}</p>
+    <div className="atlas-error" role="status" data-testid="signal-permission-state">
+      <p className="atlas-micro-label">Clearance</p>
+      <h3 className="atlas-error__title">{title}</h3>
+      <p className="atlas-error__desc">{description}</p>
     </div>
   );
 }
@@ -114,17 +111,9 @@ export function SignalSectionHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
-        {eyebrow ? (
-          <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[var(--accent-primary)]">
-            {eyebrow}
-          </p>
-        ) : null}
-        <h2 className="text-xl font-semibold tracking-tight text-[var(--text-heading)] sm:text-2xl">
-          {title}
-        </h2>
-        {description ? (
-          <p className="mt-1 max-w-2xl text-sm text-[var(--text-secondary)]">{description}</p>
-        ) : null}
+        {eyebrow ? <p className="atlas-micro-label">{eyebrow}</p> : null}
+        <h2 className="atlas-section__title">{title}</h2>
+        {description ? <p className="atlas-section__lede">{description}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
     </div>
@@ -146,7 +135,6 @@ export function SignalFilterBar({
   );
 }
 
-
 export function SignalActionDock({
   children,
   className = "",
@@ -161,7 +149,6 @@ export function SignalActionDock({
     </div>
   );
 }
-
 
 export function SignalCodeSurface({ children, className = "" }: { children: ReactNode; className?: string }) {
   return <div className={`sf-code-surface ${className}`}>{children}</div>;
@@ -199,9 +186,7 @@ export function SignalMetric({
 }) {
   return (
     <div className="sf-signal-metric" data-testid="signal-metric">
-      <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">
-        {label}
-      </p>
+      <p className="atlas-micro-label">{label}</p>
       <p className="mt-1 text-2xl font-semibold tabular-nums text-[var(--text-heading)]">{value}</p>
       {hint ? <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p> : null}
     </div>

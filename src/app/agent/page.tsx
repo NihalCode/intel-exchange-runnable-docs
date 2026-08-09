@@ -135,13 +135,13 @@ export default async function AgentPage() {
       <div className="cx-ask-page__intro">
         <p className="cx-ask-page__eyebrow">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse" aria-hidden="true" />
-          Cyware Signal Fabric
+          Ask Intelligence
         </p>
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--text-heading)] sm:text-[1.75rem]">
-          Documentation Agent
+        <h1 className="text-2xl font-medium tracking-[-0.03em] text-[var(--text-heading)] sm:text-[1.75rem]">
+          Analyst workstation
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-[var(--text-secondary)]">
-          Ask grounded questions and generate API examples
+          Investigate with grounded answers and generate API examples
           {requiresProductCredentials
             ? " for the Cyware products you have connected at /authentication."
             : ". Open API product credentials are optional for docs answers (admins can require them under Features)."}

@@ -19,17 +19,19 @@ export function ResultBox({
   children: React.ReactNode;
 }) {
   const toneClass = {
-    neutral: "border-zinc-300 dark:border-zinc-700",
-    success: "border-emerald-400/60 bg-emerald-50/60 dark:bg-emerald-950/20",
-    error: "border-red-400/60 bg-red-50/60 dark:bg-red-950/20",
-    info: "border-sky-400/60 bg-sky-50/60 dark:bg-sky-950/20",
-    warn: "border-amber-400/60 bg-amber-50/60 dark:bg-amber-950/20",
+    neutral: "border-[var(--border-default)] bg-[var(--surface-muted)]",
+    success:
+      "border-[color-mix(in_srgb,var(--success)_50%,var(--border-default))] bg-[color-mix(in_srgb,var(--success)_10%,transparent)]",
+    error:
+      "border-[color-mix(in_srgb,var(--danger)_50%,var(--border-default))] bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]",
+    info:
+      "border-[color-mix(in_srgb,var(--atlas-signal)_45%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-signal)_10%,transparent)]",
+    warn:
+      "border-[color-mix(in_srgb,var(--atlas-amber)_50%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-amber)_10%,transparent)]",
   }[tone];
   return (
-    <div className={`mt-2 rounded-md border ${toneClass} p-3 text-sm`}>
-      <div className="mb-1 text-xs font-semibold uppercase tracking-wide opacity-70">
-        {title}
-      </div>
+    <div className={`mt-2 rounded-[var(--radius-sm)] border ${toneClass} p-3 text-sm`}>
+      <div className="atlas-micro-label mb-1">{title}</div>
       {children}
     </div>
   );
@@ -48,10 +50,12 @@ export function ManualCredentialsForm({ fields }: { fields: CredField[] }) {
   const manual = fields.filter((f) => !isOpenApiAuthParam(f.name));
   if (manual.length === 0) return null;
   return (
-    <div className="mt-2 rounded-[var(--radius-md)] border border-amber-400/50 bg-amber-50/50 p-3 dark:bg-amber-950/20">
-      <div className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+    <div className="mt-2 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-amber)_45%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-amber)_10%,transparent)] p-3">
+      <div className="mb-2 flex items-center gap-1.5 text-[var(--atlas-amber)]">
         <LockIcon />
-        Additional credentials
+        <span className="atlas-micro-label !inline text-[var(--atlas-amber)]">
+          Additional credentials
+        </span>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {manual.map((f) => (
@@ -122,15 +126,14 @@ export function PathParamEditor({
 }) {
   if (params.length === 0) return null;
   return (
-    <div className="mt-2 rounded-md border border-violet-300 bg-violet-50/50 p-3 dark:border-violet-800 dark:bg-violet-950/20">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">
-        Path Parameters
-      </div>
+    <div className="mt-2 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-violet)_35%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-violet)_8%,var(--surface-raised))] p-3">
+      <div className="atlas-micro-label mb-2 text-[var(--atlas-violet)]">Path Parameters</div>
       <div className="grid gap-2 sm:grid-cols-2">
         {params.map((p) => (
           <label key={p.name} className="flex flex-col gap-1 text-xs">
-            <span className="font-medium opacity-80">
-              {p.name} <span className="text-violet-600 dark:text-violet-400">(required in URL)</span>
+            <span className="font-medium text-[var(--text-secondary)]">
+              {p.name}{" "}
+              <span className="text-[var(--atlas-violet)]">(required in URL)</span>
             </span>
             <input
               type="text"
@@ -139,7 +142,7 @@ export function PathParamEditor({
               placeholder={p.value || `Enter ${p.name}`}
               value={values[p.name] ?? p.value}
               onChange={(e) => onChange(p.name, e.target.value)}
-              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-violet-500 dark:border-zinc-600 dark:bg-zinc-900"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-violet)]"
             />
           </label>
         ))}
@@ -159,14 +162,12 @@ export function QueryParamEditor({
 }) {
   if (params.length === 0) return null;
   return (
-    <div className="mt-2 rounded-md border border-zinc-300 bg-zinc-50/50 p-3 dark:border-zinc-700 dark:bg-zinc-900/40">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">
-        Query Parameters
-      </div>
+    <div className="mt-2 rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-muted)] p-3">
+      <div className="atlas-micro-label mb-2">Query Parameters</div>
       <div className="grid gap-2 sm:grid-cols-2">
         {params.map((p) => (
           <label key={p.name} className="flex flex-col gap-1 text-xs">
-            <span className="font-medium opacity-80">{p.name}</span>
+            <span className="font-medium text-[var(--text-secondary)]">{p.name}</span>
             <input
               type="text"
               autoComplete="off"
@@ -174,7 +175,7 @@ export function QueryParamEditor({
               placeholder={p.value || `(optional)`}
               value={values[p.name] ?? p.value}
               onChange={(e) => onChange(p.name, e.target.value)}
-              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-signal)]"
             />
           </label>
         ))}
@@ -207,13 +208,13 @@ export function PayloadEditor({
   return (
     <div className="mt-2">
       <div className="mb-1 flex items-center gap-2">
-        <span className="text-xs font-medium opacity-70">Request body (JSON)</span>
+        <span className="atlas-micro-label !inline">Request body (JSON)</span>
         {jsonError ? (
-          <span className="rounded bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
+          <span className="rounded-[var(--radius-sm)] bg-[var(--surface-critical)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--danger)]">
             {jsonError}
           </span>
         ) : value.trim() ? (
-          <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+          <span className="rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--success)_14%,transparent)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--success)]">
             Valid JSON
           </span>
         ) : null}
@@ -223,10 +224,8 @@ export function PayloadEditor({
         onChange={(e) => onChange(e.target.value)}
         spellCheck={false}
         rows={Math.min(12, Math.max(3, value.split("\n").length + 1))}
-        className={`w-full rounded border px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:bg-zinc-900 ${
-          jsonError
-            ? "border-red-400 dark:border-red-600"
-            : "border-zinc-300 dark:border-zinc-600"
+        className={`w-full rounded-[var(--radius-sm)] border bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-signal)] ${
+          jsonError ? "border-[var(--danger)]" : "border-[var(--border-default)]"
         }`}
       />
     </div>

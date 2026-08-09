@@ -330,18 +330,23 @@ export function UsersManagementPanel() {
   const recoveryFailed = recoveryState === "failed";
 
   return (
-    <div data-testid="users-management" className="space-y-8" data-layout="sf-identity-command">
+    <div
+      data-testid="users-management"
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-layout="sf-access-lattice"
+    >
       <SignalSectionHeader
-        eyebrow="Identity access"
+        eyebrow="Access lattice"
         title="Okta + documentation membership"
         description="New users receive an Okta setup email. Existing ACTIVE same-tenant users keep password and Okta Verify; no setup email is sent. Target group: Cyware Docs Users."
       />
       <form
         onSubmit={addUser}
-        className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5 shadow-[var(--shadow-resting)]"
+        className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] border-l-2 border-l-[var(--atlas-signal)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4"
       >
-        <h2 className="text-sm font-semibold text-[var(--text-heading)]">Add user</h2>
-        <p className="mt-1 text-xs text-[var(--text-muted)]">
+        <p className="atlas-micro-label text-[var(--atlas-signal)]">Provision node</p>
+        <h2 className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">Add user</h2>
+        <p className="mt-1 text-xs text-[var(--atlas-text-secondary)]">
           Creates the person in Okta, adds them to the docs Okta group, and adds a
           documentation invitation. They select Sign up to set their Okta password,
           then Sign in with email, password, and the code shown in Okta Verify.
@@ -411,8 +416,9 @@ export function UsersManagementPanel() {
         {error ? <p className="mt-3 text-xs text-[var(--danger)]">{error}</p> : null}
         {hint ? <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p> : null}
       </form>
-      <section>
-        <h2 className="text-sm font-semibold text-[var(--text-heading)]">Documentation users</h2>
+      <section className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-3">
+        <p className="atlas-micro-label text-[var(--atlas-signal)]">Membership lattice</p>
+        <h2 className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">Documentation users</h2>
         {!users.length ? (
           <div className="mt-3">
             <SignalEmptyState
@@ -421,8 +427,8 @@ export function UsersManagementPanel() {
             />
           </div>
         ) : (
-          <div className="sf-table-wrap mt-3 overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm text-[var(--text-primary)]">
+          <div className="sf-table-wrap mt-3 overflow-x-auto rounded-[var(--radius-sm)]">
+            <table className="w-full min-w-[640px] text-sm text-[var(--atlas-text)]">
               <thead>
                 <tr>
                   <th className="p-2.5 text-left" scope="col">
@@ -444,10 +450,12 @@ export function UsersManagementPanel() {
               </thead>
               <tbody>
                 {users.map((user) => (
-                  <tr key={user.id} className="border-t border-[var(--border-subtle)]">
+                  <tr key={user.id} className="border-t border-[var(--atlas-line)]">
                     <td className="p-2.5">
                       {user.name || user.email}
-                      <span className="block text-xs text-[var(--text-muted)]">{user.email}</span>
+                      <span className="block font-mono text-[10px] text-[var(--atlas-text-muted)]">
+                        {user.email}
+                      </span>
                     </td>
                     <td className="p-2.5">
                       {user.id !== state.user?.id ? (

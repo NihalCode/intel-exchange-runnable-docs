@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
+import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { ADMIN_FEATURE_SECTIONS, DOCUMENTATION_FEATURE_LABELS } from "@/lib/documentation-features/keys";
 
 type Feature = {
@@ -75,28 +77,35 @@ export function DocumentationFeaturesPage({ canManage }: { canManage: boolean })
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Documentation features</h1>
-        <p className="mt-1 text-sm text-zinc-500">
-          Only flags used by this docs / agent product are listed. Click a status
-          chip to enable or disable. Multi-product deployment flags can show DB
-          off while still being{" "}
-          <span className="font-medium text-zinc-700 dark:text-zinc-200">effective</span>{" "}
-          on pinned Vercel projects.
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-layout="sf-capability-matrix"
+    >
+      <PageHeader
+        eyebrow="Capabilities"
+        title="Documentation features"
+        description="Only flags used by this docs / agent product are listed. Click a status chip to enable or disable. Multi-product deployment flags can show DB off while still being effective on pinned Vercel projects."
+        actions={<LiveStatus label={canManage ? "Editable" : "Read-only"} tone="signal" />}
+      />
+      {error ? (
+        <p className="rounded-[var(--radius-sm)] border border-[var(--atlas-danger)] bg-[color-mix(in_srgb,var(--atlas-danger)_10%,transparent)] px-3 py-2 text-sm text-[var(--atlas-danger)]" role="alert">
+          {error}
         </p>
-      </div>
-      {error ? <p className="text-sm text-red-600 dark:text-red-400">{error}</p> : null}
+      ) : null}
 
       {ADMIN_FEATURE_SECTIONS.map((section) => (
-        <section key={section.id} className="space-y-2">
-          <div>
-            <h2 className="text-sm font-semibold">{section.title}</h2>
+        <section
+          key={section.id}
+          className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)]"
+        >
+          <div className="border-b border-[var(--atlas-line)] px-4 py-3">
+            <p className="atlas-micro-label text-[var(--atlas-violet)]">{section.id}</p>
+            <h2 className="mt-1 text-sm font-semibold text-[var(--atlas-text)]">{section.title}</h2>
             {section.description ? (
-              <p className="text-xs text-zinc-500">{section.description}</p>
+              <p className="mt-1 text-xs text-[var(--atlas-text-muted)]">{section.description}</p>
             ) : null}
           </div>
-          <div className="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+          <div className="divide-y divide-[var(--atlas-line)]">
             {section.keys.map((key) => {
               const feature = byKey.get(key);
               if (!feature) return null;
@@ -104,16 +113,18 @@ export function DocumentationFeaturesPage({ canManage }: { canManage: boolean })
               return (
                 <div
                   key={feature.key}
-                  className="flex items-center justify-between gap-4 border-b border-zinc-200 px-4 py-3 last:border-0 dark:border-zinc-800"
+                  className="flex items-center justify-between gap-4 px-4 py-3"
                 >
-                  <div>
-                    <p className="text-sm font-medium">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[var(--atlas-text)]">
                       {DOCUMENTATION_FEATURE_LABELS[
                         feature.key as keyof typeof DOCUMENTATION_FEATURE_LABELS
                       ] ?? feature.key}
                     </p>
-                    <p className="font-mono text-xs text-zinc-500">{feature.key}</p>
-                    <p className="mt-0.5 text-xs text-zinc-500">
+                    <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
+                      {feature.key}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[10px] text-[var(--atlas-text-secondary)]">
                       DB: {feature.enabled ? "on" : "off"}
                       {" · "}
                       Effective: {effective ? "on" : "off"}
@@ -127,10 +138,10 @@ export function DocumentationFeaturesPage({ canManage }: { canManage: boolean })
                     disabled={!canManage || busy === feature.key}
                     onClick={() => void toggle(feature)}
                     aria-pressed={feature.enabled}
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${
+                    className={`rounded-[var(--radius-sm)] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] disabled:opacity-50 ${
                       effective
-                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                        : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                        ? "border border-[var(--atlas-line-strong)] bg-[color-mix(in_srgb,var(--atlas-signal)_14%,transparent)] text-[var(--atlas-signal)]"
+                        : "border border-[var(--atlas-line)] bg-[var(--surface-operational)] text-[var(--atlas-text-muted)]"
                     }`}
                   >
                     {effective ? "Enabled" : "Disabled"}

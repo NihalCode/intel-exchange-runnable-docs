@@ -2,10 +2,18 @@
 
 import { useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useControlPlaneMutation } from "@/components/admin/hooks/useControlPlaneMutation";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
+import {
+  SignalButton,
+  SignalCodeSurface,
+  SignalEmptyState,
+  SignalInput,
+  SignalSelect,
+} from "@/components/fabric";
 import { listProducts } from "@/lib/products/registry";
 
 type DeploymentRow = {
@@ -95,89 +103,97 @@ export function DocumentationAgentDeploymentsPage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-layout="sf-deploy-topology"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="Product deployments"
-        description="Vercel project and domain automation — server-side only, no tokens in the browser."
+        description="Pipeline topology — Vercel projects and domain automation, server-side only."
+        actions={<LiveStatus label="Topology" tone="signal" />}
       />
 
       {canManage ? (
-        <section className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold">Register Vercel project</h2>
+        <section className="space-y-3 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] border-l-2 border-l-[var(--atlas-signal)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4">
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">Register node</p>
+          <h2 className="text-sm font-semibold text-[var(--atlas-text)]">Register Vercel project</h2>
           <div className="grid gap-3 sm:grid-cols-3">
-            <label className="flex flex-col gap-1 text-xs">
-              Product
-              <select
-                value={product}
-                onChange={(e) => setProduct(e.target.value)}
-                className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
-              >
-                {products.map((p) => (
-                  <option key={p.productId} value={p.productId}>
-                    {p.displayLabel}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1 text-xs">
-              Vercel project ID
-              <input
-                value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
-                className="rounded border border-zinc-300 px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-xs">
-              Project name
-              <input
-                value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
-                className="rounded border border-zinc-300 px-2 py-1 dark:border-zinc-600 dark:bg-zinc-900"
-              />
-            </label>
+            <SignalSelect
+              label="Product"
+              value={product}
+              onChange={(e) => setProduct(e.target.value)}
+            >
+              {products.map((p) => (
+                <option key={p.productId} value={p.productId}>
+                  {p.displayLabel}
+                </option>
+              ))}
+            </SignalSelect>
+            <SignalInput
+              label="Vercel project ID"
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+              className="font-mono text-xs"
+            />
+            <SignalInput
+              label="Project name"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+            />
           </div>
-          <button
+          <SignalButton
             type="button"
             disabled={busy || !projectId.trim() || !projectName.trim()}
+            loading={busy}
             onClick={() => void registerDeployment()}
-            className="rounded bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
           >
             Register deployment
-          </button>
-          {status ? <p className="text-xs text-zinc-500">{status}</p> : null}
+          </SignalButton>
+          {status ? (
+            <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">{status}</p>
+          ) : null}
         </section>
       ) : null}
 
       {initialDeployments.length === 0 ? (
-        <p className="text-sm text-zinc-500">No product deployments configured.</p>
+        <SignalEmptyState
+          title="No product deployments"
+          description="No product deployments configured."
+        />
       ) : (
         initialDeployments.map((d) => (
           <section
             key={d.id}
-            className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+            className="space-y-3 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4"
           >
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-sm font-semibold uppercase">{d.product}</h2>
+              <p className="atlas-micro-label text-[var(--atlas-signal)]">{d.product}</p>
               <StatusBadge status={d.status} />
-              <span className="text-xs text-zinc-500">{d.environment}</span>
+              <span className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
+                {d.environment}
+              </span>
             </div>
-            <dl className="grid gap-1 text-xs sm:grid-cols-2">
+            <dl className="grid gap-2 text-xs sm:grid-cols-2">
               <div>
-                <dt className="opacity-60">Vercel project</dt>
-                <dd>{d.vercelProjectName}</dd>
+                <dt className="atlas-micro-label">Vercel project</dt>
+                <dd className="mt-0.5 text-[var(--atlas-text)]">{d.vercelProjectName}</dd>
               </div>
               <div>
-                <dt className="opacity-60">Project ID</dt>
-                <dd className="font-mono">{d.vercelProjectIdMasked}</dd>
+                <dt className="atlas-micro-label">Project ID</dt>
+                <dd className="mt-0.5 font-mono text-[var(--atlas-text-secondary)]">
+                  {d.vercelProjectIdMasked}
+                </dd>
               </div>
               <div>
-                <dt className="opacity-60">Collection</dt>
-                <dd className="font-mono">{d.approvedCollectionId}</dd>
+                <dt className="atlas-micro-label">Collection</dt>
+                <dd className="mt-0.5 font-mono text-[var(--atlas-text-secondary)]">
+                  {d.approvedCollectionId}
+                </dd>
               </div>
               <div>
-                <dt className="opacity-60">Latest deployment</dt>
-                <dd>
+                <dt className="atlas-micro-label">Latest deployment</dt>
+                <dd className="mt-0.5 font-mono text-[var(--atlas-text-secondary)]">
                   {d.latestDeployment
                     ? `${d.latestDeployment.state} · ${d.latestDeployment.meta?.githubCommitSha?.slice(0, 7) ?? d.latestDeployment.id.slice(0, 8)}`
                     : "—"}
@@ -186,12 +202,12 @@ export function DocumentationAgentDeploymentsPage({
             </dl>
 
             {d.environment === "production" ? (
-              <p className="text-xs text-amber-700 dark:text-amber-400">
+              <p className="rounded-[var(--radius-sm)] border border-[var(--atlas-amber)] bg-[color-mix(in_srgb,var(--atlas-amber)_10%,transparent)] px-3 py-2 text-xs text-[var(--atlas-text-secondary)]">
                 Production domain add/remove/verify may create an approval change request. Commit
                 promote/rollback lives on{" "}
                 <a
                   href="/admin/documentation-agent/commits"
-                  className="underline underline-offset-2"
+                  className="text-[var(--atlas-signal)] underline underline-offset-2"
                 >
                   Commits
                 </a>{" "}
@@ -200,9 +216,9 @@ export function DocumentationAgentDeploymentsPage({
             ) : null}
 
             {d.recentDeployments.length > 0 ? (
-              <p className="text-xs text-zinc-600 dark:text-zinc-400">
+              <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
                 Latest:{" "}
-                <span className="font-mono">
+                <span>
                   {d.latestDeployment?.meta?.githubCommitSha?.slice(0, 7) ??
                     d.latestDeployment?.id.slice(0, 8) ??
                     "—"}
@@ -210,7 +226,7 @@ export function DocumentationAgentDeploymentsPage({
                 {" · "}
                 <a
                   href="/admin/documentation-agent/commits"
-                  className="underline underline-offset-2"
+                  className="text-[var(--atlas-signal)] underline underline-offset-2"
                 >
                   View commit history / switch
                 </a>
@@ -218,24 +234,32 @@ export function DocumentationAgentDeploymentsPage({
             ) : null}
 
             {canManage && d.environment !== "production" && d.recentDeployments.length > 0 ? (
-              <section className="space-y-2">
-                <h3 className="text-xs font-semibold">Non-prod promote (or use Commits)</h3>
+              <section className="space-y-2 border-t border-[var(--atlas-line)] pt-3">
+                <p className="atlas-micro-label text-[var(--atlas-signal)]">
+                  Non-prod promote (or use Commits)
+                </p>
                 <ul className="space-y-1 text-xs">
                   {d.recentDeployments.slice(0, 5).map((dep) => (
-                    <li key={dep.id} className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono">{dep.id.slice(0, 12)}…</span>
+                    <li
+                      key={dep.id}
+                      className="flex flex-wrap items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] px-2 py-1.5"
+                    >
+                      <span className="font-mono text-[var(--atlas-text-secondary)]">
+                        {dep.id.slice(0, 12)}…
+                      </span>
                       <span>{dep.state}</span>
-                      <span className="text-zinc-500">
+                      <span className="text-[var(--atlas-text-muted)]">
                         {dep.meta?.githubCommitSha?.slice(0, 7) ?? "—"}
                       </span>
-                      <button
+                      <SignalButton
                         type="button"
+                        size="sm"
+                        variant="secondary"
                         disabled={busy}
                         onClick={() => void deploymentAction(d.id, "promote", dep.id)}
-                        className="rounded border px-2 py-0.5 dark:border-zinc-600"
                       >
                         Promote
-                      </button>
+                      </SignalButton>
                     </li>
                   ))}
                 </ul>
@@ -243,28 +267,25 @@ export function DocumentationAgentDeploymentsPage({
             ) : null}
 
             {canManage ? (
-              <div className="flex flex-wrap items-end gap-2">
-                <label className="flex flex-col gap-1 text-xs">
-                  Add domain
-                  <input
-                    value={newDomain[d.id] ?? ""}
-                    onChange={(e) =>
-                      setNewDomain((prev) => ({ ...prev, [d.id]: e.target.value }))
-                    }
-                    placeholder="docs.example.com"
-                    className="rounded border border-zinc-300 px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
-                  />
-                </label>
-                <button
-            type="button"
-            disabled={busy || !(newDomain[d.id] ?? "").trim()}
-            onClick={() =>
-              void domainAction(d.id, newDomain[d.id]!.trim())
-            }
-            className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-600"
-          >
-            Import / add domain
-          </button>
+              <div className="flex flex-wrap items-end gap-2 border-t border-[var(--atlas-line)] pt-3">
+                <SignalInput
+                  label="Add domain"
+                  value={newDomain[d.id] ?? ""}
+                  onChange={(e) =>
+                    setNewDomain((prev) => ({ ...prev, [d.id]: e.target.value }))
+                  }
+                  placeholder="docs.example.com"
+                  className="font-mono text-xs"
+                />
+                <SignalButton
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  disabled={busy || !(newDomain[d.id] ?? "").trim()}
+                  onClick={() => void domainAction(d.id, newDomain[d.id]!.trim())}
+                >
+                  Import / add domain
+                </SignalButton>
               </div>
             ) : null}
 
@@ -273,56 +294,59 @@ export function DocumentationAgentDeploymentsPage({
                 {d.domains.map((dom) => (
                   <li
                     key={dom.id}
-                    className="rounded border border-zinc-200 px-3 py-2 dark:border-zinc-700"
+                    className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--surface-operational)] px-3 py-2"
                   >
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono">{dom.domain}</span>
                       <StatusBadge status={dom.workflowState} />
-                      <span className="text-zinc-500">TLS: {dom.tlsStatus}</span>
+                      <span className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
+                        TLS: {dom.tlsStatus}
+                      </span>
                     </div>
                     {dom.lastProviderError ? (
-                      <p className="mt-1 text-red-600 dark:text-red-400">
-                        {dom.lastProviderError}
-                      </p>
+                      <p className="mt-1 text-[var(--atlas-danger)]">{dom.lastProviderError}</p>
                     ) : null}
                     {canManage ? (
                       <div className="mt-2 flex flex-wrap gap-2">
-                        <button
+                        <SignalButton
                           type="button"
+                          size="sm"
+                          variant="toolbar"
                           disabled={busy}
                           onClick={() => void domainAction(d.id, dom.domain, "check-dns")}
-                          className="rounded border px-2 py-0.5 dark:border-zinc-600"
                         >
                           Check DNS
-                        </button>
-                        <button
+                        </SignalButton>
+                        <SignalButton
                           type="button"
+                          size="sm"
+                          variant="toolbar"
                           disabled={busy}
                           onClick={() => void domainAction(d.id, dom.domain, "verify")}
-                          className="rounded border px-2 py-0.5 dark:border-zinc-600"
                         >
                           Verify
-                        </button>
-                        <button
+                        </SignalButton>
+                        <SignalButton
                           type="button"
+                          size="sm"
+                          variant="danger"
                           disabled={busy}
                           onClick={() => void domainAction(d.id, dom.domain, "remove")}
-                          className="rounded border border-red-300 px-2 py-0.5 text-red-700 dark:border-red-800 dark:text-red-400"
                         >
                           Remove
-                        </button>
+                        </SignalButton>
                       </div>
                     ) : null}
                     {dom.dnsRequirementsJson && dom.dnsRequirementsJson !== "[]" ? (
-                      <pre className="mt-2 max-h-24 overflow-auto rounded bg-zinc-50 p-2 font-mono text-[10px] dark:bg-zinc-900">
+                      <SignalCodeSurface className="mt-2 max-h-24 overflow-auto p-2 font-mono text-[10px]">
                         {dom.dnsRequirementsJson}
-                      </pre>
+                      </SignalCodeSurface>
                     ) : null}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-xs text-zinc-500">No domains attached yet.</p>
+              <p className="text-xs text-[var(--atlas-text-muted)]">No domains attached yet.</p>
             )}
           </section>
         ))

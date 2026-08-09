@@ -26,6 +26,7 @@ export {
 } from "@/components/fabric/SignalChrome";
 export {
   SignalSkeleton,
+  SignalAcquireLoader,
   SignalEmptyState,
   SignalErrorState,
   SignalPermissionState,

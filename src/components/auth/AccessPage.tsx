@@ -2,6 +2,7 @@ import {
   buttonPrimaryClass,
   buttonSecondaryClass,
 } from "@/components/admin/ui/tokens";
+import { TopologyField } from "@/components/atlas";
 import {
   accessBackToSignInHref,
   accessBrowseHomeAfterLogoutHref,
@@ -25,8 +26,9 @@ export function AccessPage({
   const browseHomeHref = accessBrowseHomeAfterLogoutHref();
 
   return (
-    <main data-testid={testId} className="sf-access-plane">
-      <div className="sf-access-panel">
+    <main data-testid={testId} className="sf-access-plane atlas-trust-orbit">
+      <TopologyField className="atlas-trust-orbit__field" />
+      <div className="sf-access-panel atlas-trust-orbit__panel relative z-[1]">
         <div className="mb-3 flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -36,12 +38,15 @@ export function AccessPage({
             height={28}
             className="h-7 w-7 object-contain"
           />
-          <span className="text-xs font-medium text-[var(--text-secondary)]">
-            Cyware API Docs
+          <span className="atlas-micro-label !inline text-[var(--atlas-signal)]">
+            Living Signal Atlas
           </span>
         </div>
-        <h1 className="text-xl font-semibold text-[var(--text-heading)]">{title}</h1>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]">
+        <p className="atlas-micro-label">Access</p>
+        <h1 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[var(--atlas-text)]">
+          {title}
+        </h1>
+        <p className="mt-3 text-sm leading-relaxed text-[var(--atlas-text-secondary)]">
           {description}
         </p>
         {children}

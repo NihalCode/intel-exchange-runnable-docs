@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ExternalLink, Upload, X } from "lucide-react";
 import { useFocusTrap } from "./useFocusTrap";
 import type { SavedAppProject } from "@/lib/agent/types";
 import {
@@ -89,37 +90,50 @@ export function ImportVercelModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="import-from-vercel-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--surface-overlay)] p-4"
     >
-      <div className="w-full max-w-md rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
-          <h2 id="import-from-vercel-title" className="text-sm font-semibold">Import from Vercel</h2>
-          <p className="mt-0.5 text-xs text-zinc-500">
-            Pull source files from a live deployment to edit in place.
-          </p>
+      <div className="atlas-panel w-full max-w-md shadow-[var(--shadow-floating)]">
+        <div className="atlas-panel__header">
+          <div>
+            <p className="atlas-micro-label" style={{ color: "var(--accent-ai)" }}>
+              Import
+            </p>
+            <h2 id="import-from-vercel-title" className="text-sm font-semibold text-[var(--text-heading)]">
+              Import from Vercel
+            </h2>
+            <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+              Pull source files from a live deployment to edit in place.
+            </p>
+          </div>
+          <button type="button" aria-label="Close import dialog" onClick={onClose} className="atlas-icon-btn">
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
         </div>
         <div className="space-y-3 p-5">
           <label className="block text-xs">
-            <span className="mb-1 block font-semibold">Deployment URL</span>
+            <span className="atlas-micro-label mb-1">Deployment URL</span>
             <input
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://your-app.vercel.app"
-              className="w-full rounded-md border border-zinc-300 px-2.5 py-1.5 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-900"
+              className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2.5 py-1.5 font-mono text-xs text-[var(--text-primary)]"
             />
           </label>
           <label className="block text-xs">
-            <span className="mb-1 block font-semibold">Vercel token</span>
+            <span className="atlas-micro-label mb-1">Vercel token</span>
             <input
               type="password"
               value={token}
               onChange={(e) => setVercelToken(e.target.value)}
               placeholder="vercel_…"
-              className="w-full rounded-md border border-zinc-300 px-2.5 py-1.5 font-mono text-xs dark:border-zinc-700 dark:bg-zinc-900"
+              className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2.5 py-1.5 font-mono text-xs text-[var(--text-primary)]"
             />
           </label>
           {error ? (
-            <p role="alert" className="rounded-md border border-red-300 bg-red-50 px-2 py-1.5 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/30">
+            <p
+              role="alert"
+              className="rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--danger)_40%,var(--border-subtle))] bg-[var(--danger-soft)] px-2 py-1.5 text-xs text-[var(--danger)]"
+            >
               {error}
             </p>
           ) : null}
@@ -128,11 +142,16 @@ export function ImportVercelModal({
               type="button"
               disabled={loading || !url.trim() || !token.trim()}
               onClick={() => void pull()}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--accent-ai)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
             >
+              <Upload className="h-3.5 w-3.5" aria-hidden="true" />
               {loading ? "Importing…" : "Import"}
             </button>
-            <button type="button" onClick={onClose} className="rounded-lg border border-zinc-300 px-4 py-2 text-sm">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-[var(--radius-sm)] border border-[var(--border-default)] px-4 py-2 text-sm text-[var(--text-secondary)]"
+            >
               Cancel
             </button>
           </div>
@@ -156,13 +175,16 @@ export function AgentSavedAppsBar({
 
   if (apps.length === 0 && !active) {
     return (
-      <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-zinc-50/50 px-4 py-2 dark:border-zinc-800 dark:bg-zinc-900/30">
-        <span className="text-[11px] text-zinc-500">No saved apps yet — build one or import from Vercel</span>
+      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-4 py-2">
+        <span className="font-mono text-[11px] text-[var(--text-muted)]">
+          No saved apps yet — build one or import from Vercel
+        </span>
         <button
           type="button"
           onClick={onImportClick}
-          className="ml-auto rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium dark:border-zinc-700"
+          className="ml-auto inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--text-secondary)] hover:border-[color-mix(in_srgb,var(--accent-ai)_35%,var(--border-default))] hover:text-[var(--accent-ai)]"
         >
+          <Upload className="h-3 w-3" aria-hidden="true" />
           Import from Vercel
         </button>
       </div>
@@ -170,8 +192,8 @@ export function AgentSavedAppsBar({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-zinc-50/50 px-4 py-2 dark:border-zinc-800 dark:bg-zinc-900/30">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Project</span>
+    <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border-subtle)] bg-[var(--surface-sunken)] px-4 py-2">
+      <span className="atlas-micro-label">Project</span>
       <select
         aria-label="Active project"
         value={activeAppId ?? ""}
@@ -180,7 +202,7 @@ export function AgentSavedAppsBar({
           setActiveAppId(id);
           onSelectApp(id);
         }}
-        className="max-w-[200px] rounded-md border border-zinc-300 bg-white px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-950"
+        className="max-w-[200px] rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 text-xs text-[var(--text-primary)]"
       >
         <option value="">— New app —</option>
         {apps.map((a) => (
@@ -194,9 +216,10 @@ export function AgentSavedAppsBar({
           href={active.deploymentUrl}
           target="_blank"
           rel="noreferrer"
-          className="text-[11px] text-sky-600 hover:underline dark:text-sky-400"
+          className="inline-flex items-center gap-1 font-mono text-[11px] text-[var(--text-link)] hover:underline"
         >
-          live ↗
+          live
+          <ExternalLink className="h-3 w-3" aria-hidden="true" />
         </a>
       ) : null}
       {activeAppId ? (
@@ -208,7 +231,7 @@ export function AgentSavedAppsBar({
               onSelectApp(null);
             }
           }}
-          className="text-[11px] text-red-600 hover:underline"
+          className="font-mono text-[11px] text-[var(--danger)] hover:underline"
         >
           Delete
         </button>
@@ -216,8 +239,9 @@ export function AgentSavedAppsBar({
       <button
         type="button"
         onClick={onImportClick}
-        className="ml-auto rounded-md border border-zinc-300 px-2 py-0.5 text-[11px] font-medium dark:border-zinc-700"
+        className="ml-auto inline-flex items-center gap-1 rounded-[var(--radius-sm)] border border-[var(--border-default)] px-2 py-0.5 font-mono text-[11px] font-medium text-[var(--text-secondary)] hover:border-[color-mix(in_srgb,var(--accent-ai)_35%,var(--border-default))] hover:text-[var(--accent-ai)]"
       >
+        <Upload className="h-3 w-3" aria-hidden="true" />
         Import from Vercel
       </button>
     </div>

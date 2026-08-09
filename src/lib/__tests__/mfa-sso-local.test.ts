@@ -100,7 +100,7 @@ describe("one-time login URL contracts (local)", () => {
   it("workspace + admin page redirects prefer /auth/login for SSO", () => {
     expect(source("src/lib/documentation-auth/protect-layout.ts")).toContain("auth0LoginPath");
     expect(source("src/lib/admin/page-data.ts")).toContain("auth0LoginPath");
-    expect(source("src/components/AppFrame.tsx")).toContain("/sign-in?returnTo=");
+    expect(source("src/components/atlas/CommandBar.tsx")).toContain("/sign-in?returnTo=");
     // Session-expired fallback uses branded /sign-in; API signIn carries Okta connection.
     expect(source("src/components/agent-chat-state.tsx")).toContain("/sign-in?returnTo=");
     expect(source("src/components/agent-chat-state.tsx")).not.toMatch(

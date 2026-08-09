@@ -8,10 +8,10 @@ export function EnvironmentSelector() {
   const { selectedEnvironment, setEnvironment } = useAdmin();
 
   return (
-    <label className="flex items-center gap-2 text-xs">
-      <span className="hidden text-zinc-500 sm:inline">Environment</span>
+    <label className="flex items-center gap-1.5 text-[11px]">
+      <span className="atlas-micro-label hidden !inline sm:inline">Environment</span>
       <select
-        className={`${inputClass} py-1.5 text-xs`}
+        className={`${inputClass} rounded-[var(--radius-sm)] py-1 text-[11px]`}
         value={selectedEnvironment}
         onChange={(e) => setEnvironment(e.target.value as EnterpriseEnvironment)}
         aria-label="Select environment"
@@ -32,7 +32,7 @@ export function ProductionBanner() {
 
   return (
     <div
-      className="border-b border-amber-300 bg-amber-50 px-4 py-2 text-center text-xs font-medium text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100"
+      className="border-b border-[color-mix(in_srgb,var(--atlas-amber)_45%,transparent)] bg-[color-mix(in_srgb,var(--atlas-amber)_14%,var(--atlas-elevated))] px-4 py-1.5 text-center font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-[var(--atlas-amber)]"
       role="status"
     >
       Production environment — changes may affect live Documentation Agent resources.

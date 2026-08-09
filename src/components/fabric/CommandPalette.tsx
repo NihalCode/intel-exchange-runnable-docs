@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvider";
-import { useOptionalTopChrome } from "@/components/navigation/TopChromeProvider";
 import { listProducts } from "@/lib/products/registry";
 
 type CommandItem = {
@@ -15,12 +14,30 @@ type CommandItem = {
   group: string;
 };
 
+type CommandPaletteProps = {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** When true, Ctrl/Cmd+K opens the palette (Atlas default). */
+  preferPlainShortcut?: boolean;
+};
+
 /**
- * Permission-aware command palette (Cmd/Ctrl+K).
+ * Permission-aware intelligence retrieval palette.
  * Navigates existing routes / toggles theme only — no unsupported mutations.
  */
-export function CommandPalette() {
-  const [open, setOpen] = useState(false);
+export function CommandPalette({
+  open: openControlled,
+  onOpenChange,
+  preferPlainShortcut = true,
+}: CommandPaletteProps = {}) {
+  const [openUncontrolled, setOpenUncontrolled] = useState(false);
+  const open = openControlled ?? openUncontrolled;
+  const setOpen = (next: boolean | ((prev: boolean) => boolean)) => {
+    const value = typeof next === "function" ? next(open) : next;
+    onOpenChange?.(value);
+    if (openControlled === undefined) setOpenUncontrolled(value);
+  };
+
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -28,14 +45,29 @@ export function CommandPalette() {
   const router = useRouter();
   const { state, hasPermission } = useDocumentationAuth();
   const products = listProducts();
-  const topChrome = useOptionalTopChrome();
-  const pinChrome = topChrome?.pin;
-  const unpinChrome = topChrome?.unpin;
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      // Ctrl/Cmd+K focuses Search docs (TopChromeProvider). Palette uses Shift+K.
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "k") {
+      const isK = e.key.toLowerCase() === "k";
+      const mod = e.metaKey || e.ctrlKey;
+      if (!mod || !isK) {
+        if (e.key === "Escape") setOpen(false);
+        return;
+      }
+      if (preferPlainShortcut) {
+        if (e.shiftKey) return;
+        e.preventDefault();
+        setOpen((v) => {
+          const next = !v;
+          if (next) {
+            setQuery("");
+            setActive(0);
+          }
+          return next;
+        });
+        return;
+      }
+      if (e.shiftKey) {
         e.preventDefault();
         setOpen((v) => {
           const next = !v;
@@ -46,18 +78,11 @@ export function CommandPalette() {
           return next;
         });
       }
-      if (e.key === "Escape") setOpen(false);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  useEffect(() => {
-    if (!pinChrome || !unpinChrome) return;
-    if (open) pinChrome("command-palette");
-    else unpinChrome("command-palette");
-    return () => unpinChrome("command-palette");
-  }, [open, pinChrome, unpinChrome]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setOpen is stable enough for shortcut wiring
+  }, [preferPlainShortcut]);
 
   useEffect(() => {
     if (!open) return;
@@ -67,14 +92,20 @@ export function CommandPalette() {
 
   const items = useMemo(() => {
     const list: CommandItem[] = [
-      { id: "home", label: "Home", href: "/", group: "Navigate" },
-      { id: "guides", label: "Guides", href: "/guides", group: "Navigate" },
-      { id: "changelog", label: "Changelog", href: "/changelog", group: "Navigate" },
+      { id: "home", label: "Intelligence Field", href: "/", group: "Network" },
+      { id: "guides", label: "Guides", href: "/guides", group: "System" },
+      { id: "changelog", label: "Changelog", href: "/changelog", group: "System" },
       {
         id: "auth",
-        label: "Authentication / credentials",
+        label: "Credentials",
         href: "/authentication",
-        group: "Navigate",
+        group: "System",
+      },
+      {
+        id: "developer",
+        label: "API Live Console",
+        href: "/developer",
+        group: "Operate",
       },
       {
         id: "theme",
@@ -95,7 +126,7 @@ export function CommandPalette() {
     for (const p of products) {
       list.push({
         id: `docs-${p.productId}`,
-        label: `${p.displayLabel} documentation`,
+        label: `${p.displayLabel} — Knowledge Atlas`,
         href: `/docs/${p.productId}`,
         group: "Products",
         hint: p.productId,
@@ -109,22 +140,23 @@ export function CommandPalette() {
         hasPermission("ask_agent") &&
         state.user?.role !== "viewer");
     if (canAsk) {
-      list.push({ id: "ask", label: "Ask AI", href: "/agent", group: "Workspace" });
+      list.push({ id: "ask", label: "Ask Intelligence", href: "/agent", group: "Operate" });
+      list.push({ id: "build", label: "Build Studio", href: "/agent", group: "Operate" });
     }
     if (hasPermission("manage_users")) {
       list.push({
         id: "users",
-        label: "Users",
+        label: "Settings · Users",
         href: "/settings/users",
-        group: "Workspace",
+        group: "System",
       });
     }
     if (hasPermission("sync_docs") || hasPermission("manage_sources")) {
       list.push({
         id: "content",
-        label: "Content management",
+        label: "Content sources",
         href: "/settings/content",
-        group: "Workspace",
+        group: "System",
       });
     }
     if (
@@ -135,7 +167,19 @@ export function CommandPalette() {
         state.user.role === "admin" ||
         state.user.role === "developer")
     ) {
-      list.push({ id: "admin", label: "Admin control plane", href: "/admin", group: "Workspace" });
+      list.push({ id: "admin", label: "Control Plane", href: "/admin", group: "Command" });
+      list.push({
+        id: "analytics",
+        label: "Signal Telemetry",
+        href: "/admin/documentation-agent/query-analytics",
+        group: "Command",
+      });
+      list.push({
+        id: "unanswered",
+        label: "Unknown Signals",
+        href: "/admin/documentation-agent/unanswered",
+        group: "Command",
+      });
     }
 
     const q = query.trim().toLowerCase();
@@ -166,10 +210,11 @@ export function CommandPalette() {
       onClick={() => setOpen(false)}
     >
       <div
-        className="w-full max-w-lg overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-floating)] shadow-[var(--shadow-modal)]"
+        className="w-full max-w-lg overflow-hidden rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-floating)] shadow-[var(--shadow-modal)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-[var(--border-subtle)] px-3 py-2">
+          <p className="atlas-micro-label mb-1">Signal acquisition</p>
           <input
             ref={inputRef}
             value={query}
@@ -189,7 +234,7 @@ export function CommandPalette() {
                 run(items[active]);
               }
             }}
-            placeholder="Search routes and workspace actions…"
+            placeholder="Retrieve routes, products, and command surfaces…"
             className="w-full bg-transparent px-1 py-2 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
             aria-label="Command search"
           />
@@ -197,16 +242,16 @@ export function CommandPalette() {
         <ul className="max-h-80 overflow-y-auto scroll-thin p-2" role="listbox">
           {items.length === 0 ? (
             <li className="px-3 py-6 text-center text-sm text-[var(--text-muted)]">
-              No matching commands
+              No signals matched — refine the query or browse the Knowledge Atlas.
             </li>
           ) : (
             items.map((item, index) => (
               <li key={item.id} role="option" aria-selected={index === active}>
                 <button
                   type="button"
-                  className={`flex w-full items-center justify-between rounded-[var(--radius-md)] px-3 py-2 text-left text-sm ${
+                  className={`flex w-full items-center justify-between rounded-[var(--radius-sm)] px-3 py-2 text-left text-sm ${
                     index === active
-                      ? "bg-[var(--surface-muted)] text-[var(--text-heading)]"
+                      ? "bg-[color-mix(in_srgb,var(--atlas-signal)_12%,var(--surface-muted))] text-[var(--text-heading)] shadow-[inset_2px_0_0_var(--atlas-signal)]"
                       : "text-[var(--text-primary)] hover:bg-[var(--surface-muted)]"
                   }`}
                   onMouseEnter={() => setActive(index)}
@@ -214,7 +259,9 @@ export function CommandPalette() {
                 >
                   <span>
                     <span className="block font-medium">{item.label}</span>
-                    <span className="text-[11px] text-[var(--text-muted)]">{item.group}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+                      {item.group}
+                    </span>
                   </span>
                   {item.hint ? (
                     <span className="font-mono text-[10px] uppercase text-[var(--text-muted)]">
@@ -226,8 +273,8 @@ export function CommandPalette() {
             ))
           )}
         </ul>
-        <p className="border-t border-[var(--border-subtle)] px-3 py-2 text-[10px] text-[var(--text-muted)]">
-          Esc to close · ↑↓ to move · Enter to open · Ctrl/⌘⇧K to toggle
+        <p className="border-t border-[var(--border-subtle)] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
+          Esc close · ↑↓ move · Enter open · Ctrl/⌘K toggle
         </p>
       </div>
     </div>

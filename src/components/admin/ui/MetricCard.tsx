@@ -14,7 +14,7 @@ export function Sparkline({ values }: { values: number[] }) {
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
-      className="h-6 w-20 text-[var(--accent-primary)]"
+      className="h-5 w-16 text-[var(--atlas-signal)]"
       aria-hidden="true"
     >
       <polyline
@@ -44,20 +44,22 @@ export function MetricCard({
 }) {
   const trendColor =
     trend === "up"
-      ? "text-[var(--success)]"
+      ? "text-[var(--atlas-signal)]"
       : trend === "down"
-        ? "text-[var(--danger)]"
-        : "text-[var(--text-muted)]";
+        ? "text-[var(--atlas-danger)]"
+        : "text-[var(--atlas-text-muted)]";
 
   return (
-    <div className="sf-signal-metric" data-testid="metric-card" data-layout="sf-signal-metric">
-      <p className="pr-4 text-sm text-[var(--text-secondary)]">{label}</p>
-      <div className="mt-2 flex items-end justify-between gap-2">
+    <div
+      className="sf-signal-metric atlas-telemetry rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_88%,transparent)] p-3"
+      data-testid="metric-card"
+      data-layout="sf-signal-metric"
+    >
+      <p className="atlas-micro-label">{label}</p>
+      <div className="mt-1.5 flex items-end justify-between gap-2">
         <div>
-          <p className="text-2xl font-semibold tabular-nums tracking-tight text-[var(--text-heading)]">
-            {value}
-          </p>
-          {change ? <p className={`mt-1 text-xs font-medium ${trendColor}`}>{change}</p> : null}
+          <p className="atlas-telemetry__value text-xl">{value}</p>
+          {change ? <p className={`mt-0.5 font-mono text-[10px] ${trendColor}`}>{change}</p> : null}
         </div>
         {sparkline?.length ? <Sparkline values={sparkline} /> : null}
       </div>

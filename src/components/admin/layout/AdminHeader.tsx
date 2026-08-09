@@ -20,41 +20,43 @@ export function AdminHeader({ titleSlot }: { titleSlot?: React.ReactNode }) {
 
   return (
     <header
-      className="sticky top-0 z-20 border-b border-[var(--border-subtle)] bg-[var(--surface-header)] backdrop-blur"
+      className="atlas-admin-header sticky top-0 z-20 border-b border-[var(--atlas-line)] bg-[var(--atlas-surface)] backdrop-blur-md"
       data-layout="cx-admin-header"
     >
-      <div className="flex flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
+      <div className="flex flex-wrap items-center gap-2.5 px-3 py-2.5 sm:px-5">
         <div className="min-w-0 flex-1">
-          <nav aria-label="Breadcrumb" className="text-xs text-[var(--text-muted)]">
+          <nav aria-label="Breadcrumb" className="atlas-breadcrumb text-[10px]">
             <ol className="flex flex-wrap items-center gap-1">
               {crumbs.map((crumb, i) => (
-                <li key={crumb.label} className="flex items-center gap-1">
-                  {i > 0 ? <span aria-hidden="true">/</span> : null}
+                <li key={crumb.label} className="atlas-breadcrumb__item flex items-center gap-1">
+                  {i > 0 ? (
+                    <span className="atlas-breadcrumb__sep" aria-hidden="true" />
+                  ) : null}
                   {crumb.href && i < crumbs.length - 1 ? (
                     <Link
                       href={crumb.href}
-                      className="hover:text-[var(--text-link)]"
+                      className="text-[var(--atlas-text-muted)] hover:text-[var(--atlas-signal)]"
                     >
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span className="text-[var(--text-secondary)]">{crumb.label}</span>
+                    <span className="text-[var(--atlas-text-secondary)]">{crumb.label}</span>
                   )}
                 </li>
               ))}
             </ol>
           </nav>
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <h1 className="text-lg font-semibold text-[var(--text-heading)]">
+          <div className="mt-0.5 flex flex-wrap items-center gap-2">
+            <h1 className="text-base font-semibold tracking-[-0.02em] text-[var(--atlas-text)] sm:text-lg">
               {titleSlot ?? title}
             </h1>
-            <span className="rounded-[var(--radius-sm)] bg-[var(--surface-muted)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--text-secondary)]">
+            <span className="atlas-threat-badge atlas-threat-badge--muted font-mono text-[10px] uppercase tracking-[0.1em]">
               {user.role}
             </span>
           </div>
-          <p className="text-[11px] text-[var(--text-muted)]">{organization.name}</p>
+          <p className="atlas-micro-label mt-0.5 !inline">{organization.name}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2" data-layout="cx-admin-toolbar">
+        <div className="flex flex-wrap items-center gap-1.5" data-layout="cx-admin-toolbar">
           <AdminAppExitNav variant="header" />
           <EnvironmentSelector />
           <ThemeToggle />

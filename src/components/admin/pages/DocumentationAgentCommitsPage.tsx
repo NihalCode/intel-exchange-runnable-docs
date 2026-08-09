@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useControlPlaneMutation } from "@/components/admin/hooks/useControlPlaneMutation";
 import { PageHeader, StatusMessage } from "@/components/admin/ui/PageHeader";
@@ -12,6 +13,7 @@ import { PermissionGate } from "@/components/admin/ui/PermissionGate";
 import {
   buttonPrimaryClass,
   buttonSecondaryClass,
+  linkClass,
 } from "@/components/admin/ui/tokens";
 import type { ProductCommitHistory, CommitHistoryRow } from "@/lib/deployment/commit-history";
 
@@ -134,67 +136,68 @@ export function DocumentationAgentCommitsPage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-layout="sf-commit-pipeline"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="Commits"
         description="Deployable GitHub commit history from Vercel (not full GitHub history). Production switches use propose → approve → execute."
         actions={
-          <button
-            type="button"
-            className={buttonSecondaryClass}
-            disabled={busy}
-            onClick={() => {
-              setStatus("Refreshing");
-              void refresh()
-                .then(() => setStatus("Refreshed"))
-                .catch((err) =>
-                  setStatus(err instanceof Error ? err.message : "Refresh failed")
-                );
-            }}
-          >
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <LiveStatus label={selectedEnvironment} tone="signal" />
+            <button
+              type="button"
+              className={buttonSecondaryClass}
+              disabled={busy}
+              onClick={() => {
+                setStatus("Refreshing");
+                void refresh()
+                  .then(() => setStatus("Refreshed"))
+                  .catch((err) =>
+                    setStatus(err instanceof Error ? err.message : "Refresh failed")
+                  );
+              }}
+            >
+              Refresh
+            </button>
+          </div>
         }
       />
       <StatusMessage message={status} />
-      <p className="text-xs text-[var(--text-muted)]">
+      <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--atlas-text-muted)]">
         At most 25 deployments per product.{" "}
-        <Link
-          href="/admin/documentation-agent/deployments"
-          className="underline underline-offset-2"
-        >
+        <Link href="/admin/documentation-agent/deployments" className={linkClass}>
           Manage projects & domains
         </Link>
         {" · "}
-        <Link
-          href="/admin/documentation-agent/apis"
-          className="underline underline-offset-2"
-        >
+        <Link href="/admin/documentation-agent/apis" className={linkClass}>
           Approve change requests (APIs)
         </Link>
       </p>
 
       {envProducts.length === 0 ? (
-        <p className="text-sm text-[var(--text-muted)]">
+        <p className="text-sm text-[var(--atlas-text-muted)]">
           No product deployments for this environment. Register a Vercel project under
           Deployments first.
         </p>
       ) : (
         envProducts.map((product) => (
-          <section key={product.deploymentId} className="space-y-3">
+          <section
+            key={product.deploymentId}
+            className="space-y-3 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-3"
+          >
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-sm font-semibold uppercase tracking-wide">
-                {product.product}
-              </h2>
+              <p className="atlas-micro-label text-[var(--atlas-signal)]">{product.product}</p>
               <StatusBadge status={product.status} />
-              <span className="text-xs text-[var(--text-muted)]">
+              <span className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
                 {product.environment} · {product.vercelProjectName} ·{" "}
                 {product.vercelProjectIdMasked}
               </span>
             </div>
             {product.error ? (
-              <p className="text-xs text-red-600 dark:text-red-400">{product.error}</p>
+              <p className="text-xs text-[var(--atlas-danger)]">{product.error}</p>
             ) : null}
             <DataTable
               caption={`${product.product} commit history`}

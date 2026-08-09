@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 
+import { LiveStatus } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { useControlPlaneMutation } from "@/components/admin/hooks/useControlPlaneMutation";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
 import { StatusBadge } from "@/components/admin/ui/StatusBadge";
+import {
+  SignalButton,
+  SignalEmptyState,
+  SignalInput,
+  SignalSelect,
+} from "@/components/fabric";
 import type { DomainCollectionMapping } from "@/lib/domains/types";
 import { listProducts } from "@/lib/products/registry";
 
@@ -61,93 +68,105 @@ export function DocumentationAgentDomainsPage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6" data-testid="admin-domains-page">
+    <div
+      className="mx-auto max-w-[var(--workbench-max)] space-y-5"
+      data-testid="admin-domains-page"
+      data-layout="sf-verification-map"
+    >
       <PageHeader
         eyebrow={organization.name}
         title="Domains"
-        description="Map verified custom hostnames to product documentation collections."
+        description="Verification map — custom hostnames to product documentation collections."
+        actions={
+          <LiveStatus
+            label={routingEnabled ? "Routing on" : "Routing off"}
+            tone={routingEnabled ? "signal" : "amber"}
+          />
+        }
       />
 
       {!routingEnabled ? (
         <div
           role="status"
-          className="rounded-[var(--radius-md)] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-100"
+          className="rounded-[var(--radius-sm)] border border-[var(--atlas-amber)] bg-[color-mix(in_srgb,var(--atlas-amber)_12%,transparent)] px-4 py-3 text-sm text-[var(--atlas-text)]"
           data-testid="domains-routing-disabled-banner"
         >
-          <p className="font-medium">Host-based product routing is currently off</p>
-          <p className="mt-1 text-xs leading-relaxed opacity-90">
+          <p className="atlas-micro-label text-[var(--atlas-amber)]">Routing inactive</p>
+          <p className="mt-1 font-medium">Host-based product routing is currently off</p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--atlas-text-secondary)]">
             You can still create and edit domain mappings here. To activate routing at runtime,
-            enable <strong>Host-based product routing</strong> under Admin → Features, or set{" "}
-            <code className="rounded bg-black/5 px-1 dark:bg-white/10">DOMAIN_ROUTING_ENABLED=true</code>{" "}
+            enable Host-based product routing under Admin → Features, or set{" "}
+            <code className="rounded-[var(--radius-sm)] bg-[var(--surface-sunken)] px-1 font-mono text-[10px]">
+              DOMAIN_ROUTING_ENABLED=true
+            </code>{" "}
             for this deployment.
           </p>
         </div>
       ) : null}
 
       {canManage ? (
-        <section className="space-y-3 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
-          <h2 className="text-sm font-semibold">Add domain mapping</h2>
+        <section className="space-y-3 rounded-[var(--radius-sm)] border border-[var(--atlas-line)] border-l-2 border-l-[var(--atlas-signal)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4">
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">Register hostname</p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="flex flex-col gap-1 text-xs">
-              <span className="opacity-70">Hostname</span>
-              <input
-                value={hostname}
-                onChange={(e) => setHostname(e.target.value)}
-                placeholder="docs.example.com"
-                className="rounded border border-zinc-300 px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-xs">
-              <span className="opacity-70">Product</span>
-              <select
-                value={productId}
-                onChange={(e) => setProductId(e.target.value)}
-                className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-600 dark:bg-zinc-900"
-              >
-                {PRODUCTS.map((p) => (
-                  <option key={p.productId} value={p.productId}>
-                    {p.displayLabel}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1 text-xs">
-              <span className="opacity-70">Environment</span>
-              <select
-                value={environment}
-                onChange={(e) =>
-                  setEnvironment(e.target.value as "production" | "staging" | "development")
-                }
-                className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-600 dark:bg-zinc-900"
-              >
-                <option value="production">production</option>
-                <option value="staging">staging</option>
-                <option value="development">development</option>
-              </select>
-            </label>
+            <SignalInput
+              label="Hostname"
+              value={hostname}
+              onChange={(e) => setHostname(e.target.value)}
+              placeholder="docs.example.com"
+              className="font-mono text-xs"
+            />
+            <SignalSelect
+              label="Product"
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+            >
+              {PRODUCTS.map((p) => (
+                <option key={p.productId} value={p.productId}>
+                  {p.displayLabel}
+                </option>
+              ))}
+            </SignalSelect>
+            <SignalSelect
+              label="Environment"
+              value={environment}
+              onChange={(e) =>
+                setEnvironment(e.target.value as "production" | "staging" | "development")
+              }
+            >
+              <option value="production">production</option>
+              <option value="staging">staging</option>
+              <option value="development">development</option>
+            </SignalSelect>
           </div>
-          <button
+          <SignalButton
             type="button"
             disabled={busy || !hostname.trim()}
+            loading={busy}
             onClick={() => void createMapping()}
-            className="rounded bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
           >
             Create mapping
-          </button>
-          {status ? <p className="text-xs text-zinc-500">{status}</p> : null}
+          </SignalButton>
+          {status ? (
+            <p className="font-mono text-[10px] text-[var(--atlas-text-muted)]">{status}</p>
+          ) : null}
         </section>
       ) : (
-        <p className="text-xs text-zinc-500">Read-only view. Domain changes require owner or admin.</p>
+        <p className="text-xs text-[var(--atlas-text-muted)]">
+          Read-only view. Domain changes require owner or admin.
+        </p>
       )}
 
       {mappings.length === 0 ? (
-        <p className="text-sm text-zinc-500" data-testid="domains-empty">
-          No domain mappings configured yet.
-        </p>
+        <div data-testid="domains-empty">
+          <SignalEmptyState
+            title="No domain mappings"
+            description="No domain mappings configured yet."
+          />
+        </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
-          <table className="min-w-full text-left text-sm">
-            <thead className="bg-zinc-50 text-xs uppercase text-zinc-500 dark:bg-zinc-900">
+        <div className="sf-table-wrap overflow-x-auto rounded-[var(--radius-sm)]">
+          <table className="min-w-full text-left text-sm text-[var(--atlas-text)]">
+            <thead>
               <tr>
                 <th className="px-3 py-2">Hostname</th>
                 <th className="px-3 py-2">Kind</th>
@@ -160,11 +179,11 @@ export function DocumentationAgentDomainsPage({
             </thead>
             <tbody>
               {mappings.map((m) => (
-                <tr key={m.id} className="border-t border-zinc-200 dark:border-zinc-800">
+                <tr key={m.id} className="border-t border-[var(--atlas-line)]">
                   <td className="px-3 py-2 font-mono text-xs">{m.hostname}</td>
-                  <td className="px-3 py-2">{m.kind}</td>
-                  <td className="px-3 py-2">{m.productId ?? "—"}</td>
-                  <td className="px-3 py-2">{m.enabled ? "Yes" : "No"}</td>
+                  <td className="px-3 py-2 text-xs">{m.kind}</td>
+                  <td className="px-3 py-2 font-mono text-xs">{m.productId ?? "—"}</td>
+                  <td className="px-3 py-2 text-xs">{m.enabled ? "Yes" : "No"}</td>
                   <td className="px-3 py-2">
                     <StatusBadge status={m.verificationStatus} />
                   </td>
@@ -175,25 +194,27 @@ export function DocumentationAgentDomainsPage({
                     <td className="px-3 py-2">
                       <div className="flex flex-wrap gap-1 text-[11px]">
                         {m.verificationStatus !== "verified" ? (
-                          <button
+                          <SignalButton
                             type="button"
+                            size="sm"
+                            variant="success"
                             disabled={busy}
                             onClick={() =>
                               void updateMapping(m, { verificationStatus: "verified" })
                             }
-                            className="rounded border border-emerald-400 px-2 py-0.5 text-emerald-700 dark:text-emerald-400"
                           >
                             Mark verified
-                          </button>
+                          </SignalButton>
                         ) : null}
-                        <button
+                        <SignalButton
                           type="button"
+                          size="sm"
+                          variant="secondary"
                           disabled={busy}
                           onClick={() => void updateMapping(m, { enabled: !m.enabled })}
-                          className="rounded border border-zinc-300 px-2 py-0.5 dark:border-zinc-600"
                         >
                           {m.enabled ? "Disable" : "Enable"}
-                        </button>
+                        </SignalButton>
                       </div>
                     </td>
                   ) : null}

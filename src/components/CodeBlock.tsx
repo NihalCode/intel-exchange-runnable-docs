@@ -47,15 +47,15 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
     isPostmanPreRequestScript(snippet.code);
 
   return (
-    <div className="not-prose my-4 overflow-hidden rounded-[var(--radius-lg)] border border-zinc-800 bg-[#0d1117] text-zinc-100 shadow-[var(--shadow-card)]">
-      <div className="flex items-center justify-between border-b border-zinc-800 bg-[#010409] px-3 py-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-zinc-400">
+    <div className="not-prose my-4 overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-subtle)] bg-[var(--surface-code)] text-[#d7e4df] shadow-[var(--shadow-card)]">
+      <div className="flex items-center justify-between border-b border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--surface-code)_88%,#000)] px-3 py-1.5">
+        <span className="atlas-micro-label !inline">
           {snippet.label || snippet.lang}
         </span>
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1 rounded px-2 py-1 text-[11px] font-medium text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100"
+          className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-2 py-1 text-[11px] font-medium text-[color-mix(in_srgb,#d7e4df_55%,transparent)] transition hover:bg-[color-mix(in_srgb,#fff_8%,transparent)] hover:text-[#d7e4df]"
           aria-label="Copy code"
         >
           {copied ? <CheckIcon /> : <CopyIcon />}
@@ -68,11 +68,11 @@ export function CodeBlock({ snippet }: { snippet: CodeSnippet }) {
         </pre>
       </div>
       {showRunner ? (
-        <div className="border-t border-zinc-800 bg-zinc-950/40 px-3 py-2 text-zinc-200">
+        <div className="border-t border-[var(--border-subtle)] bg-[color-mix(in_srgb,var(--surface-code)_70%,transparent)] px-3 py-2 text-[#d7e4df]">
           {canRunSnippets ? (
             <SnippetRunner snippet={runnableSnippet} />
           ) : (
-            <p className="text-[11px] text-zinc-400">
+            <p className="text-[11px] text-[var(--text-muted)]">
               View-only example — running live API calls requires a role with snippet testing
               access.
             </p>

@@ -384,16 +384,14 @@ function PathParamEditor({
 }) {
   if (params.length === 0) return null;
   return (
-    <div className="rounded-md border border-violet-300 bg-violet-50/50 p-3 dark:border-violet-800 dark:bg-violet-950/20">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-violet-700 dark:text-violet-300">
-        Path Parameters
-      </div>
+    <div className="rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-violet)_35%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-violet)_8%,var(--surface-raised))] p-3">
+      <div className="atlas-micro-label mb-2 text-[var(--atlas-violet)]">Path Parameters</div>
       <div className="grid gap-2 sm:grid-cols-2">
         {params.map((p) => (
           <label key={p.name} className="flex flex-col gap-1 text-xs">
-            <span className="font-medium opacity-80">
+            <span className="font-medium text-[var(--text-secondary)]">
               {p.name}{" "}
-              <span className="text-violet-600 dark:text-violet-400">
+              <span className="text-[var(--atlas-violet)]">
                 ({required.has(p.name) ? "required" : "in URL"})
               </span>
             </span>
@@ -404,7 +402,7 @@ function PathParamEditor({
               placeholder={p.value || `Enter ${p.name}`}
               value={values[p.name] ?? p.value}
               onChange={(e) => onChange(p.name, e.target.value)}
-              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-violet-500 dark:border-zinc-600 dark:bg-zinc-900"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-violet)]"
             />
           </label>
         ))}
@@ -426,19 +424,17 @@ function QueryParamEditor({
 }) {
   if (params.length === 0) return null;
   return (
-    <div className="rounded-md border border-zinc-300 bg-zinc-50/50 p-3 dark:border-zinc-700 dark:bg-zinc-900/40">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide opacity-70">
-        Query Parameters
-      </div>
+    <div className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-muted)] p-3">
+      <div className="atlas-micro-label mb-2">Query Parameters</div>
       <div className="grid gap-2 sm:grid-cols-2">
         {params.map((p) => (
           <label key={p.name} className="flex flex-col gap-1 text-xs">
-            <span className="font-medium opacity-80">
+            <span className="font-medium text-[var(--text-secondary)]">
               {p.name}{" "}
               {!required.has(p.name) ? (
-                <span className="font-normal text-zinc-400">(optional)</span>
+                <span className="font-normal text-[var(--text-muted)]">(optional)</span>
               ) : (
-                <span className="text-red-600 dark:text-red-400">(required)</span>
+                <span className="text-[var(--danger)]">(required)</span>
               )}
             </span>
             <input
@@ -448,7 +444,7 @@ function QueryParamEditor({
               placeholder={p.value || (required.has(p.name) ? `Enter ${p.name}` : "(optional)")}
               value={values[p.name] ?? p.value}
               onChange={(e) => onChange(p.name, e.target.value)}
-              className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:border-zinc-600 dark:bg-zinc-900"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-signal)]"
             />
           </label>
         ))}
@@ -471,38 +467,40 @@ function CustomQueryParamEditor({
   return (
     <div>
       <div className="mb-1 flex items-center justify-between gap-2">
-        <span className="text-xs font-medium opacity-70">Custom query parameters</span>
+        <span className="atlas-micro-label !inline">Custom query parameters</span>
         <button
           type="button"
           onClick={onAdd}
-          className="rounded border border-zinc-300 px-2 py-0.5 text-[11px] font-medium hover:bg-zinc-100 dark:border-zinc-600 dark:hover:bg-zinc-800"
+          className="rounded-[var(--radius-sm)] border border-[var(--border-default)] px-2 py-0.5 text-[11px] font-medium text-[var(--text-secondary)] hover:bg-[var(--surface-muted)]"
         >
           Add parameter
         </button>
       </div>
       {rows.length === 0 ? (
-        <p className="text-[11px] opacity-60">Optional user-defined query parameters (auth params are protected).</p>
+        <p className="text-[11px] text-[var(--text-muted)]">
+          Optional user-defined query parameters (auth params are protected).
+        </p>
       ) : (
         <div className="grid gap-2">
           {rows.map((row) => (
             <div key={row.id} className="flex flex-wrap items-end gap-2">
               <label className="flex min-w-[8rem] flex-1 flex-col gap-1 text-xs">
-                <span className="opacity-70">Name</span>
+                <span className="text-[var(--text-muted)]">Name</span>
                 <input
                   value={row.name}
                   onChange={(e) => onChange(row.id, { name: e.target.value })}
-                  className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
+                  className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)]"
                 />
               </label>
               <label className="flex min-w-[8rem] flex-[2] flex-col gap-1 text-xs">
-                <span className="opacity-70">Value</span>
+                <span className="text-[var(--text-muted)]">Value</span>
                 <input
                   value={row.value}
                   onChange={(e) => onChange(row.id, { value: e.target.value })}
-                  className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs dark:border-zinc-600 dark:bg-zinc-900"
+                  className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)]"
                 />
               </label>
-              <label className="flex items-center gap-1 pb-1 text-xs">
+              <label className="flex items-center gap-1 pb-1 text-xs text-[var(--text-secondary)]">
                 <input
                   type="checkbox"
                   checked={row.enabled}
@@ -513,7 +511,7 @@ function CustomQueryParamEditor({
               <button
                 type="button"
                 onClick={() => onRemove(row.id)}
-                className="pb-1 text-[11px] text-red-600 hover:underline dark:text-red-400"
+                className="pb-1 text-[11px] text-[var(--danger)] hover:underline"
               >
                 Remove
               </button>
@@ -537,13 +535,13 @@ function PayloadEditor({
   return (
     <div>
       <div className="mb-1 flex items-center gap-2">
-        <span className="text-xs font-medium opacity-70">Request body (JSON)</span>
+        <span className="atlas-micro-label !inline">Request body (JSON)</span>
         {jsonError ? (
-          <span className="rounded bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-900/30 dark:text-red-400">
+          <span className="rounded-[var(--radius-sm)] bg-[var(--surface-critical)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--danger)]">
             {jsonError}
           </span>
         ) : value.trim() ? (
-          <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+          <span className="rounded-[var(--radius-sm)] bg-[color-mix(in_srgb,var(--success)_14%,transparent)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--success)]">
             Valid JSON
           </span>
         ) : null}
@@ -553,10 +551,8 @@ function PayloadEditor({
         onChange={(e) => onChange(e.target.value)}
         spellCheck={false}
         rows={Math.min(14, Math.max(4, value.split("\n").length + 1))}
-        className={`w-full rounded border px-2 py-1 font-mono text-xs outline-none focus:border-sky-500 dark:bg-zinc-900 ${
-          jsonError
-            ? "border-red-400 dark:border-red-600"
-            : "border-zinc-300 dark:border-zinc-600"
+        className={`w-full rounded-[var(--radius-sm)] border bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-signal)] ${
+          jsonError ? "border-[var(--danger)]" : "border-[var(--border-default)]"
         }`}
       />
     </div>
@@ -578,42 +574,42 @@ function MultipartFormEditor({
 }) {
   if (fields.length === 0) return null;
   return (
-    <div className="rounded-md border border-orange-300 bg-orange-50/50 p-3 dark:border-orange-800 dark:bg-orange-950/20">
-      <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-orange-800 dark:text-orange-300">
+    <div className="rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-amber)_40%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-amber)_10%,var(--surface-raised))] p-3">
+      <div className="atlas-micro-label mb-2 text-[var(--atlas-amber)]">
         Form data (multipart upload)
       </div>
       <div className="grid gap-3">
         {fields.map((f) =>
           f.kind === "file" ? (
             <label key={f.name} className="flex flex-col gap-1 text-xs">
-              <span className="font-medium opacity-80">
+              <span className="font-medium text-[var(--text-secondary)]">
                 {f.name}{" "}
-                <span className="font-normal text-orange-700 dark:text-orange-400">(file)</span>
+                <span className="font-normal text-[var(--atlas-amber)]">(file)</span>
               </span>
               {f.description ? (
-                <span className="text-[11px] opacity-60">{f.description}</span>
+                <span className="text-[11px] text-[var(--text-muted)]">{f.description}</span>
               ) : null}
               <input
                 type="file"
                 onChange={(e) => onFileChange(f.name, e.target.files?.[0] ?? null)}
-                className="text-xs file:mr-2 file:rounded file:border-0 file:bg-sky-600 file:px-2 file:py-1 file:text-xs file:font-semibold file:text-white hover:file:bg-sky-500"
+                className="text-xs file:mr-2 file:rounded-[var(--radius-sm)] file:border-0 file:bg-[var(--atlas-signal)] file:px-2 file:py-1 file:text-xs file:font-semibold file:text-[#04110e] hover:file:bg-[var(--atlas-signal-deep)]"
               />
               {files[f.name] ? (
-                <span className="font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
+                <span className="font-mono text-[11px] text-[var(--success)]">
                   Selected: {files[f.name]!.name} ({Math.round(files[f.name]!.size / 1024)} KB)
                 </span>
               ) : (
-                <span className="text-[11px] opacity-50">No file selected</span>
+                <span className="text-[11px] text-[var(--text-muted)]">No file selected</span>
               )}
             </label>
           ) : (
             <label key={f.name} className="flex flex-col gap-1 text-xs">
-              <span className="font-medium opacity-80">
+              <span className="font-medium text-[var(--text-secondary)]">
                 {f.name}{" "}
-                <span className="font-normal text-zinc-400">(text field)</span>
+                <span className="font-normal text-[var(--text-muted)]">(text field)</span>
               </span>
               {f.description ? (
-                <span className="text-[11px] opacity-60">{f.description}</span>
+                <span className="text-[11px] text-[var(--text-muted)]">{f.description}</span>
               ) : null}
               <input
                 type="text"
@@ -622,7 +618,7 @@ function MultipartFormEditor({
                 placeholder={f.defaultValue || `(optional)`}
                 value={textValues[f.name] ?? f.defaultValue ?? ""}
                 onChange={(e) => onTextChange(f.name, e.target.value)}
-                className="rounded border border-zinc-300 bg-white px-2 py-1 font-mono text-xs outline-none focus:border-orange-500 dark:border-zinc-600 dark:bg-zinc-900"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-2 py-1 font-mono text-xs text-[var(--text-primary)] outline-none focus:border-[var(--atlas-amber)]"
               />
             </label>
           )
@@ -641,19 +637,18 @@ export function RequestPlaygroundPanel() {
   if (!playground) return null;
 
   return (
-    <div className="mb-6 space-y-3 rounded-lg border border-sky-400/40 bg-sky-50/30 p-4 dark:border-sky-800 dark:bg-sky-950/20">
+    <div className="mb-3 space-y-3 rounded-[var(--radius-sm)] border border-[var(--border-subtle)] bg-[var(--surface-muted)] p-4">
       <div>
-        <h3 className="text-sm font-semibold text-sky-900 dark:text-sky-100">
-          Request parameters
-        </h3>
-        <p className="mt-1 text-xs text-sky-800/80 dark:text-sky-300/80">
+        <p className="atlas-micro-label">Playground</p>
+        <h3 className="mt-1 text-sm font-semibold text-[var(--text-heading)]">Request parameters</h3>
+        <p className="mt-1 text-xs text-[var(--text-secondary)]">
           Edit values here before running any snippet below (cURL, JavaScript, or Python).
           Code blocks are reference only — your inputs above are what gets sent.
         </p>
       </div>
 
       {needsBaseUrl ? (
-        <div className="rounded-md border border-amber-400/50 bg-amber-50/50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/20 dark:text-amber-400">
+        <div className="rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--atlas-amber)_45%,var(--border-default))] bg-[color-mix(in_srgb,var(--atlas-amber)_12%,transparent)] px-3 py-2 text-xs text-[var(--atlas-amber)]">
           <strong>Set your base URL.</strong> Enter your Cyware tenant API base in the connection
           panel below.
         </div>

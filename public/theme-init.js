@@ -1,9 +1,11 @@
 (function () {
   try {
     var s = localStorage.getItem("theme");
-    var d = s ? s === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    // Living Signal Atlas is dark-first; only force light when explicitly chosen.
+    var d = s ? s === "dark" : s === "light" ? false : true;
     if (d) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   } catch {
-    /* ignore */
+    document.documentElement.classList.add("dark");
   }
 })();

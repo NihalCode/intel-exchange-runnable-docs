@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { LiveStatus, TelemetryValue } from "@/components/atlas";
 import { useAdmin } from "@/components/admin/context/AdminContext";
 import { PageHeader } from "@/components/admin/ui/PageHeader";
-import { MetricCard } from "@/components/admin/ui/MetricCard";
 import { buttonSecondaryClass } from "@/components/admin/ui/tokens";
 import {
   SignalButton,
@@ -82,13 +82,13 @@ export function QueryAnalyticsPage({
 
   const denom = summary.answerQualityDenominator || 0;
   const answeredPct =
-    denom > 0 ? `${Math.round((summary.answered / denom) * 100)}% of answer-quality` : "—";
+    denom > 0 ? `${Math.round((summary.answered / denom) * 100)}%` : "—";
   const partialPct =
     denom > 0
-      ? `${Math.round((summary.partiallyAnswered / denom) * 100)}% of answer-quality`
+      ? `${Math.round((summary.partiallyAnswered / denom) * 100)}%`
       : "—";
   const unansweredPct =
-    denom > 0 ? `${Math.round((summary.unanswered / denom) * 100)}% of answer-quality` : "—";
+    denom > 0 ? `${Math.round((summary.unanswered / denom) * 100)}%` : "—";
 
   return (
     <div
@@ -100,6 +100,7 @@ export function QueryAnalyticsPage({
         eyebrow={organization.name}
         title="Query analytics"
         description="Customer questions, answer outcomes, latency, and exports for the selected range."
+        actions={<LiveStatus label="Workbench" tone="signal" />}
       />
 
       {loadError ? (
@@ -113,8 +114,8 @@ export function QueryAnalyticsPage({
         </div>
       ) : null}
 
-      <p className="text-xs text-[var(--text-muted)]">
-        Last updated {new Date(refreshedAt).toLocaleString()} · Answer-quality denominator = answered +
+      <p className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--atlas-text-muted)]">
+        Last updated {new Date(refreshedAt).toLocaleString()} · Answer-quality denom = answered +
         partially answered + no verified solution + no results + clarification required ({denom})
       </p>
 
@@ -160,82 +161,145 @@ export function QueryAnalyticsPage({
         {canReadSensitive ? (
           <a
             href={sensitiveExportUrl}
-            className="inline-flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--warning)] bg-[var(--warning-soft)] px-3 py-2 text-sm font-medium text-[var(--text-heading)]"
+            className="inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--atlas-amber)] bg-[color-mix(in_srgb,var(--atlas-amber)_12%,transparent)] px-3 py-2 text-sm font-medium text-[var(--atlas-text)]"
           >
             Sensitive CSV
           </a>
         ) : null}
       </SignalFilterBar>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 sf-telemetry-strip">
-        <MetricCard label="Logical queries" value={String(summary.totalLogicalQueries)} />
-        <MetricCard label="Attempts" value={String(summary.totalAttempts)} />
-        <MetricCard label="Answered" value={String(summary.answered)} change={answeredPct} />
-        <MetricCard
-          label="Partially answered"
-          value={String(summary.partiallyAnswered)}
-          change={partialPct}
-        />
+      {/* Volume ribbon — horizontal composition, not a metric-card grid */}
+      <section
+        className="overflow-x-auto rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_92%,transparent)]"
+        aria-label="Query volume"
+      >
+        <div className="flex min-w-[40rem] divide-x divide-[var(--atlas-line)]">
+          <RibbonCell label="Logical queries" value={String(summary.totalLogicalQueries)} />
+          <RibbonCell label="Attempts" value={String(summary.totalAttempts)} />
+          <RibbonCell label="Answered" value={String(summary.answered)} hint={answeredPct} />
+          <RibbonCell
+            label="Partially answered"
+            value={String(summary.partiallyAnswered)}
+            hint={partialPct}
+          />
+          <RibbonCell
+            label="Unanswered"
+            value={String(summary.unanswered)}
+            hint={unansweredPct}
+            tone="amber"
+          />
+        </div>
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <section className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] p-4">
+          <p className="atlas-micro-label text-[var(--atlas-violet)]">Outcome matrix</p>
+          <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
+            <OutcomeRow label="Clarification required" value={summary.clarificationRequired} />
+            <OutcomeRow label="Access blocked" value={summary.accessBlocked} />
+            <OutcomeRow label="Credential blocked" value={summary.credentialBlocked} />
+            <OutcomeRow label="Provider / system errors" value={summary.providerError} />
+            <OutcomeRow label="Answer-quality denom" value={summary.answerQualityDenominator} />
+            {showProductionMetrics ? (
+              <OutcomeRow label="Production metrics" value="enabled" />
+            ) : null}
+          </dl>
+        </section>
+
+        <section className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] p-4">
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">Latency band</p>
+          <div className="mt-3 grid grid-cols-3 gap-3">
+            <TelemetryValue
+              label="p50"
+              value={summary.p50LatencyMs == null ? "—" : Math.round(summary.p50LatencyMs)}
+              unit="ms"
+            />
+            <TelemetryValue
+              label="p95"
+              value={summary.p95LatencyMs == null ? "—" : Math.round(summary.p95LatencyMs)}
+              unit="ms"
+            />
+            <TelemetryValue
+              label="Avg"
+              value={summary.avgLatencyMs == null ? "—" : Math.round(summary.avgLatencyMs)}
+              unit="ms"
+            />
+          </div>
+        </section>
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <MetricCard
-          label="Unanswered (review queue)"
-          value={String(summary.unanswered)}
-          change={unansweredPct}
-        />
-        <MetricCard
-          label="Clarification required"
-          value={String(summary.clarificationRequired)}
-        />
-        <MetricCard label="Access blocked" value={String(summary.accessBlocked)} />
-        <MetricCard label="Credential blocked" value={String(summary.credentialBlocked)} />
-      </div>
-      <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        <MetricCard label="Provider / system errors" value={String(summary.providerError)} />
-        <MetricCard
-          label="Answer-quality denom"
-          value={String(summary.answerQualityDenominator)}
-        />
-        {showProductionMetrics ? (
-          <MetricCard label="Production metrics" value="enabled" />
-        ) : null}
-        <MetricCard
-          label="p50 latency"
-          value={summary.p50LatencyMs == null ? "—" : `${Math.round(summary.p50LatencyMs)} ms`}
-        />
-        <MetricCard
-          label="p95 latency"
-          value={summary.p95LatencyMs == null ? "—" : `${Math.round(summary.p95LatencyMs)} ms`}
-        />
-        <MetricCard
-          label="Avg latency"
-          value={summary.avgLatencyMs == null ? "—" : `${Math.round(summary.avgLatencyMs)} ms`}
-        />
-      </div>
+
       <section>
-        <h2 className="mb-2 text-sm font-semibold">Recent events</h2>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h2 className="atlas-micro-label">Event stream</h2>
+          <span className="font-mono text-[10px] text-[var(--atlas-text-muted)]">
+            {recent.length} rows
+          </span>
+        </div>
         {recent.length === 0 ? (
           <SignalEmptyState title="No analytics recorded yet." />
         ) : (
-          <ul className="space-y-2 text-xs">
+          <ul className="divide-y divide-[var(--atlas-line)] rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[var(--atlas-deep)] font-mono text-[11px]">
             {recent.map((row) => (
               <li
                 key={row.id}
-                className="rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-3 py-2"
+                className="flex flex-wrap items-baseline gap-x-2 gap-y-1 px-3 py-2 text-[var(--atlas-text-secondary)]"
               >
-                <span className="font-mono">{row.outcome}</span>
-                {" · "}
-                {row.productId ?? "—"}
-                {" · "}
-                {row.hostname}
-                {" · "}
-                {row.latencyMs != null ? `${row.latencyMs} ms · ` : ""}
-                {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
+                <span className="text-[var(--atlas-signal)]">{row.outcome}</span>
+                <span>·</span>
+                <span>{row.productId ?? "—"}</span>
+                <span>·</span>
+                <span>{row.hostname}</span>
+                {row.latencyMs != null ? (
+                  <>
+                    <span>·</span>
+                    <span>{row.latencyMs} ms</span>
+                  </>
+                ) : null}
+                <span className="ml-auto text-[var(--atlas-text-muted)]">
+                  {row.createdAt ? new Date(row.createdAt).toLocaleString() : "—"}
+                </span>
               </li>
             ))}
           </ul>
         )}
       </section>
+    </div>
+  );
+}
+
+function RibbonCell({
+  label,
+  value,
+  hint,
+  tone = "signal",
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  tone?: "signal" | "amber";
+}) {
+  return (
+    <div className="min-w-[8rem] flex-1 px-4 py-3">
+      <p className="atlas-micro-label">{label}</p>
+      <p
+        className={`mt-1 font-mono text-xl font-medium tabular-nums tracking-tight ${
+          tone === "amber" ? "text-[var(--atlas-amber)]" : "text-[var(--atlas-text)]"
+        }`}
+      >
+        {value}
+      </p>
+      {hint ? (
+        <p className="mt-0.5 font-mono text-[10px] text-[var(--atlas-text-muted)]">{hint}</p>
+      ) : null}
+    </div>
+  );
+}
+
+function OutcomeRow({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div>
+      <dt className="atlas-micro-label">{label}</dt>
+      <dd className="mt-0.5 font-mono text-base tabular-nums text-[var(--atlas-text)]">{value}</dd>
     </div>
   );
 }

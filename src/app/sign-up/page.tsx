@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TopologyField } from "@/components/atlas";
 import { OktaSignUpForm } from "@/components/auth/OktaSignUpForm";
 
 export const dynamic = "force-dynamic";
@@ -21,12 +22,13 @@ export default async function SignUpPage({
     : "/sign-in";
 
   return (
-    <div className="cx-split-auth" data-layout="cx-split-auth">
+    <div className="cx-split-auth atlas-trust-orbit" data-layout="cx-split-auth">
       <aside
-        className="flex flex-col justify-between px-8 py-12 text-white"
+        className="relative flex flex-col justify-between overflow-hidden px-8 py-12 text-[var(--atlas-text)]"
         data-layout="cx-sign-up-brand"
       >
-        <div>
+        <TopologyField className="atlas-trust-orbit__field pointer-events-none absolute inset-0 opacity-75" />
+        <div className="relative z-[1]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/cyware_logo.png"
@@ -35,46 +37,49 @@ export default async function SignUpPage({
             height={40}
             className="h-10 w-10 object-contain"
           />
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-white/70">
+          <p className="atlas-micro-label mt-6 text-[var(--atlas-signal)]">
             CYWARE | Documentation
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Set up your account</h1>
-          <p className="mt-3 max-w-sm text-sm leading-6 text-white/75">
+          <h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em]">Set up your account</h1>
+          <p className="mt-3 max-w-sm text-sm leading-6 text-[var(--atlas-text-secondary)]">
             Use the email your administrator added. Create your password, then return to Sign in.
           </p>
-          <ul className="mt-8 space-y-3 text-sm text-white/70">
+          <ul className="mt-8 space-y-3 text-sm text-[var(--atlas-text-muted)]">
             <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-green)]" aria-hidden="true" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--atlas-signal)]" aria-hidden="true" />
               Email-only setup request
             </li>
             <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand-blue)]" aria-hidden="true" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--atlas-violet)]" aria-hidden="true" />
               Okta sends the password setup email
             </li>
             <li className="flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-white/50" aria-hidden="true" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--atlas-amber)]" aria-hidden="true" />
               No automatic app session is created
             </li>
           </ul>
         </div>
       </aside>
 
-      <main className="flex items-center justify-center bg-[var(--canvas-atmospheric)] px-4 py-12">
+      <main className="relative flex items-center justify-center bg-[var(--atlas-deep)] px-4 py-12">
         <div
-          className="w-full max-w-md rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-floating)] p-7 shadow-[var(--shadow-floating)]"
+          className="sf-access-panel atlas-trust-orbit__panel w-full max-w-md"
           data-layout="cx-sign-up-form"
         >
-          <h2 className="text-xl font-semibold text-[var(--text-heading)]">Set up your account</h2>
-          <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">Trust orbit</p>
+          <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em] text-[var(--atlas-text)]">
+            Set up your account
+          </h2>
+          <p className="mt-2 text-sm text-[var(--atlas-text-secondary)]">
             First-time invited users set their password here. You will get an email from Okta to
             create it.
           </p>
           <OktaSignUpForm returnTo={returnTo} />
-          <p className="mt-6 text-sm text-[var(--text-secondary)]">
+          <p className="mt-6 text-sm text-[var(--atlas-text-secondary)]">
             <Link
               href={signInHref}
               data-testid="signup-back-to-sign-in"
-              className="font-medium text-[var(--accent-primary)] hover:underline"
+              className="font-medium text-[var(--atlas-signal)] hover:underline"
             >
               Back to Sign in
             </Link>

@@ -91,34 +91,41 @@ export default async function AdminLayout({
 
 function AuthConfigRequired({ issue }: { issue: string }) {
   return (
-    <main className="mx-auto max-w-2xl px-4 py-16" aria-labelledby="auth-config-heading">
-      <h1 id="auth-config-heading" className="text-2xl font-semibold">
+    <main
+      className="mx-auto max-w-2xl px-4 py-16"
+      aria-labelledby="auth-config-heading"
+      data-layout="atlas-admin-denial"
+    >
+      <p className="atlas-micro-label atlas-micro-label--danger">Clearance fault</p>
+      <h1
+        id="auth-config-heading"
+        className="mt-1 text-2xl font-semibold tracking-[-0.02em] text-[var(--atlas-text)]"
+      >
         Sign-in is not configured for this deployment
       </h1>
-      <p className="mt-3 text-zinc-600 dark:text-zinc-300">{issue}</p>
-      <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+      <p className="mt-3 text-[var(--atlas-text-secondary)]">{issue}</p>
+      <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-[var(--atlas-text-secondary)]">
         <li>
           In Vercel → this project → Settings → Environment Variables, set{" "}
-          <code className="text-xs">AUTH0_ISSUER_BASE_URL</code>,{" "}
-          <code className="text-xs">AUTH0_CLIENT_ID</code>,{" "}
-          <code className="text-xs">AUTH0_CLIENT_SECRET</code>, and{" "}
-          <code className="text-xs">AUTH0_SECRET</code> (32+ chars).
+          <code className="font-mono text-xs text-[var(--atlas-signal)]">AUTH0_ISSUER_BASE_URL</code>,{" "}
+          <code className="font-mono text-xs text-[var(--atlas-signal)]">AUTH0_CLIENT_ID</code>,{" "}
+          <code className="font-mono text-xs text-[var(--atlas-signal)]">AUTH0_CLIENT_SECRET</code>, and{" "}
+          <code className="font-mono text-xs text-[var(--atlas-signal)]">AUTH0_SECRET</code> (32+ chars).
         </li>
         <li>
-          Set <code className="text-xs">APP_BASE_URL</code> to this site&apos;s URL, e.g.{" "}
-          <code className="text-xs">https://cyware-docs-csap.vercel.app</code> (or rely on{" "}
-          <code className="text-xs">VERCEL_URL</code> after redeploy).
+          Set <code className="font-mono text-xs text-[var(--atlas-signal)]">APP_BASE_URL</code> to
+          this site&apos;s URL, e.g.{" "}
+          <code className="font-mono text-xs">https://cyware-docs-csap.vercel.app</code> (or rely on{" "}
+          <code className="font-mono text-xs">VERCEL_URL</code> after redeploy).
         </li>
-        <li>Add this URL to Auth0 Allowed Callback URLs as{" "}
-          <code className="text-xs">{'{APP_BASE_URL}'}/auth/callback</code>.
+        <li>
+          Add this URL to Auth0 Allowed Callback URLs as{" "}
+          <code className="font-mono text-xs">{'{APP_BASE_URL}'}/auth/callback</code>.
         </li>
         <li>Redeploy after saving env vars.</li>
       </ul>
       <div className="mt-6">
-        <Link
-          href="/"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
-        >
+        <Link href="/" className="atlas-btn-ghost rounded-[var(--radius-sm)] px-3 py-2 text-sm">
           Back to documentation
         </Link>
       </div>
@@ -140,13 +147,21 @@ function ForbiddenState({
   const copy = denialCopy(reason, workspaceRole, enterpriseRole, mfaMethods);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-16" aria-labelledby="access-heading">
-      <h1 id="access-heading" className="text-2xl font-semibold">
+    <main
+      className="mx-auto max-w-2xl px-4 py-16"
+      aria-labelledby="access-heading"
+      data-layout="atlas-admin-denial"
+    >
+      <p className="atlas-micro-label atlas-micro-label--danger">Access denied</p>
+      <h1
+        id="access-heading"
+        className="mt-1 text-2xl font-semibold tracking-[-0.02em] text-[var(--atlas-text)]"
+      >
         {copy.title}
       </h1>
-      <p className="mt-3 text-zinc-600 dark:text-zinc-300">{copy.body}</p>
+      <p className="mt-3 text-[var(--atlas-text-secondary)]">{copy.body}</p>
       {copy.steps.length > 0 ? (
-        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-zinc-600 dark:text-zinc-300">
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-[var(--atlas-text-secondary)]">
           {copy.steps.map((step) => (
             <li key={step}>{step}</li>
           ))}
@@ -156,15 +171,12 @@ function ForbiddenState({
         {copy.showSignInAgain ? (
           <Link
             href={copy.stepUpHref ?? auth0StepUpLoginPath("/admin")}
-            className="rounded-md bg-sky-700 px-3 py-2 text-sm font-medium text-white hover:bg-sky-800"
+            className="atlas-btn-primary rounded-[var(--radius-sm)] px-3 py-2 text-sm"
           >
             {copy.signInLabel ?? "Sign in again"}
           </Link>
         ) : null}
-        <Link
-          href="/"
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
-        >
+        <Link href="/" className="atlas-btn-ghost rounded-[var(--radius-sm)] px-3 py-2 text-sm">
           Back to documentation
         </Link>
       </div>
