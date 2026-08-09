@@ -20,7 +20,7 @@ const ADMIN_TABS: Array<{
   mustSee?: RegExp;
   allowNotFound?: boolean;
 }> = [
-  { path: "/admin", heading: /^dashboard$/i },
+  { path: "/admin", heading: /^(dashboard|command overview)$/i },
   { path: "/admin/documentation-agent", heading: /documentation agent|overview/i },
   { path: "/admin/documentation-agent/schemas", heading: /schemas/i, mustSee: /upload|draft|schema/i },
   { path: "/admin/documentation-agent/users", heading: /users/i, mustSee: /add user|invite|email/i },

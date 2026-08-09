@@ -10,7 +10,9 @@ test.describe("enterprise admin surface", () => {
     const page = await context.newPage();
     await page.goto("/admin");
     await expect(
-      page.locator("#admin-main-content").getByRole("heading", { name: /^dashboard$/i })
+      page
+        .locator("#admin-main-content")
+        .getByRole("heading", { name: /^(dashboard|command overview)$/i })
     ).toBeVisible();
     await expect(page.getByTestId("admin-brand")).toBeVisible();
     await expect(page.getByTestId("admin-brand")).toContainText(/Admin/i);

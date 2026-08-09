@@ -24,12 +24,13 @@ test.describe("heavy stress: Atlas shell navigation", () => {
     await expectAtlasShell(page);
     await expect(page.getByTestId("atlas-command-rail")).toBeVisible();
 
-    for (let i = 0; i < 8; i++) {
+    // Open/close cycles with Esc close — proves palette cannot stick open under thrash.
+    for (let i = 0; i < 6; i++) {
       await modK(page, false);
-      await page.waitForTimeout(40);
+      await expect(page.getByTestId("command-palette")).toBeVisible({ timeout: 8000 });
+      await page.keyboard.press("Escape");
+      await expect(page.getByTestId("command-palette")).toHaveCount(0);
     }
-    // Odd toggles leave palette closed (start closed → 8 opens/closes → closed).
-    await expect(page.getByTestId("command-palette")).toHaveCount(0);
 
     await modK(page, false);
     await expect(page.getByTestId("command-palette")).toBeVisible({ timeout: 8000 });

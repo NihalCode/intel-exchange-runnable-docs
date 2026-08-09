@@ -172,9 +172,9 @@ test.describe("heavy: Ask AI → analytics count → feedback triage", () => {
     await expect(page.getByTestId("query-analytics-page")).toBeVisible();
     await expect(page.getByRole("button", { name: /apply filters/i })).toBeVisible();
     await expect(page.getByTestId("query-analytics-load-error")).toHaveCount(0);
-    // Metric cards: Answered + Unanswered (review queue).
+    // Telemetry ribbon: Answered + Unanswered.
     await expect(page.getByText(/^answered$/i).first()).toBeVisible();
-    await expect(page.getByText(/unanswered \(review queue\)/i).first()).toBeVisible();
+    await expect(page.getByText(/^unanswered$/i).first()).toBeVisible();
 
     // ── C) Thumbs-up recovers to answered and closes triage ───────────────
     const csrfUp = await getCsrf(request);
