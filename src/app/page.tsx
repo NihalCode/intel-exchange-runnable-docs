@@ -9,49 +9,61 @@ const TICKER = [
   "CFTR · incident packet inbound",
   "CSAP · collaboration thread verified",
   "Orchestrate · playbook edge hot",
-  "Unknown signals · triage queue armed",
-  "Ask Intelligence · grounded retrieval ready",
+  "Unanswered queries · triage queue armed",
+  "Ask AI · grounded retrieval ready",
 ];
 
 export default async function Home() {
   const summaries = await listProductManifests();
   const products = listProducts();
   const indexedPages = summaries.reduce((n, s) => n + (s.manifest?.count ?? 0), 0);
+  const defaultDocs = products[0]?.productId ?? "ctix";
 
   return (
     <div data-layout="cx-home-hub" data-atlas-surface="intelligence-field">
       <section className="atlas-hero" data-layout="cx-hub-hero" data-testid="atlas-hero">
         <div className="atlas-hero__grid">
           <div>
-            <p className="atlas-micro-label atlas-hero__eyebrow">Living Signal Atlas</p>
-            <h1 className="atlas-hero__title">See the threat before it forms.</h1>
+            <p className="atlas-micro-label atlas-hero__eyebrow">Living Signal Atlas · Overview</p>
+            <h1 className="atlas-hero__title">Cyware API documentation you can run.</h1>
             <p className="atlas-hero__lede">
-              Signals enter the network, correlate across Cyware products, and surface as
-              actionable knowledge — runnable documentation, Ask Intelligence, and operational
-              control in one atlas.
+              Search product docs, ask AI for grounded answers, explore live APIs, and build apps —
+              across CTIX, CSAP, Orchestrate, and CFTR — without leaving this workspace.
             </p>
             <div className="atlas-hero__actions">
               <Link href="/agent" className="atlas-btn-primary" data-testid="home-ask-ai">
-                Ask Intelligence
+                Ask AI
               </Link>
-              <Link href="/docs/ctix" className="atlas-btn-ghost" data-testid="home-open-docs">
-                Enter Knowledge Atlas
+              <Link
+                href={`/docs/${defaultDocs}`}
+                className="atlas-btn-ghost"
+                data-testid="home-open-docs"
+              >
+                Open documentation
               </Link>
             </div>
-            <div className="atlas-hero__readouts">
+            <div className="atlas-hero__readouts" aria-label="Workspace status">
               <TelemetryValue label="Indexed pages" value={indexedPages || "—"} />
               <TelemetryValue label="Products" value={products.length} />
               <div className="atlas-telemetry">
-                <span className="atlas-micro-label">Network</span>
+                <span className="atlas-micro-label">Status</span>
                 <LiveStatus label="Live" />
               </div>
             </div>
+            <nav className="atlas-hero__quicklinks" aria-label="Quick destinations">
+              <Link href="/agent">Ask AI</Link>
+              <Link href={`/docs/${defaultDocs}`}>Documentation</Link>
+              <Link href="/developer">API Explorer</Link>
+              <Link href="/agent?focus=build">Build App</Link>
+              <Link href="/authentication">Credentials</Link>
+              <Link href="/guides">Guides</Link>
+            </nav>
           </div>
           <div className="atlas-hero__panel">
             <TopologyField />
           </div>
         </div>
-        <div className="atlas-ticker" aria-label="Live threat ticker">
+        <div className="atlas-ticker" aria-label="Live activity ticker">
           <div className="atlas-ticker__track">
             {[...TICKER, ...TICKER].map((item, i) => (
               <span key={`${item}-${i}`}>{item}</span>
@@ -61,43 +73,48 @@ export default async function Home() {
       </section>
 
       <section className="atlas-section">
-        <p className="atlas-micro-label">Priority stream</p>
-        <h2 className="atlas-section__title">Operational intelligence now</h2>
+        <p className="atlas-micro-label">Get started</p>
+        <h2 className="atlas-section__title">What you can do next</h2>
         <p className="atlas-section__lede">
-          Move from observation to action — investigate with Ask Intelligence, execute against
-          live APIs, or open the product knowledge surface.
+          Choose a workflow — ask questions, call APIs, or open a product&apos;s documentation tree.
         </p>
         <div className="atlas-stream">
           <StreamItem
             tone="signal"
-            title="Ask Intelligence workstation"
-            body="Evidence-backed answers grounded in the indexed API corpus."
+            title="Ask AI"
+            body="Evidence-backed answers grounded in the indexed API documentation."
             href="/agent"
-            cta="Open"
+            cta="Open Ask AI"
           />
           <StreamItem
             tone="violet"
-            title="API Live Console"
-            body="Transmit authenticated requests through the secure proxy laboratory."
+            title="API Explorer"
+            body="Send authenticated requests through the secure developer console."
             href="/developer"
-            cta="Transmit"
+            cta="Open explorer"
           />
           <StreamItem
             tone="amber"
-            title="Credentials & clearance"
-            body="Configure product Open API credentials for this session only."
+            title="Credentials"
+            body="Configure product Open API credentials for this browser session only."
             href="/authentication"
             cta="Configure"
+          />
+          <StreamItem
+            tone="signal"
+            title="Build App"
+            body="Generate, preview, and deploy apps from Ask AI when Build App is enabled."
+            href="/agent?focus=build"
+            cta="Open Build App"
           />
         </div>
       </section>
 
       <section className="atlas-section" data-testid="product-hub">
-        <p className="atlas-micro-label">Product constellation</p>
-        <h2 className="atlas-section__title">Interconnected Cyware ecosystem</h2>
+        <p className="atlas-micro-label">Products</p>
+        <h2 className="atlas-section__title">Browse documentation by product</h2>
         <p className="atlas-section__lede">
-          Each product is a living region of the atlas — open its documentation tree and runnable
-          request deck.
+          Each product opens its documentation tree and runnable request examples.
         </p>
         <div className="atlas-product-constellation">
           {products.map((product) => {
@@ -123,10 +140,22 @@ export default async function Home() {
       </section>
 
       <section className="atlas-section">
-        <p className="atlas-micro-label">Secondary lanes</p>
+        <p className="atlas-micro-label">Learn more</p>
         <div className="atlas-stream">
-          <StreamItem tone="muted" title="Guides" body="Operator playbooks and onboarding paths." href="/guides" cta="Read" />
-          <StreamItem tone="muted" title="Changelog" body="Release notes across the documentation fabric." href="/changelog" cta="Review" />
+          <StreamItem
+            tone="muted"
+            title="Guides"
+            body="Operator playbooks and onboarding paths."
+            href="/guides"
+            cta="Read guides"
+          />
+          <StreamItem
+            tone="muted"
+            title="Changelog"
+            body="Release notes across the documentation platform."
+            href="/changelog"
+            cta="View changelog"
+          />
         </div>
       </section>
     </div>

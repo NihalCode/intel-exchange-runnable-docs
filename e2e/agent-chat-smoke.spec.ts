@@ -19,13 +19,13 @@ test.describe("agent chat smoke", () => {
     "Skip agent chat smoke: set AUTH_DISABLED=true or Auth0 credentials (AUTH0_DOMAIN, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET)"
   );
 
-  test("agent page exposes Ask Intelligence chrome", async ({ page }) => {
+  test("agent page exposes Ask AI chrome", async ({ page }) => {
     await page.goto("/agent");
     await expect(
-      page.getByRole("heading", { level: 1, name: /Analyst workstation|Documentation Agent/i })
+      page.getByRole("heading", { level: 1, name: /Ask AI|Documentation Agent|Analyst workstation/i })
     ).toBeVisible();
     const chatHeading = page.locator("#agent-chat-heading");
-    const connectCta = page.getByRole("link", { name: /Configure authentication/i });
+    const connectCta = page.getByRole("link", { name: /Configure (credentials|authentication)/i });
     await expect(chatHeading.or(connectCta).first()).toBeVisible();
   });
 });

@@ -67,7 +67,7 @@ export default async function GuidesPage() {
           <div className="atlas-stream__item">
             <ThreatBadge tone="signal">Step 1</ThreatBadge>
             <div>
-              <p className="text-sm font-medium text-[var(--text-heading)]">Configure authentication</p>
+              <p className="text-sm font-medium text-[var(--text-heading)]">Configure credentials</p>
               <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
                 Add your Open API Access ID and Secret Key for each product you integrate.
               </p>
@@ -152,7 +152,7 @@ export default async function GuidesPage() {
       </section>
 
       <section className="atlas-section">
-        <p className="atlas-micro-label">Knowledge Atlas</p>
+        <p className="atlas-micro-label">Documentation</p>
         <h2 className="atlas-section__title">CTIX API topics</h2>
         <p className="atlas-section__lede">
           Top-level sections from the Intel Exchange API reference.

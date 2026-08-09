@@ -26,8 +26,8 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
     <div className="mx-auto max-w-7xl space-y-6" data-layout="sf-admin-dashboard">
       <PageHeader
         eyebrow={organization.name}
-        title="Command overview"
-        description="Organization signal plane — control-plane health and recent activity."
+        title="Admin overview"
+        description="Organization health, recent activity, and shortcuts into admin tools."
         actions={<LiveStatus label={selectedEnvironment} tone="signal" />}
       />
 
@@ -38,7 +38,7 @@ export function AdminOverviewPage({ metrics, health, activity }: Props) {
         <div className="rounded-[var(--radius-sm)] border border-[var(--atlas-line)] bg-[color-mix(in_srgb,var(--atlas-elevated)_90%,transparent)] p-4">
           <div className="mb-3 flex items-center justify-between gap-2">
             <h2 id="metrics-heading" className="atlas-micro-label text-[var(--atlas-signal)]">
-              Primary telemetry
+              Key metrics
             </h2>
             <p className="atlas-micro-label !inline">{selectedEnvironment}</p>
           </div>

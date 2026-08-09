@@ -144,9 +144,9 @@ export function DeveloperConsole() {
     <div className="atlas-ops-console space-y-4" data-layout="atlas-ops-console">
       <div className="flex flex-wrap items-end justify-between gap-2 border-b border-[var(--atlas-line)] pb-3">
         <div>
-          <p className="atlas-micro-label text-[var(--atlas-signal)]">Live ops</p>
+          <p className="atlas-micro-label text-[var(--atlas-signal)]">API Explorer</p>
           <h1 className="text-lg font-semibold tracking-[-0.02em] text-[var(--atlas-text)]">
-            Developer console
+            Request console
           </h1>
         </div>
         <span

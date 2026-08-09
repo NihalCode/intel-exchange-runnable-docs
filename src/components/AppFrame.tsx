@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useState, type ReactNode } from "react";
 import type { NavNode } from "@/lib/types";
 import { ProductSelector, useProduct } from "./ProductContext";
 import { ProductRunSettingsSync } from "./RunSettings";
@@ -128,10 +128,12 @@ function AppFrameInner({
         Skip to main content
       </a>
 
-      <CommandRail
-        collapsed={railCollapsed}
-        onToggleCollapsed={toggleRail}
-      />
+      <Suspense fallback={<aside className="atlas-command-rail" aria-hidden="true" />}>
+        <CommandRail
+          collapsed={railCollapsed}
+          onToggleCollapsed={toggleRail}
+        />
+      </Suspense>
 
       <div className="atlas-shell-main">
         <CommandBar
@@ -173,14 +175,16 @@ function AppFrameInner({
                   <ProductSelector className="w-full" />
                 </div>
                 <div className="min-h-0 flex-1 overflow-y-auto">
-                  <CommandRail
-                    collapsed={false}
-                    mobile
-                    onNavigate={() => setDrawerOpen(false)}
-                  />
+                  <Suspense fallback={null}>
+                    <CommandRail
+                      collapsed={false}
+                      mobile
+                      onNavigate={() => setDrawerOpen(false)}
+                    />
+                  </Suspense>
                   {showDocsRail ? (
                     <div className="border-t border-[var(--border-subtle)]">
-                      <p className="atlas-micro-label px-4 pt-3">Knowledge tree</p>
+                      <p className="atlas-micro-label px-4 pt-3">Documentation</p>
                       <Sidebar
                         nav={nav}
                         currentSlug={currentSlug}
@@ -196,7 +200,7 @@ function AppFrameInner({
                     className="text-xs text-[var(--text-link)]"
                     onClick={() => setDrawerOpen(false)}
                   >
-                    Open Knowledge Atlas
+                    Open documentation
                   </Link>
                 </div>
               </aside>

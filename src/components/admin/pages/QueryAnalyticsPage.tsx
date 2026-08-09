@@ -98,9 +98,9 @@ export function QueryAnalyticsPage({
     >
       <PageHeader
         eyebrow={organization.name}
-        title="Query analytics"
-        description="Customer questions, answer outcomes, latency, and exports for the selected range."
-        actions={<LiveStatus label="Workbench" tone="signal" />}
+        title="Analytics"
+        description="Total queries, answer rate, unresolved rate, and product usage for the selected date range. Signal Telemetry view."
+        actions={<LiveStatus label="Live" tone="signal" />}
       />
 
       {loadError ? (

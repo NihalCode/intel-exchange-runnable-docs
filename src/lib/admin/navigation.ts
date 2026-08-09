@@ -113,13 +113,13 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       },
       {
         href: "/admin/documentation-agent/query-analytics",
-        label: "Query analytics",
+        label: "Analytics",
         permission: "query_analytics.read",
         featureFlag: "query_analytics",
       },
       {
         href: "/admin/documentation-agent/unanswered",
-        label: "Unanswered queries",
+        label: "Unanswered Queries",
         permission: "query_analytics.read",
         featureFlag: "unanswered_query_review",
       },

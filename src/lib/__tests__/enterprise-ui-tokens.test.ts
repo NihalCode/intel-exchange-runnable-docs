@@ -90,7 +90,8 @@ describe("enterprise UI tokens and frame naming", () => {
   it("home hub uses Atlas CTAs (not hard POST to /docs/ctix)", () => {
     const home = readFileSync(path.join(process.cwd(), "src/app/page.tsx"), "utf8");
     expect(home).toContain('data-testid="home-ask-ai"');
-    expect(home).toContain('href="/docs/ctix"');
+    expect(home).toContain('data-testid="home-open-docs"');
+    expect(home).toContain("/docs/${defaultDocs}");
     expect(home).not.toMatch(/action=["']\/docs\/ctix["']/);
   });
 

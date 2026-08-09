@@ -10,6 +10,7 @@ import { useDocumentationAuth } from "@/components/auth/DocumentationAuthProvide
 import { ProductSelector, useProduct } from "@/components/ProductContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LiveStatus } from "@/components/atlas/primitives";
+import { atlasBreadcrumbs } from "@/components/atlas/nav-model";
 import { getProduct } from "@/lib/products/registry";
 
 function AuthControl() {
@@ -62,19 +63,6 @@ function AuthControl() {
   );
 }
 
-function breadcrumbFor(pathname: string, productLabel: string): string[] {
-  if (pathname === "/") return ["Intelligence Field"];
-  if (pathname.startsWith("/docs")) return ["Knowledge Atlas", productLabel];
-  if (pathname.startsWith("/agent")) return ["Operate", "Ask Intelligence"];
-  if (pathname.startsWith("/developer")) return ["Operate", "API Live Console"];
-  if (pathname.startsWith("/guides")) return ["System", "Guides"];
-  if (pathname.startsWith("/changelog")) return ["System", "Changelog"];
-  if (pathname.startsWith("/authentication")) return ["System", "Credentials"];
-  if (pathname.startsWith("/settings")) return ["System", "Settings"];
-  if (pathname.startsWith("/admin")) return ["Command", "Control Plane"];
-  return ["Atlas"];
-}
-
 export function CommandBar({
   onOpenMobileNav,
   onOpenPalette,
@@ -87,7 +75,7 @@ export function CommandBar({
   const pathname = usePathname();
   const { productId } = useProduct();
   const product = getProduct(productId);
-  const crumbs = breadcrumbFor(pathname, product?.displayLabel ?? productId);
+  const crumbs = atlasBreadcrumbs(pathname, product?.displayLabel ?? productId);
 
   return (
     <header className="atlas-command-bar" data-testid="atlas-command-bar" data-layout="cx-header">
@@ -96,11 +84,12 @@ export function CommandBar({
           <button
             type="button"
             onClick={onOpenMobileNav}
-            aria-label="Open command drawer"
+            aria-label="Open menu"
             data-testid="nav-drawer-toggle"
             className="atlas-icon-btn lg:hidden"
           >
             <Menu size={18} strokeWidth={1.5} />
+            <span className="sr-only">Menu</span>
           </button>
           <nav aria-label="Breadcrumb" className="atlas-breadcrumb">
             {crumbs.map((c, i) => (
@@ -126,7 +115,7 @@ export function CommandBar({
             aria-label="Open command palette"
           >
             <Search size={14} strokeWidth={1.5} aria-hidden="true" />
-            <span className="hidden sm:inline">Search atlas</span>
+            <span className="hidden sm:inline">Search</span>
             <kbd className="atlas-kbd">⌘K</kbd>
           </button>
           {trailing}

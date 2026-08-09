@@ -15,4 +15,6 @@ export {
   ATLAS_NAV_GROUPS,
   resolveAtlasHref,
   isAtlasNavActive,
+  atlasBreadcrumbs,
 } from "./nav-model";
+export { PageOrientation } from "./PageOrientation";

@@ -122,7 +122,8 @@ export default async function ProductDocPage({
   if (!page) notFound();
   const { prev, next } = await adjacentPages(productId, slug);
   const crumbs = [
-    { label: "Documentation", href: "/" },
+    { label: "Home", href: "/" },
+    { label: "Documentation", href: `/docs/${productId}` },
     { label: product.displayLabel, href: `/docs/${productId}` },
     { label: page.title },
   ];

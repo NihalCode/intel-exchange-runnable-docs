@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "Living Signal Atlas — Cyware Intelligence Platform",
   description:
-    "The Living Signal Atlas: operational cyber intelligence documentation, Ask Intelligence, and runnable API consoles for CTIX, CSAP, Orchestrate, and CFTR.",
+    "The Living Signal Atlas: Cyware API documentation you can run, with Ask AI and developer consoles for CTIX, CSAP, Orchestrate, and CFTR.",
 }
 
 export default function RootLayout({

@@ -141,11 +141,11 @@ export function UnansweredQueriesPage({
     >
       <PageHeader
         eyebrow={organization.name}
-        title="Unanswered queries"
-        description="Triage Ask AI gaps using Phase 10 review statuses (documentation, retrieval, product, connector, access)."
+        title="Unanswered Queries"
+        description="Review questions Ask AI could not answer, assign ownership, investigate the gap, then resolve or dismiss. Unknown Signals queue."
         actions={
           <LiveStatus
-            label={summaryStale ? "Stale" : realtimeEnabled ? "Live queue" : "Static"}
+            label={summaryStale ? "Stale" : realtimeEnabled ? "Live" : "Ready"}
             tone={summaryStale ? "amber" : "signal"}
           />
         }

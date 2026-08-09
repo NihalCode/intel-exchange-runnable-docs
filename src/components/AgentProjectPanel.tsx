@@ -46,10 +46,10 @@ export function AgentProjectPanel({
       <div className="atlas-panel__header">
         <div>
           <p className="atlas-micro-label" style={{ color: "var(--accent-ai)" }}>
-            Build studio
+            Build App
           </p>
           <p className="mt-0.5 truncate text-[11px] text-[var(--text-secondary)]">
-            {app?.title ?? "No project loaded"}
+            {app?.title ?? "No project loaded — ask Ask AI to generate an app"}
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-1">
@@ -58,11 +58,12 @@ export function AgentProjectPanel({
               type="button"
               disabled={!app}
               onClick={onPreview}
-              className="atlas-icon-btn"
+              className="atlas-btn-ghost atlas-btn-sm inline-flex min-h-8 items-center gap-1"
               title="Preview"
               aria-label="Preview"
             >
               <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+              Preview
             </button>
           ) : null}
           {onDeploy ? (
@@ -70,11 +71,11 @@ export function AgentProjectPanel({
               type="button"
               disabled={!app || deploying}
               onClick={onDeploy}
-              className="inline-flex h-8 items-center gap-1 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent-ai)_40%,transparent)] bg-[var(--accent-ai)] px-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-white disabled:opacity-40"
+              className="inline-flex min-h-8 items-center gap-1 rounded-[var(--radius-sm)] border border-[color-mix(in_srgb,var(--accent-ai)_40%,transparent)] bg-[var(--accent-ai)] px-2 text-[11px] font-semibold text-white disabled:opacity-40"
               title="Deploy"
             >
               <Rocket className="h-3 w-3" aria-hidden="true" />
-              {deploying ? "…" : "Deploy"}
+              {deploying ? "Deploying…" : "Deploy"}
             </button>
           ) : null}
           {onCommit ? (
@@ -82,11 +83,12 @@ export function AgentProjectPanel({
               type="button"
               disabled={!app || committing}
               onClick={onCommit}
-              className="atlas-icon-btn"
+              className="atlas-btn-ghost atlas-btn-sm inline-flex min-h-8 items-center gap-1"
               title="Commit"
               aria-label={committing ? "Committing" : "Commit"}
             >
               <GitCommitHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
+              {committing ? "Committing…" : "Commit"}
             </button>
           ) : null}
           {onDownloadZip ? (
@@ -94,11 +96,12 @@ export function AgentProjectPanel({
               type="button"
               disabled={!app}
               onClick={onDownloadZip}
-              className="atlas-icon-btn"
+              className="atlas-btn-ghost atlas-btn-sm inline-flex min-h-8 items-center gap-1"
               title="Download"
-              aria-label="Download"
+              aria-label="Download project zip"
             >
               <Download className="h-3.5 w-3.5" aria-hidden="true" />
+              Download
             </button>
           ) : null}
         </div>

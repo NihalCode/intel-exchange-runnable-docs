@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Activity,
   BookOpen,
@@ -116,6 +116,8 @@ export function CommandRail({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
   const { productId } = useProduct();
   const { state } = useDocumentationAuth();
   const items = useVisibleNavItems();
@@ -171,20 +173,32 @@ export function CommandRail({
               <ul className="atlas-command-rail__list">
                 {groupItems.map((item) => {
                   const href = resolveAtlasHref(item, productId);
-                  const active = isAtlasNavActive(pathname, item, href);
+                  const active = isAtlasNavActive(pathname, item, href, search);
                   const Icon = ICONS[item.id];
+                  const ariaLabel = item.atmosphere
+                    ? `${item.label} (${item.atmosphere})`
+                    : item.label;
                   return (
                     <li key={item.id}>
                       <Link
                         href={href}
                         data-testid={item.testId}
                         data-active={active ? "true" : "false"}
-                        title={item.label}
+                        title={ariaLabel}
+                        aria-label={ariaLabel}
+                        aria-current={active ? "page" : undefined}
                         onClick={onNavigate}
                         className={`atlas-rail-link ${active ? "atlas-rail-link--active" : ""}`}
                       >
                         <Icon size={16} strokeWidth={1.5} aria-hidden="true" />
-                        {(!collapsed || mobile) && <span>{item.label}</span>}
+                        {(!collapsed || mobile) && (
+                          <span className="atlas-rail-link__text">
+                            <span className="atlas-rail-link__label">{item.label}</span>
+                            {item.atmosphere ? (
+                              <span className="atlas-rail-link__atmosphere">{item.atmosphere}</span>
+                            ) : null}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   );

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { AgentChat } from "@/components/AgentChat";
 import { SignalField } from "@/components/fabric/SignalField";
 import { getAppSession } from "@/lib/documentation-auth/session";
@@ -19,7 +20,7 @@ import { resolveOrganizationContext } from "@/lib/enterprise/organization-contex
 import { resolveViewerAskAiAccessEnabled } from "@/lib/domains/feature-gates-resolve";
 
 export const metadata: Metadata = {
-  title: "AI Agent — Cyware API Docs",
+  title: "Ask AI — Cyware API Docs",
   description: "Ask grounded questions across Cyware product documentation.",
 };
 
@@ -132,27 +133,43 @@ export default async function AgentPage() {
 
   return (
     <SignalField intensity="strong" topology className="cx-ask-page -mx-1 rounded-[var(--radius-xl)] px-1 py-1 sm:-mx-2 sm:px-2">
-      <div className="cx-ask-page__intro">
+      <div className="cx-ask-page__intro" data-testid="atlas-page-orient">
         <p className="cx-ask-page__eyebrow">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-primary)] sf-signal-pulse" aria-hidden="true" />
-          Ask Intelligence
+          Work · Ask AI
         </p>
         <h1 className="text-2xl font-medium tracking-[-0.03em] text-[var(--text-heading)] sm:text-[1.75rem]">
-          Analyst workstation
+          Ask AI
         </h1>
+        <p className="mt-0.5 text-xs text-[var(--text-muted)]">Ask Intelligence · analyst workstation</p>
         <p className="mt-1 max-w-2xl text-sm text-[var(--text-secondary)]">
-          Investigate with grounded answers and generate API examples
+          Ask questions grounded in Cyware documentation and generate API examples
           {requiresProductCredentials
-            ? " for the Cyware products you have connected at /authentication."
+            ? ". Connect product credentials under Credentials before live API actions."
             : ". Open API product credentials are optional for docs answers (admins can require them under Features)."}
+        </p>
+        <p className="mt-2 text-xs text-[var(--text-secondary)]">
+          Need an app? Use{" "}
+          <Link href="/agent?focus=build" className="text-[var(--text-link)] underline-offset-2 hover:underline">
+            Build App
+          </Link>{" "}
+          in the workspace when that feature is enabled.
         </p>
       </div>
       {credentialReady ? (
-        <AgentChat
-          features={features}
-          credentialedProducts={credentialedProducts}
-          docsPreviewMode={docsPreviewMode}
-        />
+        <Suspense
+          fallback={
+            <div className="rounded-[var(--radius-md)] border border-[var(--border-default)] p-6 text-sm text-[var(--text-secondary)]">
+              Loading Ask AI…
+            </div>
+          }
+        >
+          <AgentChat
+            features={features}
+            credentialedProducts={credentialedProducts}
+            docsPreviewMode={docsPreviewMode}
+          />
+        </Suspense>
       ) : (
         <section className="cx-ask-gate">
           <div
@@ -173,7 +190,7 @@ export default async function AgentPage() {
             href="/authentication"
             className="mt-5 inline-flex rounded-[var(--radius-md)] bg-[var(--accent-primary)] px-4 py-2 text-sm font-medium text-white shadow-[0_8px_20px_color-mix(in_srgb,var(--accent-primary)_28%,transparent)] transition hover:bg-[var(--accent-primary-hover)]"
           >
-            Configure authentication
+            Configure credentials
           </Link>
         </section>
       )}

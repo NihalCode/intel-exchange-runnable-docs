@@ -2,16 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useProduct } from "@/components/ProductContext";
 
-const APP_LINKS = [
-  { href: "/", label: "Documentation", match: (p: string) => p === "/" || p.startsWith("/docs/") },
-  { href: "/agent", label: "Ask AI", match: (p: string) => p.startsWith("/agent") },
-  {
-    href: "/authentication",
-    label: "Authentication",
-    match: (p: string) => p.startsWith("/authentication"),
-  },
-] as const;
+function useAppLinks() {
+  const { productId } = useProduct();
+  return [
+    { href: "/", label: "Overview", match: (p: string) => p === "/" },
+    {
+      href: `/docs/${productId}`,
+      label: "Documentation",
+      match: (p: string) => p.startsWith("/docs/"),
+    },
+    { href: "/agent", label: "Ask AI", match: (p: string) => p.startsWith("/agent") },
+    {
+      href: "/authentication",
+      label: "Credentials",
+      match: (p: string) => p.startsWith("/authentication"),
+    },
+  ] as const;
+}
 
 function ArrowLeftIcon() {
   return (
@@ -32,6 +41,7 @@ export function AdminAppExitNav({
 }) {
   const pathname = usePathname();
   const inverse = tone === "inverse";
+  const appLinks = useAppLinks();
 
   if (variant === "sidebar") {
     return (
@@ -60,7 +70,7 @@ export function AdminAppExitNav({
           Workspace
         </p>
         <ul className="space-y-0.5">
-          {APP_LINKS.map((link) => {
+          {appLinks.map((link) => {
             const active = link.match(pathname);
             return (
               <li key={link.href}>
@@ -101,7 +111,7 @@ export function AdminAppExitNav({
         aria-hidden="true"
       />
       <nav aria-label="Workspace" className="hidden items-center gap-0.5 sm:flex">
-        {APP_LINKS.map((link) => {
+        {appLinks.map((link) => {
           const active = link.match(pathname);
           return (
             <Link

@@ -21,8 +21,34 @@ type CommandPaletteProps = {
   preferPlainShortcut?: boolean;
 };
 
+const RECENT_KEY = "atlas-search-recent";
+
+function loadRecent(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((x): x is string => typeof x === "string").slice(0, 6)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function pushRecent(q: string) {
+  const trimmed = q.trim();
+  if (!trimmed) return;
+  try {
+    const next = [trimmed, ...loadRecent().filter((x) => x !== trimmed)].slice(0, 6);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore */
+  }
+}
+
 /**
- * Permission-aware intelligence retrieval palette.
+ * Permission-aware command palette with plain-language destinations.
  * Navigates existing routes / toggles theme only — no unsupported mutations.
  */
 export function CommandPalette({
@@ -40,6 +66,7 @@ export function CommandPalette({
 
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  const [recent, setRecent] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   const router = useRouter();
@@ -62,6 +89,7 @@ export function CommandPalette({
           if (next) {
             setQuery("");
             setActive(0);
+            setRecent(loadRecent());
           }
           return next;
         });
@@ -74,6 +102,7 @@ export function CommandPalette({
           if (next) {
             setQuery("");
             setActive(0);
+            setRecent(loadRecent());
           }
           return next;
         });
@@ -92,25 +121,26 @@ export function CommandPalette({
 
   const items = useMemo(() => {
     const list: CommandItem[] = [
-      { id: "home", label: "Intelligence Field", href: "/", group: "Network" },
-      { id: "guides", label: "Guides", href: "/guides", group: "System" },
-      { id: "changelog", label: "Changelog", href: "/changelog", group: "System" },
+      { id: "home", label: "Overview", hint: "Intelligence Field", href: "/", group: "Home" },
+      { id: "guides", label: "Guides", href: "/guides", group: "Learn" },
+      { id: "changelog", label: "Changelog", href: "/changelog", group: "Learn" },
       {
         id: "auth",
         label: "Credentials",
         href: "/authentication",
-        group: "System",
+        group: "Account",
       },
       {
         id: "developer",
-        label: "API Live Console",
+        label: "API Explorer",
+        hint: "Live Console",
         href: "/developer",
-        group: "Operate",
+        group: "Work",
       },
       {
         id: "theme",
         label: "Toggle theme",
-        group: "Workspace",
+        group: "Account",
         action: () => {
           document.documentElement.classList.toggle("dark");
           const next = document.documentElement.classList.contains("dark") ? "dark" : "light";
@@ -126,9 +156,9 @@ export function CommandPalette({
     for (const p of products) {
       list.push({
         id: `docs-${p.productId}`,
-        label: `${p.displayLabel} — Knowledge Atlas`,
+        label: `${p.displayLabel} documentation`,
         href: `/docs/${p.productId}`,
-        group: "Products",
+        group: "Learn",
         hint: p.productId,
       });
     }
@@ -140,15 +170,27 @@ export function CommandPalette({
         hasPermission("ask_agent") &&
         state.user?.role !== "viewer");
     if (canAsk) {
-      list.push({ id: "ask", label: "Ask Intelligence", href: "/agent", group: "Operate" });
-      list.push({ id: "build", label: "Build Studio", href: "/agent", group: "Operate" });
+      list.push({
+        id: "ask",
+        label: "Ask AI",
+        hint: "Ask Intelligence",
+        href: "/agent",
+        group: "Work",
+      });
+      list.push({
+        id: "build",
+        label: "Build App",
+        hint: "Build Studio",
+        href: "/agent?focus=build",
+        group: "Work",
+      });
     }
     if (hasPermission("manage_users")) {
       list.push({
         id: "users",
         label: "Settings · Users",
         href: "/settings/users",
-        group: "System",
+        group: "Account",
       });
     }
     if (hasPermission("sync_docs") || hasPermission("manage_sources")) {
@@ -156,7 +198,7 @@ export function CommandPalette({
         id: "content",
         label: "Content sources",
         href: "/settings/content",
-        group: "System",
+        group: "Account",
       });
     }
     if (
@@ -167,18 +209,26 @@ export function CommandPalette({
         state.user.role === "admin" ||
         state.user.role === "developer")
     ) {
-      list.push({ id: "admin", label: "Control Plane", href: "/admin", group: "Command" });
+      list.push({
+        id: "admin",
+        label: "Admin",
+        hint: "Control Plane",
+        href: "/admin",
+        group: "Manage",
+      });
       list.push({
         id: "analytics",
-        label: "Signal Telemetry",
+        label: "Analytics",
+        hint: "Signal Telemetry",
         href: "/admin/documentation-agent/query-analytics",
-        group: "Command",
+        group: "Manage",
       });
       list.push({
         id: "unanswered",
-        label: "Unknown Signals",
+        label: "Unanswered Queries",
+        hint: "Unknown Signals",
         href: "/admin/documentation-agent/unanswered",
-        group: "Command",
+        group: "Manage",
       });
     }
 
@@ -193,6 +243,7 @@ export function CommandPalette({
   }, [products, state, hasPermission, query]);
 
   function run(item: CommandItem) {
+    if (query.trim()) pushRecent(query);
     setOpen(false);
     if (item.action) item.action();
     if (item.href && item.href !== pathname) router.push(item.href);
@@ -205,7 +256,7 @@ export function CommandPalette({
       className="fixed inset-0 z-[80] flex items-start justify-center bg-[var(--surface-overlay)] px-4 pt-[12vh]"
       role="dialog"
       aria-modal="true"
-      aria-label="Command palette"
+      aria-label="Search"
       data-testid="command-palette"
       onClick={() => setOpen(false)}
     >
@@ -214,7 +265,7 @@ export function CommandPalette({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-[var(--border-subtle)] px-3 py-2">
-          <p className="atlas-micro-label mb-1">Signal acquisition</p>
+          <p className="atlas-micro-label mb-1">Search</p>
           <input
             ref={inputRef}
             value={query}
@@ -234,15 +285,35 @@ export function CommandPalette({
                 run(items[active]);
               }
             }}
-            placeholder="Retrieve routes, products, and command surfaces…"
+            placeholder="Search pages, products, and features…"
             className="w-full bg-transparent px-1 py-2 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-muted)]"
-            aria-label="Command search"
+            aria-label="Search"
           />
         </div>
+        {!query.trim() && recent.length > 0 ? (
+          <div className="border-b border-[var(--border-subtle)] px-3 py-2">
+            <p className="atlas-micro-label mb-1.5">Recent searches</p>
+            <div className="flex flex-wrap gap-1.5">
+              {recent.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  className="rounded-[var(--radius-sm)] border border-[var(--border-default)] px-2 py-1 text-xs text-[var(--text-secondary)] hover:bg-[var(--surface-muted)]"
+                  onClick={() => {
+                    setQuery(r);
+                    setActive(0);
+                  }}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
         <ul className="max-h-80 overflow-y-auto scroll-thin p-2" role="listbox">
           {items.length === 0 ? (
             <li className="px-3 py-6 text-center text-sm text-[var(--text-muted)]">
-              No signals matched — refine the query or browse the Knowledge Atlas.
+              No matches. Try another term, or open Documentation from Learn in the sidebar.
             </li>
           ) : (
             items.map((item, index) => (
@@ -261,13 +332,9 @@ export function CommandPalette({
                     <span className="block font-medium">{item.label}</span>
                     <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)]">
                       {item.group}
+                      {item.hint ? ` · ${item.hint}` : ""}
                     </span>
                   </span>
-                  {item.hint ? (
-                    <span className="font-mono text-[10px] uppercase text-[var(--text-muted)]">
-                      {item.hint}
-                    </span>
-                  ) : null}
                 </button>
               </li>
             ))

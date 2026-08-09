@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Paperclip,
   Settings2,
@@ -108,6 +109,8 @@ function AgentChatBody({
   >>;
 }) {
   const chat = useAgentChat();
+  const searchParams = useSearchParams();
+  const focusBuild = searchParams.get("focus") === "build";
   const {
     messages,
     input,
@@ -164,6 +167,17 @@ function AgentChatBody({
     });
   }, [messages, loading, bottomRef]);
 
+  useEffect(() => {
+    if (!focusBuild || !features.project_workspace) return;
+    const panel = document.querySelector('[data-layout="cx-build-app-panel"]');
+    panel?.scrollIntoView({
+      block: "nearest",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
+  }, [focusBuild, features.project_workspace]);
+
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -216,10 +230,10 @@ function AgentChatBody({
         <div className="atlas-panel__header">
           <div className="min-w-0">
             <p className="atlas-micro-label" style={{ color: "var(--accent-ai)" }}>
-              Intelligence channel
+              Conversation
             </p>
             <h2 id="agent-chat-heading" className="mt-0.5 text-sm font-semibold text-[var(--text-heading)]">
-              Documentation Agent
+              Ask AI
             </h2>
             <p className="text-[11px] text-[var(--text-secondary)]">
               Ask about endpoints, authentication, workflows, parameters, and code examples.
@@ -296,7 +310,7 @@ function AgentChatBody({
                 <Sparkles className="h-6 w-6" />
               </div>
               <h2 className="relative text-xl font-semibold tracking-tight text-[var(--text-heading)]">
-                Open an intelligence inquiry
+                Start a conversation
               </h2>
               <p className="relative mt-1.5 max-w-md text-sm text-[var(--text-secondary)]">
                 Ask in everyday language. Answers are grounded in published Cyware product documentation —
@@ -453,9 +467,13 @@ function AgentChatBody({
           }}
         >
           <div className="atlas-transmission__meta mx-auto max-w-3xl">
-            <span className="atlas-micro-label">Transmission console</span>
+            <span className="atlas-micro-label">Message</span>
             <span className="atlas-micro-label">
-              {extracting ? "Reading files…" : loading ? "Acquiring…" : "Ready"}
+              {extracting
+                ? "Reading files…"
+                : loading
+                  ? "Generating response…"
+                  : "Ready to send"}
             </span>
           </div>
           {(attachments.length > 0 || extracting) && (
@@ -510,9 +528,10 @@ function AgentChatBody({
               disabled={loading || extracting}
               title="Attach files"
               aria-label="Attach files"
-              className="atlas-icon-btn h-10 w-10"
+              className="atlas-btn-ghost atlas-btn-sm inline-flex h-10 min-w-10 items-center justify-center gap-1 px-2"
             >
               <Paperclip className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Attach</span>
             </button>
             <textarea
               ref={inputRef}
